@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<options>
+    <bgm volume="0" />
+    <sfx volume="60" />
+    <panning p="50" />
+</options>

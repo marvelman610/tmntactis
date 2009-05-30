@@ -23,3 +23,14 @@ void CTurtle::Render()
 {
 
 }
+void CTurtle::SetAttribute(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)
+{
+	SetBaseAP(ap);
+	SetHealthMax(hp);
+	SetStrength(strength);
+	SetDefense(defense);
+	SetAccuracy(accuracy);
+	SetSpeed(speed);
+	SetLevel(level);
+	SetExperience(range);
+}

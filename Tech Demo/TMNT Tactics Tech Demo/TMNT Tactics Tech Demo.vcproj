@@ -366,6 +366,34 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="XML"
+			>
+			<File
+				RelativePath=".\Source\tinyxml\tinystr.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\tinyxml\tinystr.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\tinyxml\tinyxml.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\tinyxml\tinyxml.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\tinyxml\tinyxmlerror.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\tinyxml\tinyxmlparser.cpp"
+				>
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

@@ -50,6 +50,8 @@ private:
 
 	int m_nBasePoints;
 	int m_nCurrPoints;
+
+	int m_nExperience;
 	
 	//CTile m_pTileArray;
 

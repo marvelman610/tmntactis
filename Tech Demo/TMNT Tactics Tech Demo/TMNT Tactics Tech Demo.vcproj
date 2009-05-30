@@ -186,11 +186,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\BitmapFont.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Boss.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\Source\Camera.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
 			<File
@@ -207,6 +215,18 @@
 			</File>
 			<File
 				RelativePath=".\Source\Ninja.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\ObjectManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Player.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Turtle.cpp"
 				>
 			</File>
 			<File
@@ -244,10 +264,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\BitmapFont.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\BitmapFont.h"
 				>
 			</File>
@@ -257,6 +273,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\Camera.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Factory.h"
 				>
 			</File>
 			<File
@@ -284,7 +304,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\ObjectManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\ParticleSystem.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Player.h"
 				>
 			</File>
 			<File
@@ -293,6 +321,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\Tile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Turtle.h"
 				>
 			</File>
 		</Filter>

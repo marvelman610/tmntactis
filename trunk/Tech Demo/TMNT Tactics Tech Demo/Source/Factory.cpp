@@ -43,7 +43,7 @@ CTurtle* Factory::CreateTurtle()
 }
 CBattleItem* Factory::CreateBattleItem()
 {
-	CBattleItem* item = new CCBattleItem();
+	CBattleItem* item = new CBattleItem();
 	ObjectManager::GetInstance()->Add(item);
 	return item;
 }

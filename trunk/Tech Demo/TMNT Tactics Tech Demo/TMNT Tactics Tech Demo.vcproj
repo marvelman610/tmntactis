@@ -320,6 +320,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Skill.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Tile.h"
 				>
 			</File>

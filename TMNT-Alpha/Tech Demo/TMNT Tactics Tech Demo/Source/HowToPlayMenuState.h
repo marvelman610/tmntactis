@@ -1,24 +1,25 @@
 //////////////////////////////////////////////////////////////////////////
-//	Filename	:	MainMenuState.h
+//	Filename	:	HowToPlayMenuState.h
 //
 //	Author		:	Ramon Johannessen (RJ)
 //
-//	Purpose		:	The Main Menu will be the first menu loaded when the game
-//					starts. It will display all menu selections available.
+//	Purpose		:	The How to Play Menu will display information on how to
+//					play the game. 
 //////////////////////////////////////////////////////////////////////////
-#ifndef CMAINMENU_H
-#define CMAINMENU_H
+#ifndef HOWTOPLAYMENUSTATE_H
+#define HOWTOPLAYMENUSTATE_H
 
-#include "BaseMenuState.h"
+#include "basemenustate.h"
 
-class CMainMenuState : public CBaseMenuState
+class CHowToPlayMenuState : public CBaseMenuState
 {
 private:
 
-	CMainMenuState();
-	~CMainMenuState();
-	CMainMenuState(const CMainMenuState&);
-	CMainMenuState& operator= (const CMainMenuState&);
+	// proper singleton
+	CHowToPlayMenuState(void) {}
+	~CHowToPlayMenuState(void) {}
+	CHowToPlayMenuState(const CHowToPlayMenuState &);
+	CHowToPlayMenuState& operator= (const CHowToPlayMenuState&);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -26,7 +27,7 @@ public:
 	//
 	//	Purpose		:	Return the only instance of this object
 	//////////////////////////////////////////////////////////////////////////
-	static CMainMenuState* GetInstance();
+	CHowToPlayMenuState* GetInstance();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Update
 	//
@@ -36,7 +37,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Render
 	//
-	//	Purpose		:	Render the main menu
+	//	Purpose		:	Render the How To Play menu
 	//////////////////////////////////////////////////////////////////////////
 	void Render();
 	//////////////////////////////////////////////////////////////////////////
@@ -46,7 +47,7 @@ public:
 	//
 	//	Return		:	true/false, false if we are exiting the game
 	//////////////////////////////////////////////////////////////////////////
-	bool Input(float elapsedTime, POINT mouse);
+	bool Input(float fElapsedTime, POINT mousePT);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Enter
 	//
@@ -62,5 +63,4 @@ public:
 
 };
 
-#endif	
-
+#endif

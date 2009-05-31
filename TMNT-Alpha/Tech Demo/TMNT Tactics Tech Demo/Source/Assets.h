@@ -58,4 +58,7 @@ public:
 
 	// Options Menu IDs
 	int aOMbgID;
+
+	// How To Play Menu IDs
+	int aHTPMBGimageID;
 };

@@ -16,7 +16,7 @@
 #include "Assets.h"
 #include "Player.h"
 
-enum {PLAY, /*HOWTOPLAY, LOAD, OPTIONS, CREDITS,*/ EXIT, NULL_END };
+enum {PLAY, LOAD,/*HOWTOPLAY, OPTIONS, CREDITS,*/ EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
@@ -83,8 +83,9 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			CGame::GetInstance()->SetIsRunning(false);
 			return false;
 			//break;
-// 		case LOAD:
-// 			CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
+		case LOAD:
+			CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
+			//CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
 		}
 	}
 	return true;

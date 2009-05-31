@@ -8,7 +8,6 @@
 ////////////////////////////////////////////////////////
 
 #include "Turtle.h"
-#include "Skill.h"
 
 CTurtle::CTurtle(void)
 {
@@ -24,7 +23,8 @@ void CTurtle::Render()
 {
 
 }
-void CTurtle::SetAttribute(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)
+
+void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)
 {
 	SetBaseAP(ap);
 	SetCurrAP(ap);

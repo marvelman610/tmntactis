@@ -16,7 +16,7 @@
 #include "Assets.h"
 #include "Player.h"
 
-enum {PLAY, LOAD, HOWTOPLAY, OPTIONS, CREDITS, EXIT, NULL_END };
+enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {

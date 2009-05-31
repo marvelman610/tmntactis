@@ -44,6 +44,8 @@ public:
 	///////////////////////////////////////////////////////////////////
 	static CPlayer* GetInstance();
 
+	bool Load(const char* szXMLFileName);
+
 };
 
 #endif

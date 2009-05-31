@@ -4,6 +4,7 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "MainMenuState.h"
+#include "Player.h"
 //#include "ParticleSystem.h"
 
 //#include "MessageSystem.h"
@@ -18,6 +19,8 @@ CGame::CGame()
 	m_pD3D = NULL;
 	m_pTM = NULL;
 	m_pDI = NULL;
+	m_pPlayer = NULL;
+
 // 	m_pMessageSystem = NULL;
 // 	m_pObjectFactory = NULL;
 // 	m_pParticleSystem = NULL;
@@ -48,6 +51,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pTM = CSGD_TextureManager::GetInstance();
 	m_pDI = CSGD_DirectInput::GetInstance();
 	m_pD3D = CSGD_Direct3D::GetInstance();
+	m_pPlayer = CPlayer::GetInstance();
 	//m_pFMODSystem = ;
 	//m_FMChannel1 = NULL;
 	//m_FMChannel2 = NULL;

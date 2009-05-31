@@ -98,6 +98,17 @@ public:
 	inline void SetVelY(float nVelY){m_fVelY = nVelY;}
 	inline void SetWidth(int nWidth){m_nWidth = nWidth;}
 	inline void SetHeight(int nHeight){m_nHeight = nHeight;}
+	inline void SetBaseAP(int nAP){m_nBasePoints = nAP;}
+	inline void SetCurrAP(int nAP){m_nCurrPoints = nAP;}
+	inline void SetHealthMax(int nHealthMax){m_nHealthMax = nHealthMax;}
+	inline void SetHealth(int nHealth){m_nHealth = nHealth;}
+	inline void SetStrength(int nStrength){m_nStrength = nStrength;}
+	inline void SetDefense(int nDefense){m_nDefense = nDefense;}
+	inline void SetAccuracy(int nAccuracy){m_nAccuracy = nAccuracy;}
+	inline void SetSpeed(int nSpeed){m_nSpeed = nSpeed;}
+	inline void SetLevel(int nLevel){m_nLevel = nLevel;}
+	inline void SetRange(int nRange){m_nRange = nRange;}
+	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

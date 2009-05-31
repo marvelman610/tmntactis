@@ -8,12 +8,14 @@
 #ifndef CBASEMENUSTATE_H
 #define CBASEMENUSTATE_H
 #include "IGameState.h"
+#include "Player.h"
 
 class CBitmapFont;
 class CAssets;
 class CSGD_TextureManager;
 class CSGD_Direct3D;
 class CSGD_DirectInput;
+class CGame;
 
 class CBaseMenuState : public IGameState
 {
@@ -37,6 +39,7 @@ private:
 	CSGD_TextureManager* m_pTM;
 	CSGD_Direct3D*		m_pD3D;
 	CSGD_DirectInput*	m_pDI;
+	CGame*				m_pGame;
 	//FMOD::System*		m_pFMOD;
 
 	//CBaseMenuState* m_pCurrentState;// a pointer to the current menu state
@@ -96,6 +99,7 @@ public:
 	CSGD_TextureManager* GetTM()	{return m_pTM;}
 	CSGD_Direct3D* GetD3D()			{return m_pD3D;}
 	CBitmapFont* GetBitmapFont()	{return m_pBitmapFont;}
+	CGame* GetGame()				{return m_pGame;}
 	int GetCurrMenuSelection()		{return m_nCurrMenuSelection;}
 	int GetMenuItemSpacing()		{return m_nMenuItemSpacing;}
 	int GetCursorX()				{return m_nCursorX;}

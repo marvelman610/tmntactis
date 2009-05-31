@@ -33,6 +33,7 @@ void CBaseMenuState::Enter()
 	m_nScreenWidth	= CGame::GetInstance()->GetScreenWidth();
 	m_nScreenHeight = CGame::GetInstance()->GetScreenHeight();
 	m_pBitmapFont   = CBitmapFont::GetInstance();
+	m_pGame			= CGame::GetInstance();
 
 	m_nMenuItemSpacing = 45;
 	//m_pFMOD		= CGame::GetInstance()->GetFMODSystem();
@@ -52,8 +53,8 @@ void CBaseMenuState::Exit()
 		m_pTM = NULL;
 	if (m_pDI)
 		m_pDI = NULL;
-// 	if (m_pBitmapFont)
-// 		m_pBitmapFont = NULL;
+	if (m_pBitmapFont)
+		m_pBitmapFont = NULL;
 // 	if (m_pFMOD)
 // 		m_pFMOD = NULL;
 }

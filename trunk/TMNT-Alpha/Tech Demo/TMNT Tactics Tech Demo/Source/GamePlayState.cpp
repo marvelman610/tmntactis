@@ -14,6 +14,7 @@
 #include "BattleMap.h"
 #include "MainMenuState.h"
 #include "Game.h"
+#include "Player.h"
 //#include "Animation.h"
 //#include "HUD.h"
 //#include "WorldMap.h"
@@ -23,6 +24,7 @@ CGamePlayState::CGamePlayState(void)
 {
 	m_pCurrentMenuState = NULL;
 	m_pBattleMap = NULL;
+	m_pPlayer = NULL;
 	//m_pHUD = NULL;
 	//m_pWorldMap  = NULL;
 
@@ -42,6 +44,7 @@ void CGamePlayState::Enter(void)
 	//m_pWorldMap = WorldMap::GetInstance();
 
 	m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_MyMap.dat");
+	m_pPlayer = CPlayer::GetInstance();
 	//m_nCurrentMap = ;
 }
 
@@ -52,6 +55,8 @@ void CGamePlayState::Exit(void)
 	{
 		delete m_pBattleMap;
 	}
+	if (m_pPlayer)
+		m_pPlayer = NULL;
 // 	if(m_pWorldMap)
 // 	{
 // 		m_pWorldMap->Release();

@@ -222,6 +222,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\OptionsMenuState.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Player.cpp"
 				>
 			</File>
@@ -305,6 +309,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\ObjectManager.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\OptionsMenuState.h"
 				>
 			</File>
 			<File

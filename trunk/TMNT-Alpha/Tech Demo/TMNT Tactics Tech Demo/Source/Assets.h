@@ -55,4 +55,7 @@ public:
 
 	// Main Menu IDs
 	int aMMBGimageID;
+
+	// Options Menu IDs
+	int aOMbgID;
 };

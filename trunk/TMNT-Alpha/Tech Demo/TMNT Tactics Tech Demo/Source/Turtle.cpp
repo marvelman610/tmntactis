@@ -37,5 +37,4 @@ void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,
 	SetLevel(level);
 	SetExperience(experience);
 	SetRange(range);
-
 }

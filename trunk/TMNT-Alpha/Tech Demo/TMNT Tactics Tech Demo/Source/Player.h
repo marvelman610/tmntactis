@@ -10,7 +10,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
-enum {LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
+enum { LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
 
 class CTurtle;
 
@@ -65,6 +65,12 @@ public:
 	///////////////////////////////////////////////////////////////////
 	void NewGame();
 
+	///////////////////////////////////////////////////////////////////
+	//  Function: "LoadSavedGame"
+	//
+	//  Purpose: Set up the saved game. The turtle's skills, stats, exp, etc...
+	///////////////////////////////////////////////////////////////////
+	void LoadSavedGame(const char* fileName);
 };
 
 #endif

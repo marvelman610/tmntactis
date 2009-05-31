@@ -72,7 +72,7 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	//m_pCamera->BuildPerspective(D3DX_PI/3, (float)(m_pGame->GetScreenWidth()/m_pGame->GetScreenHeight()), 0.1f, 100);
 
 	m_pBitmapFont   = CBitmapFont::GetInstance();
-	//  Sm_pFMOD			= m_pGame->GetFMODSystem();
+	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	//	m_pHUD			= CHUD::GetInstance();
 
 	m_pTilesL1 = NULL;
@@ -179,8 +179,8 @@ void CBattleMap::Render()
 			//////////////////////////////////////////////////////////////////////////
 			// characters would be rendered here:
 				//TODO:: determine how to z sort characters and objects
-				turtleX = 32/*m_pAnimation->GetFrames()[0].nAnchorX*/ + mapPT.x;
-				turtleY = 60/*m_pAnimation->GetFrames()[0].nAnchorY*/ + mapPT.y;
+				turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
+				turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
 				m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
 				GetZdepthDraw(turtleX, turtleY)  );
 			//////////////////////////////////////////////////////////////////////////

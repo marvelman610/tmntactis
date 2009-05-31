@@ -92,7 +92,6 @@ void CAnimation::Load(const char* FileName)
 			ifs.read(filebuff,size);
 
 			m_nTriggerName = filebuff; // flying
-			
 
 			ifs.read(reinterpret_cast<char *>(&size),1);
 			ZeroMemory(filebuff,128);
@@ -112,7 +111,6 @@ void CAnimation::Load(const char* FileName)
 			ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
 			m_fDuration = nDuration /1000.0f;
 
-
 			m_pFrames = new sFrame[m_nTotalFrames];
 
 			for(int i = 0; i < m_nTotalFrames; i++)
@@ -123,12 +121,10 @@ void CAnimation::Load(const char* FileName)
 				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nFrameHeight),4);
 				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nAnchorX),4);
 				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nAnchorY),4);
+				m_pFrames[i].nAnchorX = m_pFrames[i].nAnchorX - m_pFrames[i].nFrameX;
+				m_pFrames[i].nAnchorY = m_pFrames[i].nAnchorY - m_pFrames[i].nFrameY;
 			}
-
-			
-
 		}
-
 	}
 	catch (ios_base::failure &) 
 	{
@@ -181,9 +177,12 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 		}
 		//draw stuff to screen
 		
+		// TODO:: should we set the anchor points in the load?
+
+
 		/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx-(m_pFrames[m_nCurrFrame].nAnchorX-m_pFrames[m_nCurrFrame].nFrameX),
-			posy-(m_pFrames[m_nCurrFrame].nAnchorY-m_pFrames[m_nCurrFrame].nFrameY), posZ,
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx-(m_pFrames[m_nCurrFrame].nAnchorX/*-m_pFrames[m_nCurrFrame].nFrameX*/),
+			posy-(m_pFrames[m_nCurrFrame].nAnchorY/*-m_pFrames[m_nCurrFrame].nFrameY*/), posZ,
 			fScaleX,scale,&frame, 0, 0, 0);
 	}
 }

@@ -16,7 +16,7 @@
 #include "Assets.h"
 #include "Player.h"
 
-enum {PLAY, LOAD,/*HOWTOPLAY, OPTIONS, CREDITS,*/ EXIT, NULL_END };
+enum {PLAY, LOAD, HOWTOPLAY, OPTIONS, CREDITS, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
@@ -43,7 +43,8 @@ void CMainMenuState::Enter()
 	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
 	SetCurrMenuSelection( PLAY );
-	SetCursorX(350);
+	SetMenuX(400);
+	SetCursorX(GetMenuX()-80);
 	SetCursorY(335);
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 }
@@ -70,22 +71,23 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			CPlayer::GetInstance()->NewGame();
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 			break;
-// 		case OPTIONS:
-// 			CGame::GetInstance()->ChangeState(COptionsMenuState::GetInstance());
-// 			break;
-// 		case HOWTOPLAY:
-// 			CGame::GetInstance ()->ChangeState(CHowToPlayMenuState::GetInstance ());
-// 			break;
-// 		case CREDITS:
-// 			CGame::GetInstance ()->ChangeState(CCreditsMenuState::GetInstance ());
-// 			break;
+		case OPTIONS:
+			//CGame::GetInstance()->ChangeState(COptionsMenuState::GetInstance());
+			break;
+		case HOWTOPLAY:
+			//CGame::GetInstance ()->ChangeState(CHowToPlayMenuState::GetInstance ());
+			break;
+		case CREDITS:
+			//CGame::GetInstance ()->ChangeState(CCreditsMenuState::GetInstance ());
+			break;
+		case LOAD:
+			// TODO:: call to LoadSavedGame would be in the Load Menu State
+			CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
+			//CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
 		case EXIT:
 			CGame::GetInstance()->SetIsRunning(false);
 			return false;
 			//break;
-		case LOAD:
-			CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
-			//CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
 		}
 	}
 	return true;
@@ -97,8 +99,12 @@ void CMainMenuState::Render()
 	// Draw menu item text
 	GetBitmapFont()->DrawStringAutoCenter("T M N T",		GetScreenWidth(), 20, 1.5f);
 	GetBitmapFont()->DrawStringAutoCenter("T A C T I C S",	GetScreenWidth(), 100, 1.5f);
-	GetBitmapFont()->DrawString("P L A Y", 430, 350, 1.0f);
-	GetBitmapFont()->DrawString("E X I T", 430, 350+GetMenuItemSpacing(), 1.0f);
+	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), 350, 1.0f);
+	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), 350+GetMenuItemSpacing(), 1.0f);
+	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), 350+GetMenuItemSpacing() * 2, 1.0f);
+	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), 350+GetMenuItemSpacing() * 3, 1.0f);
+	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), 350+GetMenuItemSpacing() * 4, 1.0f);
+	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), 350+GetMenuItemSpacing() * 5, 1.0f);
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

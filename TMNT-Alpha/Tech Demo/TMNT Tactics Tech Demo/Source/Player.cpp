@@ -43,7 +43,12 @@ void CPlayer::NewGame()
 
 void CPlayer::LoadSavedGame(const char* fileName)
 {
-	ifstream ifs(fileName, ios_base::in | ios_base::binary);
+	ifstream ifs;
+	ifs.open(fileName, ios_base::in | ios_base::binary);
+
+	if (!ifs.good())
+		{MessageBox(0, "Failed to load saved game.", "Error", MB_OK); return;}
+
 }
 
 void CPlayer::LoadNewSkills(const char* filename)

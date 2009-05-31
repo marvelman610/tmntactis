@@ -10,6 +10,7 @@ class CSGD_Direct3D;
 class CSGD_TextureManager;
 class CAssets;
 //class ParticleSystem;
+class CPlayer;
 
 class CGame
 {
@@ -20,6 +21,7 @@ private:
 	CSGD_TextureManager* m_pTM;
 	CSGD_DirectInput*   m_pDI;
 	CAssets*			m_pAssets;
+	CPlayer* m_pPlayer;
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
 	//ObjectFactory* m_pObjectFactory;

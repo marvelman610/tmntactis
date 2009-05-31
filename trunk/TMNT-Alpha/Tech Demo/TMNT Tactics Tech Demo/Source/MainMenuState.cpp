@@ -14,6 +14,7 @@
 #include "GamePlayState.h"
 #include "BitmapFont.h"
 #include "Assets.h"
+#include "Player.h"
 
 CMainMenuState::CMainMenuState()
 {
@@ -65,6 +66,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		switch(GetCurrMenuSelection())
 		{
 		case PLAY:
+			CPlayer::GetInstance()->Load("resources/XML/VG_TurtleStats.xml");
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 			break;
 // 		case OPTIONS:

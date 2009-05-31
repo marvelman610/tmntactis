@@ -29,7 +29,20 @@ CPlayer* CPlayer::GetInstance()
 	static CPlayer instance;
 	return &instance;
 }
-bool CPlayer::Load(const char* szXmlFileName)
+
+
+void CPlayer::NewGame()
+{
+	LoadNewSkills("Resources/XML/NewSkills.xml");
+	LoadTurtleStats("resources/XML/VG_TurtleStats.xml");
+}
+
+void CPlayer::LoadNewSkills(const char* filename)
+{
+	// TODO:: load all skills for a new game
+
+}
+bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 {
 	TiXmlDocument doc;
 	int ap = 0, hp = 0, strength = 0, defense = 0, accuracy = 0, speed = 0, level = 0, experience = 0, range = 0;

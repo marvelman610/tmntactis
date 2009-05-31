@@ -14,7 +14,8 @@
 #include "CSGD_TextureManager.h"
 #include "Skill.h"
 #include <string>
-using std::string;
+#include <fstream>
+using namespace std;
 
 CPlayer::CPlayer(void)
 {
@@ -22,7 +23,6 @@ CPlayer::CPlayer(void)
 	m_pDonatello = Factory::CreateTurtle();
 	m_pRaphael = Factory::CreateTurtle();
 	m_pMikey = Factory::CreateTurtle();
-
 }
 
 CPlayer::~CPlayer(void)
@@ -39,6 +39,11 @@ void CPlayer::NewGame()
 {
 	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+}
+
+void CPlayer::LoadSavedGame(const char* fileName)
+{
+	ifstream ifs(fileName, ios_base::in | ios_base::binary);
 }
 
 void CPlayer::LoadNewSkills(const char* filename)
@@ -76,11 +81,11 @@ void CPlayer::LoadNewSkills(const char* filename)
 
 		switch (turtleID)
 		{
-		case DONATELLO:
-			m_pDonatello->SetSkillsInactive(inactiveSkills);
-			break;
 		case LEONARDO:
 			m_pLeonardo->SetSkillsInactive(inactiveSkills);
+			break;
+		case DONATELLO:
+			m_pDonatello->SetSkillsInactive(inactiveSkills);
 			break;
 		case RAPHAEL:
 			m_pRaphael->SetSkillsInactive(inactiveSkills);
@@ -106,7 +111,6 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 
 	if(pLeo)
 	{
-
 		pLeo->Attribute("AP", &ap);
 		pLeo->Attribute("HP", &hp);
 		pLeo->Attribute("strength", &strength);
@@ -118,7 +122,6 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pLeo->Attribute("range", &range);
 
 		m_pLeonardo->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
-
 	}
 	TiXmlElement* pRaph = pLeo->NextSiblingElement("Raphael");
 	if(pRaph)
@@ -134,7 +137,6 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pRaph->Attribute("range", &range);
 
 		m_pRaphael->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
-
 	}
 	TiXmlElement* pDon = pRaph->NextSiblingElement("Donatello");
 	if(pDon)
@@ -150,7 +152,6 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pDon->Attribute("range", &range);
 
 		m_pDonatello->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
-
 	}
 	
 	TiXmlElement* pMikey = pDon->NextSiblingElement("Michelangelo");
@@ -167,7 +168,6 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pMikey->Attribute("range", &range);
 
 		m_pMikey->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
-
 	}
 	return true;
 }

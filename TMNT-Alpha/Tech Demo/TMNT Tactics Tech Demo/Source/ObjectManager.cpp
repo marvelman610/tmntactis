@@ -22,6 +22,7 @@ struct cmp
 
 ObjectManager::ObjectManager(void)
 {
+
 }
 
 ObjectManager::~ObjectManager(void)
@@ -75,9 +76,7 @@ void ObjectManager::Remove(CBase* pObj)
 			}
 			iter++;
 		}
-
 	}
-
 }
 
 void ObjectManager::RemoveAll(void)

@@ -68,8 +68,8 @@ public:
 	//
 	// Purpose: Sets all of the turtle's attributes.
 	////////////////////////////////////////////////////////////////////
-	void SetAttributes(int ap = 10,int hp = 100,int strength = 15,int defense = 5,int accuracy = 5,int speed = 5,int level = 1, int experience = 0,int range = 1);
-
+	void SetAttributes(int ap = 10,int hp = 100,int strength = 15,int defense = 5,int accuracy = 5,
+					   int speed = 5,int level = 1, int experience = 0,int range = 1);
 };
 
 #endif

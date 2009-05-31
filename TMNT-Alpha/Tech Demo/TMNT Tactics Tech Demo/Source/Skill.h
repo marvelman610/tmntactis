@@ -80,7 +80,6 @@ public:
 	~CSkill();
 	CSkill();
 	CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt);
-
 };
 
 

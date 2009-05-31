@@ -118,6 +118,17 @@ void CSkill::SetFunctions(int skillID)
 	}
 }
 
+
+void CSkill::Update(float fElapsedTime)
+{
+	m_pUpdatePtr(fElapsedTime);
+}
+
+void CSkill::Render()
+{
+	m_pRenderPtr();
+}
+
 void RenderSwordSpin()
 {
 

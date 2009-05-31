@@ -16,6 +16,8 @@
 #include "Assets.h"
 #include "Player.h"
 
+enum {PLAY, /*HOWTOPLAY, LOAD, OPTIONS, CREDITS,*/ EXIT, NULL_END };
+
 CMainMenuState::CMainMenuState()
 {
 
@@ -41,7 +43,6 @@ void CMainMenuState::Enter()
 	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
 	SetCurrMenuSelection( PLAY );
-	// TODO:: setup starting cursor position
 	SetCursorX(350);
 	SetCursorY(335);
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
@@ -66,7 +67,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		switch(GetCurrMenuSelection())
 		{
 		case PLAY:
-			CPlayer::GetInstance()->Load("resources/XML/VG_TurtleStats.xml");
+			CPlayer::GetInstance()->NewGame();
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 			break;
 // 		case OPTIONS:
@@ -93,8 +94,8 @@ void CMainMenuState::Render()
 {
 	CBaseMenuState::Render();
 	// Draw menu item text
-	GetBitmapFont()->DrawStringAutoCenter("T M N T", GetScreenWidth(), 20, 1.5f);
-	GetBitmapFont()->DrawStringAutoCenter("T A C T I C S", GetScreenWidth(), 100, 1.5f);
+	GetBitmapFont()->DrawStringAutoCenter("T M N T",		GetScreenWidth(), 20, 1.5f);
+	GetBitmapFont()->DrawStringAutoCenter("T A C T I C S",	GetScreenWidth(), 100, 1.5f);
 	GetBitmapFont()->DrawString("P L A Y", 430, 350, 1.0f);
 	GetBitmapFont()->DrawString("E X I T", 430, 350+GetMenuItemSpacing(), 1.0f);
 	// Draw menu cursor

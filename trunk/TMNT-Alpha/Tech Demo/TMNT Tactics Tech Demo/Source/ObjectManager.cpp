@@ -54,7 +54,6 @@ void ObjectManager::RenderObjects(void)
 		objects.top()->Render();
 		objects.pop();
 	}
-
 }
 
 void ObjectManager::Add(CBase* pObj)

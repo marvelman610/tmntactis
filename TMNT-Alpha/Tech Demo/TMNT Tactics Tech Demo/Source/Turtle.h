@@ -11,14 +11,17 @@
 #define TURTLE_H
 
 #include "Base.h"
+#include "Skill.h"
+#include <vector>
+using std::vector;
 
-class CBaseSkill;
+class CSkill;
 
 class CTurtle : public CBase
 {
 private:
-	vector<CBaseSkill*> m_vInactiveSkills;
-	vector<CBaseSkill*> m_vActiveSkills;
+	vector<CSkill> m_vInactiveSkills;
+	vector<CSkill> m_vActiveSkills;
 	bool m_bIsAlive;
 
 public:
@@ -46,7 +49,26 @@ public:
 	////////////////////////////////////////////////////////////////////
 	void Render();
 
-	void SetAttribute(int ap = 10,int hp = 100,int strength = 15,int defense = 5,int accuracy = 5,int speed = 5,int level = 1, int experience = 0,int range = 1);
+	////////////////////////////////////////////////////////////////////
+	// Function: “SetSkillsInactive”
+	//
+	// Purpose: Populates the vector of inactive skills.
+	////////////////////////////////////////////////////////////////////
+	void SetSkillsInactive(vector<CSkill> &inactiveSkills) {m_vInactiveSkills = inactiveSkills;}
+
+	////////////////////////////////////////////////////////////////////
+	// Function: “SetSkillsActive”
+	//
+	// Purpose: Populates the vector of active skills.
+	////////////////////////////////////////////////////////////////////
+	void SetSkillsActive(vector<CSkill> &activeSkills) {m_vActiveSkills = activeSkills;}
+
+	////////////////////////////////////////////////////////////////////
+	// Function: “SetAttribute”
+	//
+	// Purpose: Sets all of the turtle's attributes.
+	////////////////////////////////////////////////////////////////////
+	void SetAttributes(int ap = 10,int hp = 100,int strength = 15,int defense = 5,int accuracy = 5,int speed = 5,int level = 1, int experience = 0,int range = 1);
 
 };
 

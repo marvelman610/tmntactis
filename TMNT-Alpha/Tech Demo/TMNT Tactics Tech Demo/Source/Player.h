@@ -10,6 +10,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+enum {LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
+
 class CTurtle;
 
 class CPlayer

@@ -11,7 +11,6 @@ class CSGD_TextureManager;
 class CAssets;
 class CPlayer;
 //class ParticleSystem;
-class CPlayer;
 
 class CGame
 {
@@ -29,8 +28,6 @@ private:
 	//FMOD::System* m_pFMODSystem;
 	//FMOD::Channel m_FMChannel1;
 	//FMOD::Channel m_FMChannel2;
-
-	CPlayer* m_pPlayer;
 
 	// variables
 	bool	m_bIsRunning;

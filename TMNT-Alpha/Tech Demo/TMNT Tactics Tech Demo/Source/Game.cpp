@@ -77,6 +77,8 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_nScreenWidth = nScreenWidth;
 	m_nScreenHeight = nScreenHeight;
 
+	m_pPlayer = CPlayer::GetInstance();
+
 	ChangeState(CMainMenuState::GetInstance());
 }
 
@@ -186,3 +188,13 @@ void CGame::LoadSettings(void)
 //{
 //	return &m_pFMODSystem;
 //}
+
+void CGame::SetMusicVolume(int _nMusicVolume)
+{
+
+}
+
+void CGame::SetSFXVolume(int _nSFXVolume)
+{
+
+}

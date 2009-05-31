@@ -9,6 +9,7 @@ class CBattleMap;
 class CSGD_Direct3D;
 class CSGD_TextureManager;
 class CAssets;
+class CPlayer;
 //class ParticleSystem;
 class CPlayer;
 
@@ -29,13 +30,15 @@ private:
 	//FMOD::Channel m_FMChannel1;
 	//FMOD::Channel m_FMChannel2;
 
+	CPlayer* m_pPlayer;
+
 	// variables
-	bool m_bIsRunning;
-	int m_nSFXVolume;
-	int m_nMusicVolume;
-	float m_fElapsedTime;
-	int m_nScreenWidth;
-	int m_nScreenHeight;
+	bool	m_bIsRunning;
+	int		m_nSFXVolume;
+	int		m_nMusicVolume;
+	float	m_fElapsedTime;
+	int		m_nScreenWidth;
+	int		m_nScreenHeight;
 	//PLAYERINFO m_PlayerInfo;
 
 	//Constructor
@@ -97,19 +100,19 @@ public:
 	//RECT GetBackGroundSize(void){ return m_rectBackGroundSize; }
  	int  GetScreenWidth ()		{return m_nScreenWidth;}
  	int  GetScreenHeight ()		{return m_nScreenHeight;}
-	// 	bool GetIsPaused()			{return m_bIsPaused;}
 	bool GetIsRunning()			{return m_bIsRunning;}
-	// 	int  GetSFXVolume()			{return m_nSFXVolume;}
-	// 	int  GetMusicVolume()		{return m_nMusicVolume;}
+	int  GetSFXVolume()			{return m_nSFXVolume;}
+	int  GetMusicVolume()		{return m_nMusicVolume;}
+	// 	bool GetIsPaused()			{return m_bIsPaused;}
 	// 	int  GetPanning()			{return m_nPanning;}
 
 	//////////////////////////////////////////////////////////////////////////
 	// Mutators
 	//////////////////////////////////////////////////////////////////////////
-	//	void SetIsPaused	()					{m_bIsPaused = !m_bIsPaused;}
+	void SetSFXVolume	(int _nSFXVolume);
+	void SetMusicVolume	(int _nMusicVolume);
 	void SetIsRunning	(bool _bIsRunning)		{m_bIsRunning = _bIsRunning;}
+	//	void SetIsPaused	()					{m_bIsPaused = !m_bIsPaused;}
 	// 	void SetLastScore	(int _nLastScore)		{m_nLastScore = _nLastScore;}
-	// 	void SetSFXVolume	(int _nSFXVolume);
-	// 	void SetMusicVolume	(int _nMusicVolume);
 	// 	void SetPanning		(int _nPanning);
 };

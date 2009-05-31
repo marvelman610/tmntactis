@@ -1,25 +1,32 @@
 //////////////////////////////////////////////////////////////////////////
-//	Filename	:	MainMenuState.h
+//	Filename	:	COptionsMenuState.h
 //
 //	Author		:	Ramon Johannessen (RJ)
 //
-//	Purpose		:	The Main Menu will be the first menu loaded when the game
-//					starts. It will display all menu selections available.
+//	Purpose		:	The Options Menu will allow the user to customize the
+//					game settings, such as music volume, sound effects, etc. 
 //////////////////////////////////////////////////////////////////////////
-#ifndef CMAINMENU_H
-#define CMAINMENU_H
+#ifndef OPTIONSMENUSTATE_H
+#define OPTIONSMENUSTATE_H
 
 #include "BaseMenuState.h"
+#include <windows.h>
+#include <iostream>
+using namespace std;
 
 
-class CMainMenuState : public CBaseMenuState
+class COptionsMenuState : public CBaseMenuState
 {
 private:
-
-	CMainMenuState();
-	~CMainMenuState();
-	CMainMenuState(const CMainMenuState&);
-	CMainMenuState& operator= (const CMainMenuState&);
+	bool m_bHasASettingChanged;	// has the user changed any settings? if so, save them on exit
+	int  m_nSFXVolume;
+	int  m_nMusicVolume;
+	//fmod::Sound m_fmsSFX;		// the sound played when the user changes the SFX volume
+	
+	COptionsMenuState(void);
+	~COptionsMenuState(void);
+	COptionsMenuState(const COptionsMenuState&);
+	COptionsMenuState& operator= (const COptionsMenuState&);
 
 public:
 	//////////////////////////////////////////////////////////////////////////
@@ -27,17 +34,11 @@ public:
 	//
 	//	Purpose		:	Return the only instance of this object
 	//////////////////////////////////////////////////////////////////////////
-	static CMainMenuState* GetInstance();
-	//////////////////////////////////////////////////////////////////////////
-	//	Function	:	Update
-	//
-	//	Purpose		:	Update the main menu
-	//////////////////////////////////////////////////////////////////////////
-	void Update(float fElapsedTime);
+	COptionsMenuState* GetInstance();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Render
 	//
-	//	Purpose		:	Render the main menu
+	//	Purpose		:	Render the Options menu
 	//////////////////////////////////////////////////////////////////////////
 	void Render();
 	//////////////////////////////////////////////////////////////////////////
@@ -47,21 +48,25 @@ public:
 	//
 	//	Return		:	true/false, false if we are exiting the game
 	//////////////////////////////////////////////////////////////////////////
-	bool Input(float elapsedTime, POINT mouse);
+	bool Input(float fElapsedTime, POINT mousePt);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Enter
 	//
-	//	Purpose		:	Load the bg image, set up the sound, and all singletons used
+	//	Purpose		:	Load the current settings
 	//////////////////////////////////////////////////////////////////////////
 	void Enter();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Exit
 	//
-	//	Purpose		:	Clean up any dynamic memory, release textures, etc...
+	//	Purpose		:	Call SaveSettings
 	//////////////////////////////////////////////////////////////////////////
 	void Exit();
-
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	SaveSettings
+	//
+	//	Purpose		:	to save any changed options
+	//////////////////////////////////////////////////////////////////////////
+	void SaveSettings();
 };
 
-#endif	
-
+#endif

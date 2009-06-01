@@ -179,10 +179,11 @@ void CBattleMap::Render()
 			//////////////////////////////////////////////////////////////////////////
 			// characters would be rendered here:
 				//TODO:: determine how to z sort characters and objects
+				// the turtleX and turtleY represent the anchor point of the turtle in map space
 				turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
 				turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
 				m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
-				GetZdepthDraw(turtleX, turtleY)  );
+									GetZdepthDraw(turtleX, turtleY)  );
 			//////////////////////////////////////////////////////////////////////////
 			}
 		}
@@ -212,7 +213,6 @@ MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
 
 void CBattleMap::Update(float fElapsedTime)
 {
-	//Input(fElapsedTime);
 	m_pAnimation->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
 }
@@ -576,8 +576,10 @@ void CBattleMap::LoadMapInfo()
 
 float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor)
 {
-	if (m_pDI->KeyPressed(DIK_D))
+	if (m_pDI->KeyPressed(DIK_D))	// if need to do debugging
 		int i = 0;
+	// determine if the object is still within the bounds of the object
+	// even though the(could be above
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
 		// if the character's y anchor is below the bottom of the object 

@@ -48,7 +48,6 @@ void CPlayer::LoadSavedGame(const char* fileName)
 
 	if (!ifs.good())
 		{MessageBox(0, "Failed to load saved game.", "Error", MB_OK); return;}
-
 }
 
 void CPlayer::LoadNewSkills(const char* filename)

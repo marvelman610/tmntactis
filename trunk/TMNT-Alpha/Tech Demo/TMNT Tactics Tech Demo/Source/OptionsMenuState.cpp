@@ -44,9 +44,8 @@ void COptionsMenuState::Enter()
 // 	SetBGHeight(m_pTM->GetTextureHeight(m_nBGImageID));
 //	m_fmsBGMusicID		= GetAssets()->m_fmsOMBGmusic;
 
-	SetMenuX(400);
-	SetCursorX(GetMenuX()-80);
-	SetCursorY(335);
+	SetMenuX(400); SetMenuY(350);
+	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 	SetCurrMenuSelection( MUSIC_VOLUME );
 
 	m_nSFXVolume	= GetGame()->GetSFXVolume();
@@ -131,9 +130,9 @@ void COptionsMenuState::Render()
 	// TODO:: finish options rendering here
 	char szText[64];
 	sprintf_s(szText, "MUSIC VOLUME  (%i)", m_nMusicVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), 350);
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY());
 	sprintf_s(szText, "SFX VOLUME  (%i)", m_nSFXVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), 350 + GetMenuItemSpacing(), 1.0f);
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 1.0f);
 
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);

@@ -32,6 +32,7 @@ private:
 	int m_nCursorX;					// screen x for cursor
 	int m_nCursorY;					// screen y for cursor
 	int m_nMenuX;					// used for menu items, should be the same for all
+	int m_nMenuY;					
 	int m_nMenuItemSpacing;			// the distance between one menu item and the next
 	//FMOD::Sound m_sBGMusicID;		// bg music track
 
@@ -108,6 +109,7 @@ public:
 	int GetScreenWidth()			{return m_nScreenWidth;}
 	int GetScreenHeight()			{return m_nScreenHeight;}
 	int GetMenuX() const			{return m_nMenuX; }
+	int GetMenuY() const			{return m_nMenuY; }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
@@ -120,6 +122,7 @@ public:
 	void SetBGHeight(int height)				{m_nImageHeight = height;}
 	void SetCursorImageID(int cursorID) 		{m_nCursorImageID = cursorID;}
 	void SetMenuX(int val)						{m_nMenuX = val; }
+	void SetMenuY(int val)						{m_nMenuY = val; }
 
 };
 

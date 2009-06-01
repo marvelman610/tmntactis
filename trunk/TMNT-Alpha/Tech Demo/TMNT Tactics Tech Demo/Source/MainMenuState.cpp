@@ -43,9 +43,8 @@ void CMainMenuState::Enter()
 	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
 	SetCurrMenuSelection( PLAY );
-	SetMenuX(400);
-	SetCursorX(GetMenuX()-80);
-	SetCursorY(335);
+	SetMenuX(400); SetMenuY(350);
+	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 }
 
@@ -99,12 +98,12 @@ void CMainMenuState::Render()
 	// Draw menu item text
 	GetBitmapFont()->DrawStringAutoCenter("T M N T",		GetScreenWidth(), 20, 1.5f);
 	GetBitmapFont()->DrawStringAutoCenter("T A C T I C S",	GetScreenWidth(), 100, 1.5f);
-	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), 350, 1.0f);
-	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), 350+GetMenuItemSpacing(), 1.0f);
-	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), 350+GetMenuItemSpacing() * 2, 1.0f);
-	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), 350+GetMenuItemSpacing() * 3, 1.0f);
-	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), 350+GetMenuItemSpacing() * 4, 1.0f);
-	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), 350+GetMenuItemSpacing() * 5, 1.0f);
+	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 1.0f);
+	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 1.0f);
+	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 1.0f);
+	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 1.0f);
+	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 1.0f);
+	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 1.0f);
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

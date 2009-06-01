@@ -26,16 +26,8 @@ using namespace std;
  class CCamera;
 //class CHUD;
 
- // characters, by default, render behind the OBJECTS layer
- enum { 
-		ZSORT_BACKGROUND = 0,
-		ZSORT_GROUND,
-		ZSORT_GROUND_LAYER2, 
-		ZSORT_CHARACTERS_BEHIND,	 
-		ZSORT_OBJECTS,
-		ZSORT_CHARACTERS_AHEAD,
-
-	  };
+ // enum for tile flags
+ enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
 
  struct MY_POINT 
  {
@@ -49,6 +41,7 @@ class CBattleMap
 		string name;
 		int id;
 	};
+	// characters, by default, render behind the OBJECTS layer (CHARACTER_BEHIND)
 	struct DEPTH
 	{
 		float GROUND;
@@ -180,9 +173,9 @@ public:
 	//	Purpose		:	To determine if a character object should be rendered
 	//					in front of a map object (free placed object)
 	//
-	//	Return		:	returns the z depth(enum) for the character to be drawn at
+	//	Return		:	returns the z depth(float) for the character to be drawn at
 	//////////////////////////////////////////////////////////////////////////
-	float GetZdepthDraw(int x, int y);
+	float GetZdepthDraw(int x, int y, int currTileID = -1);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors

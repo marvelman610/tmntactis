@@ -34,6 +34,7 @@ CAnimation::CAnimation(void)
 
 CAnimation::~CAnimation(void)
 {
+	delete[] m_pFrames;
 }
 void CAnimation::Play()
 { 
@@ -132,7 +133,6 @@ void CAnimation::Load(const char* FileName)
 			throw; 
 	}
 	ifs.close();
-		
 }
 void CAnimation::Update(float fElapsedtime)
 {
@@ -176,13 +176,13 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 
 		}
 		//draw stuff to screen
-		
-		// TODO:: should we set the anchor points in the load?
-
-
-		/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx-(m_pFrames[m_nCurrFrame].nAnchorX/*-m_pFrames[m_nCurrFrame].nFrameX*/),
-			posy-(m_pFrames[m_nCurrFrame].nAnchorY/*-m_pFrames[m_nCurrFrame].nFrameY*/), posZ,
-			fScaleX,scale,&frame, 0, 0, 0);
+				/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx-m_pFrames[m_nCurrFrame].nAnchorX,
+			posy-m_pFrames[m_nCurrFrame].nAnchorY, 
+			posZ,
+			fScaleX,
+			scale,
+			&frame,
+			0, 0, 0);
 	}
 }

@@ -17,7 +17,7 @@ class CBattleMap;
 class CBaseMenuState;
 class CAnimation;
 class CPlayer;
-//class HUD;
+class CHUD;
 //class WorldMap;
 
 class CGamePlayState : public IGameState
@@ -26,7 +26,7 @@ private:
 	CBaseMenuState* m_pCurrentMenuState;
 	CBattleMap*		m_pBattleMap;
 	CPlayer*		m_pPlayer;
-	//HUD* m_pHUD;
+	CHUD* m_pHUD;
 	//WorldMap* m_pWorldMap;
 
 

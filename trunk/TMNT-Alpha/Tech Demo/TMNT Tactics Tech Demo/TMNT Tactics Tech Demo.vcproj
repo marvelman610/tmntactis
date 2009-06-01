@@ -214,6 +214,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\HUD.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\MainMenuState.cpp"
 				>
 			</File>
@@ -301,6 +305,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\HowToPlayMenuState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\HUD.h"
 				>
 			</File>
 			<File

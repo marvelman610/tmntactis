@@ -16,7 +16,7 @@
 #include "Game.h"
 #include "Player.h"
 //#include "Animation.h"
-//#include "HUD.h"
+#include "HUD.h"
 //#include "WorldMap.h"
 
 // Constructor
@@ -25,7 +25,7 @@ CGamePlayState::CGamePlayState(void)
 	m_pCurrentMenuState = NULL;
 	m_pBattleMap = NULL;
 	m_pPlayer = NULL;
-	//m_pHUD = NULL;
+	m_pHUD = NULL;
 	//m_pWorldMap  = NULL;
 
 	m_nCurrentMap = 0;
@@ -40,7 +40,7 @@ CGamePlayState::~CGamePlayState(void)
 void CGamePlayState::Enter(void)
 {
 	//m_pCurrentMenuState = BaseMenuState::GetInstance();
-	//m_pHUD = HUD::GetInstance();
+	m_pHUD = CHUD::GetInstance();
 	//m_pWorldMap = WorldMap::GetInstance();
 
 	m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_MyMap.dat");
@@ -62,11 +62,11 @@ void CGamePlayState::Exit(void)
 // 		m_pWorldMap->Release();
 // 		m_pWorldMap = NULL;
 // 	}
-// 	if(m_pHUD)
-// 	{
-// 		m_pHUD->Release();
-// 		m_pHUD = NULL;
-// 	}
+ 	if(m_pHUD)
+ 	{
+ 		//m_pHUD->Release();
+ 		m_pHUD = NULL;
+ 	}
 	if(m_pCurrentMenuState)
 	{
 	//	m_pCurrentMenuState->Release();

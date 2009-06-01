@@ -21,6 +21,7 @@
 #include <fstream>
 #include <exception>
 
+#define BOUNDING_BOXES 1
 #define SCROLLSPEED 150.0f
 // default constructor may be used for
 // blank maps...a cool animation sequence,
@@ -138,8 +139,7 @@ CBattleMap::~CBattleMap(void)
 
 
 //////////////////////////////////////////////////////////////////////////
-// TODO:: determine the best way to z-sort the objects and characters..
-//			and, do we have to draw all opaque objects first, then any
+// TODO:: determine if we have to draw all opaque objects first, then any
 //			transparent ones last?
 //////////////////////////////////////////////////////////////////////////
 void CBattleMap::Render()
@@ -178,7 +178,6 @@ void CBattleMap::Render()
 				m_pTM->DrawWithZSort(m_nCursorImageID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 			//////////////////////////////////////////////////////////////////////////
 			// characters would be rendered here:
-				//TODO:: determine how to z sort characters and objects
 				// the turtleX and turtleY represent the anchor point of the turtle in map space
 				turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
 				turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
@@ -189,17 +188,30 @@ void CBattleMap::Render()
 		}
 	}
 	// draw the free placed layer
-
-//		RECT srcRect = {0, 0, 64, 50};
+		//		RECT srcRect = {0, 0, 64, 50};
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
 		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX()+(int)m_fScrollX, m_pFreeTiles[i].DestY()+(int)m_fScrollY,
 			0.6f, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
-
+#if BOUNDING_BOXES
+		// drawing bounding boxes
+		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY(),
+			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY(),
+			255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
+			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
+			255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY(),
+			m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
+			255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY(),
+			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
+			255, 0, 0);
+#endif
 // 		m_pTM->Draw(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX(), 
 // 			m_pFreeTiles[i].DestY()+yOffset, 1.0f, 1.0f, &srcRect, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 	}
-	m_pParticleSys->DrawParticle();
+	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 }
 
@@ -214,7 +226,7 @@ MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
 void CBattleMap::Update(float fElapsedTime)
 {
 	m_pAnimation->Update(fElapsedTime);
-	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
+	//m_pParticleSys->UpdateParticle(fElapsedTime, ms);
 }
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
@@ -574,28 +586,47 @@ void CBattleMap::LoadMapInfo()
 	}
 }
 
-float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor)
+float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 {
 	if (m_pDI->KeyPressed(DIK_D))	// if need to do debugging
 		int i = 0;
-	// determine if the object is still within the bounds of the object
-	// even though the(could be above
-	for (int i = 0; i < m_nFreeTileCount; ++i)
+
+	//  for the character to be ahead of the object,
+	//	it must be directly below, to the southeast, or
+	//	to the southwest of an edge tile...
+	//	otherwise it is behind the object.
+	//	TODO::make sure to check for edge of map, so that tiles across the map aren't being looked at
+// 	if (currTileID != -1)
+// 	{
+// 		if (m_pTilesL1[currTileID-(m_nNumCols+1)].Flag() == FLAG_OBJECT_EDGE ||
+// 				m_pTilesL1[currTileID-m_nNumCols]->Flag() == FLAG_OBJECT_EDGE ||
+// 				m_pTilesL1[currTileID-1]->Flag() == FLAG_OBJECT_EDGE)
+// 		{
+// 			return depth.CHARACTER_AHEAD;
+// 		}
+// 		else
+// 			return depth.CHARACTER_BEHIND;
+// 	} 
+	else
 	{
-		// if the character's y anchor is below the bottom of the object 
-		if ( (m_pFreeTiles[i].DestY() + m_pFreeTiles[i].Height()) > yAnchor)
+		for (int i = 0; i < m_nFreeTileCount; ++i)
 		{
-			// if the character is within the bounds of the left and right side of the object,
-			// we now know we have to draw the object in front...
-			if (m_pFreeTiles[i].DestX() < xAnchor && 
-					(m_pFreeTiles[i].DestX() + m_pFreeTiles[i].Width()) > xAnchor)
+			// if the character's y anchor is below the bottom of the object 
+			if ( (m_pFreeTiles[i].DestY() + m_pFreeTiles[i].Height()) > yAnchor)
 			{
-				return depth.CHARACTER_BEHIND;
+				// if the character is within the bounds of the left and right side of the object,
+				// we now know we have to draw the object in front...
+				if (m_pFreeTiles[i].DestX() < xAnchor && 
+						(m_pFreeTiles[i].DestX() + m_pFreeTiles[i].Width()) > xAnchor)
+				{
+					return depth.CHARACTER_BEHIND;
+				}
 			}
 		}
+		// not in front...
+		return depth.CHARACTER_AHEAD;
 	}
-	// not in front...
-	return depth.CHARACTER_AHEAD;
+
 }
 
 void CBattleMap::DrawDebugInfo()

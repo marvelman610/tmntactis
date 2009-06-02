@@ -96,9 +96,9 @@ void CMainMenuState::Render()
 {
 	CBaseMenuState::Render();
 	// Draw menu item text
-	GetBitmapFont()->DrawStringAutoCenter("T M N T",		GetScreenWidth(), 20, 1.5f);
-	GetBitmapFont()->DrawStringAutoCenter("T A C T I C S",	GetScreenWidth(), 100, 1.5f);
-	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 1.0f);
+	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 1.5f);
+	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 1.5f);
+	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 1.5f);
 	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 1.0f);
 	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 1.0f);
 	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 1.0f);

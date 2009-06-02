@@ -75,7 +75,8 @@ namespace test
                 "Ctrl + X \t--    Brings up the Save to XML dialog box.\n" +
 
                 "Ctrl + F \t--    Brings up the Set Tile Flags dialog box.\n" +
-                "Shift+ R-click\t Brings up the Set Trigger String dialog box.\n\n" +
+                "Shift+ R-click\t Brings up the Set Trigger String dialog box.\n" +
+                "Shift+ L-click\t Brings up the Edit Free Tile dialog box.\n\n" +
 
                 "0 (zero) \t--    sets currently selected tile(s) flag to 0\n" +
                 "1 (one)  \t--    sets currently selected tile(s) flag to 1\n" +

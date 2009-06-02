@@ -141,6 +141,18 @@ namespace tile
             get { return m_ptRotationCenter; }
             set { m_ptRotationCenter = value; }
         }
+        float m_fScaleX;
+        public float ScaleX
+        {
+            get { return m_fScaleX; }
+            set { m_fScaleX = value; }
+        }
+        float m_fScaleY;
+        public float ScaleY
+        {
+            get { return m_fScaleY; }
+            set { m_fScaleY = value; }
+        }
         // constructors
         public CFREETILE()
         {
@@ -151,6 +163,8 @@ namespace tile
             m_ptMapPt.Y = 0;
             m_nAnchorX = 0;
             m_nAnchorY = 0;
+            m_fScaleX = 1.0f;
+            m_fScaleY = 1.0f;
             m_fRotation = 0.0f;
             m_strTrigger = "None";
         }
@@ -163,6 +177,8 @@ namespace tile
             m_ptMapPt.Y = PosY;
             m_nAnchorX = 0;
             m_nAnchorY = 0;
+            m_fScaleX = 1.0f;
+            m_fScaleY = 1.0f;
             m_fRotation = rotation;
             m_strTrigger = "None";
         }
@@ -175,6 +191,8 @@ namespace tile
             m_ptMapPt.Y = PosY;
             m_nAnchorX = 0;
             m_nAnchorY = 0;
+            m_fScaleX = 1.0f;
+            m_fScaleY = 1.0f;
             m_fRotation = 0.0f;
             m_strTrigger = "None";
         }

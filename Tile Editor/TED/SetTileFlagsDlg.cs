@@ -20,11 +20,11 @@ namespace test
     /// </summary>
     public partial class SetTileFlagsDlg : Form
     {
-        public SetTileFlagsDlg(string f0, string f1, string f2, string f3)
+        public SetTileFlagsDlg(string f0, string f1, string f2, string f3, string f4, string f5)
         {
             InitializeComponent();
-            flag0 = f0.Remove(0, 2); flag1 = f1.Remove(0, 2); flag2 = f2.Remove(0, 2); flag3 = f3.Remove(0, 2);
-            tbFlag0.Text = flag0; tbFlag1.Text = flag1; tbFlag2.Text = flag2; tbFlag3.Text = flag3;
+            flag0 = f0.Remove(0, 2); flag1 = f1.Remove(0, 2); flag2 = f2.Remove(0, 2); flag3 = f3.Remove(0, 2); flag4 = f4.Remove(0, 2); flag5 = f5.Remove(0, 2);
+            tbFlag0.Text = flag0; tbFlag1.Text = flag1; tbFlag2.Text = flag2; tbFlag3.Text = flag3; tbFlag4.Text = flag4; tbFlag5.Text = flag5;
         }
 
         public event EventHandler setFlagsPushed;
@@ -53,6 +53,18 @@ namespace test
             get { return flag3; }
             set { flag3 = value; }
         }
+        string flag4;
+        public string Flag4
+        {
+            get { return flag4; }
+            set { flag4 = value; }
+        }
+        string flag5;
+        public string Flag5
+        {
+            get { return flag5; }
+            set { flag5 = value; }
+        }
         bool bflag0Changed = false;
         public bool Bflag0Changed
         {
@@ -76,6 +88,18 @@ namespace test
         {
             get { return bflag3Changed; }
             set { bflag3Changed = value; }
+        }
+        bool bflag4Changed = false;
+        public bool Bflag4Changed
+        {
+            get { return bflag4Changed; }
+            set { bflag4Changed = value; }
+        }
+        bool bflag5Changed = false;
+        public bool Bflag5Changed
+        {
+            get { return bflag5Changed; }
+            set { bflag5Changed = value; }
         }
         private void btnSetFlags_Click(object sender, EventArgs e)
         {
@@ -110,6 +134,18 @@ namespace test
         {
             bflag3Changed = true;
             flag3 = tbFlag3.Text;
+        }
+
+        private void tbFlag4_TextChanged(object sender, EventArgs e)
+        {
+            bflag4Changed = true;
+            flag4 = tbFlag4.Text;
+        }
+
+        private void tbFlag5_TextChanged(object sender, EventArgs e)
+        {
+            bflag5Changed = true;
+            flag5 = tbFlag5.Text;
         }
     }
 }

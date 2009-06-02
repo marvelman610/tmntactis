@@ -46,6 +46,7 @@
             this.lblCols = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lbCurrentLayer = new System.Windows.Forms.Label();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -78,7 +79,6 @@
             this.saveXMLWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             this.allTheHelpYouNeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.lbCurrentLayer = new System.Windows.Forms.Label();
             this.cbShowFlags = new System.Windows.Forms.CheckBox();
             this.lblTileID = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -102,14 +102,24 @@
             this.nudMapNumCols = new System.Windows.Forms.NumericUpDown();
             this.nudMapCellSize = new System.Windows.Forms.NumericUpDown();
             this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.cbFreePlace = new System.Windows.Forms.CheckBox();
             this.cbShowGrid = new System.Windows.Forms.CheckBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.nudAdjustRectWidth = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.nudAdjustRectHeight = new System.Windows.Forms.NumericUpDown();
+            this.nudAdjustRectX = new System.Windows.Forms.NumericUpDown();
+            this.label7 = new System.Windows.Forms.Label();
+            this.nudAdjustRectY = new System.Windows.Forms.NumericUpDown();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label9 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridWidth)).BeginInit();
+            this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.tabPageGrid.SuspendLayout();
@@ -118,6 +128,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudMapNumCols)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMapCellSize)).BeginInit();
             this.tabControl1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectWidth)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectHeight)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectX)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectY)).BeginInit();
             this.SuspendLayout();
             // 
             // lblRows
@@ -255,6 +269,7 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.lbCurrentLayer);
             this.splitContainer1.Panel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseMove);
             this.splitContainer1.Panel2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer1_Panel2_Scroll);
             this.splitContainer1.Panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseClick);
@@ -266,6 +281,18 @@
             this.splitContainer1.SplitterDistance = 346;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 5;
+            // 
+            // lbCurrentLayer
+            // 
+            this.lbCurrentLayer.AutoSize = true;
+            this.lbCurrentLayer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.lbCurrentLayer.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbCurrentLayer.Location = new System.Drawing.Point(3, 2);
+            this.lbCurrentLayer.Name = "lbCurrentLayer";
+            this.lbCurrentLayer.Size = new System.Drawing.Size(155, 16);
+            this.lbCurrentLayer.TabIndex = 11;
+            this.lbCurrentLayer.Text = "Current Layer: layer 1";
+            this.lbCurrentLayer.Click += new System.EventHandler(this.lbCurrentLayer_Click);
             // 
             // newToolStripMenuItem
             // 
@@ -526,21 +553,11 @@
             this.allTheHelpYouNeedToolStripMenuItem.Text = "All the help you need";
             this.allTheHelpYouNeedToolStripMenuItem.Click += new System.EventHandler(this.allTheHelpYouNeedToolStripMenuItem_Click);
             // 
-            // lbCurrentLayer
-            // 
-            this.lbCurrentLayer.AutoSize = true;
-            this.lbCurrentLayer.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
-            this.lbCurrentLayer.Location = new System.Drawing.Point(208, 5);
-            this.lbCurrentLayer.Name = "lbCurrentLayer";
-            this.lbCurrentLayer.Size = new System.Drawing.Size(107, 13);
-            this.lbCurrentLayer.TabIndex = 11;
-            this.lbCurrentLayer.Text = "Current Layer: layer 1";
-            // 
             // cbShowFlags
             // 
             this.cbShowFlags.AutoSize = true;
             this.cbShowFlags.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
-            this.cbShowFlags.Location = new System.Drawing.Point(407, 4);
+            this.cbShowFlags.Location = new System.Drawing.Point(776, 4);
             this.cbShowFlags.Name = "cbShowFlags";
             this.cbShowFlags.Size = new System.Drawing.Size(81, 17);
             this.cbShowFlags.TabIndex = 12;
@@ -553,7 +570,7 @@
             // 
             this.lblTileID.AutoSize = true;
             this.lblTileID.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
-            this.lblTileID.Location = new System.Drawing.Point(988, 6);
+            this.lblTileID.Location = new System.Drawing.Point(950, 6);
             this.lblTileID.Name = "lblTileID";
             this.lblTileID.Size = new System.Drawing.Size(50, 13);
             this.lblTileID.TabIndex = 13;
@@ -594,7 +611,7 @@
             // 
             this.lblXID.AutoSize = true;
             this.lblXID.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
-            this.lblXID.Location = new System.Drawing.Point(880, 6);
+            this.lblXID.Location = new System.Drawing.Point(1034, 6);
             this.lblXID.Name = "lblXID";
             this.lblXID.Size = new System.Drawing.Size(40, 13);
             this.lblXID.TabIndex = 15;
@@ -604,18 +621,19 @@
             // 
             this.lblAnchor.AutoSize = true;
             this.lblAnchor.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
+            this.lblAnchor.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblAnchor.ForeColor = System.Drawing.Color.Red;
-            this.lblAnchor.Location = new System.Drawing.Point(571, 6);
+            this.lblAnchor.Location = new System.Drawing.Point(541, 5);
             this.lblAnchor.Name = "lblAnchor";
-            this.lblAnchor.Size = new System.Drawing.Size(94, 13);
+            this.lblAnchor.Size = new System.Drawing.Size(106, 13);
             this.lblAnchor.TabIndex = 16;
-            this.lblAnchor.Text = "Point of Interest: X";
+            this.lblAnchor.Text = "Point of Interest: ";
             // 
             // tbAnchorX
             // 
             this.tbAnchorX.AcceptsReturn = true;
             this.tbAnchorX.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.tbAnchorX.Location = new System.Drawing.Point(666, 2);
+            this.tbAnchorX.Location = new System.Drawing.Point(661, 2);
             this.tbAnchorX.Name = "tbAnchorX";
             this.tbAnchorX.Size = new System.Drawing.Size(38, 20);
             this.tbAnchorX.TabIndex = 17;
@@ -628,7 +646,7 @@
             this.label14.AutoSize = true;
             this.label14.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
             this.label14.ForeColor = System.Drawing.Color.Red;
-            this.label14.Location = new System.Drawing.Point(710, 6);
+            this.label14.Location = new System.Drawing.Point(705, 6);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(14, 13);
             this.label14.TabIndex = 18;
@@ -638,7 +656,7 @@
             // 
             this.tbAnchorY.AcceptsReturn = true;
             this.tbAnchorY.Cursor = System.Windows.Forms.Cursors.Arrow;
-            this.tbAnchorY.Location = new System.Drawing.Point(728, 2);
+            this.tbAnchorY.Location = new System.Drawing.Point(723, 2);
             this.tbAnchorY.Name = "tbAnchorY";
             this.tbAnchorY.Size = new System.Drawing.Size(38, 20);
             this.tbAnchorY.TabIndex = 19;
@@ -851,23 +869,11 @@
             this.tabControl1.TabIndex = 4;
             this.tabControl1.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.tabControl1_Selecting);
             // 
-            // cbFreePlace
-            // 
-            this.cbFreePlace.AutoSize = true;
-            this.cbFreePlace.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
-            this.cbFreePlace.Location = new System.Drawing.Point(797, 4);
-            this.cbFreePlace.Name = "cbFreePlace";
-            this.cbFreePlace.Size = new System.Drawing.Size(77, 17);
-            this.cbFreePlace.TabIndex = 20;
-            this.cbFreePlace.Text = "Free Place";
-            this.cbFreePlace.UseVisualStyleBackColor = false;
-            this.cbFreePlace.Visible = false;
-            // 
             // cbShowGrid
             // 
             this.cbShowGrid.AutoSize = true;
             this.cbShowGrid.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
-            this.cbShowGrid.Location = new System.Drawing.Point(492, 4);
+            this.cbShowGrid.Location = new System.Drawing.Point(861, 4);
             this.cbShowGrid.Name = "cbShowGrid";
             this.cbShowGrid.Size = new System.Drawing.Size(75, 17);
             this.cbShowGrid.TabIndex = 21;
@@ -875,13 +881,181 @@
             this.cbShowGrid.UseVisualStyleBackColor = false;
             this.cbShowGrid.CheckedChanged += new System.EventHandler(this.cbShowGrid_CheckedChanged);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label5.Location = new System.Drawing.Point(204, 5);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(77, 13);
+            this.label5.TabIndex = 22;
+            this.label5.Text = "Adjust Rect:";
+            // 
+            // nudAdjustRectWidth
+            // 
+            this.nudAdjustRectWidth.Location = new System.Drawing.Point(425, 2);
+            this.nudAdjustRectWidth.Maximum = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            this.nudAdjustRectWidth.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectWidth.Name = "nudAdjustRectWidth";
+            this.nudAdjustRectWidth.Size = new System.Drawing.Size(38, 20);
+            this.nudAdjustRectWidth.TabIndex = 23;
+            this.nudAdjustRectWidth.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectWidth.ValueChanged += new System.EventHandler(this.nudAdjustRectWidth_ValueChanged);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.label6.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label6.Location = new System.Drawing.Point(464, 5);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(18, 13);
+            this.label6.TabIndex = 24;
+            this.label6.Text = "H:";
+            // 
+            // nudAdjustRectHeight
+            // 
+            this.nudAdjustRectHeight.Location = new System.Drawing.Point(484, 2);
+            this.nudAdjustRectHeight.Maximum = new decimal(new int[] {
+            1024,
+            0,
+            0,
+            0});
+            this.nudAdjustRectHeight.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectHeight.Name = "nudAdjustRectHeight";
+            this.nudAdjustRectHeight.Size = new System.Drawing.Size(38, 20);
+            this.nudAdjustRectHeight.TabIndex = 25;
+            this.nudAdjustRectHeight.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectHeight.ValueChanged += new System.EventHandler(this.nudAdjustRectHeight_ValueChanged);
+            // 
+            // nudAdjustRectX
+            // 
+            this.nudAdjustRectX.Location = new System.Drawing.Point(303, 2);
+            this.nudAdjustRectX.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectX.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectX.Name = "nudAdjustRectX";
+            this.nudAdjustRectX.Size = new System.Drawing.Size(38, 20);
+            this.nudAdjustRectX.TabIndex = 26;
+            this.nudAdjustRectX.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectX.ValueChanged += new System.EventHandler(this.nudAdjustRectX_ValueChanged);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.label7.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label7.Location = new System.Drawing.Point(344, 5);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(17, 13);
+            this.label7.TabIndex = 27;
+            this.label7.Text = "Y:";
+            // 
+            // nudAdjustRectY
+            // 
+            this.nudAdjustRectY.Location = new System.Drawing.Point(363, 2);
+            this.nudAdjustRectY.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectY.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectY.Name = "nudAdjustRectY";
+            this.nudAdjustRectY.Size = new System.Drawing.Size(38, 20);
+            this.nudAdjustRectY.TabIndex = 28;
+            this.nudAdjustRectY.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.nudAdjustRectY.ValueChanged += new System.EventHandler(this.nudAdjustRectY_ValueChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.label8.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label8.Location = new System.Drawing.Point(403, 5);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(21, 13);
+            this.label8.TabIndex = 29;
+            this.label8.Text = "W:";
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(165)))), ((int)(((byte)(189)))), ((int)(((byte)(248)))));
+            this.label9.ForeColor = System.Drawing.SystemColors.ActiveCaption;
+            this.label9.Location = new System.Drawing.Point(282, 5);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(17, 13);
+            this.label9.TabIndex = 30;
+            this.label9.Text = "X:";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(190)))), ((int)(((byte)(205)))), ((int)(((byte)(224)))));
+            this.label10.ForeColor = System.Drawing.Color.Red;
+            this.label10.Location = new System.Drawing.Point(643, 6);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(17, 13);
+            this.label10.TabIndex = 31;
+            this.label10.Text = "X:";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1295, 774);
+            this.Controls.Add(this.label10);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.label8);
+            this.Controls.Add(this.nudAdjustRectY);
+            this.Controls.Add(this.label7);
+            this.Controls.Add(this.nudAdjustRectX);
+            this.Controls.Add(this.nudAdjustRectHeight);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.nudAdjustRectWidth);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.cbShowGrid);
-            this.Controls.Add(this.cbFreePlace);
             this.Controls.Add(this.tbAnchorY);
             this.Controls.Add(this.label14);
             this.Controls.Add(this.tbAnchorX);
@@ -890,7 +1064,6 @@
             this.Controls.Add(this.lblCursorPos);
             this.Controls.Add(this.lblTileID);
             this.Controls.Add(this.cbShowFlags);
-            this.Controls.Add(this.lbCurrentLayer);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
@@ -908,6 +1081,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudCellWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridWidth)).EndInit();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
@@ -918,6 +1093,10 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudMapNumCols)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMapCellSize)).EndInit();
             this.tabControl1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectWidth)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectHeight)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectX)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.nudAdjustRectY)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -994,12 +1173,21 @@
         private System.Windows.Forms.NumericUpDown nudMapNumCols;
         private System.Windows.Forms.NumericUpDown nudMapCellSize;
         private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.CheckBox cbFreePlace;
         private System.Windows.Forms.ToolStripMenuItem xMLToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem xMLToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem1;
         private System.Windows.Forms.CheckBox cbShowGrid;
         private System.Windows.Forms.ToolStripMenuItem saveXMLWithToolStripMenuItem;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.NumericUpDown nudAdjustRectWidth;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown nudAdjustRectHeight;
+        private System.Windows.Forms.NumericUpDown nudAdjustRectX;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown nudAdjustRectY;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.Label label10;
 
     }
 }

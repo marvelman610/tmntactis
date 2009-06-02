@@ -28,3 +28,4 @@ C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.Properties.Resources.resources
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.SetTileFlagsDlg.resources
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.SetTriggerDlg.resources
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\TED.csproj.GenerateResource.Cache
+C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.EditTileDlg.resources

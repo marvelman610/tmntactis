@@ -37,6 +37,7 @@ struct PARTICLE
 	int sa, sr, sg, sb;
 	int ca, cr, cg, cb;
 	int ea, er, eg, eb;
+	float m_fScale;
 };
 #define MAX_NUM_PARTS 100
 
@@ -58,7 +59,7 @@ public:
 	float m_fGravPointX;
 	float m_fGravPointY;
 	float m_fVelDiff;
-	float m_fScale;
+	//float m_fScale;
 	float m_fRotation;
 	float m_fRotationVelocity;
 	int m_nImageID;
@@ -90,7 +91,7 @@ public:
 	{
 		srand(unsigned int(time(0)));
 		m_fOffsetX = m_fOffsetY = m_fForceX = m_fForceY = m_fGravityX = m_fGravityY = m_fGravPointX = m_fGravPointY=
-			m_fVelDiff = m_fScale = m_fRotation = m_fRotationVelocity = 0.0f;
+			m_fVelDiff = m_fRotation = m_fRotationVelocity = 0.0f;
 
 		m_nImageID = -1;
 		m_nNumParticles = m_nMaxLife = m_nDestinationBlend = m_nSourceBlend = 0;
@@ -133,7 +134,7 @@ public:
 		m_fGravPointX = 0.0f;
 		m_fGravPointY= 0.0f;
 		m_fVelDiff = 10.0f;
-		m_fScale = 1.0f;
+		//m_fScale = 1.0f;
 		m_fRotation = 0.01f;
 		m_fRotationVelocity = 0.01f;
 
@@ -167,6 +168,7 @@ public:
 			particles[i].sa = particles[i].sr = particles[i].sg = particles[i].sb = 
 				particles[i].ca = particles[i].cr = particles[i].cg = particles[i].cb = 
 				particles[i].ea = particles[i].er = particles[i].eg = particles[i].eb = 255;
+			particles[i].m_fScale = 1.0f;
 
 			particles[i].pos = D3DXVECTOR3(100,100,0.0f);//start position
 			particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
@@ -210,17 +212,33 @@ public:
 				{
 					particles[i].ca++;
 				}
+				else if(particles[i].ca > particles[i].ea)
+				{
+					particles[i].ca--;
+				}
 				if(particles[i].cr < particles[i].er)
 				{
 					particles[i].cr++;
 				}
-				if(particles[i].cg < particles[i].cg)
+				else if(particles[i].cr > particles[i].er)
+				{
+					particles[i].cr--;
+				}
+				if(particles[i].cg < particles[i].eg)
 				{
 					particles[i].cg++;
 				}
-				if(particles[i].cb < particles[i].cb)
+				else if(particles[i].cg > particles[i].eg)
+				{
+					particles[i].cg--;
+				}
+				if(particles[i].cb < particles[i].eb)
 				{
 					particles[i].cb++;
+				}
+				else if(particles[i].cb > particles[i].eb)
+				{
+					particles[i].cb--;
 				}
 				particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
 			}
@@ -303,7 +321,8 @@ public:
 		for (int i = 0; i < m_nNumParticles; ++i)
 		{
 			CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, (int)(particles[i].pos.x),
-				(int)(particles[i].pos.y), 0.0f, m_fScale, m_fScale, NULL, particles[i].pos.x, particles[i].pos.y, m_fRotation, particles[i].color );
+				(int)(particles[i].pos.y), 0.0f, particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
+				particles[i].pos.y, m_fRotation, particles[i].color );
 		}
 	}
 
@@ -474,7 +493,7 @@ public:
 				//scale
 				float fScale;
 				fs.read(reinterpret_cast<char*>(&fScale), sizeof(float));
-				m_fScale = fScale;
+				particles[i].m_fScale = fScale;
 
 				//loop
 				bool bLoop;

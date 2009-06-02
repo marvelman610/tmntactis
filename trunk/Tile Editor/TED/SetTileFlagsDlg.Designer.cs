@@ -38,6 +38,10 @@
             this.tbFlag1 = new System.Windows.Forms.TextBox();
             this.tbFlag2 = new System.Windows.Forms.TextBox();
             this.tbFlag3 = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.tbFlag4 = new System.Windows.Forms.TextBox();
+            this.tbFlag5 = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // label1
@@ -78,7 +82,7 @@
             // 
             // btnSetFlags
             // 
-            this.btnSetFlags.Location = new System.Drawing.Point(15, 120);
+            this.btnSetFlags.Location = new System.Drawing.Point(15, 172);
             this.btnSetFlags.Name = "btnSetFlags";
             this.btnSetFlags.Size = new System.Drawing.Size(99, 23);
             this.btnSetFlags.TabIndex = 4;
@@ -89,7 +93,7 @@
             // btnCancelFlags
             // 
             this.btnCancelFlags.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancelFlags.Location = new System.Drawing.Point(120, 120);
+            this.btnCancelFlags.Location = new System.Drawing.Point(120, 172);
             this.btnCancelFlags.Name = "btnCancelFlags";
             this.btnCancelFlags.Size = new System.Drawing.Size(75, 23);
             this.btnCancelFlags.TabIndex = 5;
@@ -129,13 +133,51 @@
             this.tbFlag3.TabIndex = 9;
             this.tbFlag3.TextChanged += new System.EventHandler(this.tbFlag3_TextChanged);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(13, 109);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(36, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Flag 4";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(13, 135);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(36, 13);
+            this.label6.TabIndex = 11;
+            this.label6.Text = "Flag 5";
+            // 
+            // tbFlag4
+            // 
+            this.tbFlag4.Location = new System.Drawing.Point(73, 106);
+            this.tbFlag4.Name = "tbFlag4";
+            this.tbFlag4.Size = new System.Drawing.Size(100, 20);
+            this.tbFlag4.TabIndex = 12;
+            this.tbFlag4.TextChanged += new System.EventHandler(this.tbFlag4_TextChanged);
+            // 
+            // tbFlag5
+            // 
+            this.tbFlag5.Location = new System.Drawing.Point(73, 132);
+            this.tbFlag5.Name = "tbFlag5";
+            this.tbFlag5.Size = new System.Drawing.Size(100, 20);
+            this.tbFlag5.TabIndex = 13;
+            this.tbFlag5.TextChanged += new System.EventHandler(this.tbFlag5_TextChanged);
+            // 
             // SetTileFlagsDlg
             // 
             this.AcceptButton = this.btnSetFlags;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancelFlags;
-            this.ClientSize = new System.Drawing.Size(211, 159);
+            this.ClientSize = new System.Drawing.Size(215, 207);
+            this.Controls.Add(this.tbFlag5);
+            this.Controls.Add(this.tbFlag4);
+            this.Controls.Add(this.label6);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.tbFlag3);
             this.Controls.Add(this.tbFlag2);
             this.Controls.Add(this.tbFlag1);
@@ -168,5 +210,9 @@
         private System.Windows.Forms.TextBox tbFlag1;
         private System.Windows.Forms.TextBox tbFlag2;
         private System.Windows.Forms.TextBox tbFlag3;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.TextBox tbFlag4;
+        private System.Windows.Forms.TextBox tbFlag5;
     }
 }

@@ -147,13 +147,6 @@ namespace map
             get { return m_nMapHeight; }
             set { m_nMapHeight = value; }
         }
-        // tileset image ID for texture manager
-//         int[] m_nTilesetImageID = new int[MAX_NUM_TILESETS];
-//         public int NTilesetImageID
-//         {
-//             get { return m_nTilesetImageID; }
-//             set { m_nTilesetImageID = value; }
-//         }
         int m_nPanelWidth;
         public int NPanelWidth
         {
@@ -201,6 +194,12 @@ namespace map
         {
             get { return m_bShowFlags; }
             set { m_bShowFlags = value; }
+        }
+        int m_nCurrTileEdit = -1;
+        public int CurrTileEdit
+        {
+            get { return m_nCurrTileEdit; }
+            set { m_nCurrTileEdit = value; }
         }
         ManagedTextureManager mTM;
         ManagedDirect3D mD3d;
@@ -667,9 +666,17 @@ namespace map
                     {
                         if (m_tFreePlaced[i] != null)
                         {
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
+                            if (m_nCurrTileEdit == i)
+                            {
+                                Color selectTile = Color.FromArgb(150, Color.Red);
+                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
+                            }
+                            else
+                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
                             if (m_bShowFlags)
-	                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+	                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
                         }
                     }
                     break;
@@ -678,9 +685,16 @@ namespace map
                     {
                         if (m_tFreePlaced[i] != null)
                         {
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
+                            if (m_nCurrTileEdit == i)
+                            {
+                                Color selectTile = Color.FromArgb(150, Color.Red);
+                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
+                            }
+                            else
+                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
                             if (m_bShowFlags) 
-                                mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+                                mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
                         }
                     }
                     break;

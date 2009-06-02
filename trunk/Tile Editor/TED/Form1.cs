@@ -35,6 +35,7 @@ namespace test
     #region DECLS 1
         // acts as a Focus variable for the splitcontainer1's panels
         bool m_bPanel2HasFocus = true;
+        bool m_bEditingFreeTile = false;
         const string m_strVersionNumber = "TED-Version-1.0";
         const int MAX_NUM_TILESETS = 4;
         // dialogs
@@ -84,8 +85,10 @@ namespace test
         // Four tile flags
         string m_str0 = "0=None";
         string m_str1 = "1=Collision";
-        string m_str2 = "2=Not Set";
+        string m_str2 = "2=Obj Edge";
         string m_str3 = "3=Not Set";
+        string m_str4 = "4=Not Set";
+        string m_str5 = "5=Not Set";
         int m_nCurrTileFlag = 0;
         
         /// <summary>
@@ -159,7 +162,10 @@ namespace test
             m_mTM.InitManagedTextureManager(m_mD3d.Device, m_mD3d.Sprite);
             //////////////////////////////////////////////////////////////////////////
             //Set up input boxes
-
+            nudAdjustRectHeight.Enabled = false;
+            nudAdjustRectWidth.Enabled = false;
+            nudAdjustRectX.Enabled = false;
+            nudAdjustRectY.Enabled = false;
             cbLayerMode.SelectedIndex = 0;
             cbLayer.SelectedIndex = 0;
 
@@ -200,7 +206,7 @@ namespace test
                         m_mMap.DrawMapIso();
                     if (!m_bDeleting)       // don't draw the free place image if we're deleting, it gets in the way
                     {
-	                    if (m_bFreePlace && !m_bDrawMarquee)
+	                    if (m_bFreePlace && !m_bDrawMarquee && !m_bEditingFreeTile)
 	                    {
 	                        m_mTM.Draw(m_tCurrTile.ImageID, m_ptMouseFreePlacePos.X, m_ptMouseFreePlacePos.Y, 1.0f, 1.0f, m_tCurrTile.SourceRect,
                                 0, 0, m_fRotation, m_clrKey[m_nCurrTilesetIndex].ToArgb());
@@ -208,8 +214,11 @@ namespace test
 	                    else if (m_bFreePlace && m_bDrawMarquee)
 	                    {
 	                        Rectangle MarqueeSrcRect = new Rectangle(m_ptTopLeft.X, m_ptTopLeft.Y, m_ptBottomRight.X - m_ptTopLeft.X, m_ptBottomRight.Y - m_ptTopLeft.Y);
-                            m_mTM.Draw(m_tCurrTile.ImageID, m_ptMouseFreePlacePos.X, m_ptMouseFreePlacePos.Y, 1.0f, 1.0f, MarqueeSrcRect,
-                                0, 0, m_fRotation, m_clrKey[m_nCurrTilesetIndex].ToArgb());
+                            if (!m_bEditingFreeTile)
+                            {
+	                            m_mTM.Draw(m_tCurrTile.ImageID, m_ptMouseFreePlacePos.X, m_ptMouseFreePlacePos.Y, 1.0f, 1.0f, MarqueeSrcRect,
+	                                0, 0, m_fRotation, m_clrKey[m_nCurrTilesetIndex].ToArgb());
+                            }
 	                    }
                     }
 
@@ -250,8 +259,18 @@ namespace test
 
                 m_mD3d.LineBegin();
                 m_tsTileset[m_nCurrTilesetIndex].DrawTSGrid();
-// 
-                if (!m_bDrawMarquee || (m_bDrawMarquee && !m_bIsDraggingMarquee && !m_bFreePlace))
+
+                if (m_bEditingFreeTile)
+                {
+                    m_ptDrawTL = m_ptTopLeft;
+                    m_ptDrawBR = m_ptBottomRight;
+                    m_ptDrawTL.X += m_nTilesetXoffset + (splitContainer1.Panel1.AutoScrollPosition.X);
+                    m_ptDrawTL.Y += m_nTilesetYoffset + (splitContainer1.Panel1.AutoScrollPosition.Y);
+                    m_ptDrawBR.X += m_nTilesetXoffset + (splitContainer1.Panel1.AutoScrollPosition.X);
+                    m_ptDrawBR.Y += m_nTilesetYoffset + (splitContainer1.Panel1.AutoScrollPosition.Y);
+                    m_mD3d.DrawRectLine(m_ptDrawTL, m_ptDrawBR, 0, 0, 255);
+                }
+                else if (!m_bDrawMarquee || (m_bDrawMarquee && !m_bIsDraggingMarquee && !m_bFreePlace))
                 {
 	                m_tsTileset[m_nCurrTilesetIndex].DrawSelectionRect(m_bDrawSelRectScroll);
                 }
@@ -355,10 +374,14 @@ namespace test
             m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Add(m_str1);
             m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Add(m_str2);
             m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Add(m_str3);
+            m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Add(m_str4);
+            m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Add(m_str5);
             m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.SelectedIndex = 0;
 
             m_tsComponents[m_nCurrTilesetIndex].nudImageWidth.Value = nImageWidth;
             m_tsComponents[m_nCurrTilesetIndex].nudImageHeight.Value = nImageHeight;
+            nudAdjustRectX.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageWidth.Value;
+            nudAdjustRectY.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageHeight.Value;
             m_tsComponents[m_nCurrTilesetIndex].nudCellWidth.Value = nCellWidth;
             m_tsComponents[m_nCurrTilesetIndex].nudCellHeight.Value = nCellHeight;
             m_tsComponents[m_nCurrTilesetIndex].nudTilesetGridWidth.Value = nImageWidth / nCellWidth;
@@ -914,6 +937,7 @@ namespace test
         }
         private void splitContainer1_Panel1_MouseMove(object sender, MouseEventArgs e)
         {
+            lblCursorPos.Text = "X=" + e.X + " Y=" + e.Y;
             if (m_nCurrTilesetIndex != -1 && m_tsTileset[m_nCurrTilesetIndex] != null)
             {
 	            if (e.X < m_tsTileset[m_nCurrTilesetIndex].NWidth + m_nTilesetXoffset && e.Y < m_tsTileset[m_nCurrTilesetIndex].NHeight + m_nTilesetYoffset &&
@@ -928,8 +952,8 @@ namespace test
 	                    m_bDontDraw = false;
 			            if (!m_bDrawMarquee && m_ptTopLeft.X != -1)
 			            {
-				            if (m_ptTopLeft.X >= ptNewest.X + 8 || m_ptTopLeft.X <= ptNewest.X - 8 ||
-				                    m_ptTopLeft.Y >= ptNewest.Y + 8 || m_ptTopLeft.Y <= ptNewest.Y - 8)
+				            if (m_ptTopLeft.X >= ptNewest.X /*+ 8*/ || m_ptTopLeft.X <= ptNewest.X /*- 8*/ ||
+				                    m_ptTopLeft.Y >= ptNewest.Y /*+ 8*/ || m_ptTopLeft.Y <= ptNewest.Y /*- 8*/)
 				            {
 				                m_bDrawMarquee = true;
 	                            m_tsTileset[m_nCurrTilesetIndex].DrawMarquee = true;
@@ -1017,13 +1041,17 @@ namespace test
                     m_ptTopLeft.Y = m_ptBottomRight.Y;
                     m_ptBottomRight.Y = swap;
                 }
+                int width = 0;
+                int height = 0;
+                int left = 0;
+                int top = 0;
                 if (m_bIsIsometric)
                 {
                     // add a tile from the tile set to the currently selected
-                    int left = m_ptTopLeft.X;
-                    int top = m_ptTopLeft.Y;
-                    int width = m_ptBottomRight.X - left;
-                    int height = m_ptBottomRight.Y - top;
+                    left = m_ptTopLeft.X;
+                    top = m_ptTopLeft.Y;
+                    width = m_ptBottomRight.X - left;
+                    height = m_ptBottomRight.Y - top;
                     Rectangle sRect = new Rectangle(left, top, width, height);
                     m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
                     //tbAnchorX.Text = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].AnchorX.ToString();
@@ -1071,6 +1099,24 @@ namespace test
                     m_tsTileset[m_nCurrTilesetIndex].SetMarqueeSelectionRect(m_tMarqueeTiles[0].NSourceID, m_nMarqueeNumCols, (endRow + 1) - startRow);
                     m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.SelectedIndex = m_tMarqueeTiles[0].NTileFlag;
                 }
+                m_bJustClick = true;
+                if (width > 0 && width < 1025)
+                {
+	                nudAdjustRectWidth.Value = width;
+                }
+                if (height > 0 && height < 1025)
+                {
+                    nudAdjustRectHeight.Value = height;
+                }
+                if (left > 0 && left < (int)nudAdjustRectX.Maximum)
+                {
+                    nudAdjustRectX.Value = left;
+                }
+                if (top > 0 && top < (int)nudAdjustRectY.Maximum)
+                {
+                    nudAdjustRectY.Value = top;
+                }
+                m_bJustClick = false;
             }
         }
 
@@ -1307,6 +1353,58 @@ namespace test
                         }
                     }
                     #endregion
+                    #region tileEdit
+                    if (Control.ModifierKeys == Keys.Shift && MouseButtons.Left == e.Button)
+                    {
+                        for (int i = 0; i < m_mMap.FreePlaced.GetLength(0); ++i )
+                        {
+                            if (m_mMap.FreePlaced[i] == null)
+                                continue;
+                            if (freeClick.X > m_mMap.FreePlaced[i].MapPt.X &&
+                                    freeClick.X < m_mMap.FreePlaced[i].MapPt.X + m_tsTileset[m_nCurrTilesetIndex].NCellWidth &&
+                                    freeClick.Y > m_mMap.FreePlaced[i].MapPt.Y &&
+                                    freeClick.Y < m_mMap.FreePlaced[i].MapPt.Y + m_tsTileset[m_nCurrTilesetIndex].NCellHeight)
+                            {
+                                for (int p = 0; p < MAX_NUM_TILESETS; ++p )
+                                {
+                                    if (m_mMap.FreePlaced[i].ImageID == m_nCurrImageID[i])
+                                    {
+                                        m_nCurrTilesetIndex = i;
+                                        tabControl1.SelectedIndex = m_nCurrTilesetIndex + 1;
+                                        break;
+                                    }
+                                }
+                                m_nCurrTileEditID = i;
+                                m_mMap.CurrTileEdit = i;
+                                EditTileDlg edDlg = new EditTileDlg(m_nCurrTileEditID, m_mMap.FreePlaced[i],
+                                            m_str0, m_str1, m_str2, m_str3, m_str4, m_str5);
+                                m_bEditingFreeTile = m_bFreePlace = true;
+                                edDlg.Text += " - Free Tile [" + i + "]";
+                                edDlg.FormClosing += new FormClosingEventHandler(m_edDlg_FormClosing);
+                                edDlg.acceptPushed += new EventHandler(m_edDlg_acceptPushed);
+                                edDlg.posXchanged += new EventHandler(m_edDlg_posXchanged);
+                                edDlg.posYchanged += new EventHandler(m_edDlg_posYchanged);
+                                edDlg.poiXchanged += new EventHandler(m_edDlg_poiXchanged);
+                                edDlg.poiYchanged += new EventHandler(m_edDlg_poiYchanged);
+                                edDlg.rotChanged += new EventHandler(m_edDlg_rotChanged);
+                                edDlg.scaleXchanged += new EventHandler(m_edDlg_scaleXchanged);
+                                edDlg.scaleYchanged += new EventHandler(m_edDlg_scaleYchanged);
+                                edDlg.sourceXchanged += new EventHandler(m_edDlg_sourceXchanged);
+                                edDlg.sourceYchanged += new EventHandler(m_edDlg_sourceYchanged);
+                                edDlg.srcWidthchanged += new EventHandler(m_edDlg_srcWidthchanged);
+                                edDlg.srcHeightchanged += new EventHandler(m_edDlg_srcHeightchanged);
+                                edDlg.flagChanged += new EventHandler(m_edDlg_flagChanged);
+                                edDlg.Activated += new EventHandler(edDlg_Activated);
+                                edDlg.Show(this);
+                                m_ptBottomRight.X = m_mMap.FreePlaced[i].SourceRect.Left + m_mMap.FreePlaced[i].SourceRect.Width;
+                                m_ptBottomRight.Y = m_mMap.FreePlaced[i].SourceRect.Top + m_mMap.FreePlaced[i].SourceRect.Height;
+                                m_ptTopLeft.X = m_mMap.FreePlaced[i].SourceRect.X;
+                                m_ptTopLeft.Y = m_mMap.FreePlaced[i].SourceRect.Y;
+                                return;
+                            }
+                        }
+                    }
+                    #endregion
                     #region placing 1
                     // left button == placing
                     if (MouseButtons.Left == e.Button)
@@ -1439,6 +1537,170 @@ namespace test
             }
             #endregion
         }
+
+
+        #region editTileChanges
+
+        void edDlg_Activated(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_nCurrTileEditID = ed.TileID;
+            m_mMap.CurrTileEdit = ed.TileID;
+            m_bDontDraw = false;
+        }
+        void m_edDlg_acceptPushed(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg; ;
+            m_mMap.FreePlaced[m_nCurrTileEditID].NTileFlag = ed.cbTileFlag.SelectedIndex;
+            Rectangle srcRect = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect.Height = (int)ed.nudSourceHeight.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect;
+            Rectangle srcRect2 = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect2.Width = (int)ed.nudSourceWidth.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect2;
+            Rectangle srcRect3 = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect3.Y = (int)ed.nudSourceY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect3;
+            Rectangle srcRect4 = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect4.X = (int)ed.nudSourceX.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect4;
+            m_mMap.FreePlaced[m_nCurrTileEditID].ScaleX = (int)ed.nudScaleX.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].ScaleY = (int)ed.nudScaleY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].Rotation = (float)ed.nudRot.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].AnchorY = (int)ed.nudPOIY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].AnchorX = (int)ed.nudPOIX.Value;
+            Point pt = m_mMap.FreePlaced[m_nCurrTileEditID].MapPt;
+            pt.Y = (int)ed.nudPosY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].MapPt = pt;
+            Point pt2 = m_mMap.FreePlaced[m_nCurrTileEditID].MapPt;
+            pt2.X = (int)ed.nudPosX.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].MapPt = pt2;
+            m_ptTopLeft.X       = (int)ed.nudSourceX.Value;
+            m_ptTopLeft.Y       = (int)ed.nudSourceY.Value;
+            m_ptBottomRight.X   = m_ptTopLeft.X + (int)ed.nudSourceWidth.Value;
+            m_ptBottomRight.Y   = m_ptTopLeft.Y + (int)ed.nudSourceHeight.Value;
+            ed.Close();
+        }
+        void m_edDlg_flagChanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].NTileFlag = ed.cbTileFlag.SelectedIndex;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_srcHeightchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Rectangle srcRect = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect.Height = (int)ed.nudSourceHeight.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect;
+            m_ptTopLeft.X = (int)ed.nudSourceX.Value;
+            m_ptTopLeft.Y = (int)ed.nudSourceY.Value;
+            m_ptBottomRight.X = m_ptTopLeft.X + (int)ed.nudSourceWidth.Value;
+            m_ptBottomRight.Y = m_ptTopLeft.Y + (int)ed.nudSourceHeight.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_srcWidthchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Rectangle srcRect = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect.Width = (int)ed.nudSourceWidth.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect;
+            m_ptTopLeft.X = (int)ed.nudSourceX.Value;
+            m_ptTopLeft.Y = (int)ed.nudSourceY.Value;
+            m_ptBottomRight.X = m_ptTopLeft.X + (int)ed.nudSourceWidth.Value;
+            m_ptBottomRight.Y = m_ptTopLeft.Y + (int)ed.nudSourceHeight.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_sourceYchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Rectangle srcRect = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect.Y = (int)ed.nudSourceY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect;
+            m_ptTopLeft.X = (int)ed.nudSourceX.Value;
+            m_ptTopLeft.Y = (int)ed.nudSourceY.Value;
+            m_ptBottomRight.X = m_ptTopLeft.X + (int)ed.nudSourceWidth.Value;
+            m_ptBottomRight.Y = m_ptTopLeft.Y + (int)ed.nudSourceHeight.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_sourceXchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Rectangle srcRect = m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect;
+            srcRect.X = (int)ed.nudSourceX.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].SourceRect = srcRect;
+            m_ptTopLeft.X = (int)ed.nudSourceX.Value;
+            m_ptTopLeft.Y = (int)ed.nudSourceY.Value;
+            m_ptBottomRight.X = m_ptTopLeft.X + (int)ed.nudSourceWidth.Value;
+            m_ptBottomRight.Y = m_ptTopLeft.Y + (int)ed.nudSourceHeight.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_scaleYchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].ScaleX = (int)ed.nudScaleX.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_scaleXchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].ScaleY = (int)ed.nudScaleY.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_rotChanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].Rotation = (float)ed.nudRot.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_poiYchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].AnchorY = (int)ed.nudPOIY.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_poiXchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            m_mMap.FreePlaced[m_nCurrTileEditID].AnchorX = (int)ed.nudPOIX.Value;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_posYchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Point pt = m_mMap.FreePlaced[m_nCurrTileEditID].MapPt;
+            pt.Y = (int)ed.nudPosY.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].MapPt = pt;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_posXchanged(object sender, EventArgs e)
+        {
+            EditTileDlg ed = sender as EditTileDlg;
+            Point pt = m_mMap.FreePlaced[m_nCurrTileEditID].MapPt;
+            pt.X = (int)ed.nudPosX.Value;
+            m_mMap.FreePlaced[m_nCurrTileEditID].MapPt = pt;
+            m_bDontDraw = false;
+        }
+
+        void m_edDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_bEditingFreeTile = false;
+            m_nCurrTileEditID = -1;
+            m_mMap.CurrTileEdit = -1;
+        }
+        #endregion
+
         private void splitContainer1_Panel2_MouseDown(object sender, MouseEventArgs e)
         {
             // Map move click point:
@@ -1573,17 +1835,29 @@ namespace test
                 {
                     cbLayerMode.SelectedIndex = (int)LAYER_MODE.SHOW_BOTH;
                     lbCurrentLayer.Text = m_strLayerLabel + "Layer 2";
+                    nudAdjustRectHeight.Enabled = false;
+                    nudAdjustRectWidth.Enabled = false;
+                    nudAdjustRectX.Enabled = false;
+                    nudAdjustRectY.Enabled = false;
                 }
                 else if (m_nCurrLayer == (int)LAYER.LAYER_ONE)
                 {
                     cbLayerMode.SelectedIndex = (int)LAYER_MODE.SHOW_L1;
                     lbCurrentLayer.Text = m_strLayerLabel + "Layer 1";
+                    nudAdjustRectHeight.Enabled = false;
+                    nudAdjustRectWidth.Enabled = false;
+                    nudAdjustRectX.Enabled = false;
+                    nudAdjustRectY.Enabled = false;
                 }
                 else if (m_nCurrLayer == (int)LAYER.LAYER_FREE)
                 {
                     cbLayerMode.SelectedIndex = (int)LAYER_MODE.SHOW_ALL;
                     lbCurrentLayer.Text = m_strLayerLabel + "Free Tiles";
                     m_bFreePlace = true;
+                    nudAdjustRectHeight.Enabled = true;
+                    nudAdjustRectWidth.Enabled = true;
+                    nudAdjustRectY.Enabled = true;
+                    nudAdjustRectX.Enabled = true;
                 }
             }
         }
@@ -1625,7 +1899,7 @@ namespace test
         {
             if (m_stfDlg == null)
             {
-                m_stfDlg = new SetTileFlagsDlg(m_str0, m_str1, m_str2, m_str3);
+                m_stfDlg = new SetTileFlagsDlg(m_str0, m_str1, m_str2, m_str3, m_str4, m_str5);
                 m_stfDlg.FormClosing += new FormClosingEventHandler(stfDlg_FormClosing);
                 m_stfDlg.setFlagsPushed += new EventHandler(stfDlg_setFlagsPushed);
                 m_stfDlg.Show(this);
@@ -1659,6 +1933,18 @@ namespace test
                 m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.RemoveAt(3);
                 m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Insert(3, "3=" + stfDlg.Flag3);
             }
+            if (stfDlg.Bflag4Changed)
+            {
+                m_str4 = "4=" + stfDlg.Flag4;
+                m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.RemoveAt(4);
+                m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Insert(4, "4=" + stfDlg.Flag4);
+            }
+            if (stfDlg.Bflag4Changed)
+            {
+                m_str4 = "4=" + stfDlg.Flag4;
+                m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.RemoveAt(4);
+                m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.Items.Insert(4, "4=" + stfDlg.Flag5);
+            }
             m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.SelectedIndex = 0;
             stfDlg.Close();
         }
@@ -1690,7 +1976,6 @@ namespace test
                 m_mMap.NPanelHeight = splitContainer1.Panel2.Height;
             }
         }
-
 
         private void twoLayersToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -1839,6 +2124,8 @@ namespace test
                 splitContainer1.Panel1.HorizontalScroll.Value = -m_tsComponents[m_nCurrTilesetIndex].m_nScrollX;
                 splitContainer1.Panel1.VerticalScroll.Value = -m_tsComponents[m_nCurrTilesetIndex].m_nScrollY;
                 splitContainer1.Panel1.HorizontalScroll.Value = -m_tsComponents[m_nCurrTilesetIndex].m_nScrollX;
+                nudAdjustRectX.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageWidth.Value;
+                nudAdjustRectY.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageHeight.Value;
             }
             m_bDontDraw = false;
             m_bJustClick = false;
@@ -1994,6 +2281,75 @@ namespace test
         {
             m_bDontDraw = false;
 
+        }
+
+        private void nudAdjustRectWidth_ValueChanged(object sender, EventArgs e)
+        {
+            if (!m_bJustClick)
+            {
+	            int left = m_ptTopLeft.X;
+	            int top = m_ptTopLeft.Y;
+	            int width = (int)nudAdjustRectWidth.Value;
+	            int height = m_ptBottomRight.Y - top;
+                m_ptBottomRight.X = left + width;
+	            Rectangle sRect = new Rectangle(left, top, width, height);
+	            m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+	            m_bDontDraw = false;
+            }
+        }
+
+        private void nudAdjustRectHeight_ValueChanged(object sender, EventArgs e)
+        {
+            if (!m_bJustClick)
+            {
+	            int left = m_ptTopLeft.X;
+	            int top = m_ptTopLeft.Y;
+	            int width = m_ptBottomRight.X - left;
+	            int height = (int)nudAdjustRectHeight.Value;
+                m_ptBottomRight.Y = top + height;
+	            Rectangle sRect = new Rectangle(left, top, width, height);
+	            m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+	            m_bDontDraw = false;
+            }
+        }
+
+        private void nudAdjustRectX_ValueChanged(object sender, EventArgs e)
+        {
+            if (!m_bJustClick)
+            {
+                int left = m_ptTopLeft.X = (int)nudAdjustRectX.Value;
+                int top = m_ptTopLeft.Y;
+                int width = m_ptBottomRight.X - left;
+                int height = m_ptBottomRight.Y - top;
+                nudAdjustRectWidth.Value = width;
+                Rectangle sRect = new Rectangle(left, top, width, height);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_bDontDraw = false;
+            }
+        }
+
+        private void nudAdjustRectY_ValueChanged(object sender, EventArgs e)
+        {
+            if (!m_bJustClick)
+            {
+                int left = m_ptTopLeft.X;
+                int top = m_ptTopLeft.Y = (int)nudAdjustRectY.Value;
+                int width = m_ptBottomRight.X - left;
+                int height = m_ptBottomRight.Y - top;
+                nudAdjustRectHeight.Value = height;
+                Rectangle sRect = new Rectangle(left, top, width, height);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_bDontDraw = false;
+            }
+
+        }
+
+        private void lbCurrentLayer_Click(object sender, EventArgs e)
+        {
+            if (cbLayer.SelectedIndex < (int)LAYER.LAYER_FREE)
+                cbLayer.SelectedIndex++;
+            else
+                cbLayer.SelectedIndex = (int)LAYER.LAYER_ONE;
         }
     }
 }

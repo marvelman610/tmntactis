@@ -61,4 +61,12 @@ public:
 
 	// How To Play Menu IDs
 	int aHTPMBGimageID;
+
+	//HUD Image ID's
+	int aHUDBoxID;
+	int aRedHealthBarID;
+	int aGreenHealthBarID;
+	int aBlueHealthBarID;
+	//HUD Character Faces
+	int aMikeyHUDFaceID;
 };

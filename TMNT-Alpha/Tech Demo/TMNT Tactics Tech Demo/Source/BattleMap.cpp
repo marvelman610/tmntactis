@@ -18,6 +18,7 @@
 //#include "fmod.hpp"
 #include "BitmapFont.h"
 #include "ParticleSystem.h"
+#include "HUD.h"
 #include <fstream>
 #include <exception>
 
@@ -34,7 +35,7 @@ CBattleMap::CBattleMap(void)
 	m_pDI			= CSGD_DirectInput::GetInstance();
 //	m_pFMOD			= m_pGame->GetFMODSystem();
 //	m_pBitmapFont   = CBitmapFont::GetInstance();
-//	m_pHUD			= CHUD::GetInstance();
+	m_pHUD			= CHUD::GetInstance();
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -59,6 +60,8 @@ CBattleMap::CBattleMap(void)
 	m_szMapName  = "Blank";
 
 	m_strCurrVersion = "TED-Version-1.0";
+
+	//m_pHUD->LoadHUD();
 }
 
 CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
@@ -74,7 +77,7 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
-	//	m_pHUD			= CHUD::GetInstance();
+	m_pHUD			= CHUD::GetInstance();
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -129,8 +132,8 @@ CBattleMap::~CBattleMap(void)
 		m_pGame = NULL;
 	if (m_pDI)
 		m_pDI = NULL;
-// 	if (m_pHUD)
-// 		m_pHUD = NULL;
+ 	if (m_pHUD)
+ 		m_pHUD = NULL;
 // 	if (m_pBitmapFont)
 // 		m_pBitmapFont = NULL;
 // 	if (m_pFMOD)
@@ -145,7 +148,7 @@ CBattleMap::~CBattleMap(void)
 void CBattleMap::Render()
 {
 	//m_pTM->Draw(m_nBGImageID, 0, 0);
-	//m_pHUD->Draw();
+	m_pHUD->Render();
 
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));

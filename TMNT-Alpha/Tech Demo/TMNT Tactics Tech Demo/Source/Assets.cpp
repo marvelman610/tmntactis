@@ -49,4 +49,15 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 	// How To Player Menu IDs
 	//aHTPMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_HowToPlayMenuBG.png");
+
+	//////////////////////////////////////////////////////////////////////////
+	// HUD Image ID's
+	aHUDBoxID			= m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
+	aGreenHealthBarID	= m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
+	aRedHealthBarID		= m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
+	aBlueHealthBarID	= m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
+
+	//////////////////////////////////////////////////////////////////////////
+	// HUD Character Faces IDs
+	aMikeyHUDFaceID		= m_pTM->LoadTexture("Resources/Images/VG_Michelangelo.png", D3DCOLOR_XRGB(255,255,255));
 }

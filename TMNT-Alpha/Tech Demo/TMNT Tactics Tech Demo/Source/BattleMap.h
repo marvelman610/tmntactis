@@ -13,18 +13,18 @@
 #include <iostream>
 using namespace std;
 
- class CSGD_TextureManager;
- class CSGD_DirectInput;
- class CSGD_Direct3D;
- class CGame;
- class CAssets;
- class CBitmapFont;
- class CTile;
- class CFreeTile;
- class CAnimation;
- class CParticleSystem;
- class CCamera;
-//class CHUD;
+class CSGD_TextureManager;
+class CSGD_DirectInput;
+class CSGD_Direct3D;
+class CGame;
+class CAssets;
+class CBitmapFont;
+class CTile;
+class CFreeTile;
+class CAnimation;
+class CParticleSystem;
+class CCamera;
+class CHUD;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
@@ -114,7 +114,7 @@ class CBattleMap
 	CGame*				m_pGame;
 	CCamera*			m_pCamera;
 	CBitmapFont*		m_pBitmapFont;
-	//CHUD*				m_pHUD;
+	CHUD*				m_pHUD;
 	//FMOD::System*		m_pFMODsys;
 	//////////////////////////////////////////////////////////////////////////
 

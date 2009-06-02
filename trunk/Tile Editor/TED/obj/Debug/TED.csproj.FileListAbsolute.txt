@@ -1,0 +1,15 @@
+C:\Code\SGP\Code\TED\bin\Debug\test.exe
+C:\Code\SGP\Code\TED\bin\Debug\test.pdb
+C:\Code\SGP\Code\TED\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\SGP\Code\TED\obj\Debug\ColorPicker.ColorPickerCtrl.resources
+C:\Code\SGP\Code\TED\obj\Debug\ColorPicker.ColorPickerDialog.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.Form1.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.Help.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.ImportTilesetDlg.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.NewMap.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.Properties.Resources.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.SetTileFlagsDlg.resources
+C:\Code\SGP\Code\TED\obj\Debug\test.SetTriggerDlg.resources
+C:\Code\SGP\Code\TED\obj\Debug\TED.csproj.GenerateResource.Cache
+C:\Code\SGP\Code\TED\obj\Debug\test.exe
+C:\Code\SGP\Code\TED\obj\Debug\test.pdb

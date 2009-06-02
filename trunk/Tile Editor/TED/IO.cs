@@ -744,7 +744,7 @@ namespace test
 	                                        reader.ReadToFollowing("FreePlace");
                                         }
                                         reader.Read();
-                                        int posX, posY;
+                                        int posX, posY, count = 0;
                                         while (reader.Name == "FREETILE")
                                         {
                                             reader.Read();
@@ -767,10 +767,10 @@ namespace test
                                             trigger = reader.ReadString();
 
                                             srcRect = new Rectangle(tileX, tileY, tileWidth, tileHeight);
-                                            CTILE tempTile = new CTILE(0, srcRect, flag, tileImageID);
-                                            tempTile.Trigger = trigger;
+                                            CFREETILE tempFree = new CFREETILE(posX, posY, srcRect, flag, tileImageID);
+                                            tempFree.Trigger = trigger;
                                             // TODO:: save and load rotation
-                                            m_mMap.AddFreePlacedTile(tempTile, posX, posY, 0.0f);
+                                            m_mMap.LoadFreePlacedTiles(tempFree, count++);
                                             reader.Read();
                                             reader.Read();
                                         }

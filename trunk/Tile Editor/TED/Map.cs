@@ -303,6 +303,11 @@ namespace map
             }
             SortFreePlaced(tNewFree, m_nTotNumFreeTiles - 2);
         }
+        public void LoadFreePlacedTiles(CFREETILE freeTile, int index)
+        {
+            m_tFreePlaced[index] = freeTile;
+            ++m_nTotNumFreeTiles;
+        }
         private void SortFreePlaced(CFREETILE tileToSort, int index)
         {
             if (tileToSort.MapPt.Y < m_tFreePlaced[index].MapPt.Y)

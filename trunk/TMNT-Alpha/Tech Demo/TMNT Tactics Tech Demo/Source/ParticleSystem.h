@@ -45,21 +45,67 @@ public:
 	IDirect3DVertexBuffer9 *particleBuff;
 	IDirect3DTexture9 *texture;
 	CSGD_TextureManager* m_pTM;
+	
+	float m_fOffsetX;
+	float m_fOffsetY;
+	float m_fForceX;
+	float m_fForceY;
+	float m_fGravityX;
+	float m_fGravityY;
+	float m_fGravPointX;
+	float m_fGravPointY;
+	float m_fVelDiff;
+	float m_fScale;
+	float m_fRotation;
+	float m_fRotationVelocity;
 	int m_nImageID;
 	int m_nNumParticles;
+	int m_nMaxLife;
+	int m_nStartAlpha;
+	int m_nStartRed;
+	int m_nStartGreen;
+	int m_nStartBlue;
+	int m_nEndAlpha;
+	int m_nEndRed;
+	int m_nEndGreen;
+	int m_nEndBlue;
+	int m_nDestinationBlend;
+	int m_nSourceBlend;
+	bool m_bGravityPoint;
+	bool m_bGravity;
+	bool m_bAlphaChange;
+	bool m_bColorChange;
+	bool m_bColorChangeRand;
+	bool m_bCollision;
+	bool m_bScaling;
+	bool m_bLoop;
+	bool m_bRandAge;
+	bool m_bRotation;
+	bool m_bVelDiff;
 
 	CParticleSystem(void)
 	{
 		srand(unsigned int(time(0)));
+		m_fOffsetX = m_fOffsetY = m_fForceX = m_fForceY = m_fGravityX = m_fGravityY = m_fGravPointX = m_fGravPointY=
+			m_fVelDiff = m_fScale = m_fRotation = m_fRotationVelocity = 0.0f;
+
+		m_nImageID = -1;
+		m_nNumParticles = m_nMaxLife = m_nStartAlpha = m_nStartRed = m_nStartGreen = m_nStartBlue = m_nEndAlpha = 
+			m_nEndRed = m_nEndGreen = m_nEndBlue = m_nDestinationBlend = m_nSourceBlend;
+
+		m_bGravityPoint = m_bGravity = m_bAlphaChange = m_bColorChange = m_bColorChangeRand = m_bCollision = 
+			m_bScaling = m_bLoop = m_bRandAge = m_bRotation = m_bVelDiff = false;
+		
 		m_pTM = CSGD_TextureManager::GetInstance();
 		//particles = NULL;
 		vertexDecl = NULL;
 		particleBuff = NULL;
 		texture = NULL;
+
 	}
 	void InitGeometry(void)
 	{
-		D3DVERTEXELEMENT9 decl[]=
+		/*D3DVERTEXELEMENT9 decl[]=
 		{
 			{0,0,D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
 			{0,12,D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
@@ -67,29 +113,70 @@ public:
 			{0,24,D3DDECLTYPE_D3DCOLOR,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_COLOR,0},
 			D3DDECL_END()
 		};
-		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->CreateVertexDeclaration(decl, &vertexDecl);
-		D3DXCreateTextureFromFile(CSGD_Direct3D::GetInstance()->GetDirect3DDevice(), "resource/SGD_Ship.bmp", &texture);
+		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->CreateVertexDeclaration(decl, &vertexDecl);*/
+		//D3DXCreateTextureFromFile(CSGD_Direct3D::GetInstance()->GetDirect3DDevice(), "resource/SGD_Ship.bmp", &texture);
 	}
 	void InitParticle(void)
 	{
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->CreateVertexBuffer(MAX_NUM_PARTS*sizeof(VERTEX),
-// 			D3DUSAGE_DYNAMIC | D3DUSAGE_WRITEONLY | D3DUSAGE_POINTS, 0,
-// 			D3DPOOL_DEFAULT, &particleBuff, NULL);
 		m_nNumParticles = MAX_NUM_PARTS;
 		particles = new PARTICLE[m_nNumParticles];
 		m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Ship.bmp", D3DCOLOR_XRGB(0,0,0));
+
+		m_fOffsetX = 10.0f;
+		m_fOffsetY = 10.0f;
+		m_fForceX = 0.0f;
+		m_fForceY = 0.0f;
+		m_fGravityX = 0.0f;
+		m_fGravityY = 1.0f;
+		m_fGravPointX = 0.0f;
+		m_fGravPointY= 0.0f;
+		m_fVelDiff = 10.0f;
+		m_fScale = 1.0f;
+		m_fRotation = 0.01f;
+		m_fRotationVelocity = 0.01f;
+
+		m_nMaxLife = 100;
+		m_nStartAlpha = 255;
+		m_nStartRed = 255;
+		m_nStartGreen = 255;
+		m_nStartBlue = 255;
+		m_nEndAlpha = 255;
+		m_nEndRed = 255;
+		m_nEndGreen = 255;
+		m_nEndBlue = 255;
+		m_nDestinationBlend = 0;
+		m_nSourceBlend = 0;
+
+		m_bGravityPoint = false;
+		m_bGravity = false;
+		m_bAlphaChange = false;
+		m_bColorChange = false;
+		m_bColorChangeRand = false;
+		m_bCollision = false;
+		m_bScaling = false;
+		m_bLoop = true;
+		m_bRandAge = true;
+		m_bRotation = true;
+		m_bVelDiff = false;
 
 		//loop through all the particles 
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
 			particles[i].pos = D3DXVECTOR3(100,100,0.0f);//start position
-// 			float x = (rand()%100)*.001f;
-// 			float y = (rand()%100)*.001f;
-// 			float z = (rand()%100)*.001f;
-			particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f/*RandomFloat(-0.1f, 0.1f)*/);
-			particles[i].life = (float)(rand()%100);
+			particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
+			if(m_bRandAge == true)
+			{
+				particles[i].life = (float)(rand()%100);
+			}
+			else particles[i].life = 0.0f;
+
 			particles[i].size = (float)(rand()%10);
-			particles[i].color = D3DCOLOR_ARGB(rand()%255, 255, 255, 255);
+
+			if(m_bColorChangeRand == true)
+			{
+				particles[i].color = D3DCOLOR_ARGB(rand()%255, 255, 255, 255);
+			}
+			else particles[i].color = D3DCOLOR_ARGB(m_nStartAlpha, m_nStartRed, m_nStartGreen, m_nStartBlue);
 		}
 	}
 	void UpdateParticle(float fElapsedTime, POINT mousePt)
@@ -97,16 +184,48 @@ public:
 		int x = 0;
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
-			particles[i].pos += particles[i].vel * fElapsedTime;
-			particles[i].life++;/* += particles[i].life * fElapsedTime*/;
-			//particles[i].size -= 0.05f;
-			if(particles[i].life > 100.0f)
+			if(m_bGravityPoint == true){}
+			if(m_bGravity == true)
 			{
-				particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f/*RandomFloat(-0.1f, 0.1f)*/);
-				//particles[i].vel = D3DXVECTOR3(0.0f,0.0f,0.0f);
-				particles[i].life = 0.0f;
-				particles[i].pos = D3DXVECTOR3((float)(mousePt.x) - 50.0f, (float)(mousePt.y), 0.0f);
-				particles[i].color = D3DCOLOR_ARGB(rand()%255,rand()%55, rand()%55, rand()%55);
+				particles[i].pos.x += m_fGravityX;
+				particles[i].pos.y += m_fGravityY;
+			}
+			if(m_bAlphaChange == true)
+			{
+			}
+			if(m_bColorChange == true)
+			{
+			}
+			
+			if(m_bCollision == true){}
+			if(m_bScaling == true){}
+			
+			if(m_bRotation == true)
+			{
+				m_fRotation += m_fRotationVelocity;
+				if(m_fRotation > 1.0f)
+				{
+					m_fRotation = 0.0f;
+				}
+			}
+
+			if(m_bVelDiff == true){}
+
+			particles[i].pos += particles[i].vel * fElapsedTime;
+			particles[i].life++;
+			if(m_bLoop == true)
+			{
+				if(particles[i].life > 100.0f)
+				{
+					particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
+					particles[i].life = 0.0f;
+					particles[i].pos = D3DXVECTOR3((float)(mousePt.x) - 50.0f, (float)(mousePt.y), 0.0f);
+					if(m_bColorChangeRand == true)
+					{
+						particles[i].color = D3DCOLOR_ARGB(rand()%255,rand()%55, rand()%55, rand()%55);
+					}
+					else particles[i].color = D3DCOLOR_ARGB(m_nStartAlpha, m_nStartRed, m_nStartGreen, m_nStartBlue);
+				}
 			}
 		}
 	}
@@ -171,6 +290,10 @@ public:
 		{
 			texture->Release();
 		}
+		if(m_nImageID > -1)
+		{
+			m_pTM->UnloadTexture(m_nImageID);
+		}
 	}
 	////////////////////////////////////////////////////////////////////
 	// Function : Load
@@ -185,80 +308,177 @@ public:
 		{
 			fs.exceptions(~ios_base::goodbit);
 			fs.open(binFileName, ios::in | ios::binary);//attempt to open file
+
 			int numparticles;
 			fs.read(reinterpret_cast<char*>(&numparticles), sizeof(int));
 			particles = new PARTICLE[numparticles];
 			m_nNumParticles = numparticles;
-			float emitterposx;
-			fs.read(reinterpret_cast<char*>(&emitterposx), sizeof(float));
-			float emitterposy;
-			fs.read(reinterpret_cast<char*>(&emitterposy), sizeof(float));
-			float particleoffsetx;
-			fs.read(reinterpret_cast<char*>(&particleoffsetx), sizeof(float));
-			float particleoffsety;
 
-			fs.read(reinterpret_cast<char*>(&particleoffsety), sizeof(float));
-			float emittervelx;
-			fs.read(reinterpret_cast<char*>(&emittervelx), sizeof(float));
-			float emittervely;
-			fs.read(reinterpret_cast<char*>(&emittervely), sizeof(float));
-			float emitterforcex;
-			fs.read(reinterpret_cast<char*>(&emitterforcex), sizeof(float));
-			float emitterforcey;
-			fs.read(reinterpret_cast<char*>(&emitterforcey), sizeof(float));
-			char size;
-			char buffer[128];
-			ZeroMemory(buffer, 128);
-			fs.read(reinterpret_cast<char*>(&size), sizeof(char));
-			fs.read(buffer, size);
+			int maxlife;
+			fs.read(reinterpret_cast<char*>(&maxlife), sizeof(int));
+			m_nMaxLife = maxlife;
+
+			char buffer[512];
+			ZeroMemory(buffer, 512);
+			int size;
+			fs.read(reinterpret_cast<char*>(&size),sizeof(char));
+			fs.read(buffer, sizeof(size));
 			string fileName = buffer;
 			string path = "Resources/Images/";
 			path += fileName;
 			strcpy_s(buffer, path.c_str());
-			m_nImageID = m_pTM->LoadTexture(buffer, D3DCOLOR_XRGB(0,0,0));
-			//set texture
 
+			float forcex;
+			fs.read(reinterpret_cast<char*>(&forcex), sizeof(float));
+			m_fForceX = forcex;
+			float forcey;
+			fs.read(reinterpret_cast<char*>(&forcey), sizeof(float));
+			m_fForceY = forcey;
+
+			float offsetx;
+			fs.read(reinterpret_cast<char*>(&offsetx), sizeof(float));
+			m_fOffsetX = offsetx;
+			float offsety;
+			fs.read(reinterpret_cast<char*>(&offsety), sizeof(float));
+			m_fOffsetY = offsety;
+			
+			
+			//set texture
+			m_nImageID = m_pTM->LoadTexture(buffer, D3DCOLOR_XRGB(0,0,0));
+			
 			for(int i = 0; i < numparticles; i++)
 			{
-				//set position etc
-				particles[i].pos.x = emitterposx + RandomFloat(-particleoffsetx, particleoffsetx);
-				particles[i].pos.y = emitterposy + RandomFloat(-particleoffsety, particleoffsety);
+				//velocity
 				float particlevelx;
 				fs.read(reinterpret_cast<char*>(&particlevelx), sizeof(float));
 				particles[i].vel.x = particlevelx;
 				float particlevely;
 				fs.read(reinterpret_cast<char*>(&particlevely), sizeof(float));
 				particles[i].vel.y = particlevely;
+
 				//gravity
+				bool bGravPoint;
+				fs.read(reinterpret_cast<char*>(&bGravPoint), sizeof(bool));
+				m_bGravityPoint = bGravPoint;
+
+				bool bGrav;
+				fs.read(reinterpret_cast<char*>(&bGrav), sizeof(bool));
+				m_bGravity = bGrav;
+
 				float gravx;
 				fs.read(reinterpret_cast<char*>(&gravx), sizeof(float));
+				m_fGravityX = gravx;
+
 				float gravy;
 				fs.read(reinterpret_cast<char*>(&gravy), sizeof(float));
-				bool bgrav;
-				fs.read(reinterpret_cast<char*>(&bgrav), sizeof(bool));
-				//color
-				int a;
-				fs.read(reinterpret_cast<char*>(&a), sizeof(int));
-				int r;
-				fs.read(reinterpret_cast<char*>(&r), sizeof(int));
-				int g;
-				fs.read(reinterpret_cast<char*>(&g), sizeof(int));
-				int b;
-				particles[i].color = D3DCOLOR_ARGB(a,r,g,b);
-				fs.read(reinterpret_cast<char*>(&b), sizeof(int));
-				//
-				bool randlife;
-				fs.read(reinterpret_cast<char*>(&randlife), sizeof(bool));
+				m_fGravityY = gravy;
 
-				int particlesize;
-				fs.read(reinterpret_cast<char*>(&particlesize), sizeof(int));
-				if(randlife == true)
-				{
-					particles[i].life = (float)(rand()%100);
-				}
-				//fade out
-				bool alphadown;
-				fs.read(reinterpret_cast<char*>(&alphadown), sizeof(bool));
+
+				//start color
+				int salpha;
+				fs.read(reinterpret_cast<char*>(&salpha), sizeof(int));
+				m_nStartAlpha = salpha;
+
+				int sblue;
+				fs.read(reinterpret_cast<char*>(&sblue), sizeof(int));
+				m_nStartBlue = sblue;
+
+				int sgreen;
+				fs.read(reinterpret_cast<char*>(&sgreen), sizeof(int));
+				m_nStartGreen = sgreen;
+
+				int sred;
+				fs.read(reinterpret_cast<char*>(&sred), sizeof(int));
+				m_nStartRed = sred;
+				int eAlpha;
+				fs.read(reinterpret_cast<char*>(&eAlpha), sizeof(int));
+				m_nEndAlpha = eAlpha;
+
+				int eBlue;
+				fs.read(reinterpret_cast<char*>(&eBlue), sizeof(int));
+				m_nEndBlue = eBlue;
+
+				int eGreen;
+				fs.read(reinterpret_cast<char*>(&eGreen), sizeof(int));
+				m_nEndGreen = eGreen;
+
+				int eRed;
+				fs.read(reinterpret_cast<char*>(&eRed), sizeof(int));
+				m_nEndRed = eRed;
+
+				//change with start argb
+				particles[i].color = D3DCOLOR_ARGB(salpha,sred,sgreen,sblue);
+
+				// color changes
+				bool bAlphaChange;
+				fs.read(reinterpret_cast<char*>(&bAlphaChange), sizeof(bool));
+				m_bAlphaChange = bAlphaChange;
+
+				bool bColorChange;
+				fs.read(reinterpret_cast<char*>(&bColorChange), sizeof(bool));
+				m_bColorChange = bColorChange;
+
+				bool bColorChangeRand;
+				fs.read(reinterpret_cast<char*>(&bColorChangeRand), sizeof(bool));
+				m_bColorChangeRand = bColorChangeRand;
+
+
+				//collision
+				bool bCollision;
+				fs.read(reinterpret_cast<char*>(&bCollision), sizeof(bool));
+				m_bCollision = bCollision;
+
+				//scaling
+				bool bScaling;
+				fs.read(reinterpret_cast<char*>(&bScaling), sizeof(bool));
+				m_bScaling = bScaling;
+
+				//scale
+				float fScale;
+				fs.read(reinterpret_cast<char*>(&fScale), sizeof(float));
+				m_fScale = fScale;
+
+				//loop
+				bool bLoop;
+				fs.read(reinterpret_cast<char*>(&bLoop), sizeof(bool));
+				m_bLoop = bLoop;
+
+				//rand age
+				bool bRandAge;
+				fs.read(reinterpret_cast<char*>(&bRandAge), sizeof(bool));
+				m_bRandAge = bRandAge;
+
+				//rotation
+				bool bRotation;
+				fs.read(reinterpret_cast<char*>(&bRotation), sizeof(bool));
+				m_bRotation = bRotation;
+
+				float fRotation;
+				fs.read(reinterpret_cast<char*>(&fRotation), sizeof(fRotation));
+				m_fRotation = fRotation;
+
+				float fRotationVelocity;
+				fs.read(reinterpret_cast<char*>(&fRotationVelocity), sizeof(fRotationVelocity));
+				m_fRotationVelocity = fRotationVelocity;
+
+				//velocity difference
+				bool bVelDiff;
+				fs.read(reinterpret_cast<char*>(&bVelDiff), sizeof(bVelDiff));
+				m_bVelDiff = bVelDiff;
+
+				float fVelDiff;
+				fs.read(reinterpret_cast<char*>(&fVelDiff), sizeof(fVelDiff));
+				m_fVelDiff = fVelDiff;
+
+				//dest blend
+				int nDestBlend;
+				fs.read(reinterpret_cast<char*>(&nDestBlend), sizeof(nDestBlend));
+				m_nDestinationBlend = nDestBlend;
+
+				//source blend
+				int nSourceBlend;
+				fs.read(reinterpret_cast<char*>(&nSourceBlend), sizeof(nSourceBlend));
+				m_nSourceBlend = nSourceBlend;
 			}
 		}
 		catch (ios_base::failure &)

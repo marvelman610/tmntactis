@@ -13,6 +13,7 @@
 #include "CSGD_TextureManager.h"
 //#include "CSGD_Direct3D.h"
 #include "Turtle.h"
+#include "Assets.h"
 
 CHUD::CHUD(void)
 {
@@ -21,15 +22,15 @@ CHUD::CHUD(void)
 	m_pTM = CSGD_TextureManager::GetInstance();
 
 	m_nImageID = -1;
-	m_nImageID1 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID2 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID3 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID4 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
+	//m_nImageID1 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
+	//m_nImageID2 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
+	//m_nImageID3 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
+	//m_nImageID4 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
 }
 
 CHUD::~CHUD(void)
 {
-	if(m_nImageID4 > -1)
+	/*if(m_nImageID4 > -1)
 	{
 		m_pTM->UnloadTexture(m_nImageID4);
 	}
@@ -44,7 +45,7 @@ CHUD::~CHUD(void)
 	if(m_nImageID1 > -1)
 	{
 		m_pTM->UnloadTexture(m_nImageID1);
-	}
+	}*/
 	if(m_nImageID > -1)
 	{
 		m_pTM->UnloadTexture(m_nImageID);
@@ -86,14 +87,23 @@ void CHUD::Update(float fElapsedTime)
 }
 void CHUD::Render()
 {
-
+	
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aHUDBoxID, 0,0,0, 1.0f, 1.0f, NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(200,128,128,128));
+	m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 20,21);
+	//93
+	m_pTM->Draw(CAssets::GetInstance()->aRedHealthBarID, 120, 93);
+	m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 120, 93);
+	//130
+	m_pTM->Draw(CAssets::GetInstance()->aRedHealthBarID, 120, 130);
+	m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 120, 130);
+	
 }
 
-void CHUD::LoadHUD(void)
-{
-	m_nImageID1 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID2 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID3 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
-	m_nImageID4 = m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
-
-}
+//void CHUD::LoadHUD(void)
+//{
+//	m_nImageID1 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
+//	m_nImageID2 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
+//	m_nImageID3 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
+//	m_nImageID4 = m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
+//
+//}

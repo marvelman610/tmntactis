@@ -15,14 +15,15 @@ class CBitmapFont;
 class CSGD_TextureManager;
 
 
+
 class CHUD
 {
 private:
 	int m_nImageID;		//character face image
-	int m_nImageID1;	//health bar box image(red)
-	int m_nImageID2;	//health bar box image(green)
-	int m_nImageID3;	//health bar box image(blue)
-	int m_nImageID4;	//box image
+	//int m_nImageID1;	//health bar box image(red)
+	//int m_nImageID2;	//health bar box image(green)
+	//int m_nImageID3;	//health bar box image(blue)
+	//int m_nImageID4;	//box image
 
 	CPlayer* m_pPlayer;
 	CBitmapFont* m_pBitmapFont;
@@ -43,7 +44,8 @@ public:
 	//
 	// Purpose : To load the textures used for the HUD
 	////////////////////////////////////////////////////////////////////
-	void LoadHUD(void);
+	//void LoadHUD(void);
+
 	///////////////////////////////////////////////////////////////////
 	// Function: "GetInstance"
 	//

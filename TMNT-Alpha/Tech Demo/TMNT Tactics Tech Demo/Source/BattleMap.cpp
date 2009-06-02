@@ -22,7 +22,7 @@
 #include <fstream>
 #include <exception>
 
-#define BOUNDING_BOXES 1
+#define BOUNDING_BOXES 0
 #define SCROLLSPEED 150.0f
 // default constructor may be used for
 // blank maps...a cool animation sequence,
@@ -151,8 +151,8 @@ void CBattleMap::Render()
 	m_pHUD->Render();
 
 	// tile offsets
-	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetOffsetY((int)m_fScrollY);
+	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1) + 30);
+	SetOffsetY((int)m_fScrollY + 30);
 	
 	// draw layer one & two
 	MY_POINT mapPT;
@@ -161,6 +161,8 @@ void CBattleMap::Render()
 		for (int y = 0; y < m_nNumRows; ++y)
 		{
 			int tileID = y*m_nNumCols+x;
+			if (m_pTilesL1[tileID].DestXID() == -1)
+				continue;
 			if (m_pTilesL1[tileID].DestXID() != -1)
 			{
 				mapPT.x = x; mapPT.y = y;
@@ -175,6 +177,7 @@ void CBattleMap::Render()
 				m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 0.9f, 1.0f, 
 					m_pTilesL2[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL2[tileID].Alpha(),255,255,255));
 			}
+			
 			// draws selection rectangle on the currently selected tile
 			if (m_nCurrSelectedTile == tileID)
 			{
@@ -185,7 +188,7 @@ void CBattleMap::Render()
 				turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
 				turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
 				m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
-									GetZdepthDraw(turtleX, turtleY)  );
+									GetZdepthDraw(turtleX, turtleY, tileID)  );
 			//////////////////////////////////////////////////////////////////////////
 			}
 		}
@@ -266,8 +269,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	//int mouseX = m_pDI->MouseGetPosX() + 176;
 	//int mouseY = m_pDI->MouseGetPosY() + 97;
 	int xID, yID;
-	xID = ((m_nTileWidth * mouse.y) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX))) / (m_nTileWidth * m_nTileHeight);
-	yID = ((m_nTileWidth * mouse.y) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX))) / (m_nTileWidth * m_nTileHeight);
+	xID = ((m_nTileWidth * (mouse.y - 30)) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX - 30))) / (m_nTileWidth * m_nTileHeight);
+	yID = ((m_nTileWidth * (mouse.y - 30)) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX - 30))) / (m_nTileWidth * m_nTileHeight);
 	if (xID < 0)
 	{
 		xID = 0;
@@ -414,7 +417,6 @@ void CBattleMap::LoadMapInfo()
 			throw;
 		else
 			ifs.close();
-		
 	}
 	int imageID; int sPos;
 	sPos = ifs.tellg();
@@ -422,6 +424,7 @@ void CBattleMap::LoadMapInfo()
 	{
 		//////////////////////////////////////////////////////////////////////////
 		// Layer ONE
+		int count = 0;
 		while (name == "Layer1")
 		{
 			// read in tile's tileset name (which tileset it came from)
@@ -458,6 +461,9 @@ void CBattleMap::LoadMapInfo()
 			sPos = ifs.tellg();
 			ifs.seekg(sPos+1);
 			eat = ifs.peek();
+			count++;
+			if (count == 400)
+				int i = 0;
 			if (eat == "L" || eat == "F")
 				break;
 			else
@@ -469,7 +475,7 @@ void CBattleMap::LoadMapInfo()
 		if (!ifs.eof())
 			throw;
 		else
-			ifs.close();
+			ifs.clear();ifs.close(); return;
 	}
 			
 	try
@@ -483,7 +489,7 @@ void CBattleMap::LoadMapInfo()
 			ifs.read(reinterpret_cast<char*>(&size), 1);
 			ifs.read(buff, size);
 			name = buff;
-		}
+ 		}
 		while (name == "Layer2")
 		{
 			// read in tile's tileset name (which tileset it came from)
@@ -529,12 +535,12 @@ void CBattleMap::LoadMapInfo()
 		if (!ifs.eof())
 			throw;
 		else
-			ifs.close();	
+			ifs.clear();ifs.close(); return;	
 	}
 
 	try
 	{
-		if (m_pTilesL2[0].DestXID() != -1 && m_pTilesL1[0].DestXID() != -1)
+		if (m_pTilesL2[0].DestXID() != -1 && m_pTilesL1[0].DestXID() != -1 || eat[0] == 'F')
 		{
 			ifs.seekg(sPos);
 			ZeroMemory(buff, 256);
@@ -585,7 +591,7 @@ void CBattleMap::LoadMapInfo()
 		if (!ifs.eof())
 			throw;
 		else
-			ifs.close();
+			ifs.close(); return;
 	}
 }
 
@@ -599,36 +605,41 @@ float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 	//	to the southwest of an edge tile...
 	//	otherwise it is behind the object.
 	//	TODO::make sure to check for edge of map, so that tiles across the map aren't being looked at
-// 	if (currTileID != -1)
-// 	{
-// 		if (m_pTilesL1[currTileID-(m_nNumCols+1)].Flag() == FLAG_OBJECT_EDGE ||
-// 				m_pTilesL1[currTileID-m_nNumCols]->Flag() == FLAG_OBJECT_EDGE ||
-// 				m_pTilesL1[currTileID-1]->Flag() == FLAG_OBJECT_EDGE)
-// 		{
-// 			return depth.CHARACTER_AHEAD;
-// 		}
-// 		else
-// 			return depth.CHARACTER_BEHIND;
-// 	} 
-	else
+	if (currTileID != -1)
 	{
-		for (int i = 0; i < m_nFreeTileCount; ++i)
+		if (m_pTilesL1[currTileID-(m_nNumCols+1)].Flag() == FLAG_OBJECT_EDGE ||
+				m_pTilesL1[currTileID-m_nNumCols].Flag() == FLAG_OBJECT_EDGE ||
+				m_pTilesL1[currTileID-1].Flag() == FLAG_OBJECT_EDGE ||
+				m_pTilesL1[currTileID-((m_nNumCols+1)<<1)].Flag() == FLAG_OBJECT_EDGE ||
+				m_pTilesL1[currTileID-(m_nNumCols+2)].Flag() == FLAG_OBJECT_EDGE ||
+				m_pTilesL1[currTileID-(((m_nNumCols+1)<<1)-1)].Flag() == FLAG_OBJECT_EDGE )
 		{
-			// if the character's y anchor is below the bottom of the object 
-			if ( (m_pFreeTiles[i].DestY() + m_pFreeTiles[i].Height()) > yAnchor)
-			{
-				// if the character is within the bounds of the left and right side of the object,
-				// we now know we have to draw the object in front...
-				if (m_pFreeTiles[i].DestX() < xAnchor && 
-						(m_pFreeTiles[i].DestX() + m_pFreeTiles[i].Width()) > xAnchor)
-				{
-					return depth.CHARACTER_BEHIND;
-				}
-			}
+			return depth.CHARACTER_AHEAD;
 		}
-		// not in front...
-		return depth.CHARACTER_AHEAD;
-	}
+		else
+			return depth.CHARACTER_BEHIND;
+	} 
+	else // shouldn't let it get here...
+		return 0;
+// 	if (true)
+// 	{
+// 		for (int i = 0; i < m_nFreeTileCount; ++i)
+// 		{
+// 			// if the character's y anchor is below the bottom of the object 
+// 			if ( (m_pFreeTiles[i].DestY() + m_pFreeTiles[i].Height()) > yAnchor)
+// 			{
+// 				// if the character is within the bounds of the left and right side of the object,
+// 				// we now know we have to draw the object in front...
+// 				if (m_pFreeTiles[i].DestX() < xAnchor && 
+// 						(m_pFreeTiles[i].DestX() + m_pFreeTiles[i].Width()) > xAnchor)
+// 				{
+// 					return depth.CHARACTER_BEHIND;
+// 				}
+// 			}
+// 		}
+// 		// not in front...
+// 		return depth.CHARACTER_AHEAD;
+// 	}
 
 }
 

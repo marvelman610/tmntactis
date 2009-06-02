@@ -44,6 +44,7 @@ struct PARTICLE
 class CParticleSystem
 {
 public:
+	CSGD_Direct3D* m_pd3d;
 	PARTICLE* particles;
 	IDirect3DVertexDeclaration9 *vertexDecl;
 	IDirect3DVertexBuffer9 *particleBuff;
@@ -65,14 +66,6 @@ public:
 	int m_nImageID;
 	int m_nNumParticles;
 	int m_nMaxLife;
-	/*int m_nStartAlpha;
-	int m_nStartRed;
-	int m_nStartGreen;
-	int m_nStartBlue;
-	int m_nEndAlpha;
-	int m_nEndRed;
-	int m_nEndGreen;
-	int m_nEndBlue;*/
 	int m_nDestinationBlend;
 	int m_nSourceBlend;
 	bool m_bGravityPoint;
@@ -86,6 +79,8 @@ public:
 	bool m_bRandAge;
 	bool m_bRotation;
 	bool m_bVelDiff;
+	DWORD srcblend;
+	DWORD destblend;
 
 	CParticleSystem(void)
 	{
@@ -93,6 +88,7 @@ public:
 		m_fOffsetX = m_fOffsetY = m_fForceX = m_fForceY = m_fGravityX = m_fGravityY = m_fGravPointX = m_fGravPointY=
 			m_fVelDiff = m_fRotation = m_fRotationVelocity = 0.0f;
 
+		srcblend = destblend = NULL;
 		m_nImageID = -1;
 		m_nNumParticles = m_nMaxLife = m_nDestinationBlend = m_nSourceBlend = 0;
 
@@ -100,25 +96,14 @@ public:
 			m_bScaling = m_bLoop = m_bRandAge = m_bRotation = m_bVelDiff = false;
 		
 		m_pTM = CSGD_TextureManager::GetInstance();
+		m_pd3d = CSGD_Direct3D::GetInstance();
 		//particles = NULL;
 		vertexDecl = NULL;
 		particleBuff = NULL;
 		texture = NULL;
 
 	}
-	void InitGeometry(void)
-	{
-		/*D3DVERTEXELEMENT9 decl[]=
-		{
-			{0,0,D3DDECLTYPE_FLOAT3, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_POSITION, 0},
-			{0,12,D3DDECLTYPE_FLOAT2, D3DDECLMETHOD_DEFAULT, D3DDECLUSAGE_TEXCOORD, 0},
-			{0,20,D3DDECLTYPE_FLOAT1,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_PSIZE, 0},
-			{0,24,D3DDECLTYPE_D3DCOLOR,D3DDECLMETHOD_DEFAULT,D3DDECLUSAGE_COLOR,0},
-			D3DDECL_END()
-		};
-		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->CreateVertexDeclaration(decl, &vertexDecl);*/
-		//D3DXCreateTextureFromFile(CSGD_Direct3D::GetInstance()->GetDirect3DDevice(), "resource/SGD_Ship.bmp", &texture);
-	}
+	
 	void InitParticle(void)
 	{
 		m_nNumParticles = MAX_NUM_PARTS;
@@ -318,12 +303,24 @@ public:
  		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
 
 		// DRAW
+
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
+ 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+ 		//set the blend modes
+		
+		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_SRCBLEND,&srcblend);
+		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_DESTBLEND, &destblend);
+ 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCALPHA);
+ 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+
 		for (int i = 0; i < m_nNumParticles; ++i)
 		{
 			CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, (int)(particles[i].pos.x),
 				(int)(particles[i].pos.y), 0.0f, particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
 				particles[i].pos.y, m_fRotation, particles[i].color );
 		}
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, srcblend);
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, destblend);
 	}
 
 	~CParticleSystem(void)
@@ -345,11 +342,11 @@ public:
 			m_pTM->UnloadTexture(m_nImageID);
 		}
 	}
-	////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////
 	// Function : Load
 	//
 	// Purpose : to load in binary file information and create a particle
-	//////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////
 	void Load(char* binFileName)
 	{
 		ifstream fs;

@@ -44,6 +44,7 @@ void CGamePlayState::Enter(void)
 	//m_pWorldMap = WorldMap::GetInstance();
 
 	m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_ZSortTest.dat");
+	//m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_Test.dat");
 	m_pPlayer = CPlayer::GetInstance();
 	//m_nCurrentMap = ;
 }

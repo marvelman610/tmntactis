@@ -56,6 +56,8 @@ CBattleMap::CBattleMap(void)
 	m_nMapWidth = 0;
 	m_fScrollX = 0.0f;
 	m_fScrollY = 0.0f;
+	m_nScrenWidth = m_pGame->GetScreenWidth();
+	m_nScreenHeight = m_pGame->GetScreenHeight();
 	m_szFileName = "Blank.xml";
 	m_szMapName  = "Blank";
 
@@ -100,6 +102,8 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nFreeTileCount = 0;
 	m_fScrollX = 0.0f;
 	m_fScrollY = 0.0f;
+	m_nScrenWidth = m_pGame->GetScreenWidth();
+	m_nScreenHeight = m_pGame->GetScreenHeight();
 
 	m_nCursorImageID = m_pAssets->aBMcursorID;
 	m_strCurrVersion = "TED-Version-1.0";
@@ -152,8 +156,10 @@ void CBattleMap::Render()
 	m_pHUD->Render();
 
 	// tile offsets
-	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1) + 30);
-	SetOffsetY((int)m_fScrollY + 30);
+	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+	SetFTosY((int)m_fScrollY - m_nTileHeight);
 	
 	// draw layer one & two
 	MY_POINT mapPT;
@@ -198,7 +204,7 @@ void CBattleMap::Render()
 		//		RECT srcRect = {0, 0, 64, 50};
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
-		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX()+(int)m_fScrollX, m_pFreeTiles[i].DestY()+(int)m_fScrollY,
+		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX()+GetFreeTileXos()-96, m_pFreeTiles[i].DestY()+GetFreeTileYos(),
 			0.6f, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 #if BOUNDING_BOXES
 		// drawing bounding boxes
@@ -270,8 +276,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	//int mouseX = m_pDI->MouseGetPosX() + 176;
 	//int mouseY = m_pDI->MouseGetPosY() + 97;
 	int xID, yID;
-	xID = ((m_nTileWidth * (mouse.y - 30)) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX - 30))) / (m_nTileWidth * m_nTileHeight);
-	yID = ((m_nTileWidth * (mouse.y - 30)) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX - 30))) / (m_nTileWidth * m_nTileHeight);
+	xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+	yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 	if (xID < 0)
 	{
 		xID = 0;
@@ -321,6 +327,13 @@ void CBattleMap::LoadMapInfo()
 	}
 	catch(ios_base::failure &)
 	{
+		if (!ifs.is_open())
+		{
+			char szBuffer[128];
+			sprintf_s(szBuffer, "Failed to open file: %s", m_szFileName );
+			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
+			PostQuitMessage(1);
+		}
 		if (ifs.eof())
 		{ifs.close();return;}		
 	}
@@ -348,12 +361,17 @@ void CBattleMap::LoadMapInfo()
 
 			// the exact center of the map's x and y, offset by half height and width
 			m_nTileWidth = 64; m_nTileHeight = 32;	// hard-coded, grid units are 64x32
-			m_nIsoCenterLeftY = (int)((((float)(m_nNumRows)) / 2.0f) * m_nTileHeight/* - (m_nTileHeight >>1)*/);
-			m_nIsoCenterTopX = (int)((((float)(m_nNumCols)) / 2.0f) * m_nTileWidth/* - (m_nTileWidth >> 1)*/);
-			m_nIsoCenterLeftY = 500;
+			//////////////////////////////////////////////////////////////////////////
+			//	set up the map so that it centers at the beginning
+			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
+
+			m_nIsoCenterLeftY = -(m_nTileHeight<<1)+(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
+			m_nIsoCenterTopX = (int)((((float)(m_nNumCols)) / 2.0f) * m_nTileWidth - (m_nTileWidth<<1));
+			m_nFreeTileOSx = (m_nTileWidth<<1);	
+			m_nfreeTileOSy = (m_nTileHeight<<1);
 			// allocate memory for layer 1, 2, and 3(free placed tiles)
-			m_pTilesL1 = new CTile[m_nNumRows*m_nNumCols];
-			m_pTilesL2 = new CTile[m_nNumRows*m_nNumCols];
+			m_pTilesL1  =new CTile[m_nNumRows*m_nNumCols];
+			m_pTilesL2  =new CTile[m_nNumRows*m_nNumCols];
 			m_pFreeTiles=new CFreeTile[m_nNumRows*m_nNumCols];
 		}
 		else // didn't have the correct version number...
@@ -606,6 +624,7 @@ float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 	//	to the southwest of an edge tile...
 	//	otherwise it is behind the object.
 	//	TODO::make sure to check for edge of map, so that tiles across the map aren't being looked at
+	//			edge will be accounted for by not using the top two rows of the map...
 	if (currTileID != -1)
 	{
 		if (m_pTilesL1[currTileID-(m_nNumCols+1)].Flag() == FLAG_OBJECT_EDGE ||

@@ -79,11 +79,15 @@ class CBattleMap
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;
 
+	int m_nScrenWidth;
+	int m_nScreenHeight;
 	int m_nIsoCenterLeftY;
 	int m_nIsoCenterTopX; 
 	int m_nFreeTileCount;
 	int m_nOffsetX;
 	int m_nOffsetY;
+	int m_nFreeTileOSx;
+	int m_nfreeTileOSy;
 	float m_fScrollX;
 	float m_fScrollY;
 
@@ -185,6 +189,8 @@ public:
 	int GetTileWidth()  const		{return m_nTileWidth;}
 	int GetOffsetX()	const		{return m_nOffsetX;}
 	int GetOffsetY()	const		{return m_nOffsetY;}
+	int GetFreeTileXos()const		{return m_nFreeTileOSx;}
+	int GetFreeTileYos()const		{return m_nfreeTileOSy;}
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
@@ -192,7 +198,8 @@ public:
 	void SetCurrSelectedTile(const int selectedTile){m_nCurrSelectedTile = selectedTile;}
 	void SetOffsetX(const int offsetX)				{m_nOffsetX = offsetX;}
 	void SetOffsetY(const int offsetY)				{m_nOffsetY = offsetY;}
-
+	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
+	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 
 	void DrawDebugInfo();
 

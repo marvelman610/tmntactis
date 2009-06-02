@@ -107,9 +107,10 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pAnimation = new CAnimation();
 	m_pAnimation->Load("Resources/AnimationInfo/VG_Michelangelo.dat");
 	m_pParticleSys = new CParticleSystem();
-	m_pParticleSys->Load("Resources/ParticleInfo/VG_TestParticle.dat");
+	
 	//m_pParticleSys->InitGeometry();
 	//m_pParticleSys->InitParticle();
+	m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
 	//m_pAnimation->Play();
 	//CreateEnemies();
 }
@@ -217,7 +218,7 @@ void CBattleMap::Render()
 // 		m_pTM->Draw(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX(), 
 // 			m_pFreeTiles[i].DestY()+yOffset, 1.0f, 1.0f, &srcRect, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 	}
-	//m_pParticleSys->DrawParticle();
+	m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 }
 
@@ -232,7 +233,7 @@ MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
 void CBattleMap::Update(float fElapsedTime)
 {
 	m_pAnimation->Update(fElapsedTime);
-	//m_pParticleSys->UpdateParticle(fElapsedTime, ms);
+	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
 }
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)

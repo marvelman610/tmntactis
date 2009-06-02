@@ -34,6 +34,9 @@ struct PARTICLE
 	float life;
 	float size;
 	D3DCOLOR color;
+	int sa, sr, sg, sb;
+	int ca, cr, cg, cb;
+	int ea, er, eg, eb;
 };
 #define MAX_NUM_PARTS 100
 
@@ -61,14 +64,14 @@ public:
 	int m_nImageID;
 	int m_nNumParticles;
 	int m_nMaxLife;
-	int m_nStartAlpha;
+	/*int m_nStartAlpha;
 	int m_nStartRed;
 	int m_nStartGreen;
 	int m_nStartBlue;
 	int m_nEndAlpha;
 	int m_nEndRed;
 	int m_nEndGreen;
-	int m_nEndBlue;
+	int m_nEndBlue;*/
 	int m_nDestinationBlend;
 	int m_nSourceBlend;
 	bool m_bGravityPoint;
@@ -90,8 +93,7 @@ public:
 			m_fVelDiff = m_fScale = m_fRotation = m_fRotationVelocity = 0.0f;
 
 		m_nImageID = -1;
-		m_nNumParticles = m_nMaxLife = m_nStartAlpha = m_nStartRed = m_nStartGreen = m_nStartBlue = m_nEndAlpha = 
-			m_nEndRed = m_nEndGreen = m_nEndBlue = m_nDestinationBlend = m_nSourceBlend;
+		m_nNumParticles = m_nMaxLife = m_nDestinationBlend = m_nSourceBlend = 0;
 
 		m_bGravityPoint = m_bGravity = m_bAlphaChange = m_bColorChange = m_bColorChangeRand = m_bCollision = 
 			m_bScaling = m_bLoop = m_bRandAge = m_bRotation = m_bVelDiff = false;
@@ -136,14 +138,14 @@ public:
 		m_fRotationVelocity = 0.01f;
 
 		m_nMaxLife = 100;
-		m_nStartAlpha = 255;
+		/*m_nStartAlpha = 255;
 		m_nStartRed = 255;
 		m_nStartGreen = 255;
 		m_nStartBlue = 255;
 		m_nEndAlpha = 255;
 		m_nEndRed = 255;
 		m_nEndGreen = 255;
-		m_nEndBlue = 255;
+		m_nEndBlue = 255;*/
 		m_nDestinationBlend = 0;
 		m_nSourceBlend = 0;
 
@@ -162,6 +164,10 @@ public:
 		//loop through all the particles 
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
+			particles[i].sa = particles[i].sr = particles[i].sg = particles[i].sb = 
+				particles[i].ca = particles[i].cr = particles[i].cg = particles[i].cb = 
+				particles[i].ea = particles[i].er = particles[i].eg = particles[i].eb = 255;
+
 			particles[i].pos = D3DXVECTOR3(100,100,0.0f);//start position
 			particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
 			if(m_bRandAge == true)
@@ -176,7 +182,7 @@ public:
 			{
 				particles[i].color = D3DCOLOR_ARGB(rand()%255, 255, 255, 255);
 			}
-			else particles[i].color = D3DCOLOR_ARGB(m_nStartAlpha, m_nStartRed, m_nStartGreen, m_nStartBlue);
+			else particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
 		}
 	}
 	void UpdateParticle(float fElapsedTime, POINT mousePt)
@@ -192,9 +198,31 @@ public:
 			}
 			if(m_bAlphaChange == true)
 			{
+				if(particles[i].ca < particles[i].ea)
+				{
+					particles[i].ca++;
+				}
+				particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
 			}
 			if(m_bColorChange == true)
 			{
+				if( particles[i].ca < particles[i].ea)
+				{
+					particles[i].ca++;
+				}
+				if(particles[i].cr < particles[i].er)
+				{
+					particles[i].cr++;
+				}
+				if(particles[i].cg < particles[i].cg)
+				{
+					particles[i].cg++;
+				}
+				if(particles[i].cb < particles[i].cb)
+				{
+					particles[i].cb++;
+				}
+				particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
 			}
 			
 			if(m_bCollision == true){}
@@ -215,7 +243,7 @@ public:
 			particles[i].life++;
 			if(m_bLoop == true)
 			{
-				if(particles[i].life > 100.0f)
+				if(particles[i].life > m_nMaxLife)
 				{
 					particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
 					particles[i].life = 0.0f;
@@ -224,58 +252,61 @@ public:
 					{
 						particles[i].color = D3DCOLOR_ARGB(rand()%255,rand()%55, rand()%55, rand()%55);
 					}
-					else particles[i].color = D3DCOLOR_ARGB(m_nStartAlpha, m_nStartRed, m_nStartGreen, m_nStartBlue);
+					else particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
 				}
 			}
 		}
 	}
 	void DrawParticle(void)
 	{
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetVertexDeclaration(vertexDecl);
+ 		//draw point sprites transparent
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ZWRITEENABLE, true);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+ 		//set the blend modes
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCALPHA);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+ 		//set up the point sprites
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALEENABLE, true);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE, 1);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MIN, 1);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MAX, 100);
+ 		//// new size = base size * sqrt(1/(A+B*Dis+C*Dis*Dis))
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_A, 0);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_B, 0);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_C, 1);
+ 		//use alpha value of vertex color with texture
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+ 		//rewrite the dynamic vertex buffer
+ 		//VERTEX *pvbuff;
+ 		//particleBuff->Lock(0,1*sizeof(VERTEX), (void**)&pvbuff, D3DLOCK_DISCARD);
+ 		//for(int i = 0; i < 1; i++)
+ 		//{
+ 		//	pvbuff->pos = particles[i].pos;
+ 		//	pvbuff->size = particles[i].size;
+ 		//	pvbuff->color = particles[i].color;
+ 		//	pvbuff++;
+ 		//}
+ 		//particleBuff->Unlock();
+ 		////draw
+ 		//D3DXMATRIX transform;
+ 		//D3DXMatrixIdentity(&transform);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTransform(D3DTS_WORLD, &transform);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTexture(0,texture);
+  		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetStreamSource(0,particleBuff,0,sizeof(VERTEX));
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->DrawPrimitive(D3DPT_POINTLIST,0,1);
+ 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
+
+		// DRAW
 		for (int i = 0; i < m_nNumParticles; ++i)
 		{
 			CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, (int)(particles[i].pos.x),
-					(int)(particles[i].pos.y), 0.0f);
+				(int)(particles[i].pos.y), 0.0f, m_fScale, m_fScale, NULL, particles[i].pos.x, particles[i].pos.y, m_fRotation, particles[i].color );
 		}
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetVertexDeclaration(vertexDecl);
-// 		//draw point sprites transparent
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ZWRITEENABLE, true);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, false);
-// 		//set the blend modes
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
-// 		//set up the point sprites
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALEENABLE, true);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE, 1);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MIN, 1);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MAX, 100);
-// 		// new size = base size * sqrt(1/(A+B*Dis+C*Dis*Dis))
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_A, 0);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_B, 0);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_C, 1);
-// 		//use alpha value of vertex color with texture
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP, D3DTOP_MODULATE);
-// 		//rewrite the dynamic vertex buffer
-// 		VERTEX *pvbuff;
-// 		particleBuff->Lock(0,1*sizeof(VERTEX), (void**)&pvbuff, D3DLOCK_DISCARD);
-// 		for(int i = 0; i < 1; i++)
-// 		{
-// 			pvbuff->pos = particles[i].pos;
-// 			pvbuff->size = particles[i].size;
-// 			pvbuff->color = particles[i].color;
-// 			pvbuff++;
-// 		}
-// 		particleBuff->Unlock();
-// 		//draw
-// 		D3DXMATRIX transform;
-// 		D3DXMatrixIdentity(&transform);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTransform(D3DTS_WORLD, &transform);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTexture(0,texture);
-//  		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetStreamSource(0,particleBuff,0,sizeof(VERTEX));
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->DrawPrimitive(D3DPT_POINTLIST,0,1);
-// 		CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
 	}
+
 	~CParticleSystem(void)
 	{
 		if(vertexDecl)
@@ -308,7 +339,19 @@ public:
 		{
 			fs.exceptions(~ios_base::goodbit);
 			fs.open(binFileName, ios::in | ios::binary);//attempt to open file
-
+			
+			/*char buffer[512];
+			ZeroMemory(buffer, 512);
+			char size;
+			fs.read(reinterpret_cast<char*>(&size),sizeof(char));
+			fs.read(buffer, sizeof(size));
+			string fileName = buffer;
+			string path = "Resources/Images/";
+			path += fileName;
+			strcpy_s(buffer, path.c_str());*/
+			//set texture
+			m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Particle.png", D3DCOLOR_XRGB(0,0,0));
+			
 			int numparticles;
 			fs.read(reinterpret_cast<char*>(&numparticles), sizeof(int));
 			particles = new PARTICLE[numparticles];
@@ -318,15 +361,6 @@ public:
 			fs.read(reinterpret_cast<char*>(&maxlife), sizeof(int));
 			m_nMaxLife = maxlife;
 
-			char buffer[512];
-			ZeroMemory(buffer, 512);
-			int size;
-			fs.read(reinterpret_cast<char*>(&size),sizeof(char));
-			fs.read(buffer, sizeof(size));
-			string fileName = buffer;
-			string path = "Resources/Images/";
-			path += fileName;
-			strcpy_s(buffer, path.c_str());
 
 			float forcex;
 			fs.read(reinterpret_cast<char*>(&forcex), sizeof(float));
@@ -343,8 +377,7 @@ public:
 			m_fOffsetY = offsety;
 			
 			
-			//set texture
-			m_nImageID = m_pTM->LoadTexture(buffer, D3DCOLOR_XRGB(0,0,0));
+			
 			
 			for(int i = 0; i < numparticles; i++)
 			{
@@ -377,37 +410,42 @@ public:
 				//start color
 				int salpha;
 				fs.read(reinterpret_cast<char*>(&salpha), sizeof(int));
-				m_nStartAlpha = salpha;
+				particles[i].sa = salpha;
 
 				int sblue;
 				fs.read(reinterpret_cast<char*>(&sblue), sizeof(int));
-				m_nStartBlue = sblue;
+				particles[i].sb = sblue;
 
 				int sgreen;
 				fs.read(reinterpret_cast<char*>(&sgreen), sizeof(int));
-				m_nStartGreen = sgreen;
+				particles[i].sg = sgreen;
 
 				int sred;
 				fs.read(reinterpret_cast<char*>(&sred), sizeof(int));
-				m_nStartRed = sred;
+				particles[i].sr = sred;
+
 				int eAlpha;
 				fs.read(reinterpret_cast<char*>(&eAlpha), sizeof(int));
-				m_nEndAlpha = eAlpha;
+				particles[i].ea = eAlpha;
 
 				int eBlue;
 				fs.read(reinterpret_cast<char*>(&eBlue), sizeof(int));
-				m_nEndBlue = eBlue;
+				particles[i].eb = eBlue;
 
 				int eGreen;
 				fs.read(reinterpret_cast<char*>(&eGreen), sizeof(int));
-				m_nEndGreen = eGreen;
+				particles[i].eg = eGreen;
 
 				int eRed;
 				fs.read(reinterpret_cast<char*>(&eRed), sizeof(int));
-				m_nEndRed = eRed;
+				particles[i].er = eRed;
 
 				//change with start argb
 				particles[i].color = D3DCOLOR_ARGB(salpha,sred,sgreen,sblue);
+				particles[i].ca = salpha;
+				particles[i].cr = sred;
+				particles[i].cg = sgreen;
+				particles[i].cb = sblue;
 
 				// color changes
 				bool bAlphaChange;
@@ -470,15 +508,21 @@ public:
 				fs.read(reinterpret_cast<char*>(&fVelDiff), sizeof(fVelDiff));
 				m_fVelDiff = fVelDiff;
 
-				//dest blend
-				int nDestBlend;
-				fs.read(reinterpret_cast<char*>(&nDestBlend), sizeof(nDestBlend));
-				m_nDestinationBlend = nDestBlend;
+				////dest blend
+				//int nDestBlend;
+				//fs.read(reinterpret_cast<char*>(&nDestBlend), sizeof(nDestBlend));
+				//m_nDestinationBlend = nDestBlend;
 
-				//source blend
-				int nSourceBlend;
-				fs.read(reinterpret_cast<char*>(&nSourceBlend), sizeof(nSourceBlend));
-				m_nSourceBlend = nSourceBlend;
+				////source blend
+				//int nSourceBlend;
+				//fs.read(reinterpret_cast<char*>(&nSourceBlend), sizeof(nSourceBlend));
+				//m_nSourceBlend = nSourceBlend;
+
+			}
+			for(int i = 0; i < m_nNumParticles; i++)
+			{
+				particles[i].pos = D3DXVECTOR3(0,0,0);
+				particles[i].life = rand()% m_nMaxLife;
 			}
 		}
 		catch (ios_base::failure &)

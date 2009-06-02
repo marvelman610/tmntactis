@@ -1,2 +1,3 @@
 z-sorting for characters vs. map objects will be performed in the following manner:
 
+described in design doc.

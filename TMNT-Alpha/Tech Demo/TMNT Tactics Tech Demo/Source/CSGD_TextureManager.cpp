@@ -374,7 +374,7 @@ bool CSGD_TextureManager::Draw(int nID, int nX, int nY, float fScaleX, float fSc
 	combined *= scale;
 
 	// Translate the sprite
-	D3DXMatrixTranslation(&translate, (float)nX, (float)nY, 1.0f);
+	D3DXMatrixTranslation(&translate, (float)nX, (float)nY, 0.0f);
 	combined *= translate;
 
 	// Apply the transform.
@@ -409,8 +409,8 @@ bool CSGD_TextureManager::DrawWithZSort(int nID, int nX, int nY, float nZ, float
 // 	D3DXMATRIX rotation;
 // 	D3DXMATRIX translate;
 // 	D3DXMATRIX combined;
-
-	// Initialize the Combined matrix.
+// 
+// 	// Initialize the Combined matrix.
 // 	D3DXMatrixIdentity(&combined);
 // 
 // 	// Rotate the sprite.
@@ -437,7 +437,7 @@ bool CSGD_TextureManager::DrawWithZSort(int nID, int nX, int nY, float nZ, float
 	if (FAILED(m_lpSprite->Draw(m_Textures[nID].texture, pSection, NULL, &v3Pos, dwColor)))
 		DXERROR("Failed to draw the texture.");
 
-	// Move the world back to identity.
+// 	// Move the world back to identity.
 // 	D3DXMatrixIdentity(&combined);
 // 	m_lpSprite->SetTransform(&combined);
 

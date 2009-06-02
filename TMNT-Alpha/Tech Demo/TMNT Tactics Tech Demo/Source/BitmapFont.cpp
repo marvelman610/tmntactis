@@ -74,7 +74,7 @@ void CBitmapFont::DrawString(char* szString, int posX, int posY, float scale, DW
 		int id = (int)(ch - m_cStartChar);
 		RECT rcell = CellAlgorithm(id);
 
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aBitmapFontID,offsetx,offsety, 0, scale,scale,&rcell,0,0,0);
+		CSGD_TextureManager::GetInstance()->Draw(CAssets::GetInstance()->aBitmapFontID,offsetx,offsety, scale, scale,&rcell,0,0,0);
 		offsetx += int(m_nCharWidth*scale);
 	}
 	
@@ -142,7 +142,7 @@ void CBitmapFont::DrawStringAutoCenter (const char* szString, int ScreenWidth, i
 		int nID = (int)(ch  - m_cStartChar);
 		RECT rCell = CellAlgorithm(nID);
 
-		pTM->DrawWithZSort(CAssets::GetInstance()->aBitmapFontID, nOffsetX, nOffsetY, 0, fScale, fScale, &rCell, 0.0f, 0.0f, 0.0f, dwColor);
+		pTM->Draw(CAssets::GetInstance()->aBitmapFontID, nOffsetX, nOffsetY, fScale, fScale, &rCell, 0.0f, 0.0f, 0.0f, dwColor);
 
 		nOffsetX += (int)((m_nCharWidth + 10) * fScale);
 	}

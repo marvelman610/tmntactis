@@ -51,7 +51,6 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pTM = CSGD_TextureManager::GetInstance();
 	m_pDI = CSGD_DirectInput::GetInstance();
 	m_pD3D = CSGD_Direct3D::GetInstance();
-	m_pPlayer = CPlayer::GetInstance();
 	//m_pFMODSystem = ;
 	//m_FMChannel1 = NULL;
 	//m_FMChannel2 = NULL;
@@ -62,6 +61,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	//  Initialize the singletons
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
+	
 
 	// assets class requires texture manager to be initialized
 	m_pAssets = CAssets::GetInstance();

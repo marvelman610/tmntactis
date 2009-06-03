@@ -106,8 +106,8 @@ class CBattleMap
 	CAnimation*		m_pAnimation;
 	// temp particles
 	CParticleSystem* m_pParticleSys;
-	int turtleX;
-	int turtleY;
+	//int turtleX;
+	//int turtleY;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Pointers to singletons

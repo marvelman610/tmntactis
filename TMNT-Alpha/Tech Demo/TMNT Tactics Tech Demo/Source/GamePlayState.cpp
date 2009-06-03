@@ -18,6 +18,7 @@
 //#include "Animation.h"
 #include "HUD.h"
 //#include "WorldMap.h"
+#include"ObjectManager.h"
 
 // Constructor
 CGamePlayState::CGamePlayState(void)
@@ -112,6 +113,7 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 void CGamePlayState::Update(float fElapsedTime)
 {
 	m_pBattleMap->Update(fElapsedTime);
+	ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
 }
 // Render
 void CGamePlayState::Render(void)
@@ -120,4 +122,5 @@ void CGamePlayState::Render(void)
 	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
 
 	m_pBattleMap->Render();
+	ObjectManager::GetInstance()->RenderObjects();
 }

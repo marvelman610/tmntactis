@@ -26,7 +26,7 @@ CAnimation::CAnimation(void)
 	m_bIsPlaying = false;
 	m_bIsLooping = false;
 
-	m_fSpeed = 1.5f;
+	m_fSpeed = 0.25f;
 
 	m_nImageID = -1;
 
@@ -34,7 +34,8 @@ CAnimation::CAnimation(void)
 
 CAnimation::~CAnimation(void)
 {
-	delete[] m_pFrames;
+	//delete[] m_pFrames;
+	
 }
 void CAnimation::Play()
 { 
@@ -57,7 +58,7 @@ void CAnimation::Reset()
 {
 	m_nCurrFrame = 0;
 }
-void CAnimation::Load(const char* FileName)
+void CAnimation::Load(const char* FileName,int numFrame)
 {
 	int nDuration;
 	char bIsLooping[128] = "true ";
@@ -71,59 +72,73 @@ void CAnimation::Load(const char* FileName)
 		if (ifs.is_open())
 		{
 			unsigned char size;
-			ifs.read(reinterpret_cast<char *>(&m_nTotalFrames),4);
+			int numSize;
 
-			ifs.read(reinterpret_cast<char *>(&size),1);
-			ZeroMemory(filebuff,128);
-			ifs.read(filebuff,size);
+			ifs.read(reinterpret_cast<char *>(&numSize),4);
 
-			m_nAnimName = filebuff; //2
-
-			ifs.read(reinterpret_cast<char *>(&size),1);
-			ZeroMemory(filebuff,128);
-			ifs.read(filebuff,size);
-			
-			char temp[128];
-			sprintf_s(temp, _countof(temp),"resources/images/%s", filebuff);
-
-			m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture(temp ,D3DCOLOR_XRGB(255,255,255));
-
-			ifs.read(reinterpret_cast<char *>(&size),1);
-			ZeroMemory(filebuff,128);
-			ifs.read(filebuff,size);
-
-			m_nTriggerName = filebuff; // flying
-
-			ifs.read(reinterpret_cast<char *>(&size),1);
-			ZeroMemory(filebuff,128);
-			ifs.read(filebuff,size);
-
-			m_nTriggerType = filebuff; //particle
-
-			ifs.read(reinterpret_cast<char *>(&size),1);
-			ZeroMemory(filebuff,128);
-			ifs.read(filebuff,size);
-
-			if(strcmp(filebuff,bIsLooping))
-				m_bIsLooping = true;
-			else
-				m_bIsLooping = false;
-
-			ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
-			m_fDuration = nDuration /1000.0f;
-
-			m_pFrames = new sFrame[m_nTotalFrames];
-
-			for(int i = 0; i < m_nTotalFrames; i++)
+			for(int i = 1; i <= numFrame && i <= numSize;i++)
 			{
-				ifs.read(reinterpret_cast<char *>(&(m_pFrames[i].nFrameX)),4);
-				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nFrameY),4);
-				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nFrameWidth),4);
-				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nFrameHeight),4);
-				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nAnchorX),4);
-				ifs.read(reinterpret_cast<char *>(&m_pFrames[i].nAnchorY),4);
-				m_pFrames[i].nAnchorX = m_pFrames[i].nAnchorX - m_pFrames[i].nFrameX;
-				m_pFrames[i].nAnchorY = m_pFrames[i].nAnchorY - m_pFrames[i].nFrameY;
+
+				ifs.read(reinterpret_cast<char *>(&m_nTotalFrames),4);
+
+				ifs.read(reinterpret_cast<char *>(&size),1);
+				ZeroMemory(filebuff,128);
+				ifs.read(filebuff,size);
+
+				m_nAnimName = filebuff; //2
+
+				ifs.read(reinterpret_cast<char *>(&size),1);
+				ZeroMemory(filebuff,128);
+				ifs.read(filebuff,size);
+
+				char temp[128];
+				sprintf_s(temp, _countof(temp),"Resources/Images/%s", filebuff);
+
+				CSGD_TextureManager* tm = CSGD_TextureManager::GetInstance();
+				m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture(temp ,D3DCOLOR_XRGB(255,255,255));
+
+				ifs.read(reinterpret_cast<char *>(&size),1);
+				ZeroMemory(filebuff,128);
+				ifs.read(filebuff,size);
+
+				m_nTriggerName = filebuff; // flying
+
+				ifs.read(reinterpret_cast<char *>(&size),1);
+				ZeroMemory(filebuff,128);
+				ifs.read(filebuff,size);
+
+				m_nTriggerType = filebuff; //particle
+
+				ifs.read(reinterpret_cast<char *>(&size),1);
+				ZeroMemory(filebuff,128);
+				ifs.read(filebuff,size);
+
+				if(strcmp(filebuff,bIsLooping))
+					m_bIsLooping = true;
+				else
+					m_bIsLooping = false;
+
+				ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
+				m_fDuration = nDuration /1000.0f;
+
+				m_pFrames = new sFrame[m_nTotalFrames];
+
+				for(int j = 0; j < m_nTotalFrames; j++)
+				{
+					ifs.read(reinterpret_cast<char *>(&(m_pFrames[j].nFrameX)),4);
+					ifs.read(reinterpret_cast<char *>(&m_pFrames[j].nFrameY),4);
+					ifs.read(reinterpret_cast<char *>(&m_pFrames[j].nFrameWidth),4);
+					ifs.read(reinterpret_cast<char *>(&m_pFrames[j].nFrameHeight),4);
+					ifs.read(reinterpret_cast<char *>(&m_pFrames[j].nAnchorX),4);
+					ifs.read(reinterpret_cast<char *>(&m_pFrames[j].nAnchorY),4);
+					m_pFrames[j].nAnchorX = m_pFrames[j].nAnchorX - m_pFrames[j].nFrameX;
+					m_pFrames[j].nAnchorY = m_pFrames[j].nAnchorY - m_pFrames[j].nFrameY;
+				}
+				if(i != numFrame)
+				{
+					delete[] m_pFrames;
+					m_pFrames = NULL;
+				}
 			}
 		}
 	}
@@ -182,6 +197,10 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 			fScaleX,
 			scale,
 			&frame,
-			0, 0, 0);
+			0, 0,0);
 	}
+}
+void CAnimation::Unload()
+{
+	delete[] m_pFrames;
 }

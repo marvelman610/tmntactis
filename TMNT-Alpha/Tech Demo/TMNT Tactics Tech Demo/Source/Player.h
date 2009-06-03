@@ -13,6 +13,7 @@
 enum { LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
 enum { WORLD_MAP, BATTLE_MAP, };
 #include "Turtle.h"
+#include "Base.h"
 
 class CPlayer
 {

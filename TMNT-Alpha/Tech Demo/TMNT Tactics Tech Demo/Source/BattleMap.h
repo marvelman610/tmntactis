@@ -55,6 +55,7 @@ class CBattleMap
 		float CHARACTER_BEHIND;
 		float CHARACTER_AHEAD;
 		float OBJECTS;
+		float ARROW;
 		DEPTH()
 		{
 			GROUND = 1.0f;
@@ -62,7 +63,8 @@ class CBattleMap
 			SELECTION = 0.8f;
 			CHARACTER_BEHIND = 0.7f;
 			OBJECTS = 0.6f;
-			CHARACTER_AHEAD = 0.5;
+			CHARACTER_AHEAD = 0.5f;
+			ARROW = 0.49f;
 		}
 	};
 	POINT ms;					// the mouse location, updated each Update() call
@@ -167,6 +169,13 @@ class CBattleMap
 	//	Purpose		:	Determines the attack and move range of the current character
 	//////////////////////////////////////////////////////////////////////////
 	void CalculateRanges();
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"DisplayRanges"
+	//
+	//	Purpose		:	Shows the attack and move ranges visually on the map
+	//////////////////////////////////////////////////////////////////////////
+	void DisplayRanges();
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"DrawHover"

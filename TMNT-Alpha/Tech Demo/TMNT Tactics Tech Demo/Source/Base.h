@@ -31,6 +31,7 @@ private:
 	POINT m_ptAnchor;
 	float m_fPosX;
 	float m_fPosY;
+	int   m_nCurrTileID;
 
 	float m_fVelX;
 	float m_fVelY;
@@ -86,6 +87,7 @@ public:
 	inline int		GetType()		 {return m_nType;}
 	inline POINT	GetAnchor()		 {return m_ptAnchor;}
 	inline int		GetRange()		 {return m_nRange;}
+	inline int		GetCurrTile()	 {return m_nCurrTileID;}
 	RECT			GetRect();
 
 	//////////////////////////////////////
@@ -95,10 +97,10 @@ public:
 	///////////////////////////////////////
 	inline void SetImageID(int nImageID){m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt) {m_ptAnchor = pt;}
-	inline void SetPosX(float nPosX){m_fPosX = nPosX;}
-	inline void SetPosY(float nPosY){m_fPosY = nPosY;}
-	inline void SetVelX(float nVelX){m_fVelX = nVelX;}
-	inline void SetVelY(float nVelY){m_fVelY = nVelY;}
+	inline void SetPosX(float fPosX){m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
+	inline void SetPosY(float fPosY){m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
+	inline void SetVelX(float fVelX){m_fVelX = fVelX;}
+	inline void SetVelY(float fVelY){m_fVelY = fVelY;}
 	inline void SetWidth(int nWidth){m_nWidth = nWidth;}
 	inline void SetHeight(int nHeight){m_nHeight = nHeight;}
 	inline void SetBaseAP(int nAP){m_nBasePoints = nAP;}
@@ -111,6 +113,7 @@ public:
 	inline void SetSpeed(int nSpeed){m_nSpeed = nSpeed;}
 	inline void SetLevel(int nLevel){m_nLevel = nLevel;}
 	inline void SetRange(int nRange){m_nRange = nRange;}
+	void SetCurrTile(int tileID);	// auto-sets position
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 
 	void AddAnim(CAnimation& a)

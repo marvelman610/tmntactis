@@ -538,7 +538,7 @@ public:
 			for(int i = 0; i < m_nNumParticles; i++)
 			{
 				particles[i].pos = D3DXVECTOR3(0,0,0);
-				particles[i].life = rand()% m_nMaxLife;
+				particles[i].life = (float)(rand()% m_nMaxLife);
 			}
 		}
 		catch (ios_base::failure &)

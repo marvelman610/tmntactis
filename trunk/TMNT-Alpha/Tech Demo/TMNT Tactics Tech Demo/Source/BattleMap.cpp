@@ -13,8 +13,8 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "CSGD_TextureManager.h"
+#include "ObjectManager.h"
 #include "Animation.h"
-#include "Camera.h"
 //#include "fmod.hpp"
 #include "BitmapFont.h"
 #include "ParticleSystem.h"
@@ -73,10 +73,6 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pGame			= CGame::GetInstance();
 	m_pDI			= CSGD_DirectInput::GetInstance();
 
-	//m_pCamera		= new CCamera();
-	//m_pCamera->SetViewPosition(0, 0, -5);
-	//m_pCamera->BuildPerspective(D3DX_PI/3, (float)(m_pGame->GetScreenWidth()/m_pGame->GetScreenHeight()), 0.1f, 100);
-
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	m_pHUD			= CHUD::GetInstance();
@@ -126,8 +122,6 @@ CBattleMap::~CBattleMap(void)
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
 	delete m_pAnimation;
-
-	//delete m_pCamera;
 
 	if (m_pAssets)
 		m_pAssets = NULL;
@@ -204,6 +198,13 @@ void CBattleMap::Render()
 		//		RECT srcRect = {0, 0, 64, 50};
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
+		// if the character is inside a map object, alpha that object out
+		if (ObjectManager::GetInstance()->CheckObjectsToAlpha(m_pFreeTiles[i].SourceRect()))
+		{
+			m_pFreeTiles[i].SetAlpha(100);
+		}
+		else
+			m_pFreeTiles[i].SetAlpha(255);
 		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX()+GetFreeTileXos()-96, m_pFreeTiles[i].DestY()+GetFreeTileYos(),
 			0.6f, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 #if BOUNDING_BOXES
@@ -273,8 +274,6 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		m_pAnimation->Play();
 	}
 
-	//int mouseX = m_pDI->MouseGetPosX() + 176;
-	//int mouseY = m_pDI->MouseGetPosY() + 97;
 	int xID, yID;
 	xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 	yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
@@ -641,26 +640,6 @@ float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 	} 
 	else // shouldn't let it get here...
 		return 0;
-// 	if (true)
-// 	{
-// 		for (int i = 0; i < m_nFreeTileCount; ++i)
-// 		{
-// 			// if the character's y anchor is below the bottom of the object 
-// 			if ( (m_pFreeTiles[i].DestY() + m_pFreeTiles[i].Height()) > yAnchor)
-// 			{
-// 				// if the character is within the bounds of the left and right side of the object,
-// 				// we now know we have to draw the object in front...
-// 				if (m_pFreeTiles[i].DestX() < xAnchor && 
-// 						(m_pFreeTiles[i].DestX() + m_pFreeTiles[i].Width()) > xAnchor)
-// 				{
-// 					return depth.CHARACTER_BEHIND;
-// 				}
-// 			}
-// 		}
-// 		// not in front...
-// 		return depth.CHARACTER_AHEAD;
-// 	}
-
 }
 
 void CBattleMap::DrawDebugInfo()

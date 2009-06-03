@@ -194,10 +194,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\Camera.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
@@ -285,10 +281,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\Boss.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\Camera.h"
 				>
 			</File>
 			<File

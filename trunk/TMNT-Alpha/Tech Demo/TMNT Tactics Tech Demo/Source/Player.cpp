@@ -33,6 +33,7 @@ CPlayer::CPlayer(void)
 
 	m_pLeonardo->SetPosX(64);
 	m_pLeonardo->SetPosY(364);
+	m_pLeonardo->SetCurrTile(364);
 
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1);
 	m_pDonatello->AddAnim(anim);
@@ -41,6 +42,7 @@ CPlayer::CPlayer(void)
 
 	m_pDonatello->SetPosX(96);
 	m_pDonatello->SetPosY(380);
+	m_pDonatello->SetCurrTile(365);
 
 	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1);
 	m_pRaphael->AddAnim(anim);
@@ -49,6 +51,7 @@ CPlayer::CPlayer(void)
 
 	m_pRaphael->SetPosX(96);
 	m_pRaphael->SetPosY(348);
+	m_pRaphael->SetCurrTile(344);
 
 	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1);
 	m_pMikey->AddAnim(anim);
@@ -57,6 +60,7 @@ CPlayer::CPlayer(void)
 	
 	m_pMikey->SetPosX(128);
 	m_pMikey->SetPosY(364);
+	m_pMikey->SetCurrTile(345);
 
 	m_pTurtles[LEONARDO] = *m_pLeonardo;
 	m_pTurtles[DONATELLO]= *m_pDonatello;

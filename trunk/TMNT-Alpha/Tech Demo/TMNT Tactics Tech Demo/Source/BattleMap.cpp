@@ -189,7 +189,11 @@ void CBattleMap::Render()
 			//////////////////////////////////////////////////////////////////////////
 			}
 			if (m_nCurrCharacterTile == tileID)
+			{
 				m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+				m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
+					(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
+			}
 		}
 	}
 	// draw the free placed layer
@@ -301,7 +305,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		if (index != -1)
 		{
 			m_nCurrCharacter = index;
-			m_nCurrCharacterTile = m_nCurrSelectedTile;
+			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
 		}
 	}
 
@@ -694,4 +698,9 @@ void CBattleMap::DrawHover()
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
 	m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
+}
+
+void CBattleMap::DisplayRanges()
+{
+
 }

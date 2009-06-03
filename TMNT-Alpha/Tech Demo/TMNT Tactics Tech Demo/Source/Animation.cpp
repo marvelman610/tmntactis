@@ -14,6 +14,8 @@
 #include <exception>
 using namespace std;
 #include "CSGD_TextureManager.h"
+#include "Game.h"			// in case of error, throw back to main menu
+#include "MainMenuState.h"	// same as above
 
 
 CAnimation::CAnimation(void)
@@ -141,6 +143,13 @@ void CAnimation::Load(const char* FileName,int numFrame)
 				}
 			}
 		}
+		else
+		{
+			char szBuffer[128];
+			sprintf_s(szBuffer, "Failed to open file: %s", FileName );
+			MessageBox(0, szBuffer, "Error.", MB_OK);
+			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+		}
 	}
 	catch (ios_base::failure &) 
 	{
@@ -198,6 +207,7 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 			scale,
 			&frame,
 			0, 0,0);
+		int test = 0;
 	}
 }
 void CAnimation::Unload()

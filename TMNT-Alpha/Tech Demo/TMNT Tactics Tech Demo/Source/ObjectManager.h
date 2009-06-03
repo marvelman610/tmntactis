@@ -82,7 +82,6 @@ public:
 	//			alpha'd out
 	////////////////////////////////////////////////////////////////////
 	bool CheckObjectsToAlpha(RECT* mapObjectRect);
-
 };
 
 #endif

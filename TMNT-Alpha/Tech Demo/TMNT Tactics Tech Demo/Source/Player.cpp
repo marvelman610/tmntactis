@@ -8,7 +8,6 @@
 ////////////////////////////////////////////////////////
 
 #include "Player.h"
-#include "Turtle.h"
 #include "Factory.h"
 #include "tinyxml/tinyxml.h"
 #include "CSGD_TextureManager.h"
@@ -59,6 +58,10 @@ CPlayer::CPlayer(void)
 	m_pMikey->SetPosX(128);
 	m_pMikey->SetPosY(364);
 
+	m_pTurtles[LEONARDO] = *m_pLeonardo;
+	m_pTurtles[DONATELLO]= *m_pDonatello;
+	m_pTurtles[RAPHAEL]  = *m_pRaphael;
+	m_pTurtles[MIKEY]	 = *m_pMikey;
 }
 
 CPlayer::~CPlayer(void)
@@ -87,7 +90,6 @@ CPlayer* CPlayer::GetInstance()
 	static CPlayer instance;
 	return &instance;
 }
-
 
 void CPlayer::NewGame()
 {

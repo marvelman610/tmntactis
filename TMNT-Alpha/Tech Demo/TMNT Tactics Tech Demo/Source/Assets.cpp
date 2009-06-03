@@ -36,8 +36,8 @@ void CAssets::LoadAssets()
 
 	//////////////////////////////////////////////////////////////////////////
 	// Battle Map IDs
-	aBMcursorID			= m_pTM->LoadTexture("Resources/Images/VG_Cursor.png", D3DCOLOR_XRGB(0,0,0));
-
+	aBMcursorID			= m_pTM->LoadTexture("Resources/Images/VG_SquareCursor.png", D3DCOLOR_XRGB(0,0,0));
+	aBMgreenSquareID	= m_pTM->LoadTexture("Resources/Images/VG_SquareSelectedGreen.png", D3DCOLOR_XRGB(0,0,0));
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

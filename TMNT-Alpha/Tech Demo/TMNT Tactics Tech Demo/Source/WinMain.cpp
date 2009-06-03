@@ -1,7 +1,7 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 //	File			:	"WinMain.cpp"
 //
-//	Author			:	David Brown (DB)
+//	Author			:	David Brown (DB), modified by Ramon Johannessen(RJ)
 //	Based in part on:
 //		-Window code from the book: "Physics for Game Developers" by David M. Bourg.
 //		-The previous WinMain.cpp by Jensen Rivera.
@@ -13,8 +13,8 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
+#include "resource.h"
 #include <windows.h>	//	Needed for Windows Applications.
-
 // #define VLD_AGGREGATE_DUPLICATES
 // #define VLD_MAX_DATA_DUMP 0
 // #include <vld.h>
@@ -26,10 +26,12 @@ void SetDisplayMode(int iWidth, int iHeight, int iBpp, int iRefreshRate);
 
 const char* g_szWINDOW_CLASS_NAME	= "TMNTWINDOWCLASS";			//	Window Class Name.
 
-const char* g_szWINDOW_TITLE		= "Tile Engine Test";		//	Window Title.
+const char* g_szWINDOW_TITLE		= "TMNT Tactics";		//	Window Title.
 const int	g_nWINDOW_WIDTH			= 1024;						//	Window Width.
 const int	g_nWINDOW_HEIGHT		= 768;						//	Window Height.
 POINT mouse;
+HCURSOR hcPointer;
+HCURSOR hcGrab;
 
 //	Windowed or Full screen depending on project setting
 #ifdef _DEBUG
@@ -105,6 +107,11 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 			return(0);
 		}
+
+		case WM_SETCURSOR:
+			{
+				SetCursor(hcPointer);
+			}
 		break;
 
 		default:
@@ -161,6 +168,9 @@ BOOL RegisterWindowClass(HINSTANCE hInstance)
 	winClassEx.lpszMenuName		= NULL; 
 	winClassEx.lpszClassName	= g_szWINDOW_CLASS_NAME;
 
+	hcGrab		= LoadCursor(hInstance, MAKEINTRESOURCE(IDI_GRAB));
+	hcPointer	= LoadCursor(hInstance, MAKEINTRESOURCE(IDI_POINTER));
+
 	mouse.x = 0;
 	mouse.y = 0;
 	//	Register the window class
@@ -181,7 +191,7 @@ HWND MakeWindow(HINSTANCE hInstance)
 	else
 	{
 		dwWindowStyleFlags |= WS_POPUP;
-		ShowCursor(FALSE);	// Stop showing the mouse cursor
+		//ShowCursor(FALSE);	// Stop showing the mouse cursor
 	}
 
 	// Setup the desired client area size
@@ -330,7 +340,7 @@ void ToggleFullscreenMode(HWND hWnd,
 			GetSystemMetrics(SM_CXSCREEN), GetSystemMetrics(SM_CYSCREEN),
 			SWP_NOZORDER);
 		// Remove the cursor.
-		ShowCursor(FALSE);
+		//ShowCursor(FALSE);
 	}
 	else
 	{

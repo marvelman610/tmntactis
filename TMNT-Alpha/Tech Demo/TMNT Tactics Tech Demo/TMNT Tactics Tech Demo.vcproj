@@ -336,6 +336,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\resource.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\SGD_Util.h"
 				>
 			</File>
@@ -357,6 +361,18 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
+			<File
+				RelativePath=".\Source\TMNT Tactics Tech Demo.rc"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\Images\VG_TMNT-grab.ico"
+				>
+			</File>
+			<File
+				RelativePath=".\Resources\Images\VG_TMNTpointer.ico"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Wrappers"

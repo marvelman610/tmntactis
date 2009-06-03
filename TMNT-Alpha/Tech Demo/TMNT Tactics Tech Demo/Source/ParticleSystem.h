@@ -377,7 +377,6 @@ public:
 			fs.read(reinterpret_cast<char*>(&maxlife), sizeof(int));
 			m_nMaxLife = maxlife;
 
-
 			float forcex;
 			fs.read(reinterpret_cast<char*>(&forcex), sizeof(float));
 			m_fForceX = forcex;
@@ -391,9 +390,6 @@ public:
 			float offsety;
 			fs.read(reinterpret_cast<char*>(&offsety), sizeof(float));
 			m_fOffsetY = offsety;
-			
-			
-			
 			
 			for(int i = 0; i < numparticles; i++)
 			{

@@ -12,7 +12,7 @@
 
 #include "IBaseInterface.h"
 
-
+#include <windows.h>
 #include <vector>
 using std::vector;
 
@@ -28,6 +28,8 @@ private:
 	char* m_szName;
 
 	//vector<CAnimation> animations;
+
+	POINT m_ptAnchor;
 
 	float m_fPosX;
 	float m_fPosY;
@@ -78,13 +80,14 @@ public:
 	//	Purpose	:	To get the specified type
 	///////////////////////////////////////
 	inline int GetImageID()const {return m_nImageID;}
-	inline float GetPosX()const {return m_fPosX;}
-	inline float GetPosY()const {return m_fPosY;}
-	inline float GetVelX()const {return m_fVelX;}
-	inline float GetVelY()const {return m_fVelY;}
-	inline int GetWidth() const {return m_nWidth;}
+	inline float GetPosX()const  {return m_fPosX;}
+	inline float GetPosY()const  {return m_fPosY;}
+	inline float GetVelX()const  {return m_fVelX;}
+	inline float GetVelY()const  {return m_fVelY;}
+	inline int GetWidth() const  {return m_nWidth;}
 	inline int GetHeight() const {return m_nHeight;}
-	inline int GetType(){return m_nType;}
+	inline int GetType()		 {return m_nType;}
+	inline POINT GetAnchor()	 {return m_ptAnchor;}
 
 	//////////////////////////////////////
 	//	Function:	Mutators
@@ -92,6 +95,7 @@ public:
 	//	Purpose	:	To set the specified type
 	///////////////////////////////////////
 	inline void SetImageID(int nImageID){m_nImageID = nImageID;}
+	inline void SetAnchor(POINT pt) {m_ptAnchor = pt;}
 	inline void SetPosX(float nPosX){m_fPosX = nPosX;}
 	inline void SetPosY(float nPosY){m_fPosY = nPosY;}
 	inline void SetVelX(float nVelX){m_fVelX = nVelX;}

@@ -82,3 +82,19 @@ void ObjectManager::RemoveAll(void)
 {
 	m_vObjects.clear();
 }
+
+bool ObjectManager::CheckObjectsToAlpha(RECT* mapObjectRect)
+{
+	for (unsigned int i=0; i < m_vObjects.size(); i++)
+	{
+		if (m_vObjects[i]->GetAnchor().x >= mapObjectRect->left &&
+			m_vObjects[i]->GetAnchor().x <= mapObjectRect->left + mapObjectRect->right &&
+			m_vObjects[i]->GetAnchor().y >= mapObjectRect->top &&
+			m_vObjects[i]->GetAnchor().y <= mapObjectRect->top + mapObjectRect->bottom )
+		{
+			retu
+				rn true;	
+		}
+	}
+	return false;
+}

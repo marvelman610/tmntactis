@@ -159,7 +159,6 @@ void CAnimation::Update(float fElapsedtime)
 		}
 
 	}
-
 }
 void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacingLeft, DWORD dwColor)
 {

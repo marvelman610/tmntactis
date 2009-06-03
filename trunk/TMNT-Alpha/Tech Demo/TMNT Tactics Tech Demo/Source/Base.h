@@ -28,10 +28,7 @@ private:
 
 	char* m_szName;
 
-	
-
 	POINT m_ptAnchor;
-
 	float m_fPosX;
 	float m_fPosY;
 
@@ -57,14 +54,11 @@ private:
 	int m_nExperience;
 	
 	//CTile m_pTileArray;
-
-
 	CBase* m_pOwner;
-	
 
 protected:
 	int m_nType;
-	vector<CAnimation> animations;
+	vector<CAnimation> m_vAnimations;
 	int m_ncurrFrame;
 public:
 	///////////////////////////////////////////////////////////////////
@@ -82,15 +76,17 @@ public:
 	//
 	//	Purpose	:	To get the specified type
 	///////////////////////////////////////
-	inline int GetImageID()const {return m_nImageID;}
-	inline float GetPosX()const  {return m_fPosX;}
-	inline float GetPosY()const  {return m_fPosY;}
-	inline float GetVelX()const  {return m_fVelX;}
-	inline float GetVelY()const  {return m_fVelY;}
-	inline int GetWidth() const  {return m_nWidth;}
-	inline int GetHeight() const {return m_nHeight;}
-	inline int GetType()		 {return m_nType;}
-	inline POINT GetAnchor()	 {return m_ptAnchor;}
+	inline int		GetImageID()const {return m_nImageID;}
+	inline float	GetPosX()const   {return m_fPosX;}
+	inline float	GetPosY()const   {return m_fPosY;}
+	inline float	GetVelX()const   {return m_fVelX;}
+	inline float	GetVelY()const   {return m_fVelY;}
+	inline int		GetWidth()const  {return m_nWidth;}
+	inline int		GetHeight()const {return m_nHeight;}
+	inline int		GetType()		 {return m_nType;}
+	inline POINT	GetAnchor()		 {return m_ptAnchor;}
+	inline int		GetRange()		 {return m_nRange;}
+	RECT			GetRect();
 
 	//////////////////////////////////////
 	//	Function:	Mutators
@@ -117,10 +113,9 @@ public:
 	inline void SetRange(int nRange){m_nRange = nRange;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 
-
 	void AddAnim(CAnimation& a)
 	{
-		animations.push_back(a);
+		m_vAnimations.push_back(a);
 	}
 
 	////////////////////////////////////////////////////////////////////

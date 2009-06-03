@@ -12,12 +12,12 @@
 
 enum { LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
 enum { WORLD_MAP, BATTLE_MAP, };
-class CTurtle;
+#include "Turtle.h"
 
 class CPlayer
 {
 private:
-	//CTurtle* m_pTurtles[4];
+	CTurtle  m_pTurtles[4];
 	CTurtle* m_pLeonardo;
 	CTurtle* m_pDonatello;
 	CTurtle* m_pRaphael;
@@ -72,40 +72,14 @@ public:
 	///////////////////////////////////////////////////////////////////
 	void LoadSavedGame(const char* fileName);
 
-	////////////////////////////////////////////////////////////////////
-	//  Function: "GetCurrStage"
-	//
-	//	Purpose: To Return the current stage(battle or world map)
-	////////////////////////////////////////////////////////////////////
-	inline int GetCurrStage(void) { return m_nCurrStage; }
-	////////////////////////////////////////////////////////////////////
-	// Function: GetLeonardo
-	//
-	// Purpose: To return the Leonardo pointer stored in player
-	////////////////////////////////////////////////////////////////////
-	inline CTurtle* GetLeonardo(void) { return m_pLeonardo; }
-	////////////////////////////////////////////////////////////////////
-	// Function: GetDonatello
-	//
-	// Purpose: To return the Donatello pointer stored in player
-	////////////////////////////////////////////////////////////////////
-	inline CTurtle* GetDonatello(void) { return m_pDonatello;}
-	////////////////////////////////////////////////////////////////////
-	// Function: GetRaphael
-	//
-	// Purpose: To return the Raphael pointer stored in player
-	////////////////////////////////////////////////////////////////////
-	inline CTurtle* GetRaphael(void) { return m_pRaphael; }
-	///////////////////////////////////////////////////////////////////
-	// Function: GetMikey
-	//
-	// Purpose: To return the Mikey pointer stored in player
-	///////////////////////////////////////////////////////////////////
-	inline CTurtle* GetMikey(void) { return m_pMikey; }
-
+	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
+	inline CTurtle* GetTurtles(void)	{ return m_pTurtles;	}
+	inline CTurtle* GetLeonardo(void)	{ return m_pLeonardo;	}
+	inline CTurtle* GetDonatello(void)	{ return m_pDonatello;	}
+	inline CTurtle* GetRaphael(void)	{ return m_pRaphael;	}
+	inline CTurtle* GetMikey(void)		{ return m_pMikey;		}
 
 	/*void Render();
 	void Update(float fElapsedTime);*/
-
 };
 #endif

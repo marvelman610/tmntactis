@@ -10,6 +10,9 @@
 #define BATTLEMAP_H
 
 #include <windows.h>
+#include "Base.h"
+#include <vector>
+using std::vector;
 #include <iostream>
 using namespace std;
 
@@ -25,9 +28,11 @@ class CAnimation;
 class CParticleSystem;
 class CCamera;
 class CHUD;
+class CPlayer;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
+#include "Base.h"
 
  struct MY_POINT 
  {
@@ -60,14 +65,9 @@ class CBattleMap
 			CHARACTER_AHEAD = 0.5;
 		}
 	};
-	POINT ms;
-	DEPTH depth;
+	POINT ms;					// the mouse location, updated each Update() call
+	DEPTH depth;				// struct that holds all the z-depth draw locations
 	string m_strCurrVersion;
-
-	// IDs
-	int m_nBGImageID;
-	int m_nDotImageID;
-	int m_nCursorImageID;
 
 	// Map variables
 	int m_nMapWidth;
@@ -100,10 +100,15 @@ class CBattleMap
 	CFreeTile* m_pFreeTiles;
 	sTileset m_pTilesets[4];	// keep track of the tileset info (struct)
 
-	// battle variables
+	// Character variables
+	CPlayer*	m_pPlayer;	// the player singleton pointer
 	int m_nNumEnemiesLeft;
-	// temp animations
-	CAnimation*		m_pAnimation;
+	int m_nNumCharacters;
+	int m_nHoverCharacter;
+	int m_nCurrCharacter;
+	int m_nCurrCharacterTile;
+	vector<CBase> m_vCharacters; // all characters that are on the current battle map
+
 	// temp particles
 	CParticleSystem* m_pParticleSys;
 	//int turtleX;
@@ -145,6 +150,32 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	MY_POINT IsoTilePlot(MY_POINT pt, int xOffset, int yOffset);
 
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"IsMousePosValid"
+	//
+	//	Purpose		:	Determines if the user has clicked on a valid object
+	//					to select
+	//
+	//	Return		:	The current index into the character array, if not a 
+	//					valid click, returns -1
+	//////////////////////////////////////////////////////////////////////////
+	int IsMousePosValid(POINT mousePt);
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"CalculateRanges"
+	//
+	//	Purpose		:	Determines the attack and move range of the current character
+	//////////////////////////////////////////////////////////////////////////
+	void CalculateRanges();
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"DrawHover"
+	//
+	//	Purpose		:	Draws the rectangle showing which character is currently
+	//					being hovered over
+	//////////////////////////////////////////////////////////////////////////
+	void DrawHover();
+
 public:
 	CBattleMap(void);
 	CBattleMap(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);
@@ -165,7 +196,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Input
 	//
-	//	Purpose		:	Handle any user input for the battle, mouse or keyboard 
+	//	Purpose		:	Handle any user input for the battle, mouse and/or keyboard 
 	//
 	//	Return		:	true/false, false if we are exiting the game
 	//////////////////////////////////////////////////////////////////////////
@@ -201,8 +232,13 @@ public:
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 
-	void DrawDebugInfo();
 
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	DrawDebugInfo
+	//
+	//	Purpose		:	Draws any useful information for debugging to the screen
+	//////////////////////////////////////////////////////////////////////////
+	void DrawDebugInfo();
 };
 
 #endif

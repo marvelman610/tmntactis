@@ -52,6 +52,7 @@ public:
 	int aBMbgID;
 	int aBMgroundTilesID, aBMtreeTilesID;
 	int aBMcursorID;
+	int aBMgreenSquareID;
 
 	// Main Menu IDs
 	int aMMBGimageID;

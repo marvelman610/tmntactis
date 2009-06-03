@@ -17,16 +17,70 @@
 #include <fstream>
 using namespace std;
 
+#include "Animation.h"
+
 CPlayer::CPlayer(void)
 {
 	m_pLeonardo = Factory::CreateTurtle();
 	m_pDonatello = Factory::CreateTurtle();
 	m_pRaphael = Factory::CreateTurtle();
 	m_pMikey = Factory::CreateTurtle();
+
+	CAnimation anim;
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1);
+	m_pLeonardo->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2);
+	m_pLeonardo->AddAnim(anim);
+
+	m_pLeonardo->SetPosX(64);
+	m_pLeonardo->SetPosY(364);
+
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1);
+	m_pDonatello->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2);
+	m_pDonatello->AddAnim(anim);
+
+	m_pDonatello->SetPosX(96);
+	m_pDonatello->SetPosY(380);
+
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1);
+	m_pRaphael->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2);
+	m_pRaphael->AddAnim(anim);
+
+	m_pRaphael->SetPosX(96);
+	m_pRaphael->SetPosY(348);
+
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1);
+	m_pMikey->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
+	m_pMikey->AddAnim(anim);
+	
+	m_pMikey->SetPosX(128);
+	m_pMikey->SetPosY(364);
+
 }
 
 CPlayer::~CPlayer(void)
 {
+	//for(int i = 0; i < m_pLeonardo->animations.size; i++)
+	//{
+		//m_pLeonardo->animations[i].Unload();
+	//}
+	//for(int i = 0; i < m_pDonatello->animations.size; i++)
+	//{
+		//m_pDonatello->animations[i].Unload();
+	//}
+	/*for(int i = 0; i < m_pRaphael->animations.size; i++)
+	{
+		m_pRaphael->animations[i].Unload();
+	}
+	for(int i = 0; i < m_pMikey->animations.size; i++)
+	{
+		m_pMikey->animations[i].Unload();
+	}*/
+	
+	
 }
 CPlayer* CPlayer::GetInstance()
 {
@@ -175,3 +229,19 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 	}
 	return true;
 }
+//void CPlayer::Render()
+//{
+//	m_pLeonardo->Render();
+//	m_pDonatello->Render();
+//	m_pRaphael->Render(); 
+//	m_pMikey->Render();
+//
+//
+//}
+//void CPlayer::Update(float fElapsedTime)
+//{
+//	m_pLeonardo->Update(fElapsedTime);
+//	m_pDonatello->Update(fElapsedTime);
+//	m_pRaphael->Update(fElapsedTime); 
+//	m_pMikey->Update(fElapsedTime);
+//}

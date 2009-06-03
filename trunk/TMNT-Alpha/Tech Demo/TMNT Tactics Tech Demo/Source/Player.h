@@ -71,6 +71,7 @@ public:
 	//  Purpose: Set up the saved game. The turtle's skills, stats, exp, etc...
 	///////////////////////////////////////////////////////////////////
 	void LoadSavedGame(const char* fileName);
+
 	////////////////////////////////////////////////////////////////////
 	//  Function: "GetCurrStage"
 	//
@@ -101,6 +102,10 @@ public:
 	// Purpose: To return the Mikey pointer stored in player
 	///////////////////////////////////////////////////////////////////
 	inline CTurtle* GetMikey(void) { return m_pMikey; }
-};
 
+
+	/*void Render();
+	void Update(float fElapsedTime);*/
+
+};
 #endif

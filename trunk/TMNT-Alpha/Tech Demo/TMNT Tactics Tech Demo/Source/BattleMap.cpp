@@ -19,6 +19,7 @@
 #include "BitmapFont.h"
 #include "ParticleSystem.h"
 #include "HUD.h"
+#include "Player.h"
 #include <fstream>
 #include <exception>
 
@@ -104,8 +105,7 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nCursorImageID = m_pAssets->aBMcursorID;
 	m_strCurrVersion = "TED-Version-1.0";
 	LoadMapInfo();
-	m_pAnimation = new CAnimation();
-	m_pAnimation->Load("Resources/AnimationInfo/VG_Michelangelo.dat");
+	
 	m_pParticleSys = new CParticleSystem();
 	
 	//m_pParticleSys->InitGeometry();
@@ -121,7 +121,7 @@ CBattleMap::~CBattleMap(void)
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
-	delete m_pAnimation;
+	//delete m_pAnimation;
 
 	if (m_pAssets)
 		m_pAssets = NULL;
@@ -186,10 +186,10 @@ void CBattleMap::Render()
 			//////////////////////////////////////////////////////////////////////////
 			// characters would be rendered here:
 				// the turtleX and turtleY represent the anchor point of the turtle in map space
-				turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
-				turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
-				m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
-									GetZdepthDraw(turtleX, turtleY, tileID)  );
+				//turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
+				//turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
+				//m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
+				//					GetZdepthDraw(turtleX, turtleY, tileID)  );
 			//////////////////////////////////////////////////////////////////////////
 			}
 		}
@@ -227,6 +227,8 @@ void CBattleMap::Render()
 	}
 	m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
+
+	//CPlayer::GetInstance()->Render();
 }
 
 MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
@@ -239,7 +241,8 @@ MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
 
 void CBattleMap::Update(float fElapsedTime)
 {
-	m_pAnimation->Update(fElapsedTime);
+	
+	//CPlayer::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
 }
 
@@ -271,7 +274,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	// Mouse
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
-		m_pAnimation->Play();
+		//m_pAnimation->Play();
 	}
 
 	int xID, yID;
@@ -645,7 +648,7 @@ float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 void CBattleMap::DrawDebugInfo()
 {
 	char szAnchorPt[64];
-	sprintf_s(szAnchorPt, "A-PT X:%i, Y:%i", turtleX, turtleY);
+	//sprintf_s(szAnchorPt, "A-PT X:%i, Y:%i", turtleX, turtleY);
 	CSGD_Direct3D::GetInstance()->DrawText(szAnchorPt, 5, 5);	
 
 	char szMousePt[64];

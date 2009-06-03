@@ -12,13 +12,14 @@
 
 #include "IBaseInterface.h"
 
+
 #include <windows.h>
+#include "Animation.h"
 #include <vector>
 using std::vector;
 
 enum TYPE{ OBJECT_WEAPON, OBJECT_BATTLEITEM, OBJECT_BOSS, OBJECT_NINJA, OBJECT_TURTLE};
 
-class CAnimation;
 class CBase : public IBaseInterface
 {
 private:
@@ -27,7 +28,7 @@ private:
 
 	char* m_szName;
 
-	//vector<CAnimation> animations;
+	
 
 	POINT m_ptAnchor;
 
@@ -59,10 +60,12 @@ private:
 
 
 	CBase* m_pOwner;
-
+	
 
 protected:
 	int m_nType;
+	vector<CAnimation> animations;
+	int m_ncurrFrame;
 public:
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"Base(Constructor)"
@@ -113,6 +116,12 @@ public:
 	inline void SetLevel(int nLevel){m_nLevel = nLevel;}
 	inline void SetRange(int nRange){m_nRange = nRange;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
+
+
+	void AddAnim(CAnimation& a)
+	{
+		animations.push_back(a);
+	}
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

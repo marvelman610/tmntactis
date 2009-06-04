@@ -9,54 +9,83 @@
 #ifndef FACTORY_H
 #define FACTORY_H
 
+#include "BattleItem.h"
+
+enum { BLACK_EGGS, GRENADO, PIZZA, MAX_ITEMS};
+enum { BOKKEN, TACHI, KATANA, NINJATO, WOODNUN,GLASSNUN,STEELNUN,OAKSTAFF,
+		BAMBOOSTAFF,STEELSTAFF,RUSTYSAI,POLISHEDSAI, MAX_WEAPON};
+
 class CNinja;
 class CBoss;
 class CTurtle;
-class CBattleItem;
+class CBase;
 
 class Factory
 {
 private:
+	CBattleItem blackeggs;
+	CBattleItem grenado;
+	CBattleItem pizza;
 
-public:	
+	CBase* weapons[12];
+
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"Factory(Constructor)"
 	///////////////////////////////////////////////////////////////////
 	Factory(void);
+	Factory& operator=(const Factory&);
+	Factory(const Factory&);
 
 	///////////////////////////////////////////////////////////////////
-	//	Function:	"~Factory(Destructor)"
+	//	Function:	"~ObjectManager(Destructor)"
 	///////////////////////////////////////////////////////////////////
 	~Factory(void);
 	
+public:
+
+	///////////////////////////////////////////////////////////////////
+	// Function: "GetInstance"
+	//
+	//  Purpose: Gets instance to the only instance of the class.
+	///////////////////////////////////////////////////////////////////
+	static Factory* GetInstance();
+	
+	bool LoadItems(const char* fileName);
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “CreateNinja”
 	//
 	// Purpose: Creates a pointer to the ninja object
 	////////////////////////////////////////////////////////////////////
-	static CNinja* CreateNinja();
+	CNinja* CreateNinja();
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “CreateBoss”
 	//
 	// Purpose: Creates a pointer to the boss object
 	////////////////////////////////////////////////////////////////////
-	static CBoss* CreateBoss();
+	CBoss* CreateBoss();
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “CreateTurtle”
 	//
 	// Purpose: Creates a pointer to the turtle object
 	////////////////////////////////////////////////////////////////////
-	static CTurtle* CreateTurtle(char* name);
+	CTurtle* CreateTurtle(char* name);
 
 	///////////////////////////////////////////////////////////////////
-	// Function: “CBattleItem”
+	// Function: “CreateBattleItem”
 	//
 	// Purpose: Creates a pointer to the BattleItem object
 	////////////////////////////////////////////////////////////////////
-	static CBattleItem* CreateBattleItem();
+	CBattleItem* CreateBattleItem(int type);
+
+	///////////////////////////////////////////////////////////////////
+	// Function: “CreateWeapon”
+	//
+	// Purpose: Creates a pointer to the BattleItem object
+	////////////////////////////////////////////////////////////////////
+	CBase* CreateWeapon(int type);
 
 
 	

@@ -79,17 +79,19 @@ public:
 	//	Purpose	:	To get the specified type
 	///////////////////////////////////////
 	inline int		GetImageID()const {return m_nImageID;}
-	inline float	GetPosX()const   {return m_fPosX;}
-	inline float	GetPosY()const   {return m_fPosY;}
-	inline float	GetPosZ()const	 {return m_fPosZ;}
-	inline float	GetVelX()const   {return m_fVelX;}
-	inline float	GetVelY()const   {return m_fVelY;}
-	inline int		GetWidth()const  {return m_nWidth;}
-	inline int		GetHeight()const {return m_nHeight;}
-	inline int		GetType()		 {return m_nType;}
-	inline POINT	GetAnchor()		 {return m_ptAnchor;}
-	inline int		GetRange()		 {return m_nRange;}
-	inline int		GetCurrTile()	 {return m_nCurrTileID;}
+	inline float	GetPosX()const    {return m_fPosX;}
+	inline float	GetPosY()const    {return m_fPosY;}
+	inline float	GetPosZ()const	  {return m_fPosZ;}
+	inline float	GetVelX()const    {return m_fVelX;}
+	inline float	GetVelY()const    {return m_fVelY;}
+	inline int		GetWidth()const   {return m_nWidth;}
+	inline int		GetHeight()const  {return m_nHeight;}
+	inline int		GetType()		  {return m_nType;}
+	inline POINT	GetAnchor()		  {return m_ptAnchor;}
+	inline int		GetRange()		  {return m_nRange;}
+	inline int		GetCurrTile()	  {return m_nCurrTileID;}
+	inline char*	GetName()		  {return m_szName;}
+	
 	RECT			GetRect();
 
 	//////////////////////////////////////
@@ -97,33 +99,31 @@ public:
 	//
 	//	Purpose	:	To set the specified type
 	///////////////////////////////////////
-	inline void SetImageID(int nImageID){m_nImageID = nImageID;}
-	inline void SetAnchor(POINT pt) {m_ptAnchor = pt;}
-	inline void SetPosX(float fPosX){m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
-	inline void SetPosY(float fPosY){m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
-	inline void SetPosZ(float fPosZ){m_fPosZ = fPosZ;}
-	inline void SetVelX(float fVelX){m_fVelX = fVelX;}
-	inline void SetVelY(float fVelY){m_fVelY = fVelY;}
-	inline void SetWidth(int nWidth){m_nWidth = nWidth;}
-	inline void SetHeight(int nHeight){m_nHeight = nHeight;}
-	inline void SetBaseAP(int nAP){m_nBasePoints = nAP;}
-	inline void SetCurrAP(int nAP){m_nCurrPoints = nAP;}
+	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
+	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
+	inline void SetPosX(float fPosX)		{m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
+	inline void SetPosY(float fPosY)		{m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
+	inline void SetPosZ(float fPosZ)		{m_fPosZ = fPosZ;}
+	inline void SetVelX(float fVelX)		{m_fVelX = fVelX;}
+	inline void SetVelY(float fVelY)		{m_fVelY = fVelY;}
+	inline void SetWidth(int nWidth)		{m_nWidth = nWidth;}
+	inline void SetHeight(int nHeight)		{m_nHeight = nHeight;}
+	inline void SetBaseAP(int nAP)			{m_nBasePoints = nAP;}
+	inline void SetCurrAP(int nAP)			{m_nCurrPoints = nAP;}
 	inline void SetHealthMax(int nHealthMax){m_nHealthMax = nHealthMax;}
-	inline void SetHealth(int nHealth){m_nHealth = nHealth;}
-	inline void SetStrength(int nStrength){m_nStrength = nStrength;}
-	inline void SetDefense(int nDefense){m_nDefense = nDefense;}
-	inline void SetAccuracy(int nAccuracy){m_nAccuracy = nAccuracy;}
-	inline void SetSpeed(int nSpeed){m_nSpeed = nSpeed;}
-	inline void SetLevel(int nLevel){m_nLevel = nLevel;}
-	inline void SetRange(int nRange){m_nRange = nRange;}
-	inline void SetName(char* name){m_szName = name;}
-	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols);	// auto-sets position
+	inline void SetHealth(int nHealth)		{m_nHealth = nHealth;}
+	inline void SetStrength(int nStrength)	{m_nStrength = nStrength;}
+	inline void SetDefense(int nDefense)	{m_nDefense = nDefense;}
+	inline void SetAccuracy(int nAccuracy)	{m_nAccuracy = nAccuracy;}
+	inline void SetSpeed(int nSpeed)		{m_nSpeed = nSpeed;}
+	inline void SetLevel(int nLevel)		{m_nLevel = nLevel;}
+	inline void SetRange(int nRange)		{m_nRange = nRange;}
+	inline void SetName(char* name)			{m_szName = name;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 
-	void AddAnim(CAnimation& a)
-	{
-		m_vAnimations.push_back(a);
-	}
+	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols);	// auto-sets position
+
+	void AddAnim(CAnimation& a){ m_vAnimations.push_back(a);}
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

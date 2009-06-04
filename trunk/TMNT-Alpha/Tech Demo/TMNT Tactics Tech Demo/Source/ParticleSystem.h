@@ -101,7 +101,6 @@ public:
 		vertexDecl = NULL;
 		particleBuff = NULL;
 		texture = NULL;
-
 	}
 	
 	void InitParticle(void)

@@ -29,8 +29,8 @@ private:
 	int m_nImageHeight;				// bg image height
 	int m_nCursorImageID;			// the menu selection cursor image
 	int	m_nCurrMenuSelection;		// where is the menu cursor at?
-	int m_nCursorX;					// screen x for cursor
-	int m_nCursorY;					// screen y for cursor
+	int m_nMenuCursorX;				// screen x for cursor
+	int m_nMenuCusorY;				// screen y for cursor
 	int m_nMenuX;					// used for menu items, should be the same for all
 	int m_nMenuY;					
 	int m_nMenuItemSpacing;			// the distance between one menu item and the next
@@ -49,6 +49,11 @@ private:
 
 	CBaseMenuState(const CBaseMenuState&);
 	CBaseMenuState& operator= (const CBaseMenuState&);
+protected:
+
+	int m_nMouseX;
+	int m_nMouseY;
+
 public:
 	CBaseMenuState();
 	~CBaseMenuState();
@@ -104,8 +109,8 @@ public:
 	CGame* GetGame()				{return m_pGame;}
 	int GetCurrMenuSelection()		{return m_nCurrMenuSelection;}
 	int GetMenuItemSpacing()		{return m_nMenuItemSpacing;}
-	int GetCursorX()				{return m_nCursorX;}
-	int GetCursorY()				{return m_nCursorY;}
+	int GetCursorX()				{return m_nMenuCursorX;}
+	int GetCursorY()				{return m_nMenuCusorY;}
 	int GetScreenWidth()			{return m_nScreenWidth;}
 	int GetScreenHeight()			{return m_nScreenHeight;}
 	int GetMenuX() const			{return m_nMenuX; }
@@ -114,8 +119,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
 	//////////////////////////////////////////////////////////////////////////
-	void SetCursorX(int x)						{m_nCursorX = x;}
-	void SetCursorY(int y)						{m_nCursorY = y;}
+	void SetCursorX(int x)						{m_nMenuCursorX = x;}
+	void SetCursorY(int y)						{m_nMenuCusorY = y;}
 	void SetCurrMenuSelection(int selection)	{m_nCurrMenuSelection = selection;}
 	void SetBGImageID(int bgImageID)			{m_nBGImageID = bgImageID;}
 	void SetBGWidth(int width)					{m_nImageWidth = width;}

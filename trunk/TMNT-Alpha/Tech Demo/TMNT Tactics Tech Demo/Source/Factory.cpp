@@ -35,9 +35,10 @@ CNinja* Factory::CreateNinja()
 	ObjectManager::GetInstance()->Add(ninja);
 	return ninja;
 }
-CTurtle* Factory::CreateTurtle()
+CTurtle* Factory::CreateTurtle(char* name)
 {
 	CTurtle* turtle = new CTurtle();
+	turtle->SetName(name);
 	ObjectManager::GetInstance()->Add(turtle);
 	return turtle;
 }

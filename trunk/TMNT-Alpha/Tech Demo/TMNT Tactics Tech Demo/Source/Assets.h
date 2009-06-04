@@ -47,6 +47,9 @@ public:
 	// Images common to multiple classes
 	int aMenuCursorImageID;
 	int aBitmapFontID;
+	int aMousePointerID;
+	int aMouseGrabID;
+	int aMouseMagGlassID;
 	int aBitmapFont2ID;
 	int aBitmapFont3ID;
 

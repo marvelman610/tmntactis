@@ -74,7 +74,7 @@ public:
 	//
 	// Purpose: Sets all data needed for the animation.
 	////////////////////////////////////////////////////////////////////
-	void Load(const char* FileName, int numFrame);
+	void Load(const char* FileName, int animationNum);
 
 	void Unload();
 

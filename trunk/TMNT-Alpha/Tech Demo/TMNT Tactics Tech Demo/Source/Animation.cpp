@@ -31,12 +31,14 @@ CAnimation::CAnimation(void)
 	m_fSpeed = 0.25f;
 
 	m_nImageID = -1;
-
 }
 
 CAnimation::~CAnimation(void)
 {
-	//delete[] m_pFrames;
+// 	if (m_pFrames)
+// 	{
+// 		delete[] m_pFrames;
+// 	}
 	
 }
 void CAnimation::Play()
@@ -60,7 +62,7 @@ void CAnimation::Reset()
 {
 	m_nCurrFrame = 0;
 }
-void CAnimation::Load(const char* FileName,int numFrame)
+void CAnimation::Load(const char* FileName, int numFrame)
 {
 	int nDuration;
 	char bIsLooping[128] = "true ";
@@ -200,8 +202,8 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 		}
 		//draw stuff to screen
 				/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx-m_pFrames[m_nCurrFrame].nAnchorX,
-			posy-m_pFrames[m_nCurrFrame].nAnchorY, 
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx,
+			posy, 
 			posZ,
 			fScaleX,
 			scale,

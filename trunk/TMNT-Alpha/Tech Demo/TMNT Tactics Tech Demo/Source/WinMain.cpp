@@ -13,11 +13,10 @@
 //////////////////////////////////////////////////////////////////////////////////////////////
 
 
-#include "resource.h"
 #include <windows.h>	//	Needed for Windows Applications.
-// #define VLD_AGGREGATE_DUPLICATES
-// #define VLD_MAX_DATA_DUMP 0
-// #include <vld.h>
+#define VLD_AGGREGATE_DUPLICATES
+#define VLD_MAX_DATA_DUMP 0
+#include <vld.h>
 #include "Game.h"
 
 void ToggleFullscreenMode(HWND hWnd, 
@@ -64,10 +63,10 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 		break;
 		case WM_MOUSEMOVE:
 			{
+				//GetCursorPos()
 				mouse.x = LOWORD(lParam);
 				mouse.y = HIWORD(lParam);
 			}
-
 		//	and lose/gain focus
 		case WM_ACTIVATE:
 		{
@@ -81,6 +80,13 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				// pause game code here
 			}
 		}
+		case WM_SETCURSOR:
+			{
+				if (LOWORD(lParam) == HTCAPTION || LOWORD(lParam) == HTCLIENT)
+				{
+					ShowCursor(FALSE);
+				}
+			}
 		break;
 
 		case WM_CREATE: 
@@ -107,11 +113,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			PostQuitMessage(0);
 			return(0);
 		}
-
-		case WM_SETCURSOR:
-			{
-				SetCursor(hcPointer);
-			}
 		break;
 
 		default:
@@ -168,8 +169,7 @@ BOOL RegisterWindowClass(HINSTANCE hInstance)
 	winClassEx.lpszMenuName		= NULL; 
 	winClassEx.lpszClassName	= g_szWINDOW_CLASS_NAME;
 
-	hcGrab		= LoadCursor(hInstance, MAKEINTRESOURCE(IDI_GRAB));
-	hcPointer	= LoadCursor(hInstance, MAKEINTRESOURCE(IDI_POINTER));
+	ShowCursor(FALSE);
 
 	mouse.x = 0;
 	mouse.y = 0;

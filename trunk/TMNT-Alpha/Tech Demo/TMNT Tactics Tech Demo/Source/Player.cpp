@@ -20,10 +20,12 @@ using namespace std;
 
 CPlayer::CPlayer(void)
 {
-	m_pTurtles[LEONARDO] = Factory::CreateTurtle("Leonardo");
-	m_pTurtles[DONATELLO]= Factory::CreateTurtle("Donatello");
-	m_pTurtles[RAPHAEL]	 = Factory::CreateTurtle("Raphael");
-	m_pTurtles[MIKEY]	 = Factory::CreateTurtle("Michelangelo");
+
+	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
+	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
+	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
+	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
+
 
 	LoadAnimations();
 	int bob = 0;

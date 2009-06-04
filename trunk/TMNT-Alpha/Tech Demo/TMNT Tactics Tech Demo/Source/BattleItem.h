@@ -15,9 +15,9 @@
 class CBattleItem : public CBase
 {
 private:
-	int m_nType;
-	int m_nHealth;
-	int m_nRange;
+	//int m_nType;
+	int m_nHeal;
+	int m_nDamage;
 	int m_nDamageRadius;
 
 public:
@@ -30,6 +30,14 @@ public:
 	//	Function:	"~CBattleItem(Destructor)"
 	///////////////////////////////////////////////////////////////////
 	~CBattleItem(void);
+
+	void SetDamage(int dmg) {m_nDamage = dmg;}
+	void SetHeal(int heal) {m_nHeal = heal;}
+	void SetRadius(int radius) {m_nDamageRadius = radius;}
+
+	inline int GetDamage()  {return m_nDamage;}
+	inline int GetHeal()	{return m_nHeal;}
+	inline int GetRadius()  {return m_nDamageRadius;}
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “Update”

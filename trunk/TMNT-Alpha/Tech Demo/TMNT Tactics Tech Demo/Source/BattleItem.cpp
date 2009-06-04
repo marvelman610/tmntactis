@@ -10,8 +10,10 @@
 
 CBattleItem::CBattleItem(void)
 {
+	m_nHeal = 0;
+	m_nDamage = 0;
+	m_nDamageRadius = 1;
 }
-
 CBattleItem::~CBattleItem(void)
 {
 }

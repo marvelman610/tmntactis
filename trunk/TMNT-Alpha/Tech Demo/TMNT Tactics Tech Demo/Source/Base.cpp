@@ -11,6 +11,7 @@
 
 CBase::CBase(void)
 {
+	m_szName = NULL;
 }
 
 void CBase::Update(float fElapsedTime)

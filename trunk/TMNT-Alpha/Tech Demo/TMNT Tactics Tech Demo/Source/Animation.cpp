@@ -31,6 +31,8 @@ CAnimation::CAnimation(void)
 	m_fSpeed = 0.25f;
 
 	m_nImageID = -1;
+	m_pFrames = NULL;
+
 }
 
 CAnimation::~CAnimation(void)

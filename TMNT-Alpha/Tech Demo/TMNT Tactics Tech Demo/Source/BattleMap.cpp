@@ -225,7 +225,7 @@ void CBattleMap::Render()
 			255, 0, 0);
 #endif
 	}
-	//m_pParticleSys->DrawParticle();
+	m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 
 	//CPlayer::GetInstance()->Render();

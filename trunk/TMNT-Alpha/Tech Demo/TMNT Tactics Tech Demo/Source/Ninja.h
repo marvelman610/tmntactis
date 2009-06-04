@@ -11,6 +11,7 @@
 #define NINJA_H
 
 #include "Base.h"
+#include "CSGD_TextureManager.h"
 
 class CNinja : public CBase
 {
@@ -54,5 +55,11 @@ public:
 	// Purpose: Draws game objects to the screen.
 	////////////////////////////////////////////////////////////////////
 	void Render();
+
+	////////////////////////////////////////////////////////////////////
+	// Function: Accessor and Mutator
+	////////////////////////////////////////////////////////////////////
+	inline int GetInRange(void)		{ return m_nInRange;	}
+	inline void SetInRange(int set)	{ m_nInRange = set;		}
 };
 #endif

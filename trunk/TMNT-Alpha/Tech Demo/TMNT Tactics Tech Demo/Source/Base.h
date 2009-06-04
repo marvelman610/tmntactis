@@ -55,8 +55,8 @@ private:
 	int m_nSpeed;
 	int m_nRange;
 
-	int m_nBasePoints;
-	int m_nCurrPoints;
+	int m_nBasePoints;//ap points
+	int m_nCurrPoints;//ap points
 
 	int m_nExperience;
 	//////////////////////////////////////////////////////////////////////////
@@ -85,20 +85,31 @@ public:
 	//
 	//	Purpose	:	To get the specified type
 	///////////////////////////////////////
-	inline int		GetImageID()const {return m_nImageID;}
-	inline float	GetPosX()const    {return m_fPosX;}
-	inline float	GetPosY()const    {return m_fPosY;}
-	inline float	GetPosZ()const	  {return m_fPosZ;}
-	inline float	GetVelX()const    {return m_fVelX;}
-	inline float	GetVelY()const    {return m_fVelY;}
-	inline int		GetWidth()const   {return m_nWidth;}
-	inline int		GetHeight()const  {return m_nHeight;}
-	inline int		GetType()		  {return m_nType;}
-	inline POINT	GetAnchor()		  {return m_ptAnchor;}
-	inline int		GetRange()		  {return m_nRange;}
-	inline int		GetCurrTile()	  {return m_nCurrTileID;}
+	inline int		GetImageID()const	{return m_nImageID;		}
+	inline float	GetPosX()const		{return m_fPosX;		}
+	inline float	GetPosY()const		{return m_fPosY;		}
+	inline float	GetPosZ()const		{return m_fPosZ;		}
+	inline float	GetVelX()const		{return m_fVelX;		}
+	inline float	GetVelY()const		{return m_fVelY;		}
+	inline int		GetWidth()const		{return m_nWidth;		}
+	inline int		GetHeight()const	{return m_nHeight;		}
+	inline int		GetType()			{return m_nType;		}
+	inline POINT	GetAnchor()			{return m_ptAnchor;		}
+	inline int		GetRange()			{return m_nRange;		}
+	inline int		GetCurrTile()		{return m_nCurrTileID;	}
 	inline POINT	GetMapCoord()	  {return m_ptMapCoord;}
-	inline char*	GetName()		  {return m_szName;}
+	inline char*	GetName()			{return m_szName;		}
+
+	inline int		GetMaxHealth(void)	{return m_nHealthMax;	}
+	inline int		GetHealth(void)		{return m_nHealth;		}
+	inline int		GetLevel(void)		{return m_nLevel;		}
+	inline int		GetStrength(void)	{return m_nStrength;	}
+	inline int		GetDefense(void)	{return m_nDefense;		}
+	inline int		GetAccuracy(void)	{return m_nAccuracy;	}
+	inline int		GetSpeed(void)		{return m_nSpeed;		}
+	inline int		GetBaseAP(void)		{return m_nBasePoints;	}
+	inline int		GetCurrAP(void)		{return m_nCurrPoints;	}
+	inline int		GetExperience(void)	{return m_nExperience;	}
 	
 	RECT			GetRect();
 

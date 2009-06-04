@@ -66,14 +66,18 @@ void ObjectManager::Remove(CBase* pObj)
 	if (pObj != NULL)
 	{
 		vector<CBase*>::iterator iter = m_vObjects.begin();
+		int count = 0;
 		while(iter != m_vObjects.end())
 		{
 			if ((*iter) == pObj)
 			{
+				CBase* temp = m_vObjects[count];
+				delete temp;
 				iter = m_vObjects.erase(iter);
 				break;
 			}
-			iter++;
+			++count;
+			++iter;
 		}
 	}
 }

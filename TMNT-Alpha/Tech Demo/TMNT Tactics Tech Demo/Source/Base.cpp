@@ -44,6 +44,7 @@ RECT CBase::GetRect()
 
 void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, int tileHeight, int numCols)
 {
+	m_ptMapCoord = mapPt;
 	m_nCurrTileID = mapPt.y * numCols + mapPt.x;
 	SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
 	SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));

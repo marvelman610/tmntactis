@@ -224,7 +224,7 @@ void CBattleMap::Render()
 			255, 0, 0);
 #endif
 	}
-	m_pParticleSys->DrawParticle();
+	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 
 	//CPlayer::GetInstance()->Render();
@@ -691,6 +691,10 @@ void CBattleMap::CalculateRanges()
 {
 	int range = m_vCharacters[m_nCurrCharacter].GetRange();
 
+	for (int i = 0; i < m_nTotalNumTiles; ++i)
+	{
+		
+	}
 }
 
 void CBattleMap::DrawHover()

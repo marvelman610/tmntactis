@@ -325,6 +325,10 @@ public:
 
 	~CParticleSystem(void)
 	{
+		if (particles)
+		{
+			delete[] particles;
+		}
 		if(vertexDecl)
 		{
 			vertexDecl->Release();

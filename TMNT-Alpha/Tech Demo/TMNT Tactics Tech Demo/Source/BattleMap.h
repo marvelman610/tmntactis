@@ -185,6 +185,15 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	void DrawHover();
 
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"HandleKeyBoardInput"
+	//
+	//	Purpose		:	Determine which keys are pressed and handle accordingly
+	//
+	//  Returns		:	True if the user is not exiting
+	//////////////////////////////////////////////////////////////////////////
+	bool HandleKeyBoardInput(float fElapsedTime);
+
 public:
 	CBattleMap(void);
 	CBattleMap(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);

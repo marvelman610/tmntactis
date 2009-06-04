@@ -142,7 +142,11 @@ void CBattleMap::Render()
 {
 	//m_pTM->Draw(m_pAssets->aBMbgID, 0, 0);
 	m_pHUD->Render();
-	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10+m_fScrollX, ms.y-3+m_fScrollY);
+
+	// draw the current mouse pointer
+	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
+	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10+(int)m_fScrollX, ms.y-3+(int)m_fScrollY);
+
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
@@ -246,27 +250,15 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	//if (m_pDI->KeyPressed(DIK_ESCAPE))
 	//	return false;
 
-	// Keyboard
-	if (m_pDI->KeyDown(DIK_LEFT))
-	{
-		m_fScrollX += SCROLLSPEED * fElapsedTime;
-	}
-	if (m_pDI->KeyDown(DIK_RIGHT))
-	{
-		m_fScrollX -= SCROLLSPEED * fElapsedTime;
-	}
-	if (m_pDI->KeyDown(DIK_DOWN))
-	{
-		m_fScrollY -= SCROLLSPEED * fElapsedTime;
-	}
-	if (m_pDI->KeyDown(DIK_UP))
-	{
-		m_fScrollY += SCROLLSPEED * fElapsedTime;
-	}
+	// Keyboard input
+	bool bIsNOTexiting = HandleKeyBoardInput(fElapsedTime);
 
 	int xID, yID;
+	// transform the mouse into map coordinates
 	xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 	yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+	// these check for the mouse being off the map
+	// if it is, it is reset to the lowest row/column
 	if (xID < 2)
 	{
 		xID = 2;
@@ -289,8 +281,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		yID = m_nNumRows-1;
 	}
 
-	m_nCurrSelectedTile = yID * m_nNumCols + xID;
-	// Mouse
+	m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
+	// Mouse -- determine if the mouse is over a character
 	int index = IsMousePosValid(mouse);
 	if (index != -1)
 	{
@@ -312,7 +304,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	if (m_pDI->KeyPressed(DIK_D))
 		int i = 0;
 
-	return true;
+	return bIsNOTexiting;
 }
 
 void CBattleMap::CreateEnemies()
@@ -735,4 +727,27 @@ void CBattleMap::SetTurtlePos()
 	{
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 	}
+}
+
+bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
+{
+	// Keyboard
+	if (m_pDI->KeyDown(DIK_A))
+	{
+		m_fScrollX += SCROLLSPEED * fElapsedTime;
+	}
+	if (m_pDI->KeyDown(DIK_D))
+	{
+		m_fScrollX -= SCROLLSPEED * fElapsedTime;
+	}
+	if (m_pDI->KeyDown(DIK_S))
+	{
+		m_fScrollY -= SCROLLSPEED * fElapsedTime;
+	}
+	if (m_pDI->KeyDown(DIK_W))
+	{
+		m_fScrollY += SCROLLSPEED * fElapsedTime;
+	}
+	return true;
+
 }

@@ -32,6 +32,11 @@ CPlayer::CPlayer(void)
 
 CPlayer::~CPlayer(void)
 {
+	for(int i = 0; i <4; i++)
+	{
+		for(int j = 0; j < m_pTurtles[i]->m_vAnimations.size(); j++)
+			m_pTurtles[i]->m_vAnimations[j].Unload();
+	}
 	//for(int i = 0; i < m_pLeonardo->animations.size; i++)
 	//{
 		//m_pLeonardo->animations[i].Unload();

@@ -6,8 +6,9 @@
 //   Purpose	:	Manages all objects in the game
 ////////////////////////////////////////////////////////
 
+#ifndef OBJECTMANAGER_H
 #define OBJECTMANAGER_H
-#ifndef OBJECTMANGER_H
+
 
 #include <Windows.h>
 #include <vector>

@@ -218,6 +218,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Messages.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\MessageSysytem.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Ninja.cpp"
 				>
 			</File>
@@ -313,6 +321,14 @@
 			</File>
 			<File
 				RelativePath=".\Source\MainMenuState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Messages.h"
+				>
+			</File>
+			<File
+				RelativePath=".\MessageSysytem.h"
 				>
 			</File>
 			<File

@@ -14,9 +14,9 @@
 
 
 #include <windows.h>	//	Needed for Windows Applications.
-#define VLD_AGGREGATE_DUPLICATES
-#define VLD_MAX_DATA_DUMP 0
-#include <vld.h>
+// #define VLD_AGGREGATE_DUPLICATES
+// #define VLD_MAX_DATA_DUMP 0
+// #include <vld.h>
 #include "Game.h"
 
 void ToggleFullscreenMode(HWND hWnd, 

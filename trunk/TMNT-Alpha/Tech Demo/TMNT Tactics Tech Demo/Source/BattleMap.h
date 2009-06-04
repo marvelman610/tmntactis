@@ -32,6 +32,7 @@ class CPlayer;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
+ enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
 #include "Base.h"
 
  struct MY_POINT 
@@ -109,6 +110,7 @@ class CBattleMap
 	int m_nHoverCharacter;
 	int m_nCurrCharacter;
 	int m_nCurrCharacterTile;
+	int m_nMoveDirection;
 	vector<CBase> m_vCharacters; // all characters that are on the current battle map
 
 	// temp particles
@@ -194,6 +196,19 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	bool HandleKeyBoardInput(float fElapsedTime);
 
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"UpdatePositions"
+	//
+	//	Purpose		:	Updates all characters' positions, used primarily by
+	//					camera movement
+	//////////////////////////////////////////////////////////////////////////
+	void UpdatePositions();
+
+	void MoveCamLeft(float fElapsedTime);
+	void MoveCamRight(float fElapsedTime);
+	void MoveCamDown(float fElapsedTime);
+	void MoveCamUp(float fElapsedTime);
+
 public:
 	CBattleMap(void);
 	CBattleMap(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);
@@ -250,6 +265,7 @@ public:
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 	void SetTurtlePos();
+	void SetStartPositions();
 
 	//////////////////////////////////////////////////////////////////////////
 	//  Function	:	DrawDebugInfo

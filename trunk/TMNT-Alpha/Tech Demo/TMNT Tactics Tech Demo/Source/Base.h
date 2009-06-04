@@ -31,13 +31,13 @@ private:
 	//////////////////////////////////////////////////////////////////////////
 	//	Map variables: sizes, positions, velocity, etc..
 	POINT m_ptAnchor;
+	POINT m_ptMapCoord;
 	float m_fPosX;
 	float m_fPosY;
 	float m_fPosZ;
-	int   m_nCurrTileID;
-
 	float m_fVelX;
 	float m_fVelY;
+	int   m_nCurrTileID;
 
 	int m_nWidth;
 	int m_nHeight;
@@ -96,6 +96,7 @@ public:
 	inline POINT	GetAnchor()		  {return m_ptAnchor;}
 	inline int		GetRange()		  {return m_nRange;}
 	inline int		GetCurrTile()	  {return m_nCurrTileID;}
+	inline POINT	GetMapCoord()	  {return m_ptMapCoord;}
 	inline char*	GetName()		  {return m_szName;}
 	
 	RECT			GetRect();
@@ -107,6 +108,7 @@ public:
 	///////////////////////////////////////
 	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
+	inline void SetMapCoord(POINT mapCoord) {m_ptMapCoord = mapCoord;}
 	inline void SetPosX(float fPosX)		{m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
 	inline void SetPosY(float fPosY)		{m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
 	inline void SetPosZ(float fPosZ)		{m_fPosZ = fPosZ;}

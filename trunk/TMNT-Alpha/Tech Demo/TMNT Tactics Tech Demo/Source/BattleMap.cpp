@@ -25,6 +25,7 @@
 #include <exception>
 
 #define BOUNDING_BOXES 0
+#define CAM_EDGE_DIST_TO_MOVE 40
 #define SCROLLSPEED 150.0f
 // default constructor may be used for
 // blank maps...a cool animation sequence,
@@ -80,7 +81,7 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_nHoverCharacter = -1; m_nCurrCharacter = -1;
+	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1;
 	m_nNumCharacters = 4+nNumEnemies;
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
@@ -96,9 +97,11 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nScreenHeight = m_pGame->GetScreenHeight();
 	m_nOffsetX = m_nOffsetY = 0;
 
-	m_strCurrVersion = "TED-Version-1.0";
+	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 	LoadMapInfo();
-	SetTurtlePos();
+	// will be used to set ALL the characters' start positions according to
+	// the battle map's spawn points
+	SetStartPositions();	
 	for (int i = 0; i < 4; ++i)
 	{
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
@@ -145,7 +148,7 @@ void CBattleMap::Render()
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
-	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10+(int)m_fScrollX, ms.y-3+(int)m_fScrollY);
+	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10, ms.y-3);
 
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
@@ -239,19 +242,58 @@ void CBattleMap::Update(float fElapsedTime)
 {
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
+	if (m_nMoveDirection != -1)
+	{
+		POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
+		switch(m_nMoveDirection)
+		{
+		case MOVE_ADD_X:
+			++newPt.x;
+			if (newPt.x > m_nNumCols-1)
+				newPt.x = m_nNumCols-1;
+			break;
+		case MOVE_ADD_Y:
+			++newPt.y;
+			if (newPt.y > m_nNumRows-1)
+				newPt.y = m_nNumRows-1;
+			break;
+		case MOVE_MINUS_X:
+			--newPt.x;
+			if (newPt.x < 2)
+				newPt.x = 2;
+			break;
+		case MOVE_MINUS_Y:
+			--newPt.y;
+			if (newPt.y < 2)
+				newPt.y = 2;
+			break;
+
+		}
+		//m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		SetTurtlePos();
+		m_nMoveDirection = -1;
+	}
 }
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
-	SetTurtlePos();
+	ms = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
-	ms = mouse;
 	//if (m_pDI->KeyPressed(DIK_ESCAPE))
 	//	return false;
 
 	// Keyboard input
-	bool bIsNOTexiting = HandleKeyBoardInput(fElapsedTime);
+	if (!HandleKeyBoardInput(fElapsedTime))
+		return false;	
+	if (ms.x < CAM_EDGE_DIST_TO_MOVE)
+		MoveCamLeft(fElapsedTime);
+	if (ms.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
+		MoveCamRight(fElapsedTime);
+	if (ms.y < CAM_EDGE_DIST_TO_MOVE)
+		MoveCamUp(fElapsedTime);
+	if (ms.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
+		MoveCamDown(fElapsedTime);
 
 	int xID, yID;
 	// transform the mouse into map coordinates
@@ -259,27 +301,32 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 	// these check for the mouse being off the map
 	// if it is, it is reset to the lowest row/column
-	if (xID < 2)
+
+	if (xID >= m_nNumCols && yID >= m_nNumRows)
+	{
+		yID = m_nNumRows-1;
+		xID = m_nNumCols-1;
+	}	
+	else if (xID < 2 && yID < 2)
+		yID = xID = 2;
+	else if (xID < 2 && yID >= m_nNumRows)
 	{
 		xID = 2;
-	}
-	else if (xID >= m_nNumCols && yID >= m_nNumRows)
-	{
 		yID = m_nNumRows-1;
-		xID = m_nNumCols-1;
 	}
-	else if (yID < 2)
+	else if (xID >= m_nNumCols && yID < 2)
 	{
 		yID = 2;
-	}
-	else if (xID >= m_nNumCols)
-	{
 		xID = m_nNumCols-1;
 	}
+	else if (xID < 2)
+		xID = 2;
+	else if (yID < 2)
+		yID = 2;
+	else if (xID >= m_nNumCols)
+		xID = m_nNumCols-1;
 	else if (yID >= m_nNumRows)
-	{
 		yID = m_nNumRows-1;
-	}
 
 	m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
 	// Mouse -- determine if the mouse is over a character
@@ -304,7 +351,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	if (m_pDI->KeyPressed(DIK_D))
 		int i = 0;
 
-	return bIsNOTexiting;
+	return true;
 }
 
 void CBattleMap::CreateEnemies()
@@ -681,8 +728,6 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 
 void CBattleMap::CalculateRanges()
 {
-	int range = m_vCharacters[m_nCurrCharacter].GetRange();
-
 	for (int i = 0; i < m_nTotalNumTiles; ++i)
 	{
 		
@@ -704,6 +749,17 @@ void CBattleMap::DisplayRanges()
 }
 
 void CBattleMap::SetTurtlePos()
+{
+	m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+	m_vCharacters[m_nCurrCharacter] = (CBase)(*m_pPlayer->GetTurtles()[m_nCurrCharacter]);
+// 	m_vCharacters.clear();
+// 	for (int i = 0; i < 4; ++i)
+// 	{
+// 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+// 	}
+}
+
+void CBattleMap::SetStartPositions()
 {
 	// mapCoordinates represents the grid x=column, y=row
 	POINT mapCoordinate;
@@ -727,27 +783,81 @@ void CBattleMap::SetTurtlePos()
 	{
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 	}
+
+}
+
+void CBattleMap::UpdatePositions()
+{
+	m_vCharacters.clear();
+
+	for (int i = 0; i < 4; ++i)
+	{
+		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_pPlayer->GetTurtles()[i]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+	}
 }
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 {
 	// Keyboard
+	// camera movement
 	if (m_pDI->KeyDown(DIK_A))
 	{
-		m_fScrollX += SCROLLSPEED * fElapsedTime;
+		MoveCamLeft(fElapsedTime);
 	}
 	if (m_pDI->KeyDown(DIK_D))
 	{
-		m_fScrollX -= SCROLLSPEED * fElapsedTime;
+		MoveCamRight(fElapsedTime);
 	}
 	if (m_pDI->KeyDown(DIK_S))
 	{
-		m_fScrollY -= SCROLLSPEED * fElapsedTime;
+		MoveCamDown(fElapsedTime);
 	}
 	if (m_pDI->KeyDown(DIK_W))
 	{
-		m_fScrollY += SCROLLSPEED * fElapsedTime;
+		MoveCamUp(fElapsedTime);
+	}
+	// character movement
+	if (m_nCurrCharacter != -1)
+	{
+		if (m_pDI->KeyPressed(DIK_NUMPAD7))
+		{
+			m_nMoveDirection = MOVE_MINUS_X;
+		}
+		else if (m_pDI->KeyPressed(DIK_NUMPAD3))
+		{
+			m_nMoveDirection = MOVE_ADD_X;
+		}
+		else if (m_pDI->KeyPressed(DIK_NUMPAD9))
+		{
+			m_nMoveDirection = MOVE_MINUS_Y;	
+		}
+		else if (m_pDI->KeyPressed(DIK_NUMPAD1))
+		{
+			m_nMoveDirection = MOVE_ADD_Y;
+		}
 	}
 	return true;
 
+}
+
+void CBattleMap::MoveCamUp(float fElapsedTime)
+{
+	m_fScrollY += SCROLLSPEED * fElapsedTime;
+	UpdatePositions();
+}
+void CBattleMap::MoveCamDown(float fElapsedTime)
+{
+	m_fScrollY -= SCROLLSPEED * fElapsedTime;
+	UpdatePositions();
+}
+void CBattleMap::MoveCamLeft(float fElapsedTime)
+{
+	m_fScrollX += SCROLLSPEED * fElapsedTime;
+	UpdatePositions();
+}
+void CBattleMap::MoveCamRight(float fElapsedTime)
+{
+	m_fScrollX -= SCROLLSPEED * fElapsedTime;
+	UpdatePositions();
 }

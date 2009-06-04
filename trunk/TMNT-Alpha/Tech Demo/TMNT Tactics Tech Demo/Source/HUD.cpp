@@ -77,17 +77,17 @@ void CHUD::Update(float fElapsedTime)
 }
 void CHUD::Render()
 {
-	
+	m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f);
 	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aHUDBoxID, 0,0,0, 1.0f, 1.0f, NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(255,255,255,255));
-	m_pBitmapFont->DrawString("MICHELANGELO", 90, 22, 0.3f);
+	//m_pBitmapFont->DrawString("MICHELANGELO", 90, 22, 0.3f);
 	/*m_pBitmapFont->DrawString("LVL", 210, 30, 0.2f);*/
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aMikeyHUDFaceID, 20,21, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
-	//93
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
-	//130
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 130, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 120, 130,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aMikeyHUDFaceID, 20,21, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	////93
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	////130
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 130, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 120, 130,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
 	
 }
 

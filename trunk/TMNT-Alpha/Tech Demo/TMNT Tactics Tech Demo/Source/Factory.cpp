@@ -14,9 +14,11 @@
 #include"Turtle.h"
 #include"BattleItem.h" 
 
+#define TOTAL_NUM_WEAPONS 12
+
 Factory::Factory(void)
 {
-	for(int i = 0; i < 12; i++)
+	for(int i = 0; i < TOTAL_NUM_WEAPONS; i++)
 	{
 		weapons[i] = new CBase;
 	}
@@ -25,6 +27,10 @@ Factory::Factory(void)
 
 Factory::~Factory(void)
 {
+	for(int i = 0; i < TOTAL_NUM_WEAPONS; i++)
+	{
+		delete weapons[i];
+	}
 }
 Factory* Factory::GetInstance()
 {

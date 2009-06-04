@@ -26,7 +26,6 @@ CPlayer::CPlayer(void)
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
 
-
 	LoadAnimations();
 	int bob = 0;
 }
@@ -194,6 +193,7 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 
 		m_pTurtles[MIKEY]->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
 	}
+	
 	return true;
 }
 

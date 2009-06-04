@@ -32,16 +32,14 @@ CAnimation::CAnimation(void)
 
 	m_nImageID = -1;
 	m_pFrames = NULL;
-
 }
 
 CAnimation::~CAnimation(void)
 {
-// 	if (m_pFrames)
-// 	{
-// 		delete[] m_pFrames;
-// 	}
-	
+	if (m_pFrames)
+	{
+		//delete[] m_pFrames;
+	}	
 }
 void CAnimation::Play()
 { 

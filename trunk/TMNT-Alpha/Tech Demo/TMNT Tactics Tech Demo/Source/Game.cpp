@@ -153,11 +153,11 @@ bool CGame::Main(POINT mouse)
 
 	m_pD3D->DeviceBegin();
 	m_pD3D->SpriteBegin();
-	m_pD3D->LineBegin();
+	//m_pD3D->LineBegin();
 
 	m_pCurrentState->Render();
 
-	m_pD3D->LineEnd();
+	//m_pD3D->LineEnd();
 	m_pD3D->SpriteEnd();
 	m_pD3D->DeviceEnd();
 

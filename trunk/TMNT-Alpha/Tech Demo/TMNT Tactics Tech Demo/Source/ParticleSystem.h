@@ -234,10 +234,6 @@ public:
 			if(m_bRotation == true)
 			{
 				m_fRotation += m_fRotationVelocity;
-				if(m_fRotation > 1.0f)
-				{
-					m_fRotation = 0.0f;
-				}
 			}
 
 			if(m_bVelDiff == true){}
@@ -302,25 +298,30 @@ public:
  		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->DrawPrimitive(D3DPT_POINTLIST,0,1);
  		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
 
-		// DRAW
-
-		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
- 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+		// DRAW		
  		//set the blend modes
 		
 		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_SRCBLEND,&srcblend);
 		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_DESTBLEND, &destblend);
- 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCALPHA);
- 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTCOLOR);
+
+		m_pd3d->GetSprite()->Flush();
+		
+ 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+ 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
 
 		for (int i = 0; i < m_nNumParticles; ++i)
 		{
-			CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, (int)(particles[i].pos.x),
-				(int)(particles[i].pos.y), 0.0f, particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
+			CSGD_TextureManager::GetInstance()->Draw(m_nImageID, (int)(particles[i].pos.x),
+				(int)(particles[i].pos.y), particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
 				particles[i].pos.y, m_fRotation, particles[i].color );
 		}
+
+		m_pd3d->GetSprite()->Flush();
+
+
 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, srcblend);
 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, destblend);
+
 	}
 
 	~CParticleSystem(void)
@@ -365,6 +366,7 @@ public:
 			string path = "Resources/Images/";
 			path += fileName;
 			strcpy_s(buffer, path.c_str());*/
+
 			//set texture
 			m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Particle.png", D3DCOLOR_XRGB(0,0,0));
 			
@@ -502,6 +504,7 @@ public:
 				bool bRotation;
 				fs.read(reinterpret_cast<char*>(&bRotation), sizeof(bool));
 				m_bRotation = bRotation;
+				//m_bRotation = true;
 
 				float fRotation;
 				fs.read(reinterpret_cast<char*>(&fRotation), sizeof(fRotation));

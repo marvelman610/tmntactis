@@ -22,30 +22,10 @@ CHUD::CHUD(void)
 	m_pTM = CSGD_TextureManager::GetInstance();
 
 	m_nImageID = -1;
-	//m_nImageID1 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
-	//m_nImageID2 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
-	//m_nImageID3 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
-	//m_nImageID4 = -1;//m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
 }
 
 CHUD::~CHUD(void)
 {
-	/*if(m_nImageID4 > -1)
-	{
-		m_pTM->UnloadTexture(m_nImageID4);
-	}
-	if(m_nImageID3 > -1)
-	{
-		m_pTM->UnloadTexture(m_nImageID3);
-	}
-	if(m_nImageID2 > -1)
-	{
-		m_pTM->UnloadTexture(m_nImageID2);
-	}
-	if(m_nImageID1 > -1)
-	{
-		m_pTM->UnloadTexture(m_nImageID1);
-	}*/
 	if(m_nImageID > -1)
 	{
 		m_pTM->UnloadTexture(m_nImageID);
@@ -88,22 +68,16 @@ void CHUD::Update(float fElapsedTime)
 void CHUD::Render()
 {
 	
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aHUDBoxID, 0,0,0, 1.0f, 1.0f, NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(200,128,128,128));
-	m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 20,21);
+	//m_pTM->DrawWithZSort(CAssets::GetInstance()->aHUDBoxID, 0,0,0, 1.0f, 1.0f, NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(255,255,255,255));
+	m_pBitmapFont->DrawString("MICHELANGELO", 90, 22, 0.3f);
+	/*m_pBitmapFont->DrawString("LVL", 210, 30, 0.2f);*/
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aMikeyHUDFaceID, 20,21, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
 	//93
-	m_pTM->Draw(CAssets::GetInstance()->aRedHealthBarID, 120, 93);
-	m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 120, 93);
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 120, 93,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
 	//130
-	m_pTM->Draw(CAssets::GetInstance()->aRedHealthBarID, 120, 130);
-	m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 120, 130);
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aRedHealthBarID, 120, 130, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 120, 130,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f);
 	
 }
 
-//void CHUD::LoadHUD(void)
-//{
-//	m_nImageID1 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarRed.png", D3DCOLOR_XRGB(255,255,255));
-//	m_nImageID2 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarGreen.png", D3DCOLOR_XRGB(255,255,255));
-//	m_nImageID3 = m_pTM->LoadTexture("Resources/Images/VG_HealthBarBlue.png", D3DCOLOR_XRGB(255,255,255));
-//	m_nImageID4 = m_pTM->LoadTexture("Resources/Images/VG_HUDBox.png", D3DCOLOR_XRGB(255,255,255));
-//
-//}

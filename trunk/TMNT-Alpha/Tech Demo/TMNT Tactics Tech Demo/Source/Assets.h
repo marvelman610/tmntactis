@@ -47,6 +47,8 @@ public:
 	// Images common to multiple classes
 	int aMenuCursorImageID;
 	int aBitmapFontID;
+	int aBitmapFont2ID;
+	int aBitmapFont3ID;
 
 	// BattleMap IDs
 	int aBMbgID;

@@ -20,52 +20,13 @@ using namespace std;
 
 CPlayer::CPlayer(void)
 {
-	m_pLeonardo = Factory::CreateTurtle();
-	m_pDonatello = Factory::CreateTurtle();
-	m_pRaphael = Factory::CreateTurtle();
-	m_pMikey = Factory::CreateTurtle();
+	m_pTurtles[LEONARDO] = Factory::CreateTurtle("Leonardo");
+	m_pTurtles[DONATELLO]= Factory::CreateTurtle("Donatello");
+	m_pTurtles[RAPHAEL]	 = Factory::CreateTurtle("Raphael");
+	m_pTurtles[MIKEY]	 = Factory::CreateTurtle("Michelangelo");
 
-	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1);
-	m_pLeonardo->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2);
-	m_pLeonardo->AddAnim(anim);
-
-	m_pLeonardo->SetPosX(64);
-	m_pLeonardo->SetPosY(364);
-	m_pLeonardo->SetCurrTile(364);
-
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1);
-	m_pDonatello->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2);
-	m_pDonatello->AddAnim(anim);
-
-	m_pDonatello->SetPosX(96);
-	m_pDonatello->SetPosY(380);
-	m_pDonatello->SetCurrTile(365);
-
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1);
-	m_pRaphael->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2);
-	m_pRaphael->AddAnim(anim);
-
-	m_pRaphael->SetPosX(96);
-	m_pRaphael->SetPosY(348);
-	m_pRaphael->SetCurrTile(344);
-
-	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1);
-	m_pMikey->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
-	m_pMikey->AddAnim(anim);
-	
-	m_pMikey->SetPosX(128);
-	m_pMikey->SetPosY(364);
-	m_pMikey->SetCurrTile(345);
-
-	m_pTurtles[LEONARDO] = *m_pLeonardo;
-	m_pTurtles[DONATELLO]= *m_pDonatello;
-	m_pTurtles[RAPHAEL]  = *m_pRaphael;
-	m_pTurtles[MIKEY]	 = *m_pMikey;
+	LoadAnimations();
+	int bob = 0;
 }
 
 CPlayer::~CPlayer(void)
@@ -86,8 +47,6 @@ CPlayer::~CPlayer(void)
 	{
 		m_pMikey->animations[i].Unload();
 	}*/
-	
-	
 }
 CPlayer* CPlayer::GetInstance()
 {
@@ -146,16 +105,16 @@ void CPlayer::LoadNewSkills(const char* filename)
 		switch (turtleID)
 		{
 		case LEONARDO:
-			m_pLeonardo->SetSkillsInactive(inactiveSkills);
+			m_pTurtles[LEONARDO]->SetSkillsInactive(inactiveSkills);
 			break;
 		case DONATELLO:
-			m_pDonatello->SetSkillsInactive(inactiveSkills);
+			m_pTurtles[DONATELLO]->SetSkillsInactive(inactiveSkills);
 			break;
 		case RAPHAEL:
-			m_pRaphael->SetSkillsInactive(inactiveSkills);
+			m_pTurtles[RAPHAEL]->SetSkillsInactive(inactiveSkills);
 			break;
 		case MIKEY:
-			m_pMikey->SetSkillsInactive(inactiveSkills);
+			m_pTurtles[MIKEY]->SetSkillsInactive(inactiveSkills);
 			break;
 		}
 		inactiveSkills.clear();
@@ -185,7 +144,7 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pLeo->Attribute("exp", &experience);
 		pLeo->Attribute("range", &range);
 
-		m_pLeonardo->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
+		m_pTurtles[LEONARDO]->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
 	}
 	TiXmlElement* pRaph = pLeo->NextSiblingElement("Raphael");
 	if(pRaph)
@@ -200,7 +159,7 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pRaph->Attribute("exp", &experience);
 		pRaph->Attribute("range", &range);
 
-		m_pRaphael->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
+		m_pTurtles[RAPHAEL]->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
 	}
 	TiXmlElement* pDon = pRaph->NextSiblingElement("Donatello");
 	if(pDon)
@@ -215,7 +174,7 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pDon->Attribute("exp", &experience);
 		pDon->Attribute("range", &range);
 
-		m_pDonatello->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
+		m_pTurtles[DONATELLO]->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
 	}
 	
 	TiXmlElement* pMikey = pDon->NextSiblingElement("Michelangelo");
@@ -231,9 +190,33 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 		pMikey->Attribute("exp", &experience);
 		pMikey->Attribute("range", &range);
 
-		m_pMikey->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
+		m_pTurtles[MIKEY]->SetAttributes(ap,hp,strength,defense,accuracy,speed,level,experience,range);
 	}
 	return true;
+}
+
+void CPlayer::LoadAnimations()
+{
+	CAnimation anim;
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1);
+	m_pTurtles[DONATELLO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2);
+	m_pTurtles[DONATELLO]->AddAnim(anim);
+
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1);
+	m_pTurtles[RAPHAEL]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2);
+	m_pTurtles[RAPHAEL]->AddAnim(anim);
+
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1);
+	m_pTurtles[MIKEY]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
+	m_pTurtles[MIKEY]->AddAnim(anim);
 }
 //void CPlayer::Render()
 //{

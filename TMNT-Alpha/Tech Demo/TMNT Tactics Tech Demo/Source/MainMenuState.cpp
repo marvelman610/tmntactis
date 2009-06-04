@@ -50,6 +50,9 @@ void CMainMenuState::Enter()
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
+	m_nMouseX = mousePt.x;
+	m_nMouseY = mousePt.y;
+
 	if (GetDI()->KeyPressed(DIK_DOWN))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
@@ -106,6 +109,7 @@ void CMainMenuState::Render()
 	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 1.0f);
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
+	GetTM()->Draw(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3);
 }
 
 void CMainMenuState::Update(float fElapsedTime)

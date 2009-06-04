@@ -26,8 +26,8 @@ RECT CBase::GetRect()
 {
 	LONG left, top, right, bottom;
 
-	left = (LONG)(m_fPosX/*-m_vAnimations[0].GetFrames()[0].nAnchorX*/);
-	top = (LONG)(m_fPosY/*-m_vAnimations[0].GetFrames()[0].nAnchorY*/);
+	left = (LONG)(m_fPosX);
+	top = (LONG)(m_fPosY);
 	right = (LONG)(left+m_vAnimations[0].GetFrames()[0].nFrameWidth);
 	bottom = (LONG)(top+m_vAnimations[0].GetFrames()[0].nFrameHeight);
 
@@ -41,8 +41,9 @@ RECT CBase::GetRect()
 //	return tiles;
 //}
 
-void CBase::SetCurrTile(int tileID)
+void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, int tileHeight, int numCols)
 {
-	m_nCurrTileID = tileID;
-/*	m_fPosX = tileID;*/
+	m_nCurrTileID = mapPt.y * numCols + mapPt.x;
+	SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
+	SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));
 }

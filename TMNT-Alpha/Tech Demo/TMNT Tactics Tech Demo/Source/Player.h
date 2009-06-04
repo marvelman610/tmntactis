@@ -18,7 +18,7 @@ enum { WORLD_MAP, BATTLE_MAP, };
 class CPlayer
 {
 private:
-	CTurtle  m_pTurtles[4];
+	CTurtle*  m_pTurtles[4];
 	CTurtle* m_pLeonardo;
 	CTurtle* m_pDonatello;
 	CTurtle* m_pRaphael;
@@ -50,6 +50,12 @@ private:
 	//  Purpose: Create the new game, turtles, skills, everything.
 	///////////////////////////////////////////////////////////////////
 	bool LoadTurtleStats(const char* szXMLFileName);
+	///////////////////////////////////////////////////////////////////
+	//  Function: "LoadAnimations"
+	//
+	//  Purpose: Create the new game, turtles, skills, everything.
+	///////////////////////////////////////////////////////////////////
+	void LoadAnimations();
 
 public:
 	///////////////////////////////////////////////////////////////////
@@ -74,7 +80,7 @@ public:
 	void LoadSavedGame(const char* fileName);
 
 	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
-	inline CTurtle* GetTurtles(void)	{ return m_pTurtles;	}
+	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
 	inline CTurtle* GetLeonardo(void)	{ return m_pLeonardo;	}
 	inline CTurtle* GetDonatello(void)	{ return m_pDonatello;	}
 	inline CTurtle* GetRaphael(void)	{ return m_pRaphael;	}

@@ -23,7 +23,6 @@
 #include "Player.h"
 #include <fstream>
 #include <exception>
-#include "resource.h"
 
 #define BOUNDING_BOXES 0
 #define SCROLLSPEED 150.0f
@@ -81,33 +80,29 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_nHoverCharacter = -1;
-	m_nCurrCharacter = -1;
+	m_nHoverCharacter = -1; m_nCurrCharacter = -1;
 	m_nNumCharacters = 4+nNumEnemies;
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
 	m_szMapName  = szMapName;
-	m_nNumCols = 0;
-	m_nNumRows = 0;
+	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
-	m_nTileWidth = 0;
-	m_nTileHeight = 0;
+	m_nTileWidth = 0; m_nTileHeight = 0;
 	m_nCurrSelectedTile = -1;
-	m_nMapHeight = 0;
-	m_nMapWidth = 0;
+	m_nMapHeight = 0; m_nMapWidth = 0;
 	m_nFreeTileCount = 0;
-	m_fScrollX = 0.0f;
-	m_fScrollY = 0.0f;
+	m_fScrollX = 0.0f; m_fScrollY = 0.0f;
 	m_nScrenWidth = m_pGame->GetScreenWidth();
 	m_nScreenHeight = m_pGame->GetScreenHeight();
+	m_nOffsetX = m_nOffsetY = 0;
 
 	m_strCurrVersion = "TED-Version-1.0";
 	LoadMapInfo();
+	SetTurtlePos();
 	for (int i = 0; i < 4; ++i)
 	{
-		m_vCharacters.push_back((CBase)(m_pPlayer->GetTurtles()[i]));
+		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 	}
-	//CreateEnemies();	// will push all enemies on to same m_vCharacters vector
 	
 	m_pParticleSys = new CParticleSystem();
 	
@@ -147,13 +142,13 @@ void CBattleMap::Render()
 {
 	//m_pTM->Draw(m_pAssets->aBMbgID, 0, 0);
 	m_pHUD->Render();
-
+	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10+m_fScrollX, ms.y-3+m_fScrollY);
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
 	SetFTosY((int)m_fScrollY - m_nTileHeight);
-	
+
 	if (m_nHoverCharacter != -1)
 		DrawHover();
 
@@ -172,11 +167,11 @@ void CBattleMap::Render()
 				m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255));
 			mapPT.x = x; mapPT.y = y;
 			mapPT = IsoTilePlot(mapPT, GetOffsetX(), GetOffsetY());
-			m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 0.9f, 1.0f, 
+			m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 1.0f, 1.0f, 
 				m_pTilesL2[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL2[tileID].Alpha(),255,255,255));
 			
 			// draws selection rectangle on the currently selected tile
-			if (m_nCurrSelectedTile == tileID)
+			if (m_nCurrSelectedTile == tileID && m_nHoverCharacter == -1)
 			{
 				m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 			//////////////////////////////////////////////////////////////////////////
@@ -187,6 +182,10 @@ void CBattleMap::Render()
 				//m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
 				//					GetZdepthDraw(turtleX, turtleY, tileID)  );
 			//////////////////////////////////////////////////////////////////////////
+			}
+			else if (m_nHoverCharacter != -1 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+			{
+				m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 			}
 			if (m_nCurrCharacterTile == tileID)
 			{
@@ -234,13 +233,13 @@ void CBattleMap::Render()
 
 void CBattleMap::Update(float fElapsedTime)
 {
-	
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
 }
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
+	SetTurtlePos();
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 	ms = mouse;
@@ -380,6 +379,8 @@ void CBattleMap::LoadMapInfo()
 			m_pTilesL1  =new CTile[m_nNumRows*m_nNumCols];
 			m_pTilesL2  =new CTile[m_nNumRows*m_nNumCols];
 			m_pFreeTiles=new CFreeTile[m_nNumRows*m_nNumCols];
+			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 		}
 		else // didn't have the correct version number...
 		{
@@ -675,10 +676,10 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 	for (int i = 0; i < size; ++i)
 	{
 		RECT currRect = m_vCharacters[i].GetRect();
-		if (mousePt.x >= currRect.left &&
-			mousePt.x <= currRect.right &&
-			mousePt.y >= currRect.top &&
-			mousePt.y <= currRect.bottom)
+		if (mousePt.x >= currRect.left - (int)m_fScrollX &&
+			mousePt.x <= currRect.right - (int)m_fScrollX &&
+			mousePt.y >= currRect.top - (int)m_fScrollY &&
+			mousePt.y <= currRect.bottom - (int)m_fScrollY)
 		{
 			return i;
 		}
@@ -689,6 +690,7 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 void CBattleMap::CalculateRanges()
 {
 	int range = m_vCharacters[m_nCurrCharacter].GetRange();
+
 }
 
 void CBattleMap::DrawHover()
@@ -703,4 +705,30 @@ void CBattleMap::DrawHover()
 void CBattleMap::DisplayRanges()
 {
 
+}
+
+void CBattleMap::SetTurtlePos()
+{
+	// mapCoordinates represents the grid x=column, y=row
+	POINT mapCoordinate;
+	mapCoordinate.x = 10;
+	mapCoordinate.y = 18;
+	m_pPlayer->GetTurtles()[LEONARDO]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+
+	mapCoordinate.x = 4;
+	mapCoordinate.y = 18;
+	m_pPlayer->GetTurtles()[DONATELLO]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+
+	mapCoordinate.x = 3;
+	mapCoordinate.y = 17;
+	m_pPlayer->GetTurtles()[RAPHAEL]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+
+	mapCoordinate.x = 4;
+	mapCoordinate.y = 17;
+	m_pPlayer->GetTurtles()[MIKEY]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+	m_vCharacters.clear();
+	for (int i = 0; i < 4; ++i)
+	{
+		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+	}
 }

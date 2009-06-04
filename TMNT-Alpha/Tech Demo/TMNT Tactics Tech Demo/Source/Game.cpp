@@ -51,6 +51,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pTM = CSGD_TextureManager::GetInstance();
 	m_pDI = CSGD_DirectInput::GetInstance();
 	m_pD3D = CSGD_Direct3D::GetInstance();
+	
 	//m_pFMODSystem = ;
 	//m_FMChannel1 = NULL;
 	//m_FMChannel2 = NULL;
@@ -153,11 +154,7 @@ bool CGame::Main(POINT mouse)
 
 	m_pD3D->DeviceBegin();
 	m_pD3D->SpriteBegin();
-	//m_pD3D->LineBegin();
-
 	m_pCurrentState->Render();
-
-	//m_pD3D->LineEnd();
 	m_pD3D->SpriteEnd();
 	m_pD3D->DeviceEnd();
 

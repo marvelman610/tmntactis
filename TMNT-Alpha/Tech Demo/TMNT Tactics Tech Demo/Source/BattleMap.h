@@ -240,7 +240,7 @@ public:
 	void SetOffsetY(const int offsetY)				{m_nOffsetY = offsetY;}
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
-
+	void SetTurtlePos();
 
 	//////////////////////////////////////////////////////////////////////////
 	//  Function	:	DrawDebugInfo

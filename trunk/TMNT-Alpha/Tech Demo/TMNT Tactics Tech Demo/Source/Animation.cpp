@@ -36,10 +36,10 @@ CAnimation::CAnimation(void)
 
 CAnimation::~CAnimation(void)
 {
-	if (m_pFrames)
+	/*if (m_pFrames)
 	{
-		//delete[] m_pFrames;
-	}	
+		delete[] m_pFrames;
+	}*/	
 }
 void CAnimation::Play()
 { 

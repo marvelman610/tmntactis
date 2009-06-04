@@ -17,6 +17,8 @@ CNinja::CNinja(void)
 	m_nLowHealth = 0;
 	m_nInRange = 0;
 	
+	//SetImageID(CSGD_TextureManager::LoadTexture("VG_Ninja.png", D3DCOLOR_XRGB(255,255,255));
+
 	SetBaseAP(16);
 	SetCurrAP(16);
 	
@@ -59,7 +61,7 @@ void CNinja::AI()
 						//end turn when defend is chosen
 					}
 				}
-				else //if low health == 1
+				else if( m_nLowHealth == 1)
 				{
 					//if( HaveHealingItem == true)
 					//{
@@ -73,6 +75,7 @@ void CNinja::AI()
 						//move away towards your team
 					}
 				}
+
 				if( GetCurrAP() == 0 )
 				{
 					//end turn
@@ -226,6 +229,8 @@ void CNinja::Update(float fElapsedTime)
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
 	}
 
+	//get current x and y tile position then get the x and y tile positions
+	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
 }
 void CNinja::Render()
 {

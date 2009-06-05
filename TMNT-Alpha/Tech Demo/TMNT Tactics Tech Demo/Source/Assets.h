@@ -76,6 +76,9 @@ public:
 	int aBlueHealthBarID;
 	//HUD Character Faces
 	int aMikeyHUDFaceID;
+	int aLeonardoHUDID;
+	int aDonatelloHUDID;
+	int aRaphaelHUDID;
 
 	//temp ninja
 	int aNinjaID;

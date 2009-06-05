@@ -114,10 +114,12 @@ class CBattleMap
 	int m_nMoveDirection;
 	vector<CBase> m_vCharacters; // all characters that are on the current battle map
 
+	//////////////////////////////////////////////////////////////////////////
+	//	Turn variables
+	bool m_bIsPlayersTurn;
+
 	// temp particles
 	CParticleSystem* m_pParticleSys;
-	//int turtleX;
-	//int turtleY;
 	// temp ninja
 	//CNinja* m_pNinja;
 
@@ -259,6 +261,7 @@ public:
 	int GetOffsetY()	const		{return m_nOffsetY;}
 	int GetFreeTileXos()const		{return m_nFreeTileOSx;}
 	int GetFreeTileYos()const		{return m_nfreeTileOSy;}
+	int GetCurrActive() const		{return m_nCurrCharacter;}
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators

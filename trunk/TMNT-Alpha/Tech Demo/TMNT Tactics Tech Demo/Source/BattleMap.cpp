@@ -68,6 +68,7 @@ CBattleMap::CBattleMap(void)
 
 CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 {
+	srand((unsigned int)(time(0)));
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pAssets		= CAssets::GetInstance();
 	m_pTM			= CSGD_TextureManager::GetInstance();
@@ -82,6 +83,7 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
+	m_bIsPlayersTurn = rand() % 1;
 	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1;
 	m_nNumCharacters = 4+nNumEnemies;
 	m_nNumEnemiesLeft = nNumEnemies;
@@ -142,6 +144,15 @@ void CBattleMap::Render()
 {
 	//m_pTM->Draw(m_pAssets->aBMbgID, 0, 0);
 	m_pHUD->Render();
+	//TODO::this will be put in the hud eventually
+	if (m_bIsPlayersTurn)
+	{
+		m_pD3D->DrawText();
+	}
+	else
+	{
+		m_pD3D->DrawText();
+	}
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)

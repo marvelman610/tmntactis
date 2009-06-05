@@ -8,6 +8,7 @@
 ////////////////////////////////////////////////////////
 
 #include "Ninja.h"
+#include "Assets.h"
 
 CNinja::CNinja(void)
 {
@@ -16,8 +17,7 @@ CNinja::CNinja(void)
 	m_nDefend = 0;
 	m_nLowHealth = 0;
 	m_nInRange = 0;
-	
-	//SetImageID(CSGD_TextureManager::LoadTexture("VG_Ninja.png", D3DCOLOR_XRGB(255,255,255));
+
 
 	SetBaseAP(16);
 	SetCurrAP(16);
@@ -234,5 +234,5 @@ void CNinja::Update(float fElapsedTime)
 }
 void CNinja::Render()
 {
-
+	CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aNinjaID, GetPosX(), GetPosY(), 0.5f); 
 }

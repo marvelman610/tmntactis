@@ -110,7 +110,6 @@ public:
 	inline int		GetBaseAP(void)		{return m_nBasePoints;	}
 	inline int		GetCurrAP(void)		{return m_nCurrPoints;	}
 	inline int		GetExperience(void)	{return m_nExperience;	}
-	
 	RECT			GetRect();
 
 	//////////////////////////////////////

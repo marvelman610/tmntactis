@@ -28,7 +28,7 @@ void CTurtle::Update(float fElapsedTime)
 }
 void CTurtle::Render()
 {
-	m_vAnimations[m_ncurrFrame].Render((int)GetPosX(),(int)GetPosY(),0.5f);
+	m_vAnimations[m_ncurrFrame].Render((int)GetPosX(),(int)GetPosY(), GetPosZ());
 }									
 
 void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)

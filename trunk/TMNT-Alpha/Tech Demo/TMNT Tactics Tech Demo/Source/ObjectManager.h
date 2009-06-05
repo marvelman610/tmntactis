@@ -18,7 +18,29 @@ class CBase;
 
 class ObjectManager
 {
-private:
+private:	
+	// characters, by default, render behind the OBJECTS layer (CHARACTER_BEHIND)
+	struct DEPTH
+	{
+		float GROUND;
+		float GROUNDL2;
+		float SELECTION;
+		float CHARACTER_BEHIND;
+		float CHARACTER_AHEAD;
+		float OBJECTS;
+		float ARROW;
+		DEPTH()
+		{
+			GROUND = 1.0f;
+			GROUNDL2 = 0.9f;
+			SELECTION = 0.8f;
+			CHARACTER_BEHIND = 0.7f;
+			OBJECTS = 0.6f;
+			CHARACTER_AHEAD = 0.5f;
+			ARROW = 0.49f;
+		}
+	};
+	DEPTH depth;
 	vector<CBase*> m_vObjects;
 
 	///////////////////////////////////////////////////////////////////
@@ -83,6 +105,16 @@ public:
 	//			alpha'd out
 	////////////////////////////////////////////////////////////////////
 	bool CheckObjectsToAlpha(RECT* mapObjectRect);
+
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	GetZdepthDraw
+	//
+	//	Purpose		:	To determine if a character object should be rendered
+	//					in front of a map object (free placed object)
+	//
+	//	Return		:	returns the z depth(float) for the character to be drawn at
+	//////////////////////////////////////////////////////////////////////////
+	float GetZdepthDraw(int x, int y, int currTileID = -1);
 };
 
 #endif

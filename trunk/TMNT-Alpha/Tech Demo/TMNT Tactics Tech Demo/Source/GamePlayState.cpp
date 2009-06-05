@@ -43,10 +43,13 @@ void CGamePlayState::Enter(void)
 	//m_pCurrentMenuState = BaseMenuState::GetInstance();
 	m_pHUD = CHUD::GetInstance();
 	//m_pWorldMap = WorldMap::GetInstance();
-
-	m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_ZSortTest.dat");
-	//m_pBattleMap = new CBattleMap("Resources/MapInfo/VG_Test.dat");
 	m_pPlayer = CPlayer::GetInstance();
+	m_pBattleMap = CBattleMap::GetInstance();
+
+	// TODO:: will enter battle map once player goes into a battle
+	//			from the world map
+	m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat");
+
 	//m_nCurrentMap = ;
 }
 
@@ -55,7 +58,7 @@ void CGamePlayState::Exit(void)
 {
 	if(m_pBattleMap)
 	{
-		delete m_pBattleMap;
+		m_pBattleMap->Exit();
 	}
 	if (m_pPlayer)
 		m_pPlayer = NULL;
@@ -118,10 +121,10 @@ void CGamePlayState::Update(float fElapsedTime)
 // Render
 void CGamePlayState::Render(void)
 {
-	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance();
-	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
+// 	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance();
+// 	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
 	
-	ObjectManager::GetInstance()->RenderObjects();
 	m_pBattleMap->Render();
+	ObjectManager::GetInstance()->RenderObjects();
 
 }

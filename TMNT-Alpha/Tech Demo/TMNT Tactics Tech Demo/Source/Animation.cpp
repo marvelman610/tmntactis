@@ -99,7 +99,7 @@ void CAnimation::Load(const char* FileName, int numFrame)
 				sprintf_s(temp, _countof(temp),"Resources/Images/%s", filebuff);
 
 				CSGD_TextureManager* tm = CSGD_TextureManager::GetInstance();
-				m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture(temp ,D3DCOLOR_XRGB(255,255,255));
+				m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture(temp, D3DCOLOR_XRGB(255,255,255));
 
 				ifs.read(reinterpret_cast<char *>(&size),1);
 				ZeroMemory(filebuff,128);
@@ -123,7 +123,7 @@ void CAnimation::Load(const char* FileName, int numFrame)
 					m_bIsLooping = false;
 
 				ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
-				m_fDuration = nDuration /1000.0f;
+				m_fDuration = nDuration / 1000.0f;
 
 				m_pFrames = new sFrame[m_nTotalFrames];
 
@@ -202,9 +202,7 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 		}
 		//draw stuff to screen
 				/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,posx,
-			posy, 
-			posZ,
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, posx, posy, posZ,
 			fScaleX,
 			scale,
 			&frame,

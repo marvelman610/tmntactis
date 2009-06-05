@@ -25,48 +25,13 @@
 #include <fstream>
 #include <exception>
 
-#define BOUNDING_BOXES 0
+#define BOUNDING_BOXES 1
 #define CAM_EDGE_DIST_TO_MOVE 40
 #define SCROLLSPEED 150.0f
 // default constructor may be used for
 // blank maps...a cool animation sequence,
 // or needing to render while not in a real battle, etc...
 CBattleMap::CBattleMap(void)
-{
-	m_pPlayer		= CPlayer::GetInstance();
-	m_pAssets		= CAssets::GetInstance();
-	m_pTM			= CSGD_TextureManager::GetInstance();
-	m_pGame			= CGame::GetInstance();
-	m_pDI			= CSGD_DirectInput::GetInstance();
-//	m_pFMOD			= m_pGame->GetFMODSystem();
-//	m_pBitmapFont   = CBitmapFont::GetInstance();
-	m_pHUD			= CHUD::GetInstance();
-
-	m_pTilesL1 = NULL;
-	m_pTilesL2 = NULL;
-	m_pFreeTiles = NULL;
-	//m_pMoveableTiles = NULL;
-
-	m_nNumEnemiesLeft = 0;
-	m_nNumCols = 0;
-	m_nNumRows = 0;
-	m_nTotalNumTiles = 0;
-	m_nTileWidth = 0;
-	m_nTileHeight = 0;
-	m_nCurrSelectedTile = -1;
-	m_nMapHeight = 0;
-	m_nMapWidth = 0;
-	m_fScrollX = 0.0f;
-	m_fScrollY = 0.0f;
-	m_nScrenWidth = m_pGame->GetScreenWidth();
-	m_nScreenHeight = m_pGame->GetScreenHeight();
-	m_szFileName = "Blank.xml";
-	m_szMapName  = "Blank";
-
-	m_strCurrVersion = "TED-Version-1.0";
-}
-
-CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 {
 	srand((unsigned int)(time(0)));
 	m_pPlayer		= CPlayer::GetInstance();
@@ -83,12 +48,8 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_bIsPlayersTurn = rand() % 1;
+	m_bIsPlayersTurn = (bool)(rand() % 1);
 	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1;
-	m_nNumCharacters = 4+nNumEnemies;
-	m_nNumEnemiesLeft = nNumEnemies;
-	m_szFileName = szFileName;
-	m_szMapName  = szMapName;
 	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
 	m_nTileWidth = 0; m_nTileHeight = 0;
@@ -101,17 +62,33 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nOffsetX = m_nOffsetY = 0;
 
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
-	LoadMapInfo();
-	// will be used to set ALL the characters' start positions according to
-	// the battle map's spawn points
-	SetStartPositions();	
-	
+
 	m_pParticleSys = new CParticleSystem();
-	
 	m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
 }
 
 CBattleMap::~CBattleMap(void)
+{
+}
+
+CBattleMap* CBattleMap::GetInstance()
+{
+	static CBattleMap instance;
+	return &instance;
+}
+void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
+{
+	m_nNumCharacters = 4+nNumEnemies;
+	m_nNumEnemiesLeft = nNumEnemies;
+	m_szFileName = szFileName;
+	m_szMapName  = szMapName;
+
+	LoadMapInfo();
+	// will be used to set ALL the characters' start positions according to
+	// the battle map's spawn points
+	SetStartPositions();	
+}
+void CBattleMap::Exit()
 {
 	delete[] m_pTilesL1;
 	delete[] m_pTilesL2;
@@ -127,15 +104,14 @@ CBattleMap::~CBattleMap(void)
 		m_pGame = NULL;
 	if (m_pDI)
 		m_pDI = NULL;
- 	if (m_pHUD)
- 		m_pHUD = NULL;
-// 	if (m_pBitmapFont)
-// 		m_pBitmapFont = NULL;
-// 	if (m_pFMOD)
-// 		m_pFMOD = NULL;
+	if (m_pHUD)
+		m_pHUD = NULL;
+	// 	if (m_pBitmapFont)
+	// 		m_pBitmapFont = NULL;
+	// 	if (m_pFMOD)
+	// 		m_pFMOD = NULL;
+
 }
-
-
 //////////////////////////////////////////////////////////////////////////
 // TODO:: determine if we have to draw all opaque objects first, then any
 //			transparent ones last?
@@ -146,17 +122,13 @@ void CBattleMap::Render()
 	m_pHUD->Render();
 	//TODO::this will be put in the hud eventually
 	if (m_bIsPlayersTurn)
-	{
-		m_pD3D->DrawText();
-	}
+		m_pD3D->DrawText("PLAYER'S TURN", 250, 5);
 	else
-	{
-		m_pD3D->DrawText();
-	}
+		m_pD3D->DrawText("ENEMY'S TURN", 250, 5);
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
-	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10, ms.y-3);
+	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
 
 	if (m_nHoverCharacter != -1)
 		DrawHover();
@@ -172,35 +144,35 @@ void CBattleMap::Render()
 				continue;
 			mapPT.x = x; mapPT.y = y;
 			mapPT = IsoTilePlot(mapPT, GetOffsetX(), GetOffsetY());
+			if (m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
+				m_pTilesL1[tileID].SetAlpha(150);
+			else
+				m_pTilesL1[tileID].SetAlpha(255);
 			m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 				m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255));
-			mapPT.x = x; mapPT.y = y;
-			mapPT = IsoTilePlot(mapPT, GetOffsetX(), GetOffsetY());
-			m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 1.0f, 1.0f, 
-				m_pTilesL2[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL2[tileID].Alpha(),255,255,255));
+			if (m_pTilesL2[tileID].DestXID() != -1)
+			{
+				m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 1.0f, 1.0f, 
+					m_pTilesL2[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL2[tileID].Alpha(),255,255,255));
+			}
 			
 			// draws selection rectangle on the currently selected tile
-			if (m_nCurrSelectedTile == tileID && m_nHoverCharacter == -1)
+			if (m_bIsPlayersTurn)
 			{
-				m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
-			//////////////////////////////////////////////////////////////////////////
-			// characters would be rendered here:
-				// the turtleX and turtleY represent the anchor point of the turtle in map space
-				//turtleX = m_pAnimation->GetFrames()[0].nAnchorX + mapPT.x;
-				//turtleY = m_pAnimation->GetFrames()[0].nAnchorY + mapPT.y;
-				//m_pAnimation->Render(mapPT.x + (m_nTileWidth >> 1), mapPT.y + (m_nTileHeight >> 1), 
-				//					GetZdepthDraw(turtleX, turtleY, tileID)  );
-			//////////////////////////////////////////////////////////////////////////
-			}
-			else if (m_nHoverCharacter != -1 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
-			{
-				m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
-			}
-			if (m_nCurrCharacterTile == tileID)
-			{
-				m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
-				m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
-					(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
+				if (m_nCurrSelectedTile == tileID && m_nHoverCharacter == -1)
+				{
+					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+				}
+				else if (m_nHoverCharacter != -1 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				{
+					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+				}
+				if (m_nCurrCharacterTile == tileID)
+				{
+					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+					m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
+						(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
+				}
 			}
 		}
 	}
@@ -209,39 +181,38 @@ void CBattleMap::Render()
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
 		// if the character is inside a map object, alpha that object out
-		if (ObjectManager::GetInstance()->CheckObjectsToAlpha(m_pFreeTiles[i].SourceRect()))
-		{
+		RECT srcRect = *m_pFreeTiles[i].SourceRect();
+		srcRect.left = m_pFreeTiles[i].DestX() + GetFreeTileXos();
+		srcRect.top  = m_pFreeTiles[i].DestY() + GetFreeTileYos(); 
+		srcRect.right= srcRect.left + m_pFreeTiles[i].Width();
+		srcRect.bottom=srcRect.top + m_pFreeTiles[i].Height();
+		if (ObjectManager::GetInstance()->CheckObjectsToAlpha(&srcRect))
 			m_pFreeTiles[i].SetAlpha(100);
-		}
 		else
 			m_pFreeTiles[i].SetAlpha(255);
-		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), m_pFreeTiles[i].DestX()+GetFreeTileXos()-96, m_pFreeTiles[i].DestY()+GetFreeTileYos(),
-			0.6f, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
+		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), srcRect.left, srcRect.top,
+			depth.OBJECTS, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 #if BOUNDING_BOXES
 		// drawing bounding boxes
-		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY(),
-			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY(),
-			255, 0, 0);
-		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
-			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
-			255, 0, 0);
-		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY(),
-			m_pFreeTiles[i].DestX(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
-			255, 0, 0);
-		CSGD_Direct3D::GetInstance()->DrawLine(m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY(),
-			m_pFreeTiles[i].DestX()+m_pFreeTiles[i].Width(), m_pFreeTiles[i].DestY()+m_pFreeTiles[i].Height(),
-			255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.left, srcRect.top, srcRect.right, srcRect.top, 255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.left, srcRect.bottom, srcRect.right, srcRect.bottom, 255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.left, srcRect.top, srcRect.left, srcRect.bottom, 255, 0, 0);
+		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.right, srcRect.top, srcRect.right, srcRect.bottom, 255, 0, 0);
+		if (m_nCurrCharacter!=-1)
+		{
+			char szCurrTile[64]; sprintf_s(szCurrTile, "CurrTile:%i", m_vCharacters[m_nCurrCharacter].GetCurrTile() );
+			CSGD_Direct3D::GetInstance()->DrawText(szCurrTile, 5, 200);
+		}
 #endif
 	}
 	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
-	//CPlayer::GetInstance()->Render();
 }
 
 void CBattleMap::Update(float fElapsedTime)
 {
 	//CPlayer::GetInstance()->Update(fElapsedTime);
-	m_pParticleSys->UpdateParticle(fElapsedTime, ms);
+	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
 	if (m_nMoveDirection != -1)
 	{
 		POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
@@ -277,7 +248,7 @@ void CBattleMap::Update(float fElapsedTime)
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
-	ms = mouse;
+	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 	//if (m_pDI->KeyPressed(DIK_ESCAPE))
@@ -286,64 +257,68 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	// Keyboard input
 	if (!HandleKeyBoardInput(fElapsedTime))
 		return false;	
-	if (ms.x < CAM_EDGE_DIST_TO_MOVE)
-		MoveCamLeft(fElapsedTime);
-	if (ms.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
-		MoveCamRight(fElapsedTime);
-	if (ms.y < CAM_EDGE_DIST_TO_MOVE)
-		MoveCamUp(fElapsedTime);
-	if (ms.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
-		MoveCamDown(fElapsedTime);
-
-	int xID, yID;
-	// transform the mouse into map coordinates
-	xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-	yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-	// these check for the mouse being off the map
-	// if it is, it is reset to the lowest row/column
-
-	if (xID >= m_nNumCols && yID >= m_nNumRows)
+	// Mouse movement (edge of screen to move camera)
+	if (m_bIsPlayersTurn)
 	{
-		yID = m_nNumRows-1;
-		xID = m_nNumCols-1;
-	}	
-	else if (xID < 2 && yID < 2)
-		yID = xID = 2;
-	else if (xID < 2 && yID >= m_nNumRows)
-	{
-		xID = 2;
-		yID = m_nNumRows-1;
-	}
-	else if (xID >= m_nNumCols && yID < 2)
-	{
-		yID = 2;
-		xID = m_nNumCols-1;
-	}
-	else if (xID < 2)
-		xID = 2;
-	else if (yID < 2)
-		yID = 2;
-	else if (xID >= m_nNumCols)
-		xID = m_nNumCols-1;
-	else if (yID >= m_nNumRows)
-		yID = m_nNumRows-1;
-
-	m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
-	// Mouse -- determine if the mouse is over a character
-	int index = IsMousePosValid(mouse);
-	if (index != -1)
-	{
-		m_nHoverCharacter = index;
-	}
-	else
-		m_nHoverCharacter = -1;
-	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
-	{
-		// see if we're clicking on a character
+		if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
+			MoveCamLeft(fElapsedTime);
+		if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
+			MoveCamRight(fElapsedTime);
+		if (m_ptMouseScreenCoord.y < CAM_EDGE_DIST_TO_MOVE)
+			MoveCamUp(fElapsedTime);
+		if (m_ptMouseScreenCoord.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
+			MoveCamDown(fElapsedTime);
+	
+		int xID, yID;
+		// transform the mouse into map coordinates
+		xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		// these check for the mouse being off the map
+		// if it is, it is reset to the lowest row/column
+	
+		if (xID >= m_nNumCols && yID >= m_nNumRows)
+		{
+			yID = m_nNumRows-1;
+			xID = m_nNumCols-1;
+		}	
+		else if (xID < 2 && yID < 2)
+			yID = xID = 2;
+		else if (xID < 2 && yID >= m_nNumRows)
+		{
+			xID = 2;
+			yID = m_nNumRows-1;
+		}
+		else if (xID >= m_nNumCols && yID < 2)
+		{
+			yID = 2;
+			xID = m_nNumCols-1;
+		}
+		else if (xID < 2)
+			xID = 2;
+		else if (yID < 2)
+			yID = 2;
+		else if (xID >= m_nNumCols)
+			xID = m_nNumCols-1;
+		else if (yID >= m_nNumRows)
+			yID = m_nNumRows-1;
+	
+		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
+		// Mouse -- determine if the mouse is over a character
+		int index = IsMousePosValid(mouse);
 		if (index != -1)
 		{
-			m_nCurrCharacter = index;
-			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
+			m_nHoverCharacter = index;
+		}
+		else
+			m_nHoverCharacter = -1;
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
+		{
+			// see if we're clicking on a character
+			if (index != -1)
+			{
+				m_nCurrCharacter = index;
+				m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
+			}
 		}
 	}
 	// debugging
@@ -420,7 +395,7 @@ void CBattleMap::LoadMapInfo()
 			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
 			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
 			SetFTosY((int)m_fScrollY - m_nTileHeight);
 		}
 		else // didn't have the correct version number...
@@ -665,15 +640,13 @@ void CBattleMap::LoadMapInfo()
 
 float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 {
-	if (m_pDI->KeyPressed(DIK_D))	// if need to do debugging
+	if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_D))	// if need to do debugging
 		int i = 0;
 
 	//  for the character to be ahead of the object,
 	//	it must be directly below, to the southeast, or
 	//	to the southwest of an edge tile...
 	//	otherwise it is behind the object.
-	//	TODO::make sure to check for edge of map, so that tiles across the map aren't being looked at
-	//			edge will be accounted for by not using the top two rows of the map...
 	if (currTileID != -1)
 	{
 		if (m_pTilesL1[currTileID-(m_nNumCols+1)].Flag() == FLAG_OBJECT_EDGE ||
@@ -699,7 +672,7 @@ void CBattleMap::DrawDebugInfo()
 // 	CSGD_Direct3D::GetInstance()->DrawText(szAnchorPt, 5, 5);	
 
 	char szMousePt[64];
-	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", ms.x, ms.y);
+	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", m_ptMouseScreenCoord.x, m_ptMouseScreenCoord.y);
 	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 5, 5);	
 }
 
@@ -750,13 +723,6 @@ void CBattleMap::DisplayRanges()
 
 }
 
-void CBattleMap::SetTurtlePos()
-{
-	m_vCharacters.clear();
-	for (int i = 0; i < 4; ++i)
-		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-}
-
 void CBattleMap::SetStartPositions()
 {
 	// mapCoordinates represents the grid x=column, y=row
@@ -789,43 +755,50 @@ void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enem
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 {
-	// Keyboard
-	// camera movement
-	if (m_pDI->KeyDown(DIK_A))
+	if (m_bIsPlayersTurn)
 	{
-		MoveCamLeft(fElapsedTime);
-	}
-	if (m_pDI->KeyDown(DIK_D))
-	{
-		MoveCamRight(fElapsedTime);
-	}
-	if (m_pDI->KeyDown(DIK_S))
-	{
-		MoveCamDown(fElapsedTime);
-	}
-	if (m_pDI->KeyDown(DIK_W))
-	{
-		MoveCamUp(fElapsedTime);
-	}
-	// character movement
-	if (m_nCurrCharacter != -1)
-	{
-		if (m_pDI->KeyPressed(DIK_NUMPAD7))
+		// Keyboard
+		// camera movement
+		if (m_pDI->KeyDown(DIK_A))
 		{
-			m_nMoveDirection = MOVE_MINUS_X;
+			MoveCamLeft(fElapsedTime);
 		}
-		else if (m_pDI->KeyPressed(DIK_NUMPAD3))
+		if (m_pDI->KeyDown(DIK_D))
 		{
-			m_nMoveDirection = MOVE_ADD_X;
+			MoveCamRight(fElapsedTime);
 		}
-		else if (m_pDI->KeyPressed(DIK_NUMPAD9))
+		if (m_pDI->KeyDown(DIK_S))
 		{
-			m_nMoveDirection = MOVE_MINUS_Y;	
+			MoveCamDown(fElapsedTime);
 		}
-		else if (m_pDI->KeyPressed(DIK_NUMPAD1))
+		if (m_pDI->KeyDown(DIK_W))
 		{
-			m_nMoveDirection = MOVE_ADD_Y;
+			MoveCamUp(fElapsedTime);
 		}
+		// character movement
+		if (m_nCurrCharacter != -1)
+		{
+			if (m_pDI->KeyPressed(DIK_NUMPAD7))
+			{
+				m_nMoveDirection = MOVE_MINUS_X;
+			}
+			else if (m_pDI->KeyPressed(DIK_NUMPAD3))
+			{
+				m_nMoveDirection = MOVE_ADD_X;
+			}
+			else if (m_pDI->KeyPressed(DIK_NUMPAD9))
+			{
+				m_nMoveDirection = MOVE_MINUS_Y;	
+			}
+			else if (m_pDI->KeyPressed(DIK_NUMPAD1))
+			{
+				m_nMoveDirection = MOVE_ADD_Y;
+			}
+		}
+	}
+	if (m_pDI->KeyPressed(DIK_SPACE))
+	{
+		m_bIsPlayersTurn = !m_bIsPlayersTurn;
 	}
 	return true;
 }
@@ -855,7 +828,7 @@ void CBattleMap::MoveCamLeft(float fElapsedTime)
 	m_fScrollX += SCROLLSPEED * fElapsedTime;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
@@ -865,7 +838,7 @@ void CBattleMap::MoveCamRight(float fElapsedTime)
 	m_fScrollX -= SCROLLSPEED * fElapsedTime;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();

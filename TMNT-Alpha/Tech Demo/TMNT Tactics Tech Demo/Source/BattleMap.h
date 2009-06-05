@@ -69,8 +69,9 @@ class CBattleMap
 			ARROW = 0.49f;
 		}
 	};
-	POINT ms;					// the mouse location, updated each Update() call
-	DEPTH depth;				// struct that holds all the z-depth draw locations
+	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
+	int m_nCurrMousePtr;
+	DEPTH depth;				// struct that holds all the z-depth draw values
 	string m_strCurrVersion;
 
 	// Map variables
@@ -81,7 +82,7 @@ class CBattleMap
 	int m_nTileWidth;
 	int m_nTileHeight;
 	int m_nTotalNumTiles;
-	int m_nCurrSelectedTile;
+	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
 
 	int m_nScrenWidth;
 	int m_nScreenHeight;
@@ -135,6 +136,7 @@ class CBattleMap
 	CHUD*				m_pHUD;
 	//FMOD::System*		m_pFMODsys;
 	//////////////////////////////////////////////////////////////////////////
+
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	CreateEnemies
@@ -209,6 +211,13 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	void UpdatePositions();
 
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	DrawDebugInfo
+	//
+	//	Purpose		:	Draws any useful information for debugging to the screen
+	//////////////////////////////////////////////////////////////////////////
+	void DrawDebugInfo();
+
 	void MoveCamLeft(float fElapsedTime);
 	void MoveCamRight(float fElapsedTime);
 	void MoveCamDown(float fElapsedTime);
@@ -217,9 +226,20 @@ class CBattleMap
 
 public:
 	CBattleMap(void);
-	CBattleMap(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);
 	~CBattleMap(void);
-
+	static CBattleMap* GetInstance();
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	Enter
+	//
+	//	Purpose		:	Set up the new battle map, load file, set numEnemies...
+	//////////////////////////////////////////////////////////////////////////
+	void Enter(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	Exit
+	//
+	//	Purpose		:	Clean up
+	//////////////////////////////////////////////////////////////////////////
+	void Exit();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Update
 	//
@@ -262,6 +282,7 @@ public:
 	int GetFreeTileXos()const		{return m_nFreeTileOSx;}
 	int GetFreeTileYos()const		{return m_nfreeTileOSy;}
 	int GetCurrActive() const		{return m_nCurrCharacter;}
+	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
@@ -271,15 +292,7 @@ public:
 	void SetOffsetY(const int offsetY)				{m_nOffsetY = offsetY;}
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
-	void SetTurtlePos();
 	void SetStartPositions();
-
-	//////////////////////////////////////////////////////////////////////////
-	//  Function	:	DrawDebugInfo
-	//
-	//	Purpose		:	Draws any useful information for debugging to the screen
-	//////////////////////////////////////////////////////////////////////////
-	void DrawDebugInfo();
 };
 
 #endif

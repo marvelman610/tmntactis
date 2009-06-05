@@ -123,8 +123,8 @@ void CGamePlayState::Render(void)
 {
 // 	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance();
 // 	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
-	
-	m_pBattleMap->Render();
+
 	ObjectManager::GetInstance()->RenderObjects();
+	m_pBattleMap->Render();
 
 }

@@ -85,10 +85,8 @@ public:
 
 	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
-	/*inline CTurtle* GetLeonardo(void)	{ return m_pLeonardo;	}
-	inline CTurtle* GetDonatello(void)	{ return m_pDonatello;	}
-	inline CTurtle* GetRaphael(void)	{ return m_pRaphael;	}
-	inline CTurtle* GetMikey(void)		{ return m_pMikey;		}*/
+
+	//void SetTurtle(int index, );
 
 	/*void Render();
 	void Update(float fElapsedTime);*/

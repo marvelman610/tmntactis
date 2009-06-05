@@ -143,6 +143,7 @@ public:
 
 	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols);	// auto-sets position
 
+
 	void AddAnim(CAnimation& a){ m_vAnimations.push_back(a);}
 
 	////////////////////////////////////////////////////////////////////

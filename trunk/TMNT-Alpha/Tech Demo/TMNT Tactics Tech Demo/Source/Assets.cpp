@@ -66,4 +66,8 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 	// HUD Character Faces IDs
 	aMikeyHUDFaceID		= m_pTM->LoadTexture("Resources/Images/VG_LeonardoHUD.png", D3DCOLOR_XRGB(255,255,255));
+
+	//////////////////////////////////////////////////////////////////////////
+	// temp ninja
+	aNinjaID			= m_pTM->LoadTexture("Resources/Images/VG_Ninja.png", D3DCOLOR_XRGB(0,0,0));
 }

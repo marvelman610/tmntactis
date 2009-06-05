@@ -29,6 +29,7 @@ class CParticleSystem;
 class CCamera;
 class CHUD;
 class CPlayer;
+class CNinja;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
@@ -117,6 +118,8 @@ class CBattleMap
 	CParticleSystem* m_pParticleSys;
 	//int turtleX;
 	//int turtleY;
+	// temp ninja
+	//CNinja* m_pNinja;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Pointers to singletons

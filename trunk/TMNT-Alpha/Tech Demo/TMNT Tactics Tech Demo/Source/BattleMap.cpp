@@ -177,7 +177,6 @@ void CBattleMap::Render()
 		}
 	}
 	// draw the free placed layer
-		//		RECT srcRect = {0, 0, 64, 50};
 	for (int i = 0; i < m_nFreeTileCount; ++i)
 	{
 		// if the character is inside a map object, alpha that object out

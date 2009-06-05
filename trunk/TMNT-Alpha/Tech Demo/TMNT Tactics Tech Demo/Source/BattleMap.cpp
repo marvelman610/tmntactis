@@ -21,6 +21,7 @@
 #include "ParticleSystem.h"
 #include "HUD.h"
 #include "Player.h"
+#include "Turtle.h"
 #include <fstream>
 #include <exception>
 
@@ -102,10 +103,6 @@ CBattleMap::CBattleMap(char* szFileName, char* szMapName, int nNumEnemies)
 	// will be used to set ALL the characters' start positions according to
 	// the battle map's spawn points
 	SetStartPositions();	
-	for (int i = 0; i < 4; ++i)
-	{
-		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-	}
 	
 	m_pParticleSys = new CParticleSystem();
 	
@@ -149,12 +146,6 @@ void CBattleMap::Render()
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
 	m_pTM->Draw(m_pAssets->aMousePointerID, ms.x-10, ms.y-3);
-
-	// tile offsets
-	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
-	SetFTosY((int)m_fScrollY - m_nTileHeight);
 
 	if (m_nHoverCharacter != -1)
 		DrawHover();
@@ -233,10 +224,8 @@ void CBattleMap::Render()
 	}
 	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
-
 	//CPlayer::GetInstance()->Render();
 }
-
 
 void CBattleMap::Update(float fElapsedTime)
 {
@@ -267,10 +256,10 @@ void CBattleMap::Update(float fElapsedTime)
 			if (newPt.y < 2)
 				newPt.y = 2;
 			break;
-
 		}
-		//m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-		SetTurtlePos();
+		m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
 		m_nMoveDirection = -1;
 	}
 }
@@ -346,7 +335,6 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
 		}
 	}
-
 	// debugging
 	if (m_pDI->KeyPressed(DIK_D))
 		int i = 0;
@@ -358,6 +346,7 @@ void CBattleMap::CreateEnemies()
 {
 // 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 // 	{
+
 // 	}
 }
 
@@ -415,11 +404,13 @@ void CBattleMap::LoadMapInfo()
 			m_nFreeTileOSx = (m_nTileWidth<<1);	
 			m_nfreeTileOSy = (m_nTileHeight<<1);
 			// allocate memory for layer 1, 2, and 3(free placed tiles)
-			m_pTilesL1  =new CTile[m_nNumRows*m_nNumCols];
-			m_pTilesL2  =new CTile[m_nNumRows*m_nNumCols];
-			m_pFreeTiles=new CFreeTile[m_nNumRows*m_nNumCols];
+			m_pTilesL1  = new CTile[m_nNumRows*m_nNumCols];
+			m_pTilesL2  = new CTile[m_nNumRows*m_nNumCols];
+			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
 			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+			SetFTosY((int)m_fScrollY - m_nTileHeight);
 		}
 		else // didn't have the correct version number...
 		{
@@ -698,7 +689,7 @@ void CBattleMap::DrawDebugInfo()
 
 	char szMousePt[64];
 	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", ms.x, ms.y);
-	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 5, 25);	
+	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 5, 5);	
 }
 
 MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
@@ -750,13 +741,9 @@ void CBattleMap::DisplayRanges()
 
 void CBattleMap::SetTurtlePos()
 {
-	m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-	m_vCharacters[m_nCurrCharacter] = (CBase)(*m_pPlayer->GetTurtles()[m_nCurrCharacter]);
-// 	m_vCharacters.clear();
-// 	for (int i = 0; i < 4; ++i)
-// 	{
-// 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-// 	}
+	m_vCharacters.clear();
+	for (int i = 0; i < 4; ++i)
+		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 }
 
 void CBattleMap::SetStartPositions()
@@ -780,21 +767,13 @@ void CBattleMap::SetStartPositions()
 	m_pPlayer->GetTurtles()[MIKEY]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	m_vCharacters.clear();
 	for (int i = 0; i < 4; ++i)
-	{
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-	}
-
 }
 
-void CBattleMap::UpdatePositions()
+void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
 {
-	m_vCharacters.clear();
-
 	for (int i = 0; i < 4; ++i)
-	{
-		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_pPlayer->GetTurtles()[i]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-	}
+		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 }
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
@@ -838,26 +817,49 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		}
 	}
 	return true;
-
 }
 
 void CBattleMap::MoveCamUp(float fElapsedTime)
 {
 	m_fScrollY += SCROLLSPEED * fElapsedTime;
+	// tile offsets
+	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+	SetFTosY((int)m_fScrollY - m_nTileHeight);
+	for (int i = 0; i < m_nNumCharacters; ++i)
+		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
 }
 void CBattleMap::MoveCamDown(float fElapsedTime)
 {
 	m_fScrollY -= SCROLLSPEED * fElapsedTime;
+	// tile offsets
+	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+	SetFTosY((int)m_fScrollY - m_nTileHeight);
+	for (int i = 0; i < m_nNumCharacters; ++i)
+		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
 }
 void CBattleMap::MoveCamLeft(float fElapsedTime)
 {
 	m_fScrollX += SCROLLSPEED * fElapsedTime;
+	// tile offsets
+	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+	for (int i = 0; i < m_nNumCharacters; ++i)
+		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
 }
 void CBattleMap::MoveCamRight(float fElapsedTime)
 {
 	m_fScrollX -= SCROLLSPEED * fElapsedTime;
+	// tile offsets
+	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) + m_nTileWidth);
+	for (int i = 0; i < m_nNumCharacters; ++i)
+		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
+}
+void CBattleMap::CenterCam(float fElapsedTime)
+{
+
 }

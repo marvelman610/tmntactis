@@ -199,7 +199,7 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"UpdatePositions"
 	//
-	//	Purpose		:	Updates all characters' positions, used primarily by
+	//	Purpose		:	Updates all characters' positions, used primarily for
 	//					camera movement
 	//////////////////////////////////////////////////////////////////////////
 	void UpdatePositions();
@@ -208,6 +208,7 @@ class CBattleMap
 	void MoveCamRight(float fElapsedTime);
 	void MoveCamDown(float fElapsedTime);
 	void MoveCamUp(float fElapsedTime);
+	void CenterCam(float fElapsedTime);
 
 public:
 	CBattleMap(void);

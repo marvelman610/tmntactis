@@ -13,6 +13,7 @@ CBase::CBase(void)
 {
 	m_szName = NULL;
 	m_fPosZ = 0.0f;	// draw in front of everything by default
+	m_nCurrAnimation = 0;
 }
 
 void CBase::Update(float fElapsedTime)
@@ -50,7 +51,7 @@ void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, in
 	SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
 	SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));
 	POINT anchorPt;
-	anchorPt.x = GetPosX() + m_vAnimations[0].GetFrames()[0].nAnchorX;
-	anchorPt.y = GetPosY() + m_vAnimations[0].GetFrames()[0].nAnchorY;
+	anchorPt.x = (LONG)(GetPosX() + m_vAnimations[0].GetFrames()[0].nAnchorX);
+	anchorPt.y = (LONG)(GetPosY() + m_vAnimations[0].GetFrames()[0].nAnchorY);
 	SetAnchor(anchorPt);
 }

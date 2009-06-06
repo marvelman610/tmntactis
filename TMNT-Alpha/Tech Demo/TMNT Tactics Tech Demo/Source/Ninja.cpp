@@ -18,7 +18,6 @@ CNinja::CNinja(void)
 	m_nLowHealth = 0;
 	m_nInRange = 0;
 
-
 	SetBaseAP(16);
 	SetCurrAP(16);
 	
@@ -34,6 +33,12 @@ CNinja::CNinja(void)
 
 	SetExperience(0);
 
+	CAnimation anim;
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 1);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 2);
+	AddAnim(anim);
+	anim.Play();
 }
 
 CNinja::~CNinja(void)
@@ -228,11 +233,13 @@ void CNinja::Update(float fElapsedTime)
 		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
 	}
+	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 
 	//get current x and y tile position then get the x and y tile positions
 	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
 }
 void CNinja::Render()
 {
-	CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aNinjaID, GetPosX(), GetPosY(), 0.5f); 
+	//CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aNinjaID, (int)GetPosX(), (int)GetPosY(), 0.5f); 
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.5f);
 }

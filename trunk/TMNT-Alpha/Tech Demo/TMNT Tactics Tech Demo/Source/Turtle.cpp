@@ -12,7 +12,7 @@
 
 CTurtle::CTurtle(void)
 {
-	m_ncurrFrame = 1;
+
 }
 
 CTurtle::~CTurtle(void)
@@ -20,15 +20,15 @@ CTurtle::~CTurtle(void)
 }
 void CTurtle::Update(float fElapsedTime)
 {
-	if(m_vAnimations[m_ncurrFrame].IsAnimationPlaying() == false)
+	if(m_vAnimations[m_nCurrAnimation].IsAnimationPlaying() == false)
 	{
-		m_vAnimations[m_ncurrFrame].Play();
+		m_vAnimations[m_nCurrAnimation].Play();
 	}
-	m_vAnimations[m_ncurrFrame].Update(fElapsedTime);
+	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 }
 void CTurtle::Render()
 {
-	m_vAnimations[m_ncurrFrame].Render((int)GetPosX(),(int)GetPosY(), GetPosZ());
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(),(int)GetPosY(), GetPosZ());
 }									
 
 void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)

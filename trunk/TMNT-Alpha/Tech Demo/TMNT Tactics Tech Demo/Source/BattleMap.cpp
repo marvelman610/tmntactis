@@ -14,6 +14,7 @@
 #include "CSGD_DirectInput.h"
 #include "CSGD_TextureManager.h"
 #include "ObjectManager.h"
+#include "Factory.h"
 #include "Animation.h"
 //#include "fmod.hpp"
 #include "MainMenuState.h"
@@ -22,6 +23,7 @@
 #include "HUD.h"
 #include "Player.h"
 #include "Turtle.h"
+#include "Ninja.h"
 #include <fstream>
 #include <exception>
 
@@ -86,7 +88,8 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
 	// the battle map's spawn points
-	SetStartPositions();	
+	CreateEnemies();
+	SetStartPositions();
 }
 void CBattleMap::Exit()
 {
@@ -106,6 +109,8 @@ void CBattleMap::Exit()
 		m_pDI = NULL;
 	if (m_pHUD)
 		m_pHUD = NULL;
+	if (m_pPlayer)
+		m_pPlayer = NULL;
 	// 	if (m_pBitmapFont)
 	// 		m_pBitmapFont = NULL;
 	// 	if (m_pFMOD)
@@ -341,10 +346,12 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 
 void CBattleMap::CreateEnemies()
 {
-// 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-// 	{
-
-// 	}
+	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+	{
+		CNinja* ninja = Factory::GetInstance()->CreateNinja();
+		m_vCharacters.push_back((CBase)*ninja);
+		m_vEnemies.push_back((CBase*)ninja);
+	}
 }
 
 void CBattleMap::LoadMapInfo()
@@ -740,9 +747,10 @@ void CBattleMap::CalculateRanges()
 		}
 	// mark tiles to be drawn with range color
 	// scan the neighbors
-	for(int nx = ptGridLocation.x - 20; nx <= ptGridLocation.x + 20; ++nx)
+	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+	for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
 	{
-		for(int ny = ptGridLocation.y - 20; ny <= ptGridLocation.y + 20; ++ny)
+		for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
 		{
 			//make sure the neighbor is on the map
 			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
@@ -751,7 +759,7 @@ void CBattleMap::CalculateRanges()
 				int distance = (abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) );
 				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
-				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE)
+				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
 				{
 					m_pTilesL1[id].SetAlpha(100);
 				}
@@ -796,6 +804,15 @@ void CBattleMap::SetStartPositions()
 	m_vCharacters.clear();
 	for (int i = 0; i < 4; ++i)
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+
+	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+	{
+		mapCoordinate.x = rand() % (19 - 1) + 2;
+		mapCoordinate.y = rand() % (19 - 1) + 2;
+		m_vEnemies[i]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_vCharacters.push_back(*m_vEnemies[i]);
+	}
+	
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
@@ -832,18 +849,22 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			if (m_pDI->KeyPressed(DIK_NUMPAD7))
 			{
 				m_nMoveDirection = MOVE_MINUS_X;
+				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD3))
 			{
 				m_nMoveDirection = MOVE_ADD_X;
+				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD9))
 			{
 				m_nMoveDirection = MOVE_MINUS_Y;	
+				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD1))
 			{
 				m_nMoveDirection = MOVE_ADD_Y;
+				CalculateRanges();
 			}
 		}
 	}

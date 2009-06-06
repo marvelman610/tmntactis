@@ -48,7 +48,7 @@ void CGamePlayState::Enter(void)
 
 	// TODO:: will enter battle map once player goes into a battle
 	//			from the world map
-	m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat");
+	m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 1);
 
 	//m_nCurrentMap = ;
 }

@@ -68,7 +68,7 @@ protected:
 	int m_nType;
 public:	
 	vector<CAnimation> m_vAnimations;
-	int m_ncurrFrame;
+	int m_nCurrAnimation;
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"Base(Constructor)"

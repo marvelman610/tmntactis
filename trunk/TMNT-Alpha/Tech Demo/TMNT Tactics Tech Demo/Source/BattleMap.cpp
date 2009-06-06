@@ -46,6 +46,8 @@ CBattleMap::CBattleMap(void)
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	m_pHUD			= CHUD::GetInstance();
 
+	SetMousePtr(m_pAssets->aMousePointerID);
+
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
@@ -133,10 +135,12 @@ void CBattleMap::Render()
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
-	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
+	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
 
 	if (m_nHoverCharacter != -1)
 		DrawHover();
+	else
+		SetMousePtr(m_pAssets->aMousePointerID);
 
 	// draw layer one & two
 	MY_POINT mapPT;
@@ -206,7 +210,7 @@ void CBattleMap::Render()
 		else
 			m_pFreeTiles[i].SetAlpha(255);
 		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), srcRect.left, srcRect.top,
-			depth.OBJECTS, .0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
+			depth.OBJECTS, 1.0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 #if BOUNDING_BOXES
 		// drawing bounding boxes
 		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.left, srcRect.top, srcRect.right, srcRect.top, 255, 0, 0);
@@ -775,6 +779,10 @@ void CBattleMap::DrawHover()
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
 	m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
+	if (m_nHoverCharacter > 3)
+		SetMousePtr(m_pAssets->aMouseMagGlassID);
+	else
+		SetMousePtr(m_pAssets->aMousePointerID);
 }
 
 void CBattleMap::DisplayRanges()
@@ -807,18 +815,19 @@ void CBattleMap::SetStartPositions()
 
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 	{
-		mapCoordinate.x = rand() % (19 - 1) + 2;
-		mapCoordinate.y = rand() % (19 - 1) + 2;
+		mapCoordinate.x = rand() % (18 - 3) + 2;
+		mapCoordinate.y = rand() % (18 - 3) + 2;
 		m_vEnemies[i]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 		m_vCharacters.push_back(*m_vEnemies[i]);
 	}
-	
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
 {
 	for (int i = 0; i < 4; ++i)
 		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+		m_vEnemies[i]->SetCurrTile(m_vEnemies[i]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 }
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)

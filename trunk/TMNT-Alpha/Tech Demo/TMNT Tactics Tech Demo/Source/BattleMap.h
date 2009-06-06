@@ -285,6 +285,7 @@ public:
 	int GetFreeTileXos()const		{return m_nFreeTileOSx;}
 	int GetFreeTileYos()const		{return m_nfreeTileOSy;}
 	int GetCurrActive() const		{return m_nCurrCharacter;}
+	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -295,6 +296,7 @@ public:
 	void SetOffsetY(const int offsetY)				{m_nOffsetY = offsetY;}
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
+	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
 	void SetStartPositions();
 };
 

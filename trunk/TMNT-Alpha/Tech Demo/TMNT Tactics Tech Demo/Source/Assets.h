@@ -49,6 +49,7 @@ public:
 	int aBitmapFontID;
 	int aMousePointerID;
 	int aMouseGrabID;
+	int aMouseAttackID;
 	int aMouseMagGlassID;
 	int aBitmapFont2ID;
 	int aBitmapFont3ID;

@@ -38,7 +38,7 @@ CNinja::CNinja(void)
 	AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 2);
 	AddAnim(anim);
-	anim.Play();
+	m_vAnimations[m_nCurrAnimation].Play();
 }
 
 CNinja::~CNinja(void)

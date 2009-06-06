@@ -405,13 +405,13 @@ bool CSGD_TextureManager::DrawWithZSort(int nID, int nX, int nY, float nZ, float
 	if (!m_lpSprite)
 		return false;
 
-// 	D3DXMATRIX scale;
+ 	D3DXMATRIX scale;
 // 	D3DXMATRIX rotation;
 // 	D3DXMATRIX translate;
-// 	D3DXMATRIX combined;
+ 	D3DXMATRIX combined;
 // 
 // 	// Initialize the Combined matrix.
-// 	D3DXMatrixIdentity(&combined);
+/* 	D3DXMatrixIdentity(&combined);*/
 // 
 // 	// Rotate the sprite.
 // 	D3DXMatrixTranslation(&translate, -fRotCenterX, -fRotCenterY, 0.0f);
@@ -430,7 +430,7 @@ bool CSGD_TextureManager::DrawWithZSort(int nID, int nX, int nY, float nZ, float
 // 	combined *= translate;
 // 
 // 	// Apply the transform.
-// 	m_lpSprite->SetTransform(&combined);
+/* 	m_lpSprite->SetTransform(&combined);*/
 	
 	D3DXVECTOR3 v3Pos((float)nX, (float)nY, nZ);
 	// Draw the sprite.

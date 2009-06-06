@@ -326,23 +326,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		// debugging
 		if (m_pDI->KeyPressed(DIK_D))
 			int i = 0;
-		int index = IsMousePosValid(mouse);
-		if (index != -1)
-		{
-			m_nHoverCharacter = index;
-		}
-		else
-			m_nHoverCharacter = -1;
-		if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
-		{
-			// see if we're clicking on a character
-			if (index != -1)
-			{
-				m_nCurrCharacter = index;
-				m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
-				CalculateRanges();
-			}
-		}
+
+		HandleMouseInput(fElapsedTime, mouse);
 	}
 
 	return true;
@@ -760,7 +745,7 @@ void CBattleMap::CalculateRanges()
 			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
 				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 			{
-				int distance = (abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) );
+				int distance = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) >> 1);
 				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
 				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
@@ -878,6 +863,36 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		m_bIsPlayersTurn = !m_bIsPlayersTurn;
 	}
 	return true;
+}
+void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse)
+{
+	int index = IsMousePosValid(mouse);
+	if (index != -1)
+	{
+		m_nHoverCharacter = index;
+	}
+	else
+		m_nHoverCharacter = -1;
+
+	// when the left mouse button is clicked
+	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
+	{
+		// see if we're clicking on a character
+		if (index != -1)
+		{
+			m_nCurrCharacter = index;
+			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
+			CalculateRanges();
+		}
+		// for movement, see if the tile is open
+		if (m_nCurrMouseTileTarget != -1)
+		{
+			// it's an open tile, now check if the character has enough Action Points
+			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= /*movement cost*/0)
+			{
+			}
+		}
+	}
 }
 
 void CBattleMap::MoveCamUp(float fElapsedTime)

@@ -207,6 +207,15 @@ class CBattleMap
 	bool HandleKeyBoardInput(float fElapsedTime);
 
 	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"HandleMouseInput"
+	//
+	//	Purpose		:	Determine which mouse buttons are pressed and handle accordingly
+	//
+	//  Returns		:	True if the user is not exiting
+	//////////////////////////////////////////////////////////////////////////
+	void HandleMouseInput(float fElapsedTime, POINT mouse);
+
+	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"UpdatePositions"
 	//
 	//	Purpose		:	Updates all characters' positions, used primarily for

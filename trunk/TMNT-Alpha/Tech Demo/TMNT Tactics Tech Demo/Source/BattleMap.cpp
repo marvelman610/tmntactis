@@ -858,22 +858,18 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			if (m_pDI->KeyPressed(DIK_NUMPAD7))
 			{
 				m_nMoveDirection = MOVE_MINUS_X;
-				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD3))
 			{
 				m_nMoveDirection = MOVE_ADD_X;
-				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD9))
 			{
 				m_nMoveDirection = MOVE_MINUS_Y;	
-				CalculateRanges();
 			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD1))
 			{
 				m_nMoveDirection = MOVE_ADD_Y;
-				CalculateRanges();
 			}
 		}
 	}

@@ -83,6 +83,7 @@ class CBattleMap
 	int m_nTileHeight;
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
+	int m_nCurrMouseTileTarget;
 
 	int m_nScrenWidth;
 	int m_nScreenHeight;

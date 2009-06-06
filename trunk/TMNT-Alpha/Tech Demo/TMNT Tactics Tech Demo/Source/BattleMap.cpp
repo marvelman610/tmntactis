@@ -25,7 +25,7 @@
 #include <fstream>
 #include <exception>
 
-#define BOUNDING_BOXES 1
+#define BOUNDING_BOXES 0
 #define CAM_EDGE_DIST_TO_MOVE 40
 #define SCROLLSPEED 150.0f
 // default constructor may be used for
@@ -48,8 +48,7 @@ CBattleMap::CBattleMap(void)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_bIsPlayersTurn = (bool)(rand() % 1);
-	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1;
+	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1;
 	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
 	m_nTileWidth = 0; m_nTileHeight = 0;
@@ -82,6 +81,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
 	m_szMapName  = szMapName;
+	m_bIsPlayersTurn = (bool)(rand() % 2);
 
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
@@ -122,9 +122,9 @@ void CBattleMap::Render()
 	m_pHUD->Render();
 	//TODO::this will be put in the hud eventually
 	if (m_bIsPlayersTurn)
-		m_pD3D->DrawText("PLAYER'S TURN", 250, 5);
+		m_pD3D->DrawText("PLAYER'S TURN", 200, 5);
 	else
-		m_pD3D->DrawText("ENEMY'S TURN", 250, 5);
+		m_pD3D->DrawText("ENEMY'S TURN", 200, 5);
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
@@ -144,12 +144,23 @@ void CBattleMap::Render()
 				continue;
 			mapPT.x = x; mapPT.y = y;
 			mapPT = IsoTilePlot(mapPT, GetOffsetX(), GetOffsetY());
-			if (m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
-				m_pTilesL1[tileID].SetAlpha(150);
+
+			// Layer one
+// 			if (m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
+// 				m_pTilesL1[tileID].SetAlpha(150);
+// 			else
+// 				m_pTilesL1[tileID].SetAlpha(255);
+			if (m_pTilesL1[tileID].Alpha() != 255)
+			{
+				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(60,60,255));
+			} 
 			else
-				m_pTilesL1[tileID].SetAlpha(255);
-			m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-				m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255));
+			{
+				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255));
+			}
+			// Layer two
 			if (m_pTilesL2[tileID].DestXID() != -1)
 			{
 				m_pTM->DrawWithZSort(m_pTilesL2[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUNDL2, 1.0f, 1.0f, 
@@ -274,7 +285,6 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 		// these check for the mouse being off the map
 		// if it is, it is reset to the lowest row/column
-	
 		if (xID >= m_nNumCols && yID >= m_nNumRows)
 		{
 			yID = m_nNumRows-1;
@@ -303,6 +313,10 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	
 		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
 		// Mouse -- determine if the mouse is over a character
+
+		// debugging
+		if (m_pDI->KeyPressed(DIK_D))
+			int i = 0;
 		int index = IsMousePosValid(mouse);
 		if (index != -1)
 		{
@@ -317,12 +331,10 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			{
 				m_nCurrCharacter = index;
 				m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
+				CalculateRanges();
 			}
 		}
 	}
-	// debugging
-	if (m_pDI->KeyPressed(DIK_D))
-		int i = 0;
 
 	return true;
 }
@@ -697,14 +709,54 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 			return i;
 		}
 	}
+	// determine if the mouse is over an invalid tile for movement
+	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_COLLISION)
+	{
+		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
+	}
+	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_OBJECT_EDGE)
+	{
+		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
+	}
+	if (m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_COLLISION ||
+			 m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_OBJECT_EDGE)
+	{
+		m_nCurrMouseTileTarget = m_nCurrSelectedTile = -1;
+	}
 	return -1;
 }
 
 void CBattleMap::CalculateRanges()
 {
-	for (int i = 0; i < m_nTotalNumTiles; ++i)
+	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
+
+	// reset alphas
+	for(int nx = 2; nx < m_nNumCols; ++nx)
+		for(int ny = 2; ny < m_nNumRows; ++ny)
+		{
+			int id = ny*m_nNumCols+nx;
+			if (m_pTilesL1[id].Alpha() != 255)
+				m_pTilesL1[id].SetAlpha(255);
+		}
+	// mark tiles to be drawn with range color
+	// scan the neighbors
+	for(int nx = ptGridLocation.x - 20; nx <= ptGridLocation.x + 20; ++nx)
 	{
-		
+		for(int ny = ptGridLocation.y - 20; ny <= ptGridLocation.y + 20; ++ny)
+		{
+			//make sure the neighbor is on the map
+			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
+				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
+			{
+				int distance = (abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) );
+				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+				int id		 = ny*m_nNumCols+nx;
+				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE)
+				{
+					m_pTilesL1[id].SetAlpha(100);
+				}
+			}
+		}
 	}
 }
 

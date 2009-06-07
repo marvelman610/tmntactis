@@ -327,7 +327,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		if (m_pDI->KeyPressed(DIK_D))
 			int i = 0;
 
-		HandleMouseInput(fElapsedTime, mouse);
+		HandleMouseInput(fElapsedTime, mouse, xID, yID);
 	}
 
 	return true;
@@ -864,7 +864,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	}
 	return true;
 }
-void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse)
+void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID)
 {
 	int index = IsMousePosValid(mouse);
 	if (index != -1)
@@ -885,11 +885,15 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse)
 			CalculateRanges();
 		}
 		// for movement, see if the tile is open
-		if (m_nCurrMouseTileTarget != -1)
+		if (m_nCurrMouseTileTarget != -1 && m_nHoverCharacter == -1)
 		{
 			// it's an open tile, now check if the character has enough Action Points
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= /*movement cost*/0)
+			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
+																abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) )
 			{
+				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
+				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+				UpdatePositions();
 			}
 		}
 	}

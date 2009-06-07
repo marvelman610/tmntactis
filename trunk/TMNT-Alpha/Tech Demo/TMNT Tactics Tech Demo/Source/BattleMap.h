@@ -213,7 +213,7 @@ class CBattleMap
 	//
 	//  Returns		:	True if the user is not exiting
 	//////////////////////////////////////////////////////////////////////////
-	void HandleMouseInput(float fElapsedTime, POINT mouse);
+	void HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"UpdatePositions"

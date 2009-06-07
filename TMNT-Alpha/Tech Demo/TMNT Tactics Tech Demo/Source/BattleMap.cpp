@@ -127,17 +127,27 @@ void CBattleMap::Render()
 {
 	//m_pTM->Draw(m_pAssets->aBMbgID, 0, 0);
 	m_pHUD->Render();
+
+	//////////////////////////////////////////////////////////////////////////
 	//TODO::this will be put in the hud eventually
 	if (m_bIsPlayersTurn)
-		m_pD3D->DrawText("PLAYER'S TURN", 200, 5);
+		m_pD3D->DrawText("PLAYER'S TURN", 10, 600);
 	else
-		m_pD3D->DrawText("ENEMY'S TURN", 200, 5);
+		m_pD3D->DrawText("ENEMY'S TURN", 10, 620);
+
+	if (m_nCurrCharacter > -1)
+	{
+		char apText[64];
+		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
+		m_pD3D->DrawText(apText, 10, 640);
+	}
+	//////////////////////////////////////////////////////////////////////////
 
 	// draw the current mouse pointer
 	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
 
-	if (m_nHoverCharacter != -1)
+	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
 	else
 		SetMousePtr(m_pAssets->aMousePointerID);
@@ -206,7 +216,7 @@ void CBattleMap::Render()
 		srcRect.right= srcRect.left + m_pFreeTiles[i].Width();
 		srcRect.bottom=srcRect.top + m_pFreeTiles[i].Height();
 		if (ObjectManager::GetInstance()->CheckObjectsToAlpha(&srcRect))
-			m_pFreeTiles[i].SetAlpha(100);
+			m_pFreeTiles[i].SetAlpha(150);
 		else
 			m_pFreeTiles[i].SetAlpha(255);
 		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), srcRect.left, srcRect.top,
@@ -258,9 +268,16 @@ void CBattleMap::Update(float fElapsedTime)
 				newPt.y = 2;
 			break;
 		}
-		m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-		m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
+		int id = newPt.y * m_nNumCols + newPt.x;
+		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
+			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
+				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
+		{
+			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
+			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
+		}
 		m_nMoveDirection = -1;
 	}
 }
@@ -680,7 +697,7 @@ void CBattleMap::DrawDebugInfo()
 
 	char szMousePt[64];
 	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", m_ptMouseScreenCoord.x, m_ptMouseScreenCoord.y);
-	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 5, 5);	
+	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 10, 660);	
 }
 
 MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
@@ -745,7 +762,7 @@ void CBattleMap::CalculateRanges()
 			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
 				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 			{
-				int distance = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) >> 1);
+				int distance = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) << 1);
 				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
 				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
@@ -889,10 +906,11 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		{
 			// it's an open tile, now check if the character has enough Action Points
 			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
-																abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) )
+																abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2)
 			{
 				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
 				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
 				UpdatePositions();
 			}
 		}

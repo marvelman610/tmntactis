@@ -130,6 +130,7 @@ public:
 	inline void SetHeight(int nHeight)		{m_nHeight = nHeight;}
 	inline void SetBaseAP(int nAP)			{m_nBasePoints = nAP;}
 	inline void SetCurrAP(int nAP)			{m_nCurrPoints = nAP;}
+	inline void DecrementCurrAP(int nDecrem){m_nCurrPoints -= nDecrem;}
 	inline void SetHealthMax(int nHealthMax){m_nHealthMax = nHealthMax;}
 	inline void SetHealth(int nHealth)		{m_nHealth = nHealth;}
 	inline void SetStrength(int nStrength)	{m_nStrength = nStrength;}

@@ -53,7 +53,7 @@ CBattleMap::CBattleMap(void)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1;
+	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
 	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
 	m_nTileWidth = 0; m_nTileHeight = 0;
@@ -170,15 +170,15 @@ void CBattleMap::Render()
 // 				m_pTilesL1[tileID].SetAlpha(150);
 // 			else
 // 				m_pTilesL1[tileID].SetAlpha(255);
-			if (m_pTilesL1[tileID].Alpha() != 255)
+			if (m_pTilesL1[tileID].Alpha() != 255 && m_bIsPlayersTurn)
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(60,60,255));
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255)/*D3DCOLOR_XRGB(60,60,255)*/);
 			} 
 			else
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),255,255,255));
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(255,255,255,255));
 			}
 			// Layer two
 			if (m_pTilesL2[tileID].DestXID() != -1)
@@ -190,19 +190,29 @@ void CBattleMap::Render()
 			// draws selection rectangle on the currently selected tile
 			if (m_bIsPlayersTurn)
 			{
-				if (m_nCurrSelectedTile == tileID && m_nHoverCharacter == -1)
+				if (m_nCurrSelectedTile == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				else if (m_nHoverCharacter != -1 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				else if (m_nHoverCharacter > -1 && m_nHoverCharacter < 4 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+				}
+				else if (m_nHoverCharacter > 3 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				{
+					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
 				if (m_nCurrCharacterTile == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 					m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
 						(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
+				}
+				else if (m_ncurrTargetTile == tileID)
+				{
+					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
+					m_pTM->DrawWithZSort(m_pAssets->aBMcurrTargetArrowID, (int)m_vCharacters[m_nCurrTarget].GetPosX()+8,
+						(int)m_vCharacters[m_nCurrTarget].GetPosY()-32, depth.ARROW);
 				}
 			}
 		}
@@ -278,6 +288,7 @@ void CBattleMap::Update(float fElapsedTime)
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
 			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
+			CalculateRanges();
 		}
 		m_nMoveDirection = -1;
 	}
@@ -763,10 +774,10 @@ void CBattleMap::CalculateRanges()
 			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
 				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 			{
-				int distance = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) << 1);
+				m_nDistanceToTarget = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) << 1);
 				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
-				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
+				if ( m_nDistanceToTarget <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
 				{
 					m_pTilesL1[id].SetAlpha(100);
 				}
@@ -777,15 +788,29 @@ void CBattleMap::CalculateRanges()
 
 void CBattleMap::DrawHover()
 {
-	RECT hoverRect = m_vCharacters[m_nHoverCharacter].GetRect();
-	m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.right, hoverRect.top, 0,0,255);	// top line
-	m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
-	m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
-	m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
-	if (m_nHoverCharacter > 3 && !m_bIsMouseAttack)
-		SetMousePtr(m_pAssets->aMouseMagGlassID);
-	else if (m_nHoverCharacter > 3 && m_bIsMouseAttack)
+	RECT hoverRect;
+	if (m_nHoverCharacter < 4)
+	{
+		hoverRect = m_vCharacters[m_nHoverCharacter].GetRect();
+		m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.right, hoverRect.top, 0,0,255);	// top line
+		m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
+		m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
+		m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
+	}
+	RECT targetRect;
+	if (m_nHoverCharacter > 3)
+	{
+		targetRect= m_vCharacters[m_nHoverCharacter].GetRect();
+		m_pD3D->DrawLine(targetRect.left, targetRect.top, targetRect.right, targetRect.top, 255,0,0);	// top line
+		m_pD3D->DrawLine(targetRect.left, targetRect.top, targetRect.left, targetRect.bottom, 255,0,0);	// left line
+		m_pD3D->DrawLine(targetRect.right, targetRect.top, targetRect.right, targetRect.bottom, 255,0,0);	// right line
+		m_pD3D->DrawLine(targetRect.left, targetRect.bottom, targetRect.right, targetRect.bottom, 255,0,0);	// bottom line
+	}
+
+	if (m_nHoverCharacter == m_nCurrTarget && m_bIsMouseAttack)
 		SetMousePtr(m_pAssets->aMouseAttackID);
+	else if (m_nHoverCharacter > 3)
+		SetMousePtr(m_pAssets->aMouseMagGlassID);
 	else
 		SetMousePtr(m_pAssets->aMousePointerID);
 }
@@ -881,6 +906,11 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	if (m_pDI->KeyPressed(DIK_SPACE))
 	{
 		m_bIsPlayersTurn = !m_bIsPlayersTurn;
+		// reset APs
+		for (int i = 0; i < 4; ++i)
+		{
+			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
+		}
 	}
 	return true;
 }
@@ -897,30 +927,54 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
-		// see if we're clicking on a character
-		if (index > -1 && index < 4)
-		{
-			m_nCurrCharacter	 = index;
-			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
-			CalculateRanges();
-		}
 		// for movement, see if the tile is open
-		if (m_nCurrMouseTileTarget != -1 && m_nHoverCharacter == -1)
+		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1)
 		{
-			// it's an open tile, now check if the character has enough Action Points
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
-																abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2)
+			// it's an open tile...
+
+			// is tile occupied?
+			bool bOccupied = false;	
+			int tileID = yID * m_nNumCols + xID;
+			for (int i = 0; i < m_nNumCharacters; ++i)
+				if (m_vCharacters[i].GetCurrTile() == tileID)
+				{bOccupied = true; break; }
+
+			//now check if the character has enough Action Points
+			int dist = (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
+			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist && !bOccupied)
 			{
 				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
 				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
+				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
 				UpdatePositions();
+				CalculateRanges();
 			}
 		}
-		if (index > 3)
+	}
+	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
+	{
+		if (index > -1 && index < 4)		// see if we're clicking on a character (turtle)
+		{
+			m_nCurrCharacter	 = index;
+			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
+			//m_bIsMouseAttack	 = false;
+			CalculateRanges();
+		}
+		else if (index > 3 && m_nCurrTarget != m_nHoverCharacter) // or if we're clicking on an enemy to view their stats
+		{
 			m_bIsMouseAttack = true;
-		else
-			m_bIsMouseAttack = false;
+			m_nCurrTarget = index;
+			m_ncurrTargetTile = m_vCharacters[m_nCurrTarget].GetCurrTile();
+		}
+		else if (index > 3 && m_nCurrTarget == m_nHoverCharacter)	// otherwise, attempting to attack
+		{
+			// check if in range
+			if (m_nDistanceToTarget <= m_vCharacters[m_nCurrCharacter].GetRange())
+			{
+				// do damage
+			}
+		}
 	}
 }
 

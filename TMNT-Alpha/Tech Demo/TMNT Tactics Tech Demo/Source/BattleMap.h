@@ -115,6 +115,8 @@ class CBattleMap
 	int m_nCurrCharacter;
 	int m_nCurrCharacterTile;
 	int m_nCurrTarget;
+	int m_ncurrTargetTile;
+	int m_nDistanceToTarget;
 	int m_nMoveDirection;
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
 	vector<CBase*> m_vEnemies;	 // all enemy characters tha are on the current battle map

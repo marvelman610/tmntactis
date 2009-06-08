@@ -61,6 +61,7 @@ public:
 	int aBMcursorID;
 	int aBMgreenSquareID;
 	int aBMcurrSelectedArrowID;
+	int aBMcurrTargetArrowID;
 
 	// Main Menu IDs
 	int aMMBGimageID;

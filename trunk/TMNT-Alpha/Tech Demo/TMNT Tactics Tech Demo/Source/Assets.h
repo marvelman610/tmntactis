@@ -51,6 +51,7 @@ public:
 	int aMouseGrabID;
 	int aMouseAttackID;
 	int aMouseMagGlassID;
+	int aMouseMoveID;
 	int aBitmapFont2ID;
 	int aBitmapFont3ID;
 

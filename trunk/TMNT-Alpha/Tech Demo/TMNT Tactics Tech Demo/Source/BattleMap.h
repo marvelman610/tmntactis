@@ -108,6 +108,7 @@ class CBattleMap
 
 	// Character variables
 	CPlayer*	m_pPlayer;	// the player singleton pointer
+	bool m_bIsMouseAttack;
 	int m_nNumEnemiesLeft;
 	int m_nNumCharacters;
 	int m_nHoverCharacter;

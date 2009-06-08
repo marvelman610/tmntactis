@@ -47,6 +47,7 @@ CBattleMap::CBattleMap(void)
 	m_pHUD			= CHUD::GetInstance();
 
 	SetMousePtr(m_pAssets->aMousePointerID);
+	m_bIsMouseAttack = false;
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -149,7 +150,7 @@ void CBattleMap::Render()
 
 	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
-	else
+	else if (m_nHoverCharacter == -1)
 		SetMousePtr(m_pAssets->aMousePointerID);
 
 	// draw layer one & two
@@ -781,8 +782,10 @@ void CBattleMap::DrawHover()
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
 	m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
 	m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
-	if (m_nHoverCharacter > 3)
+	if (m_nHoverCharacter > 3 && !m_bIsMouseAttack)
 		SetMousePtr(m_pAssets->aMouseMagGlassID);
+	else if (m_nHoverCharacter > 3 && m_bIsMouseAttack)
+		SetMousePtr(m_pAssets->aMouseAttackID);
 	else
 		SetMousePtr(m_pAssets->aMousePointerID);
 }
@@ -895,9 +898,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
 		// see if we're clicking on a character
-		if (index != -1)
+		if (index > -1 && index < 4)
 		{
-			m_nCurrCharacter = index;
+			m_nCurrCharacter	 = index;
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
 			CalculateRanges();
 		}
@@ -914,6 +917,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				UpdatePositions();
 			}
 		}
+		if (index > 3)
+			m_bIsMouseAttack = true;
+		else
+			m_bIsMouseAttack = false;
 	}
 }
 

@@ -37,6 +37,7 @@ void CAssets::LoadAssets()
 	aMouseMagGlassID	= m_pTM->LoadTexture("Resources/Images/VG_cursorMagGlass.png", D3DCOLOR_XRGB(255,255,255));
 	aMouseAttackID		= m_pTM->LoadTexture("Resources/Images/VG_cursorAttack.png", D3DCOLOR_XRGB(255,255,255));
 	aMousePointerID		= m_pTM->LoadTexture("Resources/Images/VG_cursorPointer.png", D3DCOLOR_XRGB(255,255,255));
+	aMouseMoveID		= m_pTM->LoadTexture("Resources/Images/VG_cursorMove.png", D3DCOLOR_XRGB(255,255,255));
 	//aMouseGrabID		= m_pTM->LoadTexture("Resources/Images/VG_cursorGrab.png", D3DCOLOR_XRGB(255,255,255));
 	//////////////////////////////////////////////////////////////////////////
 

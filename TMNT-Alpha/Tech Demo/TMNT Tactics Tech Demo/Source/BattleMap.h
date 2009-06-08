@@ -233,6 +233,21 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	void DrawDebugInfo();
 
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	PerformAttack
+	//
+	//	Purpose		:	Executes the attack depending on who attacks, any skills
+	//					they use, and what the specific stats are for each character
+	//////////////////////////////////////////////////////////////////////////
+	void PerformAttack();
+
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	FindPathToTarget
+	//
+	//	Purpose		:	Determines how to get to the target
+	//////////////////////////////////////////////////////////////////////////
+	void FindPathToTarget();
+
 	void MoveCamLeft(float fElapsedTime);
 	void MoveCamRight(float fElapsedTime);
 	void MoveCamDown(float fElapsedTime);
@@ -297,7 +312,9 @@ public:
 	int GetFreeTileXos()const		{return m_nFreeTileOSx;}
 	int GetFreeTileYos()const		{return m_nfreeTileOSy;}
 	int GetCurrActive() const		{return m_nCurrCharacter;}
+	int GetCurrTarget() const		{return m_nCurrTarget;}
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
+	CBase* GetCurrEnemyTarget()		{return &m_vCharacters[m_nCurrTarget];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////

@@ -195,7 +195,7 @@ void CBattleMap::Render()
 					m_pTilesL2[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL2[tileID].Alpha(),255,255,255));
 			}
 			
-			// draws selection rectangle on the currently selected tile
+			// draws selection rectangle on the currently selected tile, character, and enemy (and draws arrow)
 			if (m_bIsPlayersTurn)
 			{
 				if (m_nCurrSelectedTile == tileID)
@@ -800,7 +800,7 @@ void CBattleMap::CalculateRanges()
 	if (m_nCurrTarget > -1)
 	{
 		m_nDistanceToTarget = (abs(m_vCharacters[m_nCurrTarget].GetMapCoord().x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + 
-			abs(m_vCharacters[m_nCurrTarget].GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
+			abs(m_vCharacters[m_nCurrTarget].GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y));
 	}
 }
 
@@ -985,7 +985,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			m_nCurrTarget = index;
 			m_ncurrTargetTile = m_vCharacters[m_nCurrTarget].GetCurrTile();
 			m_nDistanceToTarget = (abs(m_vCharacters[m_nCurrTarget].GetMapCoord().x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + 
-								   abs(m_vCharacters[m_nCurrTarget].GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
+								   abs(m_vCharacters[m_nCurrTarget].GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y));
 		}
 		else if (index > 3 && m_nCurrTarget == m_nHoverCharacter)	// otherwise, attempting to attack
 		{
@@ -994,6 +994,36 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			{
 				// do damage
 				int test = 0;
+				PerformAttack();
+			}
+		}
+	}
+}
+void CBattleMap::PerformAttack()
+{
+
+}
+void CBattleMap::FindPathToTarget()
+{
+	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
+	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+	int currTile = m_nCurrCharacterTile;
+
+	while (currTile != m_ncurrTargetTile)
+	{
+		for(int nx = ptGridLocation.x - 1; nx <= ptGridLocation.x + 1; ++nx)
+		{
+			for(int ny = ptGridLocation.y - 1; ny <= ptGridLocation.y + 1; ++ny)
+			{
+				if (nx == 0)
+				{
+				}
+				//make sure the neighbor is on the map
+				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
+					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
+				{
+					
+				}
 			}
 		}
 	}

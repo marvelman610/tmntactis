@@ -78,7 +78,7 @@ public:
 	//
 	// Purpose: Creates a pointer to the BattleItem object
 	////////////////////////////////////////////////////////////////////
-	CBattleItem* CreateBattleItem(int type);
+	CBattleItem* CreateBattleItem(int type, int PosX, int PosY);
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “CreateWeapon”

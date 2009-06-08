@@ -32,25 +32,9 @@ CPlayer::~CPlayer(void)
 {
 	for(int i = 0; i <4; i++)
 	{
-		for(int j = 0; j < m_pTurtles[i]->m_vAnimations.size(); j++)
-			m_pTurtles[i]->m_vAnimations[j].Unload();
+		for(int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
+			m_pTurtles[i]->GetAnimations()[j].Unload();
 	}
-	//for(int i = 0; i < m_pLeonardo->animations.size; i++)
-	//{
-		//m_pLeonardo->animations[i].Unload();
-	//}
-	//for(int i = 0; i < m_pDonatello->animations.size; i++)
-	//{
-		//m_pDonatello->animations[i].Unload();
-	//}
-	/*for(int i = 0; i < m_pRaphael->animations.size; i++)
-	{
-		m_pRaphael->animations[i].Unload();
-	}
-	for(int i = 0; i < m_pMikey->animations.size; i++)
-	{
-		m_pMikey->animations[i].Unload();
-	}*/
 }
 CPlayer* CPlayer::GetInstance()
 {
@@ -223,19 +207,3 @@ void CPlayer::LoadAnimations()
 	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 }
-//void CPlayer::Render()
-//{
-//	m_pLeonardo->Render();
-//	m_pDonatello->Render();
-//	m_pRaphael->Render(); 
-//	m_pMikey->Render();
-//
-//
-//}
-//void CPlayer::Update(float fElapsedTime)
-//{
-//	m_pLeonardo->Update(fElapsedTime);
-//	m_pDonatello->Update(fElapsedTime);
-//	m_pRaphael->Update(fElapsedTime); 
-//	m_pMikey->Update(fElapsedTime);
-//}

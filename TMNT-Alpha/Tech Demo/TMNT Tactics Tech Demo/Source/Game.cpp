@@ -5,6 +5,9 @@
 #include "CSGD_DirectInput.h"
 #include "MainMenuState.h"
 #include "Player.h"
+#include "MessageSystem.h"
+#include "Factory.h"
+#include "Ninja.h"
 //#include "ParticleSystem.h"
 
 //#include "MessageSystem.h"
@@ -51,18 +54,19 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pTM = CSGD_TextureManager::GetInstance();
 	m_pDI = CSGD_DirectInput::GetInstance();
 	m_pD3D = CSGD_Direct3D::GetInstance();
+	m_pMS = MessageSystem::GetInstance();
 	
 	//m_pFMODSystem = ;
 	//m_FMChannel1 = NULL;
 	//m_FMChannel2 = NULL;
 	//m_pMessageSystem = MessageSysterm::GetInstance();
-	//m_pObjectFactory = ObjectFactory::GetInstance();
+	//m_pObjectFactory = Factory::GetInstance();
 	//m_pParticleSystem = ParticleSystem::GetInstance();
 
 	//  Initialize the singletons
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
-	
+	m_pMS->InitMessageSystem(MessageProc);
 
 	// assets class requires texture manager to be initialized
 	m_pAssets = CAssets::GetInstance();
@@ -87,17 +91,19 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 void CGame::Shutdown()
 {
 	ChangeState(NULL);
+	if(m_pMS){m_pMS->ShutdownMessageSystem(); m_pMS=NULL;}
+
 
 // 	if(m_pParticleSystem)
 // 	{
 // 		m_pParticleSystem->Shutdown();
 // 		m_pParticleSystem = NULL;
 // 	}
-// 	if(m_pObjectFactory)
-// 	{
-// 		m_pObjectFactory->Shutdown();
-// 		m_pObjectFactory = NULL;
-// 	}
+ 	//if(m_pObjectFactory)
+ 	//{
+ 	//	m_pObjectFactory->Shutdown();
+ 	//	m_pObjectFactory = NULL;
+ 	//}
 // 	if(m_pMessageSystem)
 // 	{
 // 		m_pMessageSystem->Shutdown();
@@ -149,6 +155,7 @@ bool CGame::Main(POINT mouse)
 		return false;
 
 	m_pCurrentState->Update(m_fElapsedTime);
+	m_pMS->ProcessMsgs();
 
 	m_pD3D->Clear(255,255,255);
 
@@ -194,4 +201,21 @@ void CGame::SetMusicVolume(int _nMusicVolume)
 void CGame::SetSFXVolume(int _nSFXVolume)
 {
 
+}
+void MessageProc(CBaseMessage* pMsg)
+{
+	switch(pMsg->GetMsgID())
+	{
+	case MSG_CREATE_ITEM:
+		{
+		int type = rand()% 2;
+		CCreateItem * pCP = (CCreateItem*)pMsg;
+		Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetPosX(), pCP->GetNinja()->GetPosY() );
+		}
+		break;
+	case MSG_DESTROY_ITEM:
+		CDestroyItem * pDP = (CDestroyItem*)pMsg;
+		//ObjectManager::GetInstance()->RemoveObject();
+		break;
+	}
 }

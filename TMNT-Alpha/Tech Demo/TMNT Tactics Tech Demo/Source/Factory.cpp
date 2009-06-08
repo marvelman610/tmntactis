@@ -118,7 +118,15 @@ CBoss* Factory::CreateBoss()
 CNinja* Factory::CreateNinja()
 {
 	CNinja* ninja = new CNinja();
+
+	CAnimation anim;
+	anim.Load("Resources/AnimationInfo/VG_whiteninja.dat", 1);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_whiteninja.dat", 2);
+	ninja->AddAnim(anim);
+
 	ObjectManager::GetInstance()->Add(ninja);
+
 	return ninja;
 }
 CTurtle* Factory::CreateTurtle(char* name)
@@ -128,7 +136,7 @@ CTurtle* Factory::CreateTurtle(char* name)
 	ObjectManager::GetInstance()->Add(turtle);
 	return turtle;
 }
-CBattleItem* Factory::CreateBattleItem(int type)
+CBattleItem* Factory::CreateBattleItem(int type, int PosX, int PosY)
 {
 	CBattleItem* item = new CBattleItem();
 
@@ -150,6 +158,8 @@ CBattleItem* Factory::CreateBattleItem(int type)
 		break;
 	}
 
+	item->SetPosX(PosX);
+	item->SetPosY(PosY);
 	ObjectManager::GetInstance()->Add(item);
 	return item;
 }

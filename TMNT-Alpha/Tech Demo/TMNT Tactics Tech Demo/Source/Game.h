@@ -11,6 +11,9 @@ class CSGD_TextureManager;
 class CAssets;
 class CPlayer;
 //class ParticleSystem;
+class MessageSystem;
+class CBaseMessage;
+class Factory;
 
 class CGame
 {
@@ -22,9 +25,10 @@ private:
 	CSGD_DirectInput*   m_pDI;
 	CAssets*			m_pAssets;
 	CPlayer* m_pPlayer;
+	MessageSystem* m_pMS;
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
-	//ObjectFactory* m_pObjectFactory;
+	//Factory* m_pObjectFactory;
 	//FMOD::System* m_pFMODSystem;
 	//FMOD::Channel m_FMChannel1;
 	//FMOD::Channel m_FMChannel2;
@@ -90,6 +94,8 @@ public:
 	//	Purpose: Return the FMODSystem pointer
 	////////////////////////////////////////////////////////
 	//FMOD::System* GetFMODSystem(void);
+
+	static friend void MessageProc(CBaseMessage* pMsg);
 
 	//////////////////////////////////////////////////////////////////////////
 	// Accessors

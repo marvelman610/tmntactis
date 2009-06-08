@@ -29,6 +29,7 @@ private:
 	CHUD* m_pHUD;
 	//WorldMap* m_pWorldMap;
 
+	bool m_bIsPaused;
 
 	int m_nCurrentMap;
 
@@ -47,6 +48,10 @@ public:
 	//	Purpose: Init the instance and return a pointer to the instance
 	///////////////////////////////////////////////////////////////////
 	static CGamePlayState* GetInstance(void);
+  
+	inline bool GetPaused(){return m_bIsPaused;}
+	inline void SetPaused(bool p){m_bIsPaused = p;}
+
 	///////////////////////////////////////////////////////////////////
 	//	Function:	Enter
 	//

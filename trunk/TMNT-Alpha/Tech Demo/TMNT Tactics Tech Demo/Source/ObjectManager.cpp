@@ -106,7 +106,7 @@ bool ObjectManager::CheckObjectsToAlpha(RECT* mapObjectRect)
 		if (m_vObjects[i]->GetAnchor().x >= mapObjectRect->left &&
 			m_vObjects[i]->GetAnchor().x <= mapObjectRect->right &&
 			m_vObjects[i]->GetAnchor().y >= mapObjectRect->top &&
-			m_vObjects[i]->GetAnchor().y <= mapObjectRect->bottom )
+			m_vObjects[i]->GetAnchor().y <= mapObjectRect->bottom)
 		{
 			return true;	
 		}

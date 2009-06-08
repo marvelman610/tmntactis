@@ -97,6 +97,8 @@ void CHUD::Render()
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aRaphaelHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	}
+
+	//draw hud menu if player turn active
 	
 }
 

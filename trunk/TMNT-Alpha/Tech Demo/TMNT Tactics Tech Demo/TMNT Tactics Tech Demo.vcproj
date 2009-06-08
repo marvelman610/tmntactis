@@ -218,11 +218,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Messages.cpp"
+				RelativePath=".\Source\Messages.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\MessageSysytem.cpp"
+				RelativePath=".\Source\MessageSystem.cpp"
 				>
 			</File>
 			<File
@@ -324,11 +324,11 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Messages.h"
+				RelativePath=".\Source\Messages.h"
 				>
 			</File>
 			<File
-				RelativePath=".\MessageSysytem.h"
+				RelativePath=".\Source\MessageSystem.h"
 				>
 			</File>
 			<File

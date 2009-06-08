@@ -107,7 +107,10 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 		return true;
 	}
+	else if(pDI->KeyPressed(DIK_P))
+		m_bIsPaused = !m_bIsPaused;
 
+	
 	m_pBattleMap->Input(fElapsedTime, mousePt);
 
 	return true;
@@ -115,8 +118,11 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 // Update
 void CGamePlayState::Update(float fElapsedTime)
 {
-	m_pBattleMap->Update(fElapsedTime);
-	ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
+	if(!m_bIsPaused)
+	{
+		m_pBattleMap->Update(fElapsedTime);
+		ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
+	}
 }
 // Render
 void CGamePlayState::Render(void)
@@ -126,5 +132,7 @@ void CGamePlayState::Render(void)
 
 	ObjectManager::GetInstance()->RenderObjects();
 	m_pBattleMap->Render();
+	if(m_bIsPaused)
+		CSGD_Direct3D::GetInstance()->DrawTextA("PAUSE",100,100,255,0,0);
 
 }

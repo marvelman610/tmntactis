@@ -86,6 +86,9 @@ public:
 	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
 
+	void AddItem(CBase* a){ m_nInventory.push_back(a);}
+
+
 	//void SetTurtle(int index, );
 
 	/*void Render();

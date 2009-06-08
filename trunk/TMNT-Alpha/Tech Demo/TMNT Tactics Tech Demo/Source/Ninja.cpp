@@ -10,6 +10,9 @@
 #include "Ninja.h"
 #include "Assets.h"
 
+#include "MessageSystem.h"
+
+
 CNinja::CNinja(void)
 {
 	m_nType = OBJECT_NINJA;
@@ -43,6 +46,10 @@ CNinja::CNinja(void)
 
 CNinja::~CNinja(void)
 {
+	for(int j = 0; j < this->GetAnimations().size(); j++)
+			this->GetAnimations()[j].Unload();
+
+	//MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 }
 
 void CNinja::AI()

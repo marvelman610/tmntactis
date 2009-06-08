@@ -83,5 +83,6 @@ public:
 	int aRaphaelHUDID;
 
 	//temp ninja
-	int aNinjaID;
+	int aFootClanHUDID;
+	int aShredderHUDID;
 };

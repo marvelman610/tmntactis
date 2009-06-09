@@ -126,7 +126,7 @@ void CBattleMap::Exit()
 //////////////////////////////////////////////////////////////////////////
 void CBattleMap::Render()
 {
-	//m_pTM->Draw(m_pAssets->aBMbgID, 0, 0);
+	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
 	m_pHUD->Render();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -941,44 +941,61 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		else if (index > 3 && m_nCurrTarget == m_nHoverCharacter)	// otherwise, attempting to attack
 		{
 			// check if in range
-			if (m_nDistanceToTarget <= m_vCharacters[m_nCurrCharacter].GetRange() && m_nDistanceToTarget <= m_vCharacters[m_nCurrCharacter].GetCurrAP())
+			if (m_nDistanceToTarget <= m_vCharacters[m_nCurrCharacter].GetRange() && m_vCharacters[m_nCurrCharacter].GetCurrAP() >= 4)
 			{
 				// do damage
 				int test = 0;
 				PerformAttack();
 			}
+			else
+				m_pD3D->DrawText("Not enough AP", 10, 700, 255,0,0);
 		}
 	}
 }
 void CBattleMap::PerformAttack()
 {
+	int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vCharacters[m_nCurrTarget].GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
+	damage += rand() % (5 - (-4)) -5;
 
+	m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
+	m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth()-damage);
 }
 void CBattleMap::FindPathToTarget()
 {
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
 	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 	int currTile = m_nCurrCharacterTile;
+	int adjTiles[4]; int count = 0;
 
 	while (currTile != m_ncurrTargetTile)
 	{
 		for(int nx = ptGridLocation.x - 1; nx <= ptGridLocation.x + 1; ++nx)
 		{
+			if (count == 4)
+				count = 0;
 			for(int ny = ptGridLocation.y - 1; ny <= ptGridLocation.y + 1; ++ny)
 			{
-				if (nx == 0)
+				// skip tiles that are diagonal from the currTile
+				if ((nx == ptGridLocation.x - 1 && ny == ptGridLocation.y - 1) ||
+					(nx == ptGridLocation.x + 1 && ny == ptGridLocation.y - 1) ||
+					(nx == ptGridLocation.x - 1 && ny == ptGridLocation.y + 1) ||
+					(nx == ptGridLocation.x + 1 && ny == ptGridLocation.y + 1) )
 				{
+					continue;
+					++count;
 				}
 				//make sure the neighbor is on the map
 				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
 					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 				{
-					
+
+					++count;
 				}
 			}
 		}
 	}
 }
+
 
 void CBattleMap::MoveCamUp(float fElapsedTime)
 {

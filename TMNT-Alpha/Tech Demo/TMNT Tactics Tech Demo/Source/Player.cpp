@@ -30,7 +30,7 @@ CPlayer::CPlayer(void)
 
 CPlayer::~CPlayer(void)
 {
-	for(int i = 0; i <4; i++)
+	for(int i = 0; i < 4; i++)
 	{
 		for(int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();

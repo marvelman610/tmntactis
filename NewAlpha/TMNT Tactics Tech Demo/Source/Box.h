@@ -15,6 +15,7 @@ class CBox
 	int m_nCurrImage;
 
 	// size/position variables
+	int m_nLongestString;
 	int m_nBoxWidth;
 	int m_nBoxHeight;
 	int m_nBoxRight;

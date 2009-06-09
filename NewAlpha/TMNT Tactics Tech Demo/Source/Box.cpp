@@ -22,7 +22,7 @@ CBox::CBox(int numItems, string* sItems, int posX, int posY, float posZ /* = 0.1
 		m_nBoxHeight = ((posY - startY) >> 1) + (int)(32.0f * numItems);
 	m_nBoxRight = m_nPosX + width;
 	m_nBoxBottom = m_nPosY + m_nBoxHeight;
-	m_fScaleY = fScaleY;
+	m_fScaleY = 1.0f - (float)(1.0f - 256.0f / (float)m_nBoxHeight);
 	m_fScaleX = fScaleX;
 	m_fTextScale = fTextScale;
 
@@ -31,20 +31,21 @@ CBox::CBox(int numItems, string* sItems, int posX, int posY, float posZ /* = 0.1
 	m_nNumItems = numItems;
 	r = red; g = green; b = blue;
 
-	int longestString = 0;
+	m_nLongestString = 0;
 	m_sItems = new string[m_nNumItems];
 	for (int i = 0; i < m_nNumItems; ++i)
 	{
 		m_sItems[i] = sItems[i];
-		if (sItems[i].size() > longestString)
-			longestString = sItems[i].size();
+		if (sItems[i].size() > m_nLongestString)
+			m_nLongestString = sItems[i].size();
 	}
-	if (longestString * 32 > m_nBoxWidth)
+	if (m_nLongestString * 32 > m_nBoxWidth)
 	{
-		m_nBoxWidth = longestString * 32 + ((m_nStartTextX - m_nPosX) * 2);
+		m_nBoxWidth = m_nLongestString * 32 + ((m_nStartTextX - m_nPosX) /** 2*/);
 		m_nBoxRight = m_nPosX + m_nBoxWidth;
-		m_fScaleX = 1.0f + (float)(1.0f - ((float)width / (float)m_nBoxWidth)); 
+		m_fScaleX = 0.8f + (float)(1.0f - ((float)width / (float)m_nBoxWidth)); 
 	}
+	m_nLongestString *= 34; 
 
 	if (imageID > -1)
 		m_nCurrImage = imageID;	// set to an image that has already been loaded
@@ -65,9 +66,9 @@ CBox::~CBox()
 void CBox::CheckMouse(POINT mousePt)
 {
 	if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
-	{ m_nAlpha = 150; }
-	else
 	{ m_nAlpha = 255; }
+	else
+	{ m_nAlpha = 150; }
 
 	if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
 	{
@@ -84,12 +85,12 @@ void CBox::Render()
 	m_pTM->DrawWithZSort(CurrImage(), PosX(), PosY(), PosZ(), m_fScaleX, m_fScaleY, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_nAlpha, 255, 255, 255));
 	if (m_nCurrSelectedIndex > -1)
 	{
-		m_pTM->DrawWithZSort(m_pAssets->aBpointerID, m_nPosX-5, m_nStartTextY + (m_nCurrSelectedIndex*m_nSpacing), 0.0f);
+		m_pTM->DrawWithZSort(m_pAssets->aBpointerID, m_nStartTextX - 45, m_nStartTextY + (m_nCurrSelectedIndex*m_nSpacing), 0.0f);
 		RECT btnRect;
 		btnRect.left = m_nStartTextX-10; 
-		btnRect.right = m_nBoxRight-10; 
-		btnRect.top = m_nStartTextY + (m_nSpacing*m_nCurrSelectedIndex); 
-		btnRect.bottom = btnRect.top + (int)(32.0f * m_fTextScale);
+		btnRect.right = btnRect.left + m_nLongestString; 
+		btnRect.top = m_nStartTextY + (m_nSpacing*m_nCurrSelectedIndex)-5; 
+		btnRect.bottom = btnRect.top + (int)(32.0f * m_fTextScale)+10;
 		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
 		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
 		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line

@@ -28,11 +28,9 @@
 #include <exception>
 
 #define BOUNDING_BOXES 0
-#define CAM_EDGE_DIST_TO_MOVE 40
+#define CAM_EDGE_DIST_TO_MOVE 40	// how close to edge of the screen the mouse has to get to start scrolling
 #define SCROLLSPEED 150.0f
-// default constructor may be used for
-// blank maps...a cool animation sequence,
-// or needing to render while not in a real battle, etc...
+
 CBattleMap::CBattleMap(void)
 {
 	srand((unsigned int)(time(0)));
@@ -56,10 +54,10 @@ CBattleMap::CBattleMap(void)
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
 	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
+	m_nCurrSelectedTile = -1;
 	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
 	m_nTileWidth = 0; m_nTileHeight = 0;
-	m_nCurrSelectedTile = -1;
 	m_nMapHeight = 0; m_nMapWidth = 0;
 	m_nFreeTileCount = 0;
 	m_fScrollX = 0.0f; m_fScrollY = 0.0f;
@@ -860,11 +858,6 @@ void CBattleMap::DrawHover()
 		SetMousePtr(m_pAssets->aMousePointerID);
 }
 
-void CBattleMap::DisplayRanges()
-{
-
-}
-
 void CBattleMap::SetStartPositions()
 {
 	// mapCoordinates represents the grid x=column, y=row
@@ -955,6 +948,8 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		for (int i = 0; i < 4; ++i)
 		{
 			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
+			if (m_nCurrCharacter > -1)
+				CalculateRanges();
 		}
 	}
 	return true;
@@ -968,6 +963,16 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	}
 	else
 		m_nHoverCharacter = -1;
+
+	// is the mouse over an action box button?
+	if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 600 && m_ptMouseScreenCoord.y <= 635)
+		m_nCurrBtnSelected = ACTION_SPECIAL;
+	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 635 && m_ptMouseScreenCoord.y <= 670)
+		m_nCurrBtnSelected = ACTION_ITEM;
+	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 670 && m_ptMouseScreenCoord.y <= 705)
+		m_nCurrBtnSelected = ACTION_ENDTURN;
+	else
+		m_nCurrBtnSelected = -1;
 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
@@ -984,7 +989,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				if (m_vCharacters[i].GetCurrTile() == tileID)
 				{bOccupied = true; break; }
 
-			//now check if the character has enough Action Points
+			// now check if the character has enough Action Points
 			int dist = (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
 			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist && !bOccupied)
 			{
@@ -996,6 +1001,18 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				CalculateRanges();
 			}
 		}
+		switch (m_nCurrBtnSelected)
+		{
+		case ACTION_SPECIAL:
+			break;
+		case ACTION_ITEM:
+			break;
+		case ACTION_ENDTURN:
+			m_bIsPlayersTurn = false;
+			break;
+		default:
+			break;
+		}
 	}
 	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
 	{
@@ -1003,7 +1020,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		{
 			m_nCurrCharacter	 = index;
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
-			//m_bIsMouseAttack	 = false;
 			CalculateRanges();
 		}
 		else if (index > 3 && m_nCurrTarget != m_nHoverCharacter && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
@@ -1032,20 +1048,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				PerformAttack();
 		}
 	}
-	if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 600 && m_ptMouseScreenCoord.y <= 635)
-	{
-		m_nCurrBtnSelected = ACTION_SPECIAL;
-	}
-	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 635 && m_ptMouseScreenCoord.y <= 670)
-	{
-		m_nCurrBtnSelected = ACTION_ITEM;
-	}
-	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 670 && m_ptMouseScreenCoord.y <= 705)
-	{
-		m_nCurrBtnSelected = ACTION_ENDTURN;
-	}
-	else
-		m_nCurrBtnSelected = -1;
 }
 void CBattleMap::PerformAttack()
 {
@@ -1148,41 +1150,34 @@ void CBattleMap::DrawActionBox()
 	else
 		m_pTM->DrawWithZSort(m_pAssets->aBMactionBoxID, 400, 550, 0.1f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(100, 255,255,255));
 
-	if (m_nCurrBtnSelected > -1)
+	RECT btnRect;
+	switch (m_nCurrBtnSelected)
 	{
-		RECT btnRect;
-		switch (m_nCurrBtnSelected)
-		{
-		case ACTION_SPECIAL:
-			btnRect.left = 421;
-			btnRect.right= 590;
-			btnRect.top  = 590;
-			btnRect.bottom=635;
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-			m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-			m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-			break;
-		case ACTION_ITEM:
-			btnRect.left = 421;
-			btnRect.right= 590;
-			btnRect.top  = 635;
-			btnRect.bottom=670;
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-			m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-			m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-			break;
-		case ACTION_ENDTURN:
-			btnRect.left = 421;
-			btnRect.right= 590;
-			btnRect.top  = 670;
-			btnRect.bottom=715;
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-			m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-			m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-			m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-			break;
-		}
+	case ACTION_SPECIAL:
+		btnRect.left = 421; btnRect.right = 590; 
+		btnRect.top = 590; btnRect.bottom = 635;
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
+		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
+		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
+		break;
+	case ACTION_ITEM:
+		btnRect.left = 421; btnRect.right = 590; 
+		btnRect.top = 635; btnRect.bottom = 670;
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
+		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
+		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
+		break;
+	case ACTION_ENDTURN:
+		btnRect.left = 421; btnRect.right = 590; 
+		btnRect.top = 670; btnRect.bottom = 715;
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
+		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
+		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
+		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
+		break;
+	default:
+		break;
 	}
 }

@@ -326,6 +326,7 @@ public:
 	void SetFTosX(const int osX)					{m_nFreeTileOSx = osX;}
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
+	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
 	void SetStartPositions();
 };
 

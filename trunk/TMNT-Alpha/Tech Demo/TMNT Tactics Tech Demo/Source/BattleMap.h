@@ -30,11 +30,13 @@ class CCamera;
 class CHUD;
 class CPlayer;
 class CNinja;
+class CBox;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
- enum {ACTION_SPECIAL, ACTION_ITEM, ACTION_ENDTURN, };
+ enum {ACTION_SPECIAL, ACTION_ITEM, ACTION_ENDTURN, SPECIAL_BACK, };
+
 #include "Base.h"
 
  struct MY_POINT 
@@ -59,6 +61,7 @@ class CBattleMap
 		float CHARACTER_AHEAD;
 		float OBJECTS;
 		float ARROW;
+		float MENUS;
 		DEPTH()
 		{
 			GROUND = 1.0f;
@@ -68,6 +71,7 @@ class CBattleMap
 			OBJECTS = 0.6f;
 			CHARACTER_AHEAD = 0.5f;
 			ARROW = 0.49f;
+			MENUS = 0.1f;
 		}
 	};
 	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
@@ -77,6 +81,9 @@ class CBattleMap
 
 	// button selection
 	int m_nCurrBtnSelected;
+	bool m_bDisplaySpecialBox;
+	CBox* m_bxActionBox;
+	CBox* m_bxSkillBox;
 
 	// Times
 	float m_fTimer;
@@ -256,7 +263,7 @@ class CBattleMap
 	void CenterCam(float fElapsedTime);
 
 public:
-	void DrawActionBox();
+	void DrawBoxes();
 
 	CBattleMap(void);
 	~CBattleMap(void);

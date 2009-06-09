@@ -406,40 +406,40 @@ bool CSGD_TextureManager::DrawWithZSort(int nID, int nX, int nY, float nZ, float
 		return false;
 
  	D3DXMATRIX scale;
-// 	D3DXMATRIX rotation;
-// 	D3DXMATRIX translate;
+	D3DXMATRIX rotation;
+ 	D3DXMATRIX translate;
  	D3DXMATRIX combined;
 // 
 // 	// Initialize the Combined matrix.
-/* 	D3DXMatrixIdentity(&combined);*/
+ 	D3DXMatrixIdentity(&combined);
 // 
 // 	// Rotate the sprite.
-// 	D3DXMatrixTranslation(&translate, -fRotCenterX, -fRotCenterY, 0.0f);
-// 	combined *= translate;
-// 	D3DXMatrixRotationZ(&rotation, fRotation);
-// 	combined *= rotation;
-// 	D3DXMatrixTranslation(&translate, fRotCenterX, fRotCenterY, 0.0f);
-// 	combined *= translate;
+ 	D3DXMatrixTranslation(&translate, -fRotCenterX, -fRotCenterY, 0.0f);
+ 	combined *= translate;
+ 	D3DXMatrixRotationZ(&rotation, fRotation);
+ 	combined *= rotation;
+ 	D3DXMatrixTranslation(&translate, fRotCenterX, fRotCenterY, 0.0f);
+ 	combined *= translate;
 // 
 // 	// Scale the sprite.
-// 	D3DXMatrixScaling(&scale, fScaleX, fScaleY, 1.0f);
-// 	combined *= scale;
+	D3DXMatrixScaling(&scale, fScaleX, fScaleY, 1.0f);
+	combined *= scale;
 // 
 // 	// Translate the sprite
-// 	D3DXMatrixTranslation(&translate, (float)nX, (float)nY, (float)nZ);
-// 	combined *= translate;
+	D3DXMatrixTranslation(&translate, (float)nX, (float)nY, (float)nZ);
+	combined *= translate;
 // 
 // 	// Apply the transform.
-/* 	m_lpSprite->SetTransform(&combined);*/
+ 	m_lpSprite->SetTransform(&combined);
 	
-	D3DXVECTOR3 v3Pos((float)nX, (float)nY, nZ);
+	//D3DXVECTOR3 v3Pos((float)nX, (float)nY, nZ);
 	// Draw the sprite.
-	if (FAILED(m_lpSprite->Draw(m_Textures[nID].texture, pSection, NULL, &v3Pos, dwColor)))
+	if (FAILED(m_lpSprite->Draw(m_Textures[nID].texture, pSection, NULL, NULL/*&v3Pos*/, dwColor)))
 		DXERROR("Failed to draw the texture.");
 
 // 	// Move the world back to identity.
-// 	D3DXMatrixIdentity(&combined);
-// 	m_lpSprite->SetTransform(&combined);
+	D3DXMatrixIdentity(&combined);
+	m_lpSprite->SetTransform(&combined);
 
 	// success.
 	return true;

@@ -24,6 +24,7 @@
 #include "Player.h"
 #include "Turtle.h"
 #include "Ninja.h"
+#include "Box.h"
 #include <fstream>
 #include <exception>
 
@@ -43,11 +44,28 @@ CBattleMap::CBattleMap(void)
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	m_pHUD			= CHUD::GetInstance();
+}
+
+CBattleMap::~CBattleMap(void)
+{
+}
+
+CBattleMap* CBattleMap::GetInstance()
+{
+	static CBattleMap instance;
+	return &instance;
+}
+void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
+{
+	SetMousePtr(m_pAssets->aMousePointerID);
+	m_bIsMouseAttack = m_bOutOfRange = false;
 
 	m_fTimer = 0.0f;
 
-	SetMousePtr(m_pAssets->aMousePointerID);
-	m_bIsMouseAttack = m_bOutOfRange = false;
+	string text[3];
+	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
+	m_bxActionBox = new CBox(3, text, 400, 500, 0.1f, 128, -1, 55);
+	m_bxActionBox->SetActive();
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -69,19 +87,7 @@ CBattleMap::CBattleMap(void)
 
 	m_pParticleSys = new CParticleSystem();
 	m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
-}
 
-CBattleMap::~CBattleMap(void)
-{
-}
-
-CBattleMap* CBattleMap::GetInstance()
-{
-	static CBattleMap instance;
-	return &instance;
-}
-void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
-{
 	m_nNumCharacters = 4+nNumEnemies;
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
@@ -127,7 +133,6 @@ void CBattleMap::Exit()
 void CBattleMap::Render()
 {
 	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
-	m_pHUD->Render();
 
 	//////////////////////////////////////////////////////////////////////////
 	//TODO::this will be put in the hud eventually
@@ -169,16 +174,14 @@ void CBattleMap::Render()
 	}
 	//////////////////////////////////////////////////////////////////////////
 
-	// draw the current mouse pointer
-	// TODO:: make a CurrPointerID, set and get, to be called here (instead of making a separate draw for each)
-	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
-
 	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter == -1)
 		SetMousePtr(m_pAssets->aMousePointerID);
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter > -1)
 		SetMousePtr(m_pAssets->aMouseMoveID);
+	// draw the current mouse pointer
+	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
 
 	// draw layer one & two
 	MY_POINT mapPT;
@@ -278,7 +281,8 @@ void CBattleMap::Render()
 #endif
 	}
 	if (m_bIsPlayersTurn)
-		DrawActionBox();
+		DrawBoxes();
+	m_pHUD->Render();
 	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 }
@@ -747,7 +751,7 @@ void CBattleMap::DrawDebugInfo()
 
 	char szMousePt[64];
 	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", m_ptMouseScreenCoord.x, m_ptMouseScreenCoord.y);
-	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 10, 700, 0, 0, 0);	
+	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 10, 720, 0, 0, 0);	
 }
 
 MY_POINT CBattleMap::IsoTilePlot(MY_POINT pt, int xOffset, int yOffset)
@@ -965,14 +969,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nHoverCharacter = -1;
 
 	// is the mouse over an action box button?
-	if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 600 && m_ptMouseScreenCoord.y <= 635)
-		m_nCurrBtnSelected = ACTION_SPECIAL;
-	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 635 && m_ptMouseScreenCoord.y <= 670)
-		m_nCurrBtnSelected = ACTION_ITEM;
-	else if (m_bIsPlayersTurn && m_ptMouseScreenCoord.x >= 400 && m_ptMouseScreenCoord.x <= 600 && m_ptMouseScreenCoord.y >= 670 && m_ptMouseScreenCoord.y <= 705)
-		m_nCurrBtnSelected = ACTION_ENDTURN;
-	else
-		m_nCurrBtnSelected = -1;
+	if (m_bIsPlayersTurn)
+	{
+		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
+		if (m_nCurrBtnSelected > -1)
+			SetMousePtr(m_pAssets->aMousePointerID);
+	}
 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
@@ -998,12 +1000,14 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
 				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
 				UpdatePositions();
+				m_pPlayer->GetTurtles()[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 				CalculateRanges();
 			}
 		}
 		switch (m_nCurrBtnSelected)
 		{
 		case ACTION_SPECIAL:
+			m_bDisplaySpecialBox = true;
 			break;
 		case ACTION_ITEM:
 			break;
@@ -1141,43 +1145,7 @@ void CBattleMap::CenterCam(float fElapsedTime)
 
 }
 
-void CBattleMap::DrawActionBox()
+void CBattleMap::DrawBoxes()
 {
-	if (m_ptMouseScreenCoord.x > 400 && m_ptMouseScreenCoord.x < 600 && m_ptMouseScreenCoord.y > 550 && m_ptMouseScreenCoord.y < 750)
-	{
-		m_pTM->DrawWithZSort(m_pAssets->aBMactionBoxID, 400, 550, 0.1f);
-	}
-	else
-		m_pTM->DrawWithZSort(m_pAssets->aBMactionBoxID, 400, 550, 0.1f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(100, 255,255,255));
-
-	RECT btnRect;
-	switch (m_nCurrBtnSelected)
-	{
-	case ACTION_SPECIAL:
-		btnRect.left = 421; btnRect.right = 590; 
-		btnRect.top = 590; btnRect.bottom = 635;
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-		break;
-	case ACTION_ITEM:
-		btnRect.left = 421; btnRect.right = 590; 
-		btnRect.top = 635; btnRect.bottom = 670;
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-		break;
-	case ACTION_ENDTURN:
-		btnRect.left = 421; btnRect.right = 590; 
-		btnRect.top = 670; btnRect.bottom = 715;
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.right, btnRect.top, 0,0,255);	// top line
-		m_pD3D->DrawLine(btnRect.left, btnRect.top, btnRect.left, btnRect.bottom, 0,0,255);	// left line
-		m_pD3D->DrawLine(btnRect.right, btnRect.top, btnRect.right, btnRect.bottom, 0,0,255);	// right line
-		m_pD3D->DrawLine(btnRect.left, btnRect.bottom, btnRect.right, btnRect.bottom, 0,0,255);	// bottom line
-		break;
-	default:
-		break;
-	}
+	//m_bxActionBox->Render();
 }

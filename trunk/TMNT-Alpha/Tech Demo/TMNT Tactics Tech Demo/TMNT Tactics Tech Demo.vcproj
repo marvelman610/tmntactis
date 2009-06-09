@@ -194,6 +194,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\Box.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
@@ -289,6 +293,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\Boss.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\Box.h"
 				>
 			</File>
 			<File

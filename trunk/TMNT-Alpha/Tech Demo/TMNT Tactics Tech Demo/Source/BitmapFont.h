@@ -57,7 +57,7 @@ public:
 	//
 	// Purpose: Draws the string passed in to the screen at the specified location.
 	////////////////////////////////////////////////////////////////////
-	void DrawString( char* szstring, int posX, int posY, float scale = 1, DWORD color = -1); 
+	void DrawString( const char* szstring, int posX, int posY, float scale = 1.0f, DWORD color = -1); 
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “DrawChar”
@@ -71,7 +71,17 @@ public:
 	//
 	// Purpose		:		Same as DrawString, except it auto centers horizontally(good for scrolling)
 	//////////////////////////////////////////////////////////////////////////
-	void DrawStringAutoCenter (const char* szString, int ScreenWidth, int yPos, float fScale = 1.0f, DWORD dwColor = D3DCOLOR_XRGB(255,255,255));
+	void DrawStringAutoCenter (const char* szString, int ScreenWidth, int yPos, float zPos = 0.09f, float fScale = 1.0f, DWORD dwColor = D3DCOLOR_XRGB(255,255,255));
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Mutators
+	//////////////////////////////////////////////////////////////////////////
+	void SetNewID(int imageID) {m_nImageID = imageID;}
+	void SetCharWidth(int width) {m_nCharWidth = width;}
+	void SetCharHeight(int height) {m_nCharHeight = height;}
+	void SetNumCols(int cols) {m_nNumCols = cols;}
+	void ChangeBMFont(int imageID, int width, int height, int cols);
+	void Reset();
 };
 
 #endif

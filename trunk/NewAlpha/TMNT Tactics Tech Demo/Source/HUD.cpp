@@ -22,6 +22,46 @@ CHUD::CHUD(void)
 	m_pBitmapFont = CBitmapFont::GetInstance();
 	m_pTM = CSGD_TextureManager::GetInstance();
 
+	m_rMikeyHP.top = 0;
+	m_rMikeyHP.bottom = 16;
+	m_rMikeyHP.right = 104;
+	m_rMikeyHP.left = 0;
+
+	m_rMikeyAP.top = 0;
+	m_rMikeyAP.bottom = 16;
+	m_rMikeyAP.right = 104;
+	m_rMikeyAP.left = 0;
+
+	m_rLeoHP.top = 0;
+	m_rLeoHP.bottom = 16;
+	m_rLeoHP.right = 104;
+	m_rLeoHP.left = 0;
+
+	m_rLeoAP.top = 0;
+	m_rLeoAP.bottom = 16;
+	m_rLeoAP.right = 104;
+	m_rLeoAP.left = 0;
+
+	m_rDonHP.top = 0;
+	m_rDonHP.bottom = 16;
+	m_rDonHP.right = 104;
+	m_rDonHP.left = 0;
+
+	m_rDonAP.top = 0;
+	m_rDonAP.bottom = 16;
+	m_rDonAP.right = 104;
+	m_rDonAP.left = 0;
+
+	m_rRaphHP.top = 0;
+	m_rRaphHP.bottom = 16;
+	m_rRaphHP.right = 104;
+	m_rRaphHP.left = 0;
+
+	m_rRaphAP.top = 0;
+	m_rRaphAP.bottom = 16;
+	m_rRaphAP.right = 104;
+	m_rRaphAP.left = 0;
+
 	m_nImageID = -1;
 }
 
@@ -39,44 +79,34 @@ CHUD* CHUD::GetInstance()
 }
 void CHUD::Update(float fElapsedTime)
 {
-	switch(m_pPlayer->GetCurrStage())
-	{
-	case WORLD_MAP:
-		break;
-	case BATTLE_MAP:
 		//******************************************
 		//MODIFIED CODE TO USE ARRAY OF TURTLE POINTER INSTEAD OF INDIVIDUAL TURTLES
 		if(m_pPlayer->GetTurtles()[LEONARDO] != NULL && m_pPlayer->GetTurtles()[DONATELLO] != NULL && 
 			m_pPlayer->GetTurtles()[RAPHAEL] != NULL && m_pPlayer->GetTurtles()[MIKEY] != NULL)
 		{
 
-			//if(m_pPlayer->GetTurtles()[LEONARDO]->GetActive() == true && (CBattleMap::GetInstance()->GetCurrActive() == LEONARDO))
-				//do the lerp to draw the health bar at set position and ap bar 
+			float healthwidth = 104.0f *((float)m_pPlayer->GetTurtles()[MIKEY]->GetHealth() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetMaxHealth());
+			float  apwidth = 104.0f * ((float)m_pPlayer->GetTurtles()[MIKEY]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetBaseAP()); 
+			m_rMikeyHP.right = healthwidth;
+			m_rMikeyAP.right = apwidth;
 
-			//else if(m_pPlayer->GetTurtles()[DONATELLO]->GetActive() == true && (CBattleMap::GetInstance()->GetCurrActive() == DONATELLO))
-				//do the lerp to draw the health bar at the set position and ap bar
+			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[LEONARDO]->GetHealth() / (float)m_pPlayer->GetTurtles()[LEONARDO]->GetMaxHealth() );
+			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[LEONARDO]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[LEONARDO]->GetBaseAP() );
+			m_rLeoHP.right = healthwidth;
+			m_rLeoAP.right = apwidth;
 
-			//else if(m_pPlayer->GetTurtles()[RAPHAEL]->GetActive() == true && (CBattleMap::GetInstance()->GetCurrActive() == RAPHAEL))
-				//do the lerp to draw the health bar at the set position and ap bar
-		
-			//else if(m_pPlayer->GetTurtles()[MIKEY]->GetActive() == true && (CBattleMap::GetInstance()->GetCurrActive() == MIKEY))
-				//do the lerp to draw the health bar at the set position and ap bar
+			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
+			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
+			m_rDonHP.right = healthwidth;
+			m_rDonAP.right = apwidth;
+
+			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
+			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
+			m_rRaphHP.right = healthwidth;
+			m_rRaphAP.right = apwidth;
 
 		}
-		break;
-		/*if(m_pPlayer->GetLeonardo() != NULL && m_pPlayer->GetDonatello() != NULL && m_pPlayer->GetRaphael() != NULL && m_pPlayer->GetMikey() != NULL)
-		{
-			if(m_pPlayer->GetLeonardo()->GetActive() == true)
-				m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Leonardo.png", D3DCOLOR_XRGB(255,255,255));	
-			else if(m_pPlayer->GetDonatello()->GetActive() == true)
-				m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Donatello.png", D3DCOLOR_XRGB(255,255,255));
-			else if(m_pPlayer->GetRaphael()->GetActive() == true)
-				m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Raphael.png", D3DCOLOR_XRGB(255,255,255));
-			else if(m_pPlayer->GetMikey()->GetActive() == true)
-				m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Michelangelo.png", D3DCOLOR_XRGB(255,255,255));
-		}
-		break;*/
-	}
+
 }
 void CHUD::Render()
 {
@@ -84,21 +114,37 @@ void CHUD::Render()
 	if(m_pPlayer->GetTurtles()[MIKEY] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == MIKEY))
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 144,49,1.0f,1.0f,&m_rMikeyHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 144, 98, 1.0f,1.0f,&m_rMikeyAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	}
 	else if(m_pPlayer->GetTurtles()[LEONARDO] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == LEONARDO))
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aLeonardoHUDID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f, 0.0f, D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 170, 80, 1.0f,1.0f,&m_rLeoHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 170, 140, 1.0f, 1.0f,&m_rLeoAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));	
 	}
 	else if(m_pPlayer->GetTurtles()[DONATELLO] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == DONATELLO))
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aDonatelloHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 175, 72, 1.0f,1.0f,&m_rDonHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 175,118,1.0f,1.0f,&m_rDonAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	}
 	else if(m_pPlayer->GetTurtles()[RAPHAEL] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == RAPHAEL))
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aRaphaelHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 156, 40, 1.0f, 1.0f,&m_rRaphHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 156,83,1.0f,1.0f,&m_rRaphAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	}
 
 	//draw hud menu if player turn active
+
+
+	//enemy hud
+	if( CBattleMap::GetInstance()->GetCurrTarget() != -1 )
+	{
+		m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540,0,1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
+		//get current target 
+	}
 	
 }
 

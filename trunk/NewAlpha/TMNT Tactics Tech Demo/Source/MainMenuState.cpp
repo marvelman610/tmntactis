@@ -15,6 +15,9 @@
 #include "BitmapFont.h"
 #include "Assets.h"
 #include "Player.h"
+#include "HowToPlayMenuState.h"
+#include "OptionsMenuState.h"
+#include "CreditState.h"
 
 enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 
@@ -74,13 +77,13 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 			break;
 		case OPTIONS:
-			//CGame::GetInstance()->ChangeState(COptionsMenuState::GetInstance());
+			CGame::GetInstance()->ChangeState(COptionsMenuState::GetInstance());
 			break;
 		case HOWTOPLAY:
-			//CGame::GetInstance ()->ChangeState(CHowToPlayMenuState::GetInstance ());
+			CGame::GetInstance()->ChangeState(CHowToPlayMenuState::GetInstance());
 			break;
 		case CREDITS:
-			//CGame::GetInstance ()->ChangeState(CCreditsMenuState::GetInstance ());
+			CGame::GetInstance()->ChangeState(CCreditState::GetInstance());
 			break;
 		case LOAD:
 			// TODO:: call to LoadSavedGame would be in the Load Menu State

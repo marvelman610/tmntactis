@@ -10,6 +10,8 @@
 #ifndef HUD_H
 #define HUD_H
 
+#include <windows.h>
+
 class CPlayer;
 class CBitmapFont;
 class CSGD_TextureManager;
@@ -18,10 +20,18 @@ class CHUD
 {
 private:
 	int m_nImageID;		//character face image
-	//int m_nImageID1;	//health bar box image(red)
-	//int m_nImageID2;	//health bar box image(green)
-	//int m_nImageID3;	//health bar box image(blue)
-	//int m_nImageID4;	//box image
+
+	RECT m_rMikeyHP;	//HP bar rect
+	RECT m_rMikeyAP;	//AP bar rect
+
+	RECT m_rLeoHP;		//HP bar rect
+	RECT m_rLeoAP;		//AP bar rect
+
+	RECT m_rDonHP;		//HP bar rect
+	RECT m_rDonAP;		//AP bar rect
+
+	RECT m_rRaphHP;		//HP bar rect
+	RECT m_rRaphAP;		//AP bar rect
 
 	CPlayer* m_pPlayer;
 	CBitmapFont* m_pBitmapFont;

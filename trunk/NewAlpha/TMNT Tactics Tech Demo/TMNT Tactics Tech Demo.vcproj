@@ -198,6 +198,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\CreditState.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
@@ -301,6 +305,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\codeprofiler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CreditState.h"
 				>
 			</File>
 			<File

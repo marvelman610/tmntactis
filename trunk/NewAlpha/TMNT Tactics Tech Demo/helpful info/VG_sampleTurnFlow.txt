@@ -1,0 +1,22 @@
+A DESCRIPTION OF ONE PLAYER TURN...THE FLOW:
+............................................
+
+user will be notified that it's their turn.
+
+<<will a turtle be selected by default?>>
+<<will an enemy be selected by default?>>
+
+they may select one of their characters at any time, to notify them, change the cursor when hovering over a turtle.
+When a turtle is selected, show the range of movement by some visual queue which may be easily distinguished from a visual queue for the attack range. Show that that turtle is selected on the map as well (a selection box of some sort).
+
+the top left character panel will populate with the currently selected turtle's info.
+
+Also, change the cursor when hovering over an enemy to an appropriate attack cursor.
+
+when an enemy is clicked, the top right panel will populate with their info.
+
+if the player left-clicks on a tile(not inhabited by an enemy), if it is valid, display the path to get there (depending on how difficult shortest path is to find) with a string of dots or something useful (footstep image maybe?). Could also display the cumulative total AP cost along the path.
+
+if an enemy is clicked, somehow show that that character is selected on the map, and populate the top-right character panel. If that enemy is clicked again, if it is in range, the attack will commence, if not, when hovering with the mouse, the cursor will change to a red circle with an 'X', or some sort of no-can-do visual queue. Could also give a pleasant-sounding beep error sound to notify as well...
+
+ 

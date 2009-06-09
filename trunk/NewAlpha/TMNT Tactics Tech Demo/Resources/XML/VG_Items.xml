@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Items>
+       <BattleItem>
+                 <Item name ="Black Eggs" Dmg ="6" range="2" radius="1"/>
+                 <Item name ="Grenado" Dmg ="25" range ="3" radius="3"/>
+                 <Item name ="Pizza" Dmg ="20" range ="0" radius="1"/>
+       </BattleItem>
+       <Weapon>
+               <Item name ="Bokken" atk ="6" def ="0"/>
+               <Item name ="Tachi" atk ="8" def="2"/>
+               <Item name ="Katana" atk ="10" def="2"/>
+               <Item name ="Ninjato" atk ="11" def ="1"/>
+               <Item name ="Wooden Nunchaku" atk ="3" def="0"/>
+               <Item name ="Fiberglass Nunchaku" atk ="5" def="1"/>
+               <Item name ="Steel Nunchaku" atk ="6" def="2"/>
+               <Item name ="Oak Bo Staff" atk ="5" def="1"/>
+               <Item name ="Bamboo Staff" atk ="6" def="2"/>
+               <Item name ="Steel Staff" atk ="8" def="3"/>
+               <Item name ="Rusty Sais" atk ="6" def="0"/>
+               <Item name ="Polished Sais" atk ="8" def="1"/>
+       </Weapon>
+</Items>
+
+

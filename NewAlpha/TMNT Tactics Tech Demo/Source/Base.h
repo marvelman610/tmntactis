@@ -144,7 +144,7 @@ public:
 	inline void SetName(char* name)			{m_szName = name;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 
-	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols);	// auto-sets position
+	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols, bool anchor = true);	// auto-sets position
 
 
 	void AddAnim(CAnimation& a){ m_vAnimations.push_back(a);}

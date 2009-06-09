@@ -300,6 +300,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\codeprofiler.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Factory.h"
 				>
 			</File>
@@ -439,7 +443,7 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\helpful info\pathfinding.txt"
+			RelativePath=".\helpful info\VG_pathfinding.txt"
 			>
 		</File>
 	</Files>

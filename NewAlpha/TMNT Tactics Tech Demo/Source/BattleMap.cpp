@@ -48,6 +48,22 @@ CBattleMap::CBattleMap(void)
 
 CBattleMap::~CBattleMap(void)
 {
+	if (m_pAssets)
+		m_pAssets = NULL;
+	if (m_pTM)
+		m_pTM = NULL;
+	if (m_pGame)
+		m_pGame = NULL;
+	if (m_pDI)
+		m_pDI = NULL;
+	if (m_pHUD)
+		m_pHUD = NULL;
+	if (m_pPlayer)
+		m_pPlayer = NULL;
+	// 	if (m_pBitmapFont)
+	// 		m_pBitmapFont = NULL;
+	// 	if (m_pFMOD)
+	// 		m_pFMOD = NULL;
 }
 
 CBattleMap* CBattleMap::GetInstance()
@@ -107,24 +123,6 @@ void CBattleMap::Exit()
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
 	m_vCharacters.clear();
-
-	if (m_pAssets)
-		m_pAssets = NULL;
-	if (m_pTM)
-		m_pTM = NULL;
-	if (m_pGame)
-		m_pGame = NULL;
-	if (m_pDI)
-		m_pDI = NULL;
-	if (m_pHUD)
-		m_pHUD = NULL;
-	if (m_pPlayer)
-		m_pPlayer = NULL;
-	// 	if (m_pBitmapFont)
-	// 		m_pBitmapFont = NULL;
-	// 	if (m_pFMOD)
-	// 		m_pFMOD = NULL;
-
 }
 //////////////////////////////////////////////////////////////////////////
 // TODO:: determine if we have to draw all opaque objects first, then any

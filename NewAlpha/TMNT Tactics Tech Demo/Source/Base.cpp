@@ -44,14 +44,23 @@ RECT CBase::GetRect()
 //	return tiles;
 //}
 
-void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, int tileHeight, int numCols)
+void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, int tileHeight, int numCols, bool anchor)
 {
 	m_ptMapCoord = mapPt;
 	m_nCurrTileID = mapPt.y * numCols + mapPt.x;
-	SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
-	SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));
-	POINT anchorPt;
-	anchorPt.x = (LONG)(GetPosX() + m_vAnimations[0].GetFrames()[0].nAnchorX);
-	anchorPt.y = (LONG)(GetPosY() + m_vAnimations[0].GetFrames()[0].nAnchorY);
-	SetAnchor(anchorPt);
+	if(anchor)
+	{
+		SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
+		SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));
+		POINT anchorPt;
+		anchorPt.x = (LONG)(GetPosX() + m_vAnimations[0].GetFrames()[0].nAnchorX);
+		anchorPt.y = (LONG)(GetPosY() + m_vAnimations[0].GetFrames()[0].nAnchorY);
+		SetAnchor(anchorPt);
+	}
+	else
+	{
+		mapPt.x = (float)(m_ptMapCoord.x - m_ptMapCoord.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1);
+		mapPt.y = (float)(m_ptMapCoord.x + m_ptMapCoord.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1);
+		SetPosPt(mapPt);
+	}
 }

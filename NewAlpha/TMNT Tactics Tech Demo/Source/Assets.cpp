@@ -84,4 +84,9 @@ void CAssets::LoadAssets()
 	// temp ninja
 	aFootClanHUDID		= m_pTM->LoadTexture("Resources/Images/VG_FootClanHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD.png", D3DCOLOR_XRGB(255,255,255));	
+
+	///////////////////////////////////////////////////////////////////////
+	//Items and weapons
+	//temp item
+	aItemID = m_pTM->LoadTexture("Resources/Images/VG_tempItem.png");
 }

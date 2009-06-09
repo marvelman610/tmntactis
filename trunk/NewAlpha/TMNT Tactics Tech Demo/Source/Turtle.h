@@ -77,6 +77,8 @@ public:
 	// Purpose : Gets the boolean for the HUD to know if the player is active 
 	//////////////////////////////////////////////////////////////////////////////
 	inline bool GetActive(void) { return m_bIsActive; }
+	inline vector<CSkill>* GetSkills()  { return &m_vActiveSkills;}
+	inline int GetNumSkills(void) {return m_vActiveSkills.size();}
 };
 
 #endif

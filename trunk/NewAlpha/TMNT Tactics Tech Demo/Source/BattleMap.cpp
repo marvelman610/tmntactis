@@ -80,8 +80,9 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	string text[3];
 	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
-	m_bxActionBox = new CBox(3, text, 400, 500, 0.1f, 128, -1, 55);
+	m_bxActionBox = new CBox(3, text, 350, 560, 0.1f, 128, -1, 55, 65, 15, m_pAssets->aBMactionBoxID);
 	m_bxActionBox->SetActive();
+	m_bxSkillBox = NULL;
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -122,6 +123,10 @@ void CBattleMap::Exit()
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
+	if (m_bxSkillBox)
+		m_bxSkillBox = NULL;
+	if (m_bxActionBox)
+		m_bxActionBox = NULL;
 	m_vCharacters.clear();
 }
 //////////////////////////////////////////////////////////////////////////
@@ -1005,7 +1010,23 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		switch (m_nCurrBtnSelected)
 		{
 		case ACTION_SPECIAL:
-			m_bDisplaySpecialBox = true;
+			{
+				if (m_nCurrCharacter > -1)
+				{
+					m_bDisplaySpecialBox = true;
+					if (m_bxSkillBox)
+						delete m_bxSkillBox;
+					int numSkills = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills();
+					string* skillNames = new string[numSkills];
+					for (int i = 0; i < numSkills; ++i)
+					{
+						vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
+						skillNames[i] = skills[i].GetSkillName();
+					}
+					m_bxSkillBox = new CBox(numSkills, skillNames, 10, 10);
+					delete[] skillNames;
+				}
+			}
 			break;
 		case ACTION_ITEM:
 			break;
@@ -1163,4 +1184,6 @@ void CBattleMap::CenterCam(float fElapsedTime)
 void CBattleMap::DrawBoxes()
 {
 	m_bxActionBox->Render();
+	if (m_bDisplaySpecialBox)
+		m_bxSkillBox->Render();
 }

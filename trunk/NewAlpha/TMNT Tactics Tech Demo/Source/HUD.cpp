@@ -87,23 +87,23 @@ void CHUD::Update(float fElapsedTime)
 
 			float healthwidth = 104.0f *((float)m_pPlayer->GetTurtles()[MIKEY]->GetHealth() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetMaxHealth());
 			float  apwidth = 104.0f * ((float)m_pPlayer->GetTurtles()[MIKEY]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetBaseAP()); 
-			m_rMikeyHP.right = healthwidth;
-			m_rMikeyAP.right = apwidth;
+			m_rMikeyHP.right = (LONG)healthwidth;
+			m_rMikeyAP.right = (LONG)apwidth;
 
 			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[LEONARDO]->GetHealth() / (float)m_pPlayer->GetTurtles()[LEONARDO]->GetMaxHealth() );
 			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[LEONARDO]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[LEONARDO]->GetBaseAP() );
-			m_rLeoHP.right = healthwidth;
-			m_rLeoAP.right = apwidth;
+			m_rLeoHP.right = (LONG)healthwidth;
+			m_rLeoAP.right = (LONG)apwidth;
 
 			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
 			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
-			m_rDonHP.right = healthwidth;
-			m_rDonAP.right = apwidth;
+			m_rDonHP.right = (LONG)healthwidth;
+			m_rDonAP.right = (LONG)apwidth;
 
 			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
 			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
-			m_rRaphHP.right = healthwidth;
-			m_rRaphAP.right = apwidth;
+			m_rRaphHP.right = (LONG)healthwidth;
+			m_rRaphAP.right = (LONG)apwidth;
 
 		}
 

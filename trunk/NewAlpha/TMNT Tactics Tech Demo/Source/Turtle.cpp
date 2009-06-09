@@ -25,6 +25,17 @@ void CTurtle::Update(float fElapsedTime)
 		m_vAnimations[m_nCurrAnimation].Play();
 	}
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+	if(GetExperience() >= (100 * GetLevel()))
+	{
+		SetExperience(GetExperience()-(100* GetLevel()));
+		SetLevel(GetLevel() + 1);
+		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));
+		SetBaseAP(GetBaseAP()+2);
+		SetStrength( (int)( (float)GetStrength() * 1.2f ) );
+		SetDefense( (int) ( (float)GetDefense() * 1.2f ) );
+		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
+		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
+	}
 }
 void CTurtle::Render()
 {

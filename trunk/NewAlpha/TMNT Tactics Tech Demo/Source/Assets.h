@@ -91,4 +91,6 @@ public:
 	//temp ninja
 	int aFootClanHUDID;
 	int aShredderHUDID;
+
+	int aItemID;
 };

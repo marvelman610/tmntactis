@@ -48,8 +48,6 @@ CNinja::~CNinja(void)
 {
 	for(int j = 0; j < this->GetAnimations().size(); j++)
 			this->GetAnimations()[j].Unload();
-
-	//MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 }
 
 void CNinja::AI()
@@ -1162,6 +1160,19 @@ void CNinja::AI()
 }
 void CNinja::Update(float fElapsedTime)
 {
+	if(GetHealth() <= 0)
+	{
+		/*int type = rand()% 1;
+
+		if(type == 0)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
+		else			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));*/
+
+		//this->SetHealth(1);
+		MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
+		return;
+
+	}
+
 	if( ( (float)GetHealth()/(float)GetMaxHealth()) < (3.0f/10.0f))
 	{
 		m_nLowHealth = 1;
@@ -1170,7 +1181,7 @@ void CNinja::Update(float fElapsedTime)
 
 	if( GetExperience() >= 100)
 	{
-		SetExperience( GetExperience() - 100 );
+		SetExperience( GetExperience() - (100* GetLevel()) );
 		SetLevel(GetLevel()+1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));
 		SetBaseAP(GetBaseAP()+2);
@@ -1186,6 +1197,5 @@ void CNinja::Update(float fElapsedTime)
 }
 void CNinja::Render()
 {
-	//CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aNinjaID, (int)GetPosX(), (int)GetPosY(), 0.5f); 
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.2f);
 }

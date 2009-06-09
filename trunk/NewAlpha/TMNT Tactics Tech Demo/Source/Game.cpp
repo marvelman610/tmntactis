@@ -8,6 +8,7 @@
 #include "MessageSystem.h"
 #include "Factory.h"
 #include "Ninja.h"
+#include "ObjectManager.h"
 //#include "ParticleSystem.h"
 
 //#include "MessageSystem.h"
@@ -208,14 +209,29 @@ void MessageProc(CBaseMessage* pMsg)
 	{
 	case MSG_CREATE_ITEM:
 		{
-		int type = rand()% 2;
-		CCreateItem * pCP = (CCreateItem*)pMsg;
-		Factory::GetInstance()->CreateBattleItem(type, (int)(pCP->GetNinja()->GetPosX()), (int)pCP->GetNinja()->GetPosY() );
+			/*int type = rand()% 2;
+			CCreateItem * pCP = (CCreateItem*)pMsg;
+			Factory::GetInstance()->CreateBattleItem(type, (int)(pCP->GetNinja()->GetPosX()), (int)pCP->GetNinja()->GetPosY() );*/
+			int type = rand()% 2;
+			CCreateItem * pCP = (CCreateItem*)pMsg;
+			Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
+
+			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
+
 		}
 		break;
 	case MSG_DESTROY_ITEM:
-		CDestroyItem * pDP = (CDestroyItem*)pMsg;
-		//ObjectManager::GetInstance()->RemoveObject();
+		{
+			CDestroyItem * pDP = (CDestroyItem*)pMsg;
+			//ObjectManager::GetInstance()->RemoveObject();
+		}
+		break;
+	case MSG_CREATE_WEAPON:
+		{
+			int type = rand()% 11;
+			CCreateWeapon * pCP = (CCreateWeapon*)pMsg;
+			Factory::GetInstance()->CreateWeapon(type,pCP->GetNinja()->GetMapCoord() );
+		}
 		break;
 	}
 }

@@ -11,6 +11,7 @@
 #include "CSGD_DirectInput.h"
 #include "Tile.h"
 #include "Base.h"
+#include "CodeProfiler.h"
 
 #include <queue>
 using namespace std;
@@ -46,6 +47,8 @@ void ObjectManager::UpdateObjects(float fElapsedTime)
 }
 void ObjectManager::RenderObjects(void)
 {
+	static CCodeProfiler cp("ObjManRender");
+	cp.Start();
 	//Z-Sorted
 	priority_queue<CBase *, vector<CBase *>, cmp> objects;
 	for (unsigned int i=0; i < m_vObjects.size(); i++)
@@ -58,6 +61,7 @@ void ObjectManager::RenderObjects(void)
 		objects.top()->Render();
 		objects.pop();
 	}
+	cp.End();
 }
 
 void ObjectManager::Add(CBase* pObj)

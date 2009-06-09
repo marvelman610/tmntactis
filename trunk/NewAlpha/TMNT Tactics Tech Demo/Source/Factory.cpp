@@ -13,6 +13,7 @@
 #include"Boss.h"
 #include"Turtle.h"
 #include"BattleItem.h" 
+#include"BattleMap.h"
 
 #define TOTAL_NUM_WEAPONS 12
 
@@ -136,7 +137,7 @@ CTurtle* Factory::CreateTurtle(char* name)
 	ObjectManager::GetInstance()->Add(turtle);
 	return turtle;
 }
-CBattleItem* Factory::CreateBattleItem(int type, int PosX, int PosY)
+CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 {
 	CBattleItem* item = new CBattleItem();
 
@@ -157,13 +158,13 @@ CBattleItem* Factory::CreateBattleItem(int type, int PosX, int PosY)
 		item->SetHeal(pizza.GetDamage());
 		break;
 	}
+	CBattleMap* pBM =  CBattleMap::GetInstance();
+	item->SetCurrTile(mapPoint, pBM->GetOffsetX(),pBM->GetOffsetY(),pBM->GetTileWidth(), pBM->GetTileHeight(),pBM->GetNumCols(),false);
 
-	item->SetPosX(PosX);
-	item->SetPosY(PosY);
 	ObjectManager::GetInstance()->Add(item);
 	return item;
 }
-CBase* Factory::CreateWeapon(int type)
+CBase* Factory::CreateWeapon(int type, POINT mapPoint)
 {
 	CBase* weapon = new CBase();
 	switch(type)

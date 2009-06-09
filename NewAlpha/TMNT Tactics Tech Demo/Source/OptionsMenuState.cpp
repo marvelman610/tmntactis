@@ -133,7 +133,7 @@ void COptionsMenuState::Render()
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY());
 	sprintf_s(szText, "SFX VOLUME  (%i)", m_nSFXVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 1.0f);
-
+	CBitmapFont::GetInstance()->DrawString("EXIT", 400,430, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

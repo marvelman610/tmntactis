@@ -55,10 +55,12 @@ void CHowToPlayMenuState::Render()
 {
 	CBaseMenuState::Render();
 	// TODO:: add the how to play info here
+	CBitmapFont::GetInstance()->DrawString("ESC", 512, 384, 1.0f, D3DCOLOR_ARGB(255, 255,0,0));
 }
 
 void CHowToPlayMenuState::Update(float fElapsedTime)
 {
 	CBaseMenuState::Update(fElapsedTime);
 	// TODO:: add update code here
+
 }

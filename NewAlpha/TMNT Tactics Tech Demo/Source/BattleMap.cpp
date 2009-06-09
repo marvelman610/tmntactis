@@ -1060,6 +1060,23 @@ void CBattleMap::PerformAttack()
 	m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 	m_vEnemies[m_nCurrTarget-4]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 
+	if (m_vEnemies[m_nCurrTarget-4]->GetHealth() <= 0)
+	{
+		vector<CBase*>::iterator iter = m_vEnemies.begin();
+		int count = 0;
+		while(iter != m_vEnemies.end())
+		{
+			if ((*iter) == m_vEnemies[m_nCurrTarget-4])
+			{
+				iter = m_vEnemies.erase(iter);
+				break;
+			}
+			++count;
+			++iter;
+		}
+		--m_nNumCharacters;
+		--m_nNumEnemiesLeft;
+	}
 	CalculateRanges();
 }
 void CBattleMap::FindPathToTarget()

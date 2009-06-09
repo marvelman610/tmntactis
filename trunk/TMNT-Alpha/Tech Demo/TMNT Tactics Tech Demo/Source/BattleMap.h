@@ -34,6 +34,7 @@ class CNinja;
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
+ enum {ACTION_SPECIAL, ACTION_ITEM, ACTION_ENDTURN, };
 #include "Base.h"
 
  struct MY_POINT 
@@ -73,6 +74,14 @@ class CBattleMap
 	int m_nCurrMousePtr;
 	DEPTH depth;				// struct that holds all the z-depth draw values
 	string m_strCurrVersion;
+
+	// button selection
+	int m_nCurrBtnSelected;
+
+	// Times
+	float m_fTimer;
+	bool m_bNotEnoughAP;
+	bool m_bOutOfRange;
 
 	// Map variables
 	int m_nMapWidth;
@@ -128,7 +137,6 @@ class CBattleMap
 	// temp particles
 	CParticleSystem* m_pParticleSys;
 	// temp ninja
-	//CNinja* m_pNinja;
 
 	//////////////////////////////////////////////////////////////////////////
 	// Pointers to singletons
@@ -255,6 +263,8 @@ class CBattleMap
 	void CenterCam(float fElapsedTime);
 
 public:
+	void DrawActionBox();
+
 	CBattleMap(void);
 	~CBattleMap(void);
 	static CBattleMap* GetInstance();
@@ -306,6 +316,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	int GetCurrSelectedTile() const {return m_nCurrSelectedTile;}
 	int GetNumCols()	const		{return m_nNumCols;}
+	int GetTileHeight() const		{return m_nTileHeight;}
 	int GetTileWidth()  const		{return m_nTileWidth;}
 	int GetOffsetX()	const		{return m_nOffsetX;}
 	int GetOffsetY()	const		{return m_nOffsetY;}

@@ -62,6 +62,7 @@ public:
 	int aBMgreenSquareID;
 	int aBMcurrSelectedArrowID;
 	int aBMcurrTargetArrowID;
+	int aBMactionBoxID;
 
 	// Main Menu IDs
 	int aMMBGimageID;

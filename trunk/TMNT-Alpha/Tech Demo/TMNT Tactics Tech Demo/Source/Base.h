@@ -97,7 +97,7 @@ public:
 	inline POINT	GetAnchor()			{return m_ptAnchor;		}
 	inline int		GetRange()			{return m_nRange;		}
 	inline int		GetCurrTile()		{return m_nCurrTileID;	}
-	inline POINT	GetMapCoord()	  {return m_ptMapCoord;}
+	inline POINT	GetMapCoord()		{return m_ptMapCoord;}
 	inline char*	GetName()			{return m_szName;		}
 
 	inline int		GetMaxHealth(void)	{return m_nHealthMax;	}

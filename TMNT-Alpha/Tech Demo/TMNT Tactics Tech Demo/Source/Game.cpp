@@ -210,7 +210,7 @@ void MessageProc(CBaseMessage* pMsg)
 		{
 		int type = rand()% 2;
 		CCreateItem * pCP = (CCreateItem*)pMsg;
-		Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetPosX(), pCP->GetNinja()->GetPosY() );
+		Factory::GetInstance()->CreateBattleItem(type, (int)(pCP->GetNinja()->GetPosX()), (int)pCP->GetNinja()->GetPosY() );
 		}
 		break;
 	case MSG_DESTROY_ITEM:

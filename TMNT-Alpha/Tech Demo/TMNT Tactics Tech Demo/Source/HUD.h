@@ -14,8 +14,6 @@ class CPlayer;
 class CBitmapFont;
 class CSGD_TextureManager;
 
-
-
 class CHUD
 {
 private:

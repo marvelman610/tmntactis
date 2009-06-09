@@ -23,6 +23,7 @@ CBitmapFont::CBitmapFont(void)
 	m_cStartChar = 32;
 	m_nCharHeight = 32;
 	m_nCharWidth = 32;
+	m_nImageID = CAssets::GetInstance()->aBitmapFontID;
 }
 
 CBitmapFont::~CBitmapFont(void)
@@ -42,7 +43,7 @@ void CBitmapFont::Load()
 {
 
 }
-void CBitmapFont::DrawString(char* szString, int posX, int posY, float scale, DWORD dwcolor) //if u want to to color text, make fonts white (desaturate
+void CBitmapFont::DrawString(const char* szString, int posX, int posY, float scale, DWORD dwcolor) //if u want to color text, make fonts white (desaturate)
 {
 	int offsetx = posX;
 	int offsety = posY;
@@ -50,10 +51,10 @@ void CBitmapFont::DrawString(char* szString, int posX, int posY, float scale, DW
 	//find length of string 
 	int len = (int)strlen(szString);
 
-	//loop throught string
+	//loop through string
 	for(int i = 0; i < len; i++)
 	{
-		//do cell algorithm for each charater
+		//do cell algorithm for each character
 		char ch = szString[i]; //!!toUpper()
 		if(ch == ' ')
 		{
@@ -70,11 +71,11 @@ void CBitmapFont::DrawString(char* szString, int posX, int posY, float scale, DW
 
 			continue;
 		}
-		//convert asccii char to id off sheet
+		//convert ascii char to id off sheet
 		int id = (int)(ch - m_cStartChar);
 		RECT rcell = CellAlgorithm(id);
 
-		CSGD_TextureManager::GetInstance()->Draw(CAssets::GetInstance()->aBitmapFontID,offsetx,offsety, scale, scale,&rcell,0,0,0);
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,offsetx,offsety, 0.05f, scale, scale,&rcell,0,0,0, dwcolor);
 		offsetx += int(m_nCharWidth*scale);
 	}
 	
@@ -85,7 +86,7 @@ void CBitmapFont::DrawChar(char c, int posX, int posY, float scale, DWORD dwcolo
 	int offsetx = posX;
 	int offsety = posY;
 
-		//do cell algorithm for each charater
+		//do cell algorithm for each character
 	char ch = c; //!!toUpper()
 	if(ch == ' ')
 	{
@@ -99,18 +100,16 @@ void CBitmapFont::DrawChar(char c, int posX, int posY, float scale, DWORD dwcolo
 		return;
 
 	}
-	//convert asccii char to id off sheet
+	//convert ascii char to id off sheet
 	int id = (int)(ch - m_cStartChar);
 	RECT rcell = CellAlgorithm(id);
 
 	//CSGD_TextureManager::GetInstance()->Draw(imageID,offsetx,offsety,scale,scale,&rcell,0,0,0);
 	offsetx += int(m_nCharWidth*scale);
-
-	
 }
 
 
-void CBitmapFont::DrawStringAutoCenter (const char* szString, int ScreenWidth, int yPos,  float fScale, DWORD dwColor)
+void CBitmapFont::DrawStringAutoCenter (const char* szString, int ScreenWidth, int yPos, float zPos, float fScale, DWORD dwColor)
 {
 	m_cStartChar = 32;
 	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance ();
@@ -142,8 +141,23 @@ void CBitmapFont::DrawStringAutoCenter (const char* szString, int ScreenWidth, i
 		int nID = (int)(ch  - m_cStartChar);
 		RECT rCell = CellAlgorithm(nID);
 
-		pTM->Draw(CAssets::GetInstance()->aBitmapFontID, nOffsetX, nOffsetY, fScale, fScale, &rCell, 0.0f, 0.0f, 0.0f, dwColor);
+		pTM->DrawWithZSort(m_nImageID, nOffsetX, nOffsetY, zPos, fScale, fScale, &rCell, 0.0f, 0.0f, 0.0f, dwColor);
 
 		nOffsetX += (int)((m_nCharWidth + 10) * fScale);
 	}
+}
+
+void CBitmapFont::Reset() // back to original BM font
+{
+	m_nCharWidth = 32;
+	m_nCharHeight = 32;
+	m_nNumCols = 10;
+	m_nImageID = CAssets::GetInstance()->aBitmapFontID;
+}
+void CBitmapFont::ChangeBMFont(int imageID, int width, int height, int cols)
+{
+	m_nCharWidth = width;
+	m_nCharHeight = height;
+	m_nNumCols = cols;
+	m_nImageID = imageID;
 }

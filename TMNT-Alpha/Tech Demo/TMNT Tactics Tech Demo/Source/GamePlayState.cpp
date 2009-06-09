@@ -15,10 +15,12 @@
 #include "MainMenuState.h"
 #include "Game.h"
 #include "Player.h"
+#include "Turtle.h"
 //#include "Animation.h"
 #include "HUD.h"
 //#include "WorldMap.h"
 #include"ObjectManager.h"
+#include <fstream>
 
 // Constructor
 CGamePlayState::CGamePlayState(void)
@@ -50,7 +52,7 @@ void CGamePlayState::Enter(void)
 	//			from the world map
 	m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
 
-	//m_nCurrentMap = ;
+	m_nCurrentMap = MAP_BATTLE;
 }
 
 // Exit
@@ -134,5 +136,38 @@ void CGamePlayState::Render(void)
 	m_pBattleMap->Render();
 	if(m_bIsPaused)
 		CSGD_Direct3D::GetInstance()->DrawTextA("PAUSE",100,100,255,0,0);
+
+}
+
+void CGamePlayState::LoadGame(char* fileName)
+{
+	ifstream ifs;
+	ifs.open(fileName, ios_base::binary | ios_base::in);
+	if (ifs.is_open())
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			//ifs.read(reinterpret_cast<char*>(), );
+		}
+	}
+	else
+		ifs.close();
+}
+
+void CGamePlayState::SaveGame(char* fileName)
+{
+	ofstream ofs;
+	ofs.open(fileName, ios_base::binary | ios_base::out);
+	CTurtle** turtles = CPlayer::GetInstance()->GetTurtles();
+
+	if (ofs.is_open())
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+		}
+	}
+	else
+		ofs.close();
 
 }

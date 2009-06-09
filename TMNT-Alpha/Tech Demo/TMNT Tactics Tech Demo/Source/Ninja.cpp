@@ -1187,5 +1187,5 @@ void CNinja::Update(float fElapsedTime)
 void CNinja::Render()
 {
 	//CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aNinjaID, (int)GetPosX(), (int)GetPosY(), 0.5f); 
-	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.5f);
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.2f);
 }

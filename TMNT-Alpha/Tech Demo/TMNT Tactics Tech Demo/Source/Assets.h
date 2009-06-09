@@ -47,13 +47,16 @@ public:
 	// Images common to multiple classes
 	int aMenuCursorImageID;
 	int aBitmapFontID;
+	int aBitmapFont2ID;
+	int aBitmapFont3ID;
 	int aMousePointerID;
 	int aMouseGrabID;
 	int aMouseAttackID;
 	int aMouseMagGlassID;
 	int aMouseMoveID;
-	int aBitmapFont2ID;
-	int aBitmapFont3ID;
+
+	// box images
+	int aBpointerID;
 
 	// BattleMap IDs
 	int aBMbgID;
@@ -63,6 +66,7 @@ public:
 	int aBMcurrSelectedArrowID;
 	int aBMcurrTargetArrowID;
 	int aBMactionBoxID;
+	int aBMskillBoxID;
 
 	// Main Menu IDs
 	int aMMBGimageID;

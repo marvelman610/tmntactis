@@ -357,8 +357,6 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
-	//if (m_pDI->KeyPressed(DIK_ESCAPE))
-	//	return false;
 
 	// Keyboard input
 	if (!HandleKeyBoardInput(fElapsedTime))
@@ -973,6 +971,13 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				CalculateRanges();
 		}
 	}
+	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox)
+		return false;
+	else if (m_pDI->KeyPressed(DIK_ESCAPE))
+	{
+		m_nCurrBtnSelected = BTN_BACK;
+		HandleButton();
+	}
 	return true;
 }
 void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID)
@@ -1024,69 +1029,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 				CalculateRanges();
 			}
-		}
-		switch (m_nCurrBtnSelected)
-		{
-		case ACTION_SPECIAL:
-			{
-				if (m_nCurrCharacter > -1)
-				{
-					m_bDisplaySpecialBox = true;
-					if (m_bxSkillBox)
-						delete m_bxSkillBox;
-					int numSkills = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills();
-					string* skillNames = new string[numSkills];
-					for (int i = 0; i < numSkills; ++i)
-					{
-						vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
-						skillNames[i] = skills[i].GetSkillName();
-					}
-					m_bxSkillBox = new CBox(numSkills, skillNames, 400, 400, 0.1f, 128, -1, 55, 50, 15, m_pAssets->aBMskillBoxID, 1.0f, 1.0f, 0.7f );
-					delete[] skillNames;
-					m_bxSkillBox->SetActive(true);
-					m_bxSkillBox->SetType(BOX_WITH_BACK);
-					m_bxActionBox->SetActive(false);
-				}
-			}
-			break;
-		case ACTION_ITEM:
-			{
-				m_bDisplayItemBox = true;
-				if (m_bxItemBox)
-					delete m_bxItemBox;
-				vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
-				string* item = new string[temp.size()];
-				
-				for(int i = 0; i < (int)temp.size(); i++)
-					item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
-					
-				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(),item,600,400,0.1f,128,-1);
-				delete[] item;
-				m_bxItemBox->SetActive(true);
-				m_bxItemBox->SetType(BOX_WITH_BACK);
-				m_bxActionBox->SetActive(false);
-			}
-			break;
-		case ACTION_ENDTURN:
-			m_bIsPlayersTurn = false;
-			break;
-		case SPECIAL_BACK:
-			if (m_bxSkillBox)
-			{
-				delete m_bxSkillBox;
-				m_bxSkillBox = NULL;
-				m_bDisplaySpecialBox = false;
-				m_bxActionBox->SetActive();
-			}
-			if (m_bxItemBox)
-			{
-				delete m_bxItemBox;
-				m_bxItemBox = NULL;
-				m_bDisplayItemBox = false;
-				m_bxActionBox->SetActive();
-			}
-		default:
-			break;
+			HandleButton();
 		}
 	}
 	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
@@ -1122,6 +1065,72 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			else
 				PerformAttack();
 		}
+	}
+}
+void CBattleMap::HandleButton()
+{
+	switch (m_nCurrBtnSelected)
+	{
+	case BTN_SPECIAL:
+		{
+			if (m_nCurrCharacter > -1)
+			{
+				m_bDisplaySpecialBox = true;
+				if (m_bxSkillBox)
+					delete m_bxSkillBox;
+				int numSkills = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills();
+				string* skillNames = new string[numSkills];
+				for (int i = 0; i < numSkills; ++i)
+				{
+					vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
+					skillNames[i] = skills[i].GetSkillName();
+				}
+				m_bxSkillBox = new CBox(numSkills, skillNames, 400, 400, 0.1f, 128, -1, 55, 50, 15, m_pAssets->aBMskillBoxID, 1.0f, 1.0f, 0.7f );
+				delete[] skillNames;
+				m_bxSkillBox->SetActive(true);
+				m_bxSkillBox->SetType(BOX_WITH_BACK);
+				m_bxActionBox->SetActive(false);
+			}
+		}
+		break;
+	case BTN_ITEM:
+		{
+			m_bDisplayItemBox = true;
+			if (m_bxItemBox)
+				delete m_bxItemBox;
+			vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
+			string* item = new string[temp.size()];
+
+			for(int i = 0; i < (int)temp.size(); i++)
+				item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+
+			m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(),item,600,400,0.1f,128,-1);
+			delete[] item;
+			m_bxItemBox->SetActive(true);
+			m_bxItemBox->SetType(BOX_WITH_BACK);
+			m_bxActionBox->SetActive(false);
+		}
+		break;
+	case BTN_ENDTURN:
+		m_bIsPlayersTurn = false;
+		break;
+	case BTN_BACK:
+		if (m_bxSkillBox)
+		{
+			delete m_bxSkillBox;
+			m_bxSkillBox = NULL;
+			m_bDisplaySpecialBox = false;
+			m_bxActionBox->SetActive();
+		}
+		if (m_bxItemBox)
+		{
+			delete m_bxItemBox;
+			m_bxItemBox = NULL;
+			m_bDisplayItemBox = false;
+			m_bxActionBox->SetActive();
+		}
+	default:
+		break;
 	}
 }
 void CBattleMap::PerformAttack()

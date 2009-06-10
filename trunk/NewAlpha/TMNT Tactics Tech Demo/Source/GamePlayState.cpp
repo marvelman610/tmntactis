@@ -104,16 +104,17 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 {
 	CSGD_DirectInput* pDI = CSGD_DirectInput::GetInstance();
 
-	if (pDI->KeyPressed(DIK_ESCAPE))
-	{
-		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
-		return true;
-	}
-	else if(pDI->KeyPressed(DIK_P))
+// 	if (pDI->KeyPressed(DIK_ESCAPE))
+// 	{
+// 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+// 		return true;
+// 	}
+	if(pDI->KeyPressed(DIK_P))
 		m_bIsPaused = !m_bIsPaused;
 
+	if (!m_pBattleMap->Input(fElapsedTime, mousePt))
+		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	
-	m_pBattleMap->Input(fElapsedTime, mousePt);
 
 	return true;
 }

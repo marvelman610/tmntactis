@@ -378,12 +378,8 @@ void CBattleMap::Update(float fElapsedTime)
 {
 	if(m_bIsPlayersTurn == false)
 	{
-		for(int i =0; i < m_vEnemies.size(); i++)
-		{	
-			CNinja* ninja = (CNinja*)m_vEnemies[i];
-			
-			ninja->AI();
-		}
+		CNinja* ninja = (CNinja*)m_vEnemies[rand()%m_vEnemies.size()];
+		ninja->AI();
 	}
 	cheat();
 	if(godbool)

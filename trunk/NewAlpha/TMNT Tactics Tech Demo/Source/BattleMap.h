@@ -351,7 +351,7 @@ public:
 	int GetCurrTarget() const		{return m_nCurrTarget;}
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	bool GetPaused()	const		{return m_bIsPaused;}
-	CBase* GetCurrEnemyTarget()		{return &m_vCharacters[m_nCurrTarget];}
+	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetChars()				{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}

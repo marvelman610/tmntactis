@@ -85,12 +85,14 @@ class CBattleMap
 	CBox* m_bxActionBox;
 	CBox* m_bxSkillBox;
 	CBox* m_bxItemBox;
+	CBox* m_bxPauseBox;
 
 	// Times
 	float m_fTimer;
 	bool m_bNotEnoughAP;
 	bool m_bOutOfRange;
 	bool m_bExecuteSkill;
+	bool m_bIsPaused;
 
 	// Map variables
 	int m_nMapWidth;
@@ -249,13 +251,6 @@ class CBattleMap
 	void HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID);
 
 	void HandleButton();
-	//////////////////////////////////////////////////////////////////////////
-	//	Function	:	"UpdatePositions"
-	//
-	//	Purpose		:	Updates all characters' positions, used primarily for
-	//					camera movement
-	//////////////////////////////////////////////////////////////////////////
-	void UpdatePositions();
 
 	//////////////////////////////////////////////////////////////////////////
 	//  Function	:	DrawDebugInfo
@@ -291,6 +286,13 @@ public:
 	CBattleMap(void);
 	~CBattleMap(void);
 	static CBattleMap* GetInstance();
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"UpdatePositions"
+	//
+	//	Purpose		:	Updates all characters' positions, used primarily for
+	//					camera movement
+	//////////////////////////////////////////////////////////////////////////
+	void UpdatePositions();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Enter
 	//
@@ -348,6 +350,7 @@ public:
 	int GetCurrActive() const		{return m_nCurrCharacter;}
 	int GetCurrTarget() const		{return m_nCurrTarget;}
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
+	bool GetPaused()	const		{return m_bIsPaused;}
 	CBase* GetCurrEnemyTarget()		{return &m_vCharacters[m_nCurrTarget];}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetChars()	{return &m_vCharacters[m_nCurrCharacter];}
@@ -363,6 +366,7 @@ public:
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
 	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
+	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 
 

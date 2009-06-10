@@ -90,6 +90,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = NULL;
 	m_bxItemBox = NULL;
+	m_bxPauseBox = NULL;
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -145,6 +146,8 @@ void CBattleMap::Reset()
 		m_bxSkillBox = NULL;
 	if (m_bxActionBox)
 		m_bxActionBox = NULL;
+	if (m_bxPauseBox)
+		m_bxPauseBox = NULL;
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
@@ -152,9 +155,9 @@ void CBattleMap::Reset()
 void CBattleMap::Render()
 {
 	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
-
 	//////////////////////////////////////////////////////////////////////////
 	//TODO::this will be put in the hud eventually
+	//////////////////////////////////////////////////////////////////////////
 	if (m_bNotEnoughAP && m_fTimer < 3)
 	{
 		m_pD3D->DrawText("Not enough AP", 10, 520, 255, 0, 0);
@@ -187,7 +190,6 @@ void CBattleMap::Render()
 		sprintf_s(ninjaHealth, "Health: %i", m_vCharacters[m_nCurrTarget].GetHealth());
 		m_pD3D->DrawText(ninjaHealth, 10, 460, 0, 0, 0);
 	}
-	//////////////////////////////////////////////////////////////////////////
 
 	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
@@ -319,6 +321,8 @@ void CBattleMap::Render()
 	}
 	if (m_bIsPlayersTurn)
 		DrawBoxes();
+	if (m_bIsPaused && m_bxPauseBox)
+		m_bxPauseBox->Render();
 	m_pHUD->Render();
 	if (m_bIsPlayersTurn)
 		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScrenWidth, 10, 0.09f, 0.6f);
@@ -341,7 +345,35 @@ void CBattleMap::Render()
 	//m_pParticleSys->DrawParticle();
 	DrawDebugInfo();
 }
-
+void CBattleMap::SetPaused(bool IsPaused)
+{
+	m_bIsPaused = IsPaused;
+	if (m_bIsPaused)
+	{
+		if (m_bxPauseBox)
+			delete m_bxPauseBox;
+		string text[3]; text[0] = "SAVE GAME"; text[1] = "LOAD GAME"; text[2] = "QUIT";
+		m_bxPauseBox = new CBox(3, text, 400, 300, 0.1f);
+		m_bxPauseBox->SetActive();
+		m_bxPauseBox->SetType(BOX_WITH_BACK);
+		if (m_bxItemBox)
+			m_bxItemBox->SetActive(false);
+		if (m_bxSkillBox)
+			m_bxSkillBox->SetActive(false);
+	}
+	else
+	{
+		if (m_bxItemBox)
+			m_bxItemBox->SetActive();
+		else if (m_bxSkillBox)
+			m_bxSkillBox->SetActive();
+		else 
+			m_bxActionBox->SetActive();
+		if (m_bxPauseBox)
+			delete m_bxPauseBox;
+		m_bxPauseBox = NULL;
+	}
+}
 void CBattleMap::Update(float fElapsedTime)
 {
 	cheat();
@@ -418,22 +450,25 @@ void CBattleMap::Update(float fElapsedTime)
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
+	if(CGamePlayState::GetInstance()->GetPaused())
+		SetPaused(true);
+	else
+		SetPaused(false);
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 
-	if(!CGamePlayState::GetInstance()->GetPaused())
+	// Keyboard input
+	if (!HandleKeyBoardInput(fElapsedTime))
+		return false;
+	if (m_bExecuteSkill)
+		return true;
+	// Mouse movement (edge of screen to move camera)
+	if (m_bIsPlayersTurn || m_bIsPaused)
 	{
-		// Keyboard input
-		if (!HandleKeyBoardInput(fElapsedTime))
-			return false;	
-		if (m_bExecuteSkill)
-			return true;
-		// Mouse movement (edge of screen to move camera)
-		if (m_bIsPlayersTurn)
-		{
-
+		if(!CGamePlayState::GetInstance()->GetPaused())
+		{	
 			if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
 				MoveCamLeft(fElapsedTime);
 			if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
@@ -442,49 +477,47 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 				MoveCamUp(fElapsedTime);
 			if (m_ptMouseScreenCoord.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
 				MoveCamDown(fElapsedTime);
-
-
-			// transform the mouse into map coordinates
-			xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-			yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-			// these check for the mouse being off the map
-			// if it is, it is reset to the lowest row/column
-			if (xID >= m_nNumCols && yID >= m_nNumRows)
-			{
-				yID = m_nNumRows-1;
-				xID = m_nNumCols-1;
-			}	
-			else if (xID < 2 && yID < 2)
-				yID = xID = 2;
-			else if (xID < 2 && yID >= m_nNumRows)
-			{
-				xID = 2;
-				yID = m_nNumRows-1;
-			}
-			else if (xID >= m_nNumCols && yID < 2)
-			{
-				yID = 2;
-				xID = m_nNumCols-1;
-			}
-			else if (xID < 2)
-				xID = 2;
-			else if (yID < 2)
-				yID = 2;
-			else if (xID >= m_nNumCols)
-				xID = m_nNumCols-1;
-			else if (yID >= m_nNumRows)
-				yID = m_nNumRows-1;
-
-			m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
-			// Mouse -- determine if the mouse is over a character
-
-			// debugging
-			if (m_pDI->KeyPressed(DIK_D))
-				int i = 0;
-
-
-			HandleMouseInput(fElapsedTime, mouse, xID, yID);
 		}
+
+		// transform the mouse into map coordinates
+		xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		// these check for the mouse being off the map
+		// if it is, it is reset to the lowest row/column
+		if (xID >= m_nNumCols && yID >= m_nNumRows)
+		{
+			yID = m_nNumRows-1;
+			xID = m_nNumCols-1;
+		}	
+		else if (xID < 2 && yID < 2)
+			yID = xID = 2;
+		else if (xID < 2 && yID >= m_nNumRows)
+		{
+			xID = 2;
+			yID = m_nNumRows-1;
+		}
+		else if (xID >= m_nNumCols && yID < 2)
+		{
+			yID = 2;
+			xID = m_nNumCols-1;
+		}
+		else if (xID < 2)
+			xID = 2;
+		else if (yID < 2)
+			yID = 2;
+		else if (xID >= m_nNumCols)
+			xID = m_nNumCols-1;
+		else if (yID >= m_nNumRows)
+			yID = m_nNumRows-1;
+
+		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
+		// Mouse -- determine if the mouse is over a character
+
+		// debugging
+		if (m_pDI->KeyPressed(DIK_D))
+			int i = 0;
+		if (m_bIsPlayersTurn || m_bIsPaused)
+			HandleMouseInput(fElapsedTime, mouse, xID, yID);
 	}
 
 	return true;
@@ -1028,9 +1061,9 @@ void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enem
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 {
+	// Keyboard
 	if (m_bIsPlayersTurn)
 	{
-		// Keyboard
 		// camera movement
 		if (m_pDI->KeyDown(DIK_A))
 		{
@@ -1080,9 +1113,9 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				CalculateRanges();
 		}
 	}
-	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox)
+	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
 		return false;
-	else if (m_pDI->KeyPressed(DIK_ESCAPE))
+	else if (m_pDI->KeyPressed(DIK_ESCAPE) )
 	{
 		m_nCurrBtnSelected = BTN_BACK;
 		HandleButton();
@@ -1100,7 +1133,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nHoverCharacter = -1;
 
 	// is the mouse over an action box button?
-	if (m_bIsPlayersTurn)
+	if (m_bIsPlayersTurn || m_bIsPaused)
 	{
 		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
 		if (m_bxSkillBox)
@@ -1109,13 +1142,15 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
+		if (m_bxPauseBox)
+			m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
 	}
 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
 		// for movement, see if the tile is open
-		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && !m_bxSkillBox && !m_bxActionBox->IsMouseInBox() && !m_bxItemBox)
+		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && !m_bxSkillBox && !m_bxActionBox->IsMouseInBox() && !m_bxItemBox && !m_bIsPaused)
 		{
 			// it's an open tile...
 
@@ -1139,7 +1174,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				CalculateRanges();
 			}
 		}
-		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1)
+		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
 			HandleButton();
 	}
 	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
@@ -1196,7 +1231,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				m_bOutOfRange = true;
 				return;
 			}
-			else if (m_nDistanceToTarget > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->GetRange() && m_sCurrSkillName != "NONE")
+			else if (m_sCurrSkillName != "NONE" && m_nDistanceToTarget > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->GetRange())
 			{
 				m_bOutOfRange = true;
 				return;
@@ -1208,7 +1243,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				return;
 			}
 			// check if enough AP for the selected skill
-			else if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < m_nCurrSkillCost && m_sCurrSkillName != "NONE")
+			else if (m_sCurrSkillName != "NONE" && m_vCharacters[m_nCurrCharacter].GetCurrAP() < m_nCurrSkillCost)
 			{
 				m_bNotEnoughAP = true;
 				return;
@@ -1246,6 +1281,22 @@ void CBattleMap::HandleButton()
 		m_bDisplaySpecialBox = false;
 		m_bxActionBox->SetActive();
 		return;
+	}
+	else if (m_bxPauseBox)
+	{
+		if (m_nCurrBtnSelected == 2 /*Quit*/)
+		{
+			delete m_bxPauseBox; m_bxPauseBox = NULL;
+			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+			return;
+		}
+		else if (m_nCurrBtnSelected == 1 /*Load*/)
+		{
+		}
+		else if (m_nCurrBtnSelected == 0 /*Save*/)
+		{
+
+		}
 	}
 	// catches any random invalid input
 	else if ((m_bxItemBox || m_bxSkillBox) && m_nCurrBtnSelected != BTN_BACK)
@@ -1324,6 +1375,12 @@ void CBattleMap::HandleButton()
 			m_bxItemBox = NULL;
 			m_bDisplayItemBox = false;
 			m_bxActionBox->SetActive();
+		}
+		if (m_bxPauseBox)
+		{
+			delete m_bxPauseBox;
+			m_bxPauseBox = NULL;
+			CGamePlayState::GetInstance()->SetPaused(false);
 		}
 	default:
 		break;

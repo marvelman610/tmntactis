@@ -98,7 +98,6 @@ void CBox::CheckMouse(POINT mousePt)
 			return;
 		}
 	}
-
 	if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
 	{
 		m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);

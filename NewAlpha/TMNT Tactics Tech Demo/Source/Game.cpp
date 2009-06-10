@@ -15,7 +15,6 @@
 //#include "MessageSystem.h"
 //#include "ObjectFactory.h"
 //#include "FMod.hpp"
-//#pragma comment(lib, "FModEx.dll");
 
 
 CGame::CGame()
@@ -29,7 +28,7 @@ CGame::CGame()
 // 	m_pMessageSystem = NULL;
 // 	m_pObjectFactory = NULL;
 // 	m_pParticleSystem = NULL;
-// 	m_pFMODSystem = NULL;
+	//m_pFMODSystem = NULL;
 // 	m_FMChannel1 = NULL;
 // 	m_FMChannel2 = NULL;
 
@@ -58,7 +57,8 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pD3D = CSGD_Direct3D::GetInstance();
 	m_pMS = MessageSystem::GetInstance();
 	
-	//m_pFMODSystem = ;
+// 	FMOD::System_Create(&m_pFMODSystem);
+// 	m_pFMODSystem->init(10, FMOD_INIT_NORMAL, 0);
 	//m_FMChannel1 = NULL;
 	//m_FMChannel2 = NULL;
 	//m_pMessageSystem = MessageSysterm::GetInstance();

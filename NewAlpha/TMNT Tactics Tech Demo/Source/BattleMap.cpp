@@ -296,6 +296,7 @@ void CBattleMap::Render()
 void CBattleMap::Update(float fElapsedTime)
 {
 	//CPlayer::GetInstance()->Update(fElapsedTime);
+	CHUD::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
 	if (m_nMoveDirection != -1)
 	{

@@ -62,6 +62,16 @@ CHUD::CHUD(void)
 	m_rRaphAP.right = 104;
 	m_rRaphAP.left = 0;
 
+	m_rEnemyHP.bottom = 16;
+	m_rEnemyHP.left = 0;
+	m_rEnemyHP.right = 104;
+	m_rEnemyHP.top = 0;
+
+	m_rEnemyAP.bottom = 16;
+	m_rEnemyAP.left = 0;
+	m_rEnemyAP.right = 104;
+	m_rEnemyAP.top = 0;
+
 	m_nImageID = -1;
 }
 
@@ -95,15 +105,23 @@ void CHUD::Update(float fElapsedTime)
 			m_rLeoAP.right = (LONG)apwidth;
 
 			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
-			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetHealth() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetMaxHealth() );
+			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[DONATELLO]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[DONATELLO]->GetBaseAP() );
 			m_rDonHP.right = (LONG)healthwidth;
 			m_rDonAP.right = (LONG)apwidth;
 
 			healthwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
-			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
+			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetBaseAP() );
 			m_rRaphHP.right = (LONG)healthwidth;
 			m_rRaphAP.right = (LONG)apwidth;
 		}
+		if(CBattleMap::GetInstance()->GetCurrTarget() > -1)
+		{
+			float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetMaxHealth() );
+			float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetBaseAP() );		
+			m_rEnemyHP.left = 104 - hpWidth;
+			m_rEnemyAP.left = 104 - apWidth;
+		}
+
 }
 void CHUD::Render()
 {
@@ -137,10 +155,12 @@ void CHUD::Render()
 
 
 	//enemy hud
-	if( CBattleMap::GetInstance()->GetCurrTarget() != -1 )
+	if( CBattleMap::GetInstance()->GetCurrTarget() > -1 )
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540,0,1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
 		//get current target 
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 795, 61, 1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 795, 105,1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 	}
 	
 }

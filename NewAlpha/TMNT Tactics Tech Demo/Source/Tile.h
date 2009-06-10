@@ -6,7 +6,9 @@
 //	Purpose		:	To define the CTile and CFreeTile classes...which will be used in drawing
 //					the individual tiles of the battle maps
 //////////////////////////////////////////////////////////////////////////
-#pragma once
+#ifndef TILE_H
+#define TILE_H
+
 #include <string>
 using std::string;
 
@@ -168,3 +170,4 @@ public:
 // 	void Trigger(std::string val) { m_strTrigger = val; }
 	void SetAlpha(int alpha) {m_nAlpha = alpha;}
 };
+#endif

@@ -69,16 +69,19 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				mouse.y = HIWORD(lParam);
 
 
-				CGamePlayState::GetInstance()->SetPaused(false);
+				//CGamePlayState::GetInstance()->SetPaused(false);
 
 			}
+			break;
 		//	and lose/gain focus
 		case WM_ACTIVATE:
 		{
 			//	gaining focus
-			if (LOWORD(wParam) == WA_INACTIVE)
+			if (LOWORD(wParam) != WA_INACTIVE)
 			{
 				// unpause game code here
+				CGamePlayState::GetInstance()->SetPaused(false);
+
 				
 
 			}
@@ -87,6 +90,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				// pause game code here
 				CGamePlayState::GetInstance()->SetPaused(true);
 			}
+			break;
 		}
 		case WM_SETCURSOR:
 			{

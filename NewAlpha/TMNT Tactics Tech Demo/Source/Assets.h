@@ -6,7 +6,8 @@
 //	Purpose		:	To define the CAssets class. Will load all assets used
 //					within the game and hold the IDs. A singleton.
 //////////////////////////////////////////////////////////////////////////
-#pragma once
+#ifndef ASSETS_H
+#define ASSETS_H
 //////////////////////////////////////////////////////////////////////////
 // all assets will follow a naming convention to easily identify.
 // For a background image used in the BattleMap class for instance, 
@@ -94,3 +95,5 @@ public:
 
 	int aItemID;
 };
+
+#endif

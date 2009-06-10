@@ -1,4 +1,5 @@
-#pragma once
+#ifndef GAME_H
+#define GAME_H
 
 #include "windows.h"
 #include "IGameState.h"
@@ -119,3 +120,5 @@ public:
 	// 	void SetLastScore	(int _nLastScore)		{m_nLastScore = _nLastScore;}
 	// 	void SetPanning		(int _nPanning);
 };
+
+#endif

@@ -23,6 +23,9 @@ private:
     LARGE_INTEGER   tickFrequency;
 
 public:
+	///////////////////////////////////////////////////////////////////
+	//	Function:	"CCodeProfiler(Constructor)"
+	///////////////////////////////////////////////////////////////////
 	CCodeProfiler(char* functionName)
 	{
 		name = functionName;
@@ -35,6 +38,9 @@ public:
 		QueryPerformanceFrequency( &tickFrequency );
 
 	}
+	///////////////////////////////////////////////////////////////////
+	//	Function:	"CCodeProfiler(Constructor)"
+	///////////////////////////////////////////////////////////////////
 	~CCodeProfiler()
 	{
 		avgTime = (totalTime / tickFrequency.QuadPart) / timesRan;
@@ -51,20 +57,28 @@ public:
 		ofs.close();
 
 	}
+	////////////////////////////////////////////////////////////////////
+	// Function: “Start”
+	//
+	// Purpose: Starts the timer.
+	////////////////////////////////////////////////////////////////////
 	void Start()
 	{
 		timesRan++;
 		
 		QueryPerformanceCounter( &timeStart );
 
-		//timeStart = ( float )ticks.QuadPart / ( float )tickFrequency.QuadPart;
 	}
+	////////////////////////////////////////////////////////////////////
+	// Function: “End”
+	//
+	// Purpose: Stops the timer.
+	////////////////////////////////////////////////////////////////////
 	void End()
 	{
 		LARGE_INTEGER   time;
 
 		QueryPerformanceCounter( &time );
-		//time = ( float )ticks.QuadPart / ( float )tickFrequency.QuadPart;
 		totalTime += (time.QuadPart - timeStart.QuadPart);
 	}
 };

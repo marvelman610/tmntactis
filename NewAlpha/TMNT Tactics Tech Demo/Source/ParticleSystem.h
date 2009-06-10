@@ -6,7 +6,8 @@
 //	Purpose		:	To define the CParticleSystem class. This class handles
 //					loading, updating, and drawing sprites.
 //////////////////////////////////////////////////////////////////////////
-#pragma once
+#ifndef PARTICLESYSTEM_H
+#define PARTICLESYSTEM_H
 
 #include "CSGD_Direct3D.h"
 #include "Game.h"
@@ -550,3 +551,5 @@ public:
 		}
 	};
 };
+
+#endif

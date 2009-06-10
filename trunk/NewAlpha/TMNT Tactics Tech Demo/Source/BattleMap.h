@@ -128,6 +128,7 @@ class CBattleMap
 	CPlayer*	m_pPlayer;	// the player singleton pointer
 	bool m_bIsMouseAttack;
 	int m_nNumEnemiesLeft;
+	int m_nNumEnemiesKilled;
 	int m_nNumCharacters;
 	int m_nHoverCharacter;
 	int m_nCurrCharacter;
@@ -160,7 +161,13 @@ class CBattleMap
 	//FMOD::System*		m_pFMODsys;
 	//////////////////////////////////////////////////////////////////////////
 
-
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	Reset
+	//
+	//	Purpose		:	Resets all variables and gets ready for another level
+	//					to be made
+	//////////////////////////////////////////////////////////////////////////
+	void Reset();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	CreateEnemies
 	//

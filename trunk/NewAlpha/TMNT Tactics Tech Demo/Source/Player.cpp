@@ -95,6 +95,7 @@ void CPlayer::LoadNewSkills(const char* filename)
 		m_pTurtles[turtleID]->SetSkillsActive(activeSkill);
 		m_pTurtles[turtleID]->SetSkillsInactive(inactiveSkills);
 		inactiveSkills.clear();
+		activeSkill.clear();
 		pTurtle = pTurtle->NextSiblingElement("TURTLE");
 	}
 }

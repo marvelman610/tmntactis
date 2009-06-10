@@ -17,7 +17,6 @@
 class CNinja : public CBase
 {
 private:
-	int m_nType;
 	//set up integers to change state
 	int m_nAttack;
 	int m_nDefend;

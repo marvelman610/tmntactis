@@ -11,11 +11,11 @@
 #include "Assets.h"
 #include <cmath>
 #include "MessageSystem.h"
-
+#include "ObjectManager.h"
 
 CNinja::CNinja(void)
 {
-	m_nType = OBJECT_NINJA;
+	SetType( OBJECT_NINJA );
 	m_nAttack = 0;
 	m_nDefend = 0;
 	m_nLowHealth = 0;
@@ -46,7 +46,7 @@ CNinja::CNinja(void)
 
 CNinja::~CNinja(void)
 {
-	for(int j = 0; j < this->GetAnimations().size(); j++)
+	for(int j = 0; j < (int)this->GetAnimations().size(); j++)
 			this->GetAnimations()[j].Unload();
 }
 

@@ -20,6 +20,8 @@ CTurtle::CTurtle(void)
 
 CTurtle::~CTurtle(void)
 {
+	m_vActiveSkills.clear();
+	m_vInactiveSkills.clear();
 }
 void CTurtle::Update(float fElapsedTime)
 {

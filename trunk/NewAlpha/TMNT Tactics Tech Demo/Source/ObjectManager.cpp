@@ -178,3 +178,21 @@ void ObjectManager::CheckCollisions(void)
 		}
 	}
 }
+
+void ObjectManager::ClearEnemies()
+{
+	vector<CBase*>::iterator iter = m_vObjects.begin();
+	int count = 0;
+	while(iter != m_vObjects.end())
+	{
+		if ((*iter)->GetType() == OBJECT_NINJA)
+		{
+			CBase* temp = m_vObjects[count--];
+			delete temp;
+			iter = m_vObjects.erase(iter);
+		}
+		else
+			++iter;
+		++count;
+	}
+}

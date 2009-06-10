@@ -170,17 +170,17 @@ void RenderSwordJab()
 	
 }
 
-//void CSkill::UpdateSwordJab( float elapsedTime )
-//{
-// 	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
-// 	CPlayer* player= cs::GetPlayer();
-// 	CBattleMap* bm = cs::GetBattleMap();
-// 	CBase* character=&bm->GetChars()[bm->GetCurrActive()];
-// 
-// 	int damage = character->GetStrength() - target->GetDefense() + cs::GetDmg() + character->GetAccuracy();
-// 
-// 	target->SetHealth(target->GetHealth() - damage);
-//}
+void CSkill::UpdateSwordJab( float elapsedTime )
+{
+	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
+	CPlayer* player= cs::GetPlayer();
+	CBattleMap* bm = cs::GetBattleMap();
+	CBase* character=&bm->GetChars()[bm->GetCurrActive()];
+
+	int damage = character->GetStrength() - target->GetDefense() + cs::GetDmg() + character->GetAccuracy();
+
+	target->SetHealth(target->GetHealth() - damage);
+}
 
 //////////////////////////////////////////////////////////////////////////
 //	SFLIP BACKSTAB

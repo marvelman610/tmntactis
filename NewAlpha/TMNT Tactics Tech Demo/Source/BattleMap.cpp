@@ -376,10 +376,17 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
-	if(m_bIsPlayersTurn == false)
+	if(m_bIsPlayersTurn == false && m_vEnemies.size() != 0)
 	{
-		CNinja* ninja = (CNinja*)m_vEnemies[rand()%m_vEnemies.size()];
+		int index = rand()%m_vEnemies.size();
+		CNinja* ninja = (CNinja*)m_vEnemies[index];
 		ninja->AI();
+
+		m_vCharacters.clear();
+		for (int i = 0; i < 4; ++i)
+			m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+		for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+			m_vCharacters.push_back(*m_vEnemies[i]);
 	}
 	cheat();
 	if(godbool)

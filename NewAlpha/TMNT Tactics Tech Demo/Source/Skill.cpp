@@ -81,8 +81,8 @@ void CSkill::SetFunctions(int skillID)
 		m_pUpdatePtr = UpdateSwordSpin;
 		break;
 	case SWORD_JAB:
-// 		m_pRenderPtr = &CSkill::RenderSwordJab;
-// 		m_pUpdatePtr = &CSkill::UpdateSwordJab;
+//  		m_pRenderPtr = &CSkill::RenderSwordJab;
+//  		m_pUpdatePtr = &CSkill::UpdateSwordJab;
 		break;
 	case FLIP_BACKSTAB:
 		m_pRenderPtr = RenderFlipBackstab;
@@ -170,17 +170,17 @@ void RenderSwordJab()
 	
 }
 
-void CSkill::UpdateSwordJab( float elapsedTime )
-{
-	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
-	CPlayer* player= cs::GetPlayer();
-	CBattleMap* bm = cs::GetBattleMap();
-	CBase* character=&bm->GetChars()[bm->GetCurrActive()];
-
-	int damage = character->GetStrength() - target->GetDefense() + cs::GetDmg() + character->GetAccuracy();
-
-	target->SetHealth(target->GetHealth() - damage);
-}
+// void CSkill::UpdateSwordJab( float elapsedTime )
+// {
+// 	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
+// 	CPlayer* player= cs::GetPlayer();
+// 	CBattleMap* bm = cs::GetBattleMap();
+// 	CBase* character=&bm->GetChars()[bm->GetCurrActive()];
+// 
+// 	int damage = character->GetStrength() - target->GetDefense() + cs::GetDmg() + character->GetAccuracy();
+// 
+// 	target->SetHealth(target->GetHealth() - damage);
+// }
 
 //////////////////////////////////////////////////////////////////////////
 //	SFLIP BACKSTAB

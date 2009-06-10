@@ -10,11 +10,11 @@
 #define GAMEPLAYSTATE_H
 
 #include "IGameState.h"
+#include "BattleMap.h"
 
 enum {MAP_WORLD, MAP_BATTLE, MAP_NULL };
 
 class CBaseMenuState;
-class CBattleMap;
 class CBaseMenuState;
 class CAnimation;
 class CPlayer;

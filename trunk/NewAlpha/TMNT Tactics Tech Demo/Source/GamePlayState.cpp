@@ -11,7 +11,6 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
 #include "BaseMenuState.h"
-#include "BattleMap.h"
 #include "MainMenuState.h"
 #include "Game.h"
 #include "Player.h"
@@ -51,8 +50,8 @@ void CGamePlayState::Enter(void)
 
 	// TODO:: will enter battle map once player goes into a battle
 	//			from the world map
-	m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
-	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2test.dat", "Test", 2);
+	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
+	m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2test.dat", "Test", 2);
 
 	m_nCurrentMap = MAP_BATTLE;
 }
@@ -112,7 +111,9 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 // 		return true;
 // 	}
 	if(pDI->KeyPressed(DIK_P))
+	{
 		m_bIsPaused = !m_bIsPaused;
+	}
 
 	if (!m_pBattleMap->Input(fElapsedTime, mousePt))
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
@@ -138,12 +139,6 @@ void CGamePlayState::Render(void)
 
 	ObjectManager::GetInstance()->RenderObjects();
 	m_pBattleMap->Render();
-	if(m_bIsPaused)
-	{
-		//CSGD_Direct3D::GetInstance()->DrawTextA("PAUSE",100,100,255,0,0);
-		CBitmapFont::GetInstance()->DrawStringAutoCenter("PAUSE",1024,350,0.09f,2,D3DCOLOR_XRGB(0,0,255));
-	}
-
 }
 
 void CGamePlayState::LoadGame(char* fileName)

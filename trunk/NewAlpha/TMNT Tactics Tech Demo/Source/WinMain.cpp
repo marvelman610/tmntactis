@@ -67,10 +67,6 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				//GetCursorPos()
 				mouse.x = LOWORD(lParam);
 				mouse.y = HIWORD(lParam);
-
-
-				//CGamePlayState::GetInstance()->SetPaused(false);
-
 			}
 			break;
 		//	and lose/gain focus
@@ -81,9 +77,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			{
 				// unpause game code here
 				CGamePlayState::GetInstance()->SetPaused(false);
-
-				
-
+				CGamePlayState::GetInstance()->SetPaused(false);
 			}
 			else // losing focus
 			{
@@ -92,6 +86,7 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			}
 			break;
 		}
+
 		case WM_SETCURSOR:
 			{
 				if (LOWORD(lParam) == HTCAPTION || LOWORD(lParam) == HTCLIENT)

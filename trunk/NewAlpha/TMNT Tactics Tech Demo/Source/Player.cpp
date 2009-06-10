@@ -71,12 +71,18 @@ void CPlayer::LoadSavedGame(const char* fileName)
 void CPlayer::SaveGame(const char* fileName)
 {
 	ofstream ofs;
-	ofs.open(fileName, ios_base::out | ios_base::binary);
+	ofs.open(fileName, ios_base::binary | ios_base::out);
+	CTurtle** turtles = CPlayer::GetInstance()->GetTurtles();
 
-	for (int i = 0; i < 4; ++i)
+	if (ofs.is_open())
 	{
-		ofs.write((char*)m_pTurtles[i], sizeof(CTurtle));
+		for (int i = 0; i < 4; ++i)
+		{
+			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+		}
 	}
+	else
+		ofs.close();
 }
 
 void CPlayer::LoadNewSkills(const char* filename)

@@ -269,13 +269,13 @@ void CBattleMap::Render()
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				if (m_nCurrCharacterTile == tileID)
+				if (m_nCurrCharacterTile == tileID && m_nCurrCharacter > -1)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 					m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
 						(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
 				}
-				else if (m_ncurrTargetTile == tileID)
+				else if (m_ncurrTargetTile == tileID && m_nCurrTarget > -1)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 					m_pTM->DrawWithZSort(m_pAssets->aBMcurrTargetArrowID, (int)m_vCharacters[m_nCurrTarget].GetPosX()+8,
@@ -303,7 +303,7 @@ void CBattleMap::Render()
 			m_pFreeTiles[i].SetAlpha(255);
 
 		m_pTM->DrawWithZSort(m_pFreeTiles[i].ImageID(), srcRect.left, srcRect.top,
-			depth.OBJECTS, 1.0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
+			depth.OBJECTS, 1.0f, 1.0f, m_pFreeTiles[i].SourceRect(), 0.0f, 0.0f, m_pFreeTiles[i].Rotation(), D3DCOLOR_ARGB(m_pFreeTiles[i].Alpha(),255,255,255));
 #if BOUNDING_BOXES
 		// drawing bounding boxes
 		CSGD_Direct3D::GetInstance()->DrawLine(srcRect.left, srcRect.top, srcRect.right, srcRect.top, 255, 0, 0);
@@ -581,6 +581,7 @@ void CBattleMap::LoadMapInfo()
 
 	int tilesetCount = 0;	// how many tilesets are we going to be drawing from?
 	int xID, yID, destID, sourceID, flag, width, height; // tile variables
+	float rotation;
 	string trigger;	// tile trigger string
 	byte red, green, blue; // for tileset key color
 
@@ -664,6 +665,7 @@ void CBattleMap::LoadMapInfo()
 			// setting up each tile of the first layer
 			destID = yID * m_nNumCols + xID;	// the id of the tile in the 1-d array
 			m_pTilesL1[destID] = CTile(sourceID, imageID, m_nNumCols, xID, yID, width, height, flag, trigger);
+			rotation = 0;
 			// skip ahead to determine if we have more tiles
 			// or if we move on to layer 2 ("L") or 3 ("F")
 			sPos = ifs.tellg();
@@ -789,8 +791,11 @@ void CBattleMap::LoadMapInfo()
 			ifs.read(reinterpret_cast<char*>(&size), 1);
 			ifs.read(buff, size);
 			trigger = buff;
+			int rot = 0;
+			ifs.read(reinterpret_cast<char*>(&rot), sizeof(int));
+			rotation = (float)rot / 10.0f;
 
-			m_pFreeTiles[count++] = CFreeTile(srcPosX, srcPosY, imageID, destX, destY, width, height, flag, trigger);
+			m_pFreeTiles[count++] = CFreeTile(srcPosX, srcPosY, imageID, destX, destY, width, height, flag, trigger, rotation);
 			m_nFreeTileCount = count;
 		}
 	}

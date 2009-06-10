@@ -46,7 +46,7 @@ public:
 			
 	}
 	~CTile(void){}
-	CTile(int nSourceID, int nImageID, int numCols, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger/*, int sSourceTS*/)
+	CTile(int nSourceID, int nImageID, int numCols, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger)
 	{
 		// setup source rect here, once and for all
 		int left, top, right, bottom; 
@@ -111,6 +111,7 @@ private:
 	int m_nDestY;
 	int m_nHeight;			// tile's width
 	int m_nWidth;			// tile's height
+	float m_fRotation;
 	int m_nFlag;			// collision/other flags
 	int m_nAlpha;			// tile's alpha
 	std::string m_strTrigger;	// trigger string, used to trigger a specific event from this tile
@@ -119,7 +120,7 @@ private:
 public:
 	CFreeTile() {}
 	~CFreeTile() {}
-	CFreeTile(int nSourceX, int nSourceY, int nImageID, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger/*, int tsID*/)
+	CFreeTile(int nSourceX, int nSourceY, int nImageID, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger, float rotation = 0.0f)
 	{
 		RECT rect = {nSourceX, nSourceY, nSourceX + nWidth, nSourceY + nHeight};
 		m_rSrc = rect;
@@ -132,7 +133,7 @@ public:
 		m_nHeight = nHeight;
 		m_nFlag = nFlag;
 		m_strTrigger = strTrigger;
-		//m_nSourceTS = tsID;
+		m_fRotation = rotation;
 		m_nAlpha = 255;
 	}
 
@@ -150,6 +151,7 @@ public:
 	int Width()			const { return m_nWidth;	}
 	int Flag()			const { return m_nFlag;		}
 	int Alpha()			const { return m_nAlpha;	}
+	float Rotation()	const { return m_fRotation;}
 	std::string Trigger() const { return m_strTrigger; }
 
 	//////////////////////////////////////////////////////////////////////////

@@ -89,7 +89,8 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_nHoverCharacter = -1; m_nCurrCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
+	m_nCurrCharacter = 0;
+	m_nHoverCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
 	m_nCurrSelectedTile = -1;
 	m_nNumCols = 0; m_nNumRows = 0;
 	m_nTotalNumTiles = 0;
@@ -106,6 +107,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pParticleSys = new CParticleSystem();
 	m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
 
+	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
@@ -120,6 +122,11 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 }
 void CBattleMap::Exit()
 {
+	Reset();
+}
+void CBattleMap::Reset()
+{
+	m_nNumEnemiesLeft = m_nNumEnemiesKilled = m_nNumCharacters = 0;
 	delete[] m_pTilesL1;
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
@@ -130,7 +137,9 @@ void CBattleMap::Exit()
 		m_bxSkillBox = NULL;
 	if (m_bxActionBox)
 		m_bxActionBox = NULL;
+	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
+	m_vEnemies.clear();
 }
 //////////////////////////////////////////////////////////////////////////
 // TODO:: determine if we have to draw all opaque objects first, then any
@@ -488,7 +497,8 @@ void CBattleMap::LoadMapInfo()
 			char szBuffer[128];
 			sprintf_s(szBuffer, "Current version: %s ...does not match loaded version: %s", m_strCurrVersion.c_str(), version.c_str());
 			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
-			PostQuitMessage(1);
+			m_pGame->ChangeState(CMainMenuState::GetInstance());
+			ifs.close();return;
 		}
 	}
 	catch(ios_base::failure &)
@@ -907,8 +917,6 @@ void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enem
 		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 		m_vEnemies[i]->SetCurrTile(m_vEnemies[i]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-
-
 }
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
@@ -983,6 +991,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
 		if (m_bxSkillBox)
 			m_nCurrBtnSelected = m_bxSkillBox->Input(m_ptMouseScreenCoord);
+		if (m_bxItemBox)
+			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
 	}
@@ -1041,25 +1051,40 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			break;
 		case ACTION_ITEM:
 			{
-				m_bDisplayItemBox = !m_bDisplayItemBox;
+				m_bDisplayItemBox = true;
+				if (m_bxItemBox)
+					delete m_bxItemBox;
 				vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
 				string* item = new string[temp.size()];
 				
-				for(int i = 0; i < temp.size(); i++)
+				for(int i = 0; i < (int)temp.size(); i++)
 					item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
 					
 				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(),item,600,400,0.1f,128,-1);
 				delete[] item;
+				m_bxItemBox->SetActive(true);
+				m_bxItemBox->SetType(BOX_WITH_BACK);
+				m_bxActionBox->SetActive(false);
 			}
 			break;
 		case ACTION_ENDTURN:
 			m_bIsPlayersTurn = false;
 			break;
 		case SPECIAL_BACK:
-			delete m_bxSkillBox;
-			m_bxSkillBox = NULL;
-			m_bDisplaySpecialBox = false;
-			m_bxActionBox->SetActive();
+			if (m_bxSkillBox)
+			{
+				delete m_bxSkillBox;
+				m_bxSkillBox = NULL;
+				m_bDisplaySpecialBox = false;
+				m_bxActionBox->SetActive();
+			}
+			if (m_bxItemBox)
+			{
+				delete m_bxItemBox;
+				m_bxItemBox = NULL;
+				m_bDisplayItemBox = false;
+				m_bxActionBox->SetActive();
+			}
 		default:
 			break;
 		}
@@ -1108,9 +1133,9 @@ void CBattleMap::PerformAttack()
 	m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
 
 	m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
-	m_vEnemies[m_nCurrTarget-4]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
+	m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 
-	if (m_vEnemies[m_nCurrTarget-4]->GetHealth() <= 0)
+	if (m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)]->GetHealth() <= 0)
 	{
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
 		
@@ -1118,7 +1143,7 @@ void CBattleMap::PerformAttack()
 		int count = 0;
 		while(iter != m_vEnemies.end())
 		{
-			if ((*iter) == m_vEnemies[m_nCurrTarget-4])
+			if ((*iter) == m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)])
 			{
 				iter = m_vEnemies.erase(iter);
 				break;
@@ -1128,6 +1153,7 @@ void CBattleMap::PerformAttack()
 		}
 		--m_nNumCharacters;
 		--m_nNumEnemiesLeft;
+		++m_nNumEnemiesKilled;
 		m_ncurrTargetTile = -1;
 	}
 	CalculateRanges();

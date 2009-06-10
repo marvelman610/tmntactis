@@ -8,12 +8,15 @@
 ////////////////////////////////////////////////////////
 
 #include "Base.h"
+#include "CSGD_Direct3D.h"
 
 CBase::CBase(void)
 {
 	m_szName = NULL;
 	m_fPosZ = 0.0f;	// draw in front of everything by default
 	m_nCurrAnimation = 0;
+	m_nSkillXP = m_nExperience = 0;
+	m_dwColor = D3DCOLOR_XRGB(255,255,255);
 }
 
 void CBase::Update(float fElapsedTime)
@@ -63,4 +66,12 @@ void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, in
 		mapPt.y = (float)(m_ptMapCoord.x + m_ptMapCoord.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1);
 		SetPosPt(mapPt);
 	}
+}
+
+void CBase::Colorize(bool bColorize)
+{
+	if (bColorize)
+		m_dwColor = D3DCOLOR_XRGB(255, 50, 50);
+	else
+		m_dwColor = D3DCOLOR_XRGB(255,255,255);
 }

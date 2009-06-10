@@ -206,7 +206,7 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacin
 			fScaleX,
 			scale,
 			&frame,
-			0, 0,0);
+			0, 0,0, dwColor);
 		int test = 0;
 	}
 }

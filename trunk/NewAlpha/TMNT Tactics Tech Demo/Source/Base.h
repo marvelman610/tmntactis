@@ -58,6 +58,7 @@ private:
 	int m_nCurrPoints;//ap points
 
 	int m_nExperience;
+	int m_nSkillXP;
 	//////////////////////////////////////////////////////////////////////////
 
 	//CTile m_pTileArray;
@@ -65,6 +66,7 @@ private:
 
 protected:
 	int m_nType;
+	DWORD m_dwColor;
 
 	vector<CAnimation> m_vAnimations;
 	int m_nCurrAnimation;
@@ -109,6 +111,7 @@ public:
 	inline int		GetBaseAP(void)		{return m_nBasePoints;	}
 	inline int		GetCurrAP(void)		{return m_nCurrPoints;	}
 	inline int		GetExperience(void)	{return m_nExperience;	}
+	inline int		GetSkillXP(void)	{return m_nSkillXP;}
 	//vector<CAnimation> GetAnims(void)   {return m_vAnimations;}
 	vector<CAnimation> GetAnimations() {return m_vAnimations;}
 	RECT			GetRect();
@@ -143,9 +146,9 @@ public:
 	inline void SetName(char* name)			{m_szName = name;}
 	inline void SetType(int type)			{m_nType = type;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
+	inline void SetSkillXP(int nSkillXp)	{m_nSkillXP = nSkillXp;}
 
 	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols, bool anchor = true);	// auto-sets position
-
 
 	void AddAnim(CAnimation& a){ m_vAnimations.push_back(a);}
 
@@ -181,6 +184,14 @@ public:
 	//
 	////////////////////////////////////////////////////////////////////
 	//vector<CTile> Pathfind(void);
+
+	////////////////////////////////////////////////////////////////////
+	// Function: “Colorize”
+	//
+	// Purpose: To provide feedback to the user that a character is selectable
+	//
+	////////////////////////////////////////////////////////////////////
+	void Colorize(bool bColorize = true);
 
 };
 

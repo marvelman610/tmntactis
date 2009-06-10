@@ -36,9 +36,9 @@ CBox::CBox(int numItems, string* sItems,
 		if ((int)sItems[i].size() > m_nLongestString)
 			m_nLongestString = sItems[i].size();
 	}
-	m_nLongestString *= 34; 
-	m_fScaleX = (float)(m_nLongestString + spacing * 2) / DEFAULT_SIZE; 
-	m_fScaleY = (float)((numItems * 34) + (spacing * 2) + startY) / DEFAULT_SIZE;
+	m_nLongestString *= 34 * fTextScale; 
+	m_fScaleX = (float)(m_nLongestString + (float)spacing * 2.5f) / DEFAULT_SIZE; 
+	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 2.5f) + startY) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
 	m_nBoxHeight = (int)(DEFAULT_SIZE * m_fScaleY);
@@ -91,7 +91,8 @@ void CBox::CheckMouse(POINT mousePt)
 	}
 	else // it has a back button?
 	{
-		if (mousePt.x >= m_nPosX && mousePt.x <= m_nPosX + (300.0f*m_fTextScale) && mousePt.y >= m_nBoxBottom - (40.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
+		if (mousePt.x >= (m_nBoxRight-(25+300.0f*m_fTextScale)) && mousePt.x <= m_nBoxRight && 
+				mousePt.y >= m_nBoxBottom - (40.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
 		{
 			m_nCurrSelectedIndex = BTN_BACK;
 			return;
@@ -127,7 +128,7 @@ void CBox::Render()
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		m_pBM->DrawString("BACK-ESC", m_nPosX+15, m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale, m_dwColor);
+		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+300.0f*m_fTextScale)), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale, m_dwColor);
 	}
 	//m_pBM->Reset();
 }

@@ -81,7 +81,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	string text[3];
 	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
-	m_bxActionBox = new CBox(3, text, 20, 560, depth.MENUS, 35, 65, 15, m_pAssets->aBMactionBoxID);
+	m_bxActionBox = new CBox(3, text, 20, 575, depth.MENUS, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = NULL;
 	m_bxItemBox = NULL;
@@ -90,7 +90,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
-	m_sCurrSkillName = "NONE";
+	m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; m_nCurrSkillCost = -1; m_bExecuteSkill = false;
 	m_nCurrCharacter = -1;
 	m_nHoverCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
 	m_nCurrSelectedTile = -1;
@@ -190,10 +190,28 @@ void CBattleMap::Render()
 
 	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
+
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter == -1)
 		SetMousePtr(m_pAssets->aMousePointerID);
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter > -1)
 		SetMousePtr(m_pAssets->aMouseMoveID);
+	if (m_bxItemBox || m_bxSkillBox)
+		if (m_bxSkillBox->IsMouseInBox() || m_bxItemBox->IsMouseInBox())
+			SetMousePtr(m_pAssets->aMousePointerID);
+	if (m_bxActionBox->IsActiveBox() && m_bxActionBox->IsMouseInBox())
+		SetMousePtr(m_pAssets->aMousePointerID);
+	if (m_nHoverCharacter == -1 && m_bIsPlayersTurn)
+	{
+		m_pPlayer->GetTurtles()[LEONARDO]->Colorize(false);
+		m_pPlayer->GetTurtles()[DONATELLO]->Colorize(false);
+		m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
+		m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
+		if (m_nHoverCharacter == -1)
+		{
+			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+				m_vEnemies[i]->Colorize(false);
+		}
+	}
 
 	// draw layer one & two
 	MY_POINT mapPT;
@@ -232,8 +250,14 @@ void CBattleMap::Render()
 			// draws selection rectangle on the currently selected tile, character, and enemy (and draws arrow)
 			if (m_bIsPlayersTurn)
 			{
-				if (m_nCurrSelectedTile == tileID)
+				if (m_nCurrSelectedTile == tileID && !m_bxActionBox->IsMouseInBox())
 				{
+					if (m_bxItemBox)
+						if (m_bxItemBox->IsMouseInBox())
+							continue;
+					else if (m_bxSkillBox)
+						if (m_bxSkillBox->IsMouseInBox())
+							continue;
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
 				else if (m_nHoverCharacter > -1 && m_nHoverCharacter < 4 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
@@ -273,7 +297,7 @@ void CBattleMap::Render()
 			m_ptMouseScreenCoord.x > srcRect.left && m_ptMouseScreenCoord.x < srcRect.right &&
 			m_ptMouseScreenCoord.y > srcRect.top  && m_ptMouseScreenCoord.y < srcRect.bottom)
 			)
-			m_pFreeTiles[i].SetAlpha(130);
+			m_pFreeTiles[i].SetAlpha(100);
 		else
 			m_pFreeTiles[i].SetAlpha(255);
 
@@ -302,7 +326,7 @@ void CBattleMap::Render()
 	if (m_bIsPlayersTurn && m_nCurrCharacter > -1)
 	{
 		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 0.5f);
-		m_pBitmapFont->DrawString(m_sCurrSkillName.c_str(), 5, 220, 0.05f, 0.5f);
+		m_pBitmapFont->DrawString(m_sCurrSkillDisplay.c_str(), 5, 220, 0.05f, 0.5f);
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
@@ -315,6 +339,18 @@ void CBattleMap::Update(float fElapsedTime)
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	CHUD::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
+	if (m_bExecuteSkill && m_fTimer < 5.0f)
+	{
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->Update(fElapsedTime);
+		m_fTimer += fElapsedTime;
+		return;
+	}
+	else if (m_bExecuteSkill && m_fTimer >= 5.0f)
+	{
+		m_bExecuteSkill = false;
+		m_fTimer = 0.0f;
+		return;
+	}
 	if (m_nMoveDirection != -1)
 	{
 		POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
@@ -865,22 +901,43 @@ void CBattleMap::DrawHover()
 	if (!m_bxItemBox && !m_bxSkillBox && m_nCurrBtnSelected == -1)
 	{
 		RECT hoverRect;
-		if (m_nHoverCharacter < 4)
+		switch (m_nHoverCharacter)
 		{
-			hoverRect = m_vCharacters[m_nHoverCharacter].GetRect();
-			m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.right, hoverRect.top, 0,0,255);	// top line
-			m_pD3D->DrawLine(hoverRect.left, hoverRect.top, hoverRect.left, hoverRect.bottom, 0,0,255);	// left line
-			m_pD3D->DrawLine(hoverRect.right, hoverRect.top, hoverRect.right, hoverRect.bottom, 0,0,255);	// right line
-			m_pD3D->DrawLine(hoverRect.left, hoverRect.bottom, hoverRect.right, hoverRect.bottom, 0,0,255);	// bottom line
+		case LEONARDO:
+			m_pPlayer->GetTurtles()[LEONARDO]->Colorize();
+			m_pPlayer->GetTurtles()[DONATELLO]->Colorize(false);
+			m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
+			m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
+			break;
+		case DONATELLO:
+			m_pPlayer->GetTurtles()[DONATELLO]->Colorize();
+			m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
+			m_pPlayer->GetTurtles()[LEONARDO]->Colorize(false);
+			m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
+			break;
+		case RAPHAEL:
+			m_pPlayer->GetTurtles()[RAPHAEL]->Colorize();
+			m_pPlayer->GetTurtles()[DONATELLO]->Colorize(false);
+			m_pPlayer->GetTurtles()[LEONARDO]->Colorize(false);
+			m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
+			break;
+		case MIKEY:
+			m_pPlayer->GetTurtles()[MIKEY]->Colorize();
+			m_pPlayer->GetTurtles()[DONATELLO]->Colorize(false);
+			m_pPlayer->GetTurtles()[LEONARDO]->Colorize(false);
+			m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
+			break;
+		default:
+			break;
 		}
+
 		RECT targetRect;
 		if (m_nHoverCharacter > 3)
 		{
-			targetRect= m_vCharacters[m_nHoverCharacter].GetRect();
-			m_pD3D->DrawLine(targetRect.left, targetRect.top, targetRect.right, targetRect.top, 255,0,0);	// top line
-			m_pD3D->DrawLine(targetRect.left, targetRect.top, targetRect.left, targetRect.bottom, 255,0,0);	// left line
-			m_pD3D->DrawLine(targetRect.right, targetRect.top, targetRect.right, targetRect.bottom, 255,0,0);	// right line
-			m_pD3D->DrawLine(targetRect.left, targetRect.bottom, targetRect.right, targetRect.bottom, 255,0,0);	// bottom line
+			m_vEnemies[m_nHoverCharacter-(4+m_nNumEnemiesKilled)]->Colorize();
+			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+				if (m_nHoverCharacter-(4+m_nNumEnemiesKilled) != i)
+					m_vEnemies[i]->Colorize(false);
 		}
 	
 		if (m_nHoverCharacter == m_nCurrTarget && m_bIsMouseAttack)
@@ -1054,13 +1111,34 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		{
 			m_nCurrCharacter	 = index;
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
-			if (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill() > -1)
+			if (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkillIndex() > -1)
 			{
 				vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
-				m_sCurrSkillName = skills[m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()].GetSkillName();
+				m_sCurrSkillName = skills[m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkillIndex()].GetSkillName();
 			}
 			else
 				m_sCurrSkillName = "NONE";
+			if (m_bxSkillBox)
+			{
+				delete m_bxSkillBox;
+				int numSkills = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills();
+				string* skillNames = new string[numSkills+1];
+				for (int i = 0; i < numSkills; ++i)
+				{
+					vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
+					skillNames[i] = skills[i].GetSkillName();
+					char temp[16];
+					sprintf_s(temp, " - %i", skills[i].GetSkillCost());
+					string cost = temp;
+					skillNames[i] += cost;
+				}
+				skillNames[numSkills] = "NONE";
+				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, 35, 35, 15, -1, 0.7f );
+				delete[] skillNames;
+				m_bxSkillBox->SetActive(true);
+				m_bxSkillBox->SetType(BOX_WITH_BACK);
+				m_bxActionBox->SetActive(false);
+			}
 			CalculateRanges();
 		}
 		else if (index > 3 && m_nCurrTarget != m_nHoverCharacter && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
@@ -1079,8 +1157,14 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				m_bOutOfRange = true;
 				return;
 			}
-			// check if enough AP
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < 4)
+			// check if enough AP for a regular attack
+			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < 4 && m_sCurrSkillName == "NONE")
+			{
+				m_bNotEnoughAP = true;
+				return;
+			}
+			// check if enough AP for the selected skill
+			else if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < m_nCurrSkillCost && m_sCurrSkillName != "NONE")
 			{
 				m_bNotEnoughAP = true;
 				return;
@@ -1097,7 +1181,12 @@ void CBattleMap::HandleButton()
 	{
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(m_nCurrBtnSelected);
 		vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
-		m_sCurrSkillName = skills[m_nCurrBtnSelected].GetSkillName();
+		m_sCurrSkillDisplay = m_sCurrSkillName = skills[m_nCurrBtnSelected].GetSkillName();
+		m_nCurrSkillCost = skills[m_nCurrBtnSelected].GetSkillCost();
+		char temp[16];
+		sprintf_s(temp, " - %i", m_nCurrSkillCost);
+		string cost = temp;
+		m_sCurrSkillDisplay += cost;
 		delete m_bxSkillBox;
 		m_bxSkillBox = NULL;
 		m_bDisplaySpecialBox = false;
@@ -1107,7 +1196,7 @@ void CBattleMap::HandleButton()
 	// or if they chose "NONE"
 	else if (m_bxSkillBox && m_nCurrBtnSelected == m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills())
 	{
-		m_sCurrSkillName = "NONE"; 
+		m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; 
 		delete m_bxSkillBox;
 		m_bxSkillBox = NULL;
 		m_bDisplaySpecialBox = false;
@@ -1132,6 +1221,10 @@ void CBattleMap::HandleButton()
 				{
 					vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
 					skillNames[i] = skills[i].GetSkillName();
+					char temp[16];
+					sprintf_s(temp, " - %i", skills[i].GetSkillCost());
+					string cost = temp;
+					skillNames[i] += cost;
 				}
 				skillNames[numSkills] = "NONE";
 				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, 35, 35, 15, -1, 0.7f );
@@ -1226,6 +1319,10 @@ void CBattleMap::PerformAttack()
 	// a skill has been selected, execute that skill
 	else
 	{
+		m_bExecuteSkill = true;
+		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(m_nCurrSkillCost);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
 	}
 	CalculateRanges();
 }

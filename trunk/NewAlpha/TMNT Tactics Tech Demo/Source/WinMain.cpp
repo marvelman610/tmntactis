@@ -18,6 +18,7 @@
 // #define VLD_MAX_DATA_DUMP 0
 // #include <vld.h>
 #include "Game.h"
+#include "GamePlayState.h"
 
 void ToggleFullscreenMode(HWND hWnd, 
 						  int iWidth, int iHeight, int iBpp, int iRefreshRate);
@@ -66,18 +67,25 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 				//GetCursorPos()
 				mouse.x = LOWORD(lParam);
 				mouse.y = HIWORD(lParam);
+
+
+				CGamePlayState::GetInstance()->SetPaused(false);
+
 			}
 		//	and lose/gain focus
 		case WM_ACTIVATE:
 		{
 			//	gaining focus
-			if (LOWORD(wParam) != WA_INACTIVE)
+			if (LOWORD(wParam) == WA_INACTIVE)
 			{
 				// unpause game code here
+				
+
 			}
 			else // losing focus
 			{
 				// pause game code here
+				CGamePlayState::GetInstance()->SetPaused(true);
 			}
 		}
 		case WM_SETCURSOR:
@@ -286,8 +294,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 			DispatchMessage(&msg);
 		}
 
-		if(GetAsyncKeyState(VK_MENU) && GetAsyncKeyState(VK_RETURN))
-			ToggleFullscreenMode(hWnd, g_nWINDOW_WIDTH, g_nWINDOW_HEIGHT, 32, 60);  
+		//if(GetAsyncKeyState(VK_MENU) && GetAsyncKeyState(VK_RETURN))
+		//	ToggleFullscreenMode(hWnd, g_nWINDOW_WIDTH, g_nWINDOW_HEIGHT, 32, 60);  
 		
 		//////////////////////////////////
 		//	Put Game Logic Here

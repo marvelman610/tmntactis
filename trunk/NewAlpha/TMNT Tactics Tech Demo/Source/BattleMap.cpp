@@ -1446,6 +1446,7 @@ void CBattleMap::PerformAttack()
 			--m_nNumEnemiesLeft;
 			++m_nNumEnemiesKilled;
 			m_ncurrTargetTile = -1;
+			m_nCurrTarget = -1;
 		}
 	} 
 	// a skill has been selected, execute that skill

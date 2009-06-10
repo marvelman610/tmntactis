@@ -57,7 +57,7 @@ public:
 	//
 	// Purpose: Draws the string passed in to the screen at the specified location.
 	////////////////////////////////////////////////////////////////////
-	void DrawString( const char* szstring, int posX, int posY, int posZ = 0.05f, float scale = 1.0f, DWORD color = -1); 
+	void DrawString( const char* szstring, int posX, int posY, float posZ = 0.05f, float scale = 1.0f, DWORD color = -1); 
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “DrawChar”

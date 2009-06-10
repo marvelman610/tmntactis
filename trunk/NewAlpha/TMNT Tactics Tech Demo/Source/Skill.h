@@ -17,6 +17,9 @@
 #include <string>
 using std::string;
 
+class CBattleMap;
+class CPlayer;
+
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
 enum eSkillIDs // IDs used to set the appropriate function pointers when info is loaded in
 {
@@ -51,6 +54,9 @@ private:
 	int m_nSkillCost;
 	int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
 	int m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+
+	CPlayer*	m_pPlayer;
+	CBattleMap* m_pBattleMap;
 
 	rendPtr m_pRenderPtr;			// the function pointer to the appropriate Render()
 	updPtr  m_pUpdatePtr;			// the function pointer to the appropriate Update()

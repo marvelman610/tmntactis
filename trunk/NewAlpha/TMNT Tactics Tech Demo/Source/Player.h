@@ -22,10 +22,6 @@ class CPlayer
 {
 private:
 	CTurtle*  m_pTurtles[4];
-	/*CTurtle* m_pLeonardo;
-	CTurtle* m_pDonatello;
-	CTurtle* m_pRaphael;
-	CTurtle* m_pMikey;*/
 
 	//int m_pItemsArr[50];
 	vector<CBase*> m_nInventory;

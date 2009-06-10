@@ -28,7 +28,7 @@
         </TURTLE>
         
         <TURTLE NumberOfSkills="5" TurtleName="3">
-                  <SKILL Name="NUNCHUCK SKULL-SPLITTER" ID="11" Type="0" Dmg="13" Range="1" Cost="16" CombAmt="6"/>
+                  <SKILL Name="SKULL-SPLITTER" ID="11" Type="0" Dmg="13" Range="1" Cost="16" CombAmt="6"/>
                   <SKILL Name="NUNCHUCK SPIN"       ID="12" Type="0" Dmg="9"  Range="1" Cost="20" CombAmt="7" />
                   <SKILL Name="ROLL AWAY"           ID="13" Type="3" Dmg="0"  Range="2" Cost="12" CombAmt="6" />
                   <SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="10" Range="1" Cost="10" CombAmt="3" />

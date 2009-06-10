@@ -22,6 +22,7 @@ class CTurtle : public CBase
 private:
 	vector<CSkill> m_vInactiveSkills;
 	vector<CSkill> m_vActiveSkills;
+	int m_nCurrSelectedSkill;
 	bool m_bIsAlive;
 	bool m_bIsActive; // bool to check for hud 
 
@@ -72,13 +73,13 @@ public:
 	void SetAttributes(int ap = 10,int hp = 100,int strength = 15,int defense = 5,int accuracy = 5,
 					   int speed = 5,int level = 1, int experience = 0,int range = 1);
 	/////////////////////////////////////////////////////////////////////////////
-	// Function : "GetActive"
-	//
-	// Purpose : Gets the boolean for the HUD to know if the player is active 
+	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////////
 	inline bool GetActive(void) { return m_bIsActive; }
 	inline vector<CSkill>* GetSkills()  { return &m_vActiveSkills;}
 	inline int GetNumSkills(void) {return m_vActiveSkills.size();}
+	inline int GetCurrSelectedSkill() {return m_nCurrSelectedSkill;}
+	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
 };
 
 #endif

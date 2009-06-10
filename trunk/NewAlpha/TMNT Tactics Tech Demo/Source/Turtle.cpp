@@ -12,7 +12,10 @@
 
 CTurtle::CTurtle(void)
 {
+	m_nType = OBJECT_TURTLE;
 
+	SetWidth(64);
+	SetHeight(64);
 }
 
 CTurtle::~CTurtle(void)

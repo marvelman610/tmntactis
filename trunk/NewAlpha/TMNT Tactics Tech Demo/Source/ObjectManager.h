@@ -115,6 +115,9 @@ public:
 	//	Return		:	returns the z depth(float) for the character to be drawn at
 	//////////////////////////////////////////////////////////////////////////
 	float GetZdepthDraw(int x, int y, int currTileID = -1);
+
+	void CheckCollisions(void);
+
 };
 
 #endif

@@ -14,6 +14,7 @@ typedef int MSGID;
 enum eMsgTypes { MSG_NULL = 0, MSG_CREATE_ITEM, MSG_DESTROY_ITEM, MSG_CREATE_WEAPON, MSG_DESTROY_WEAPON,MSG_MAX };
 
 class CNinja;
+class CBattleItem;
 
 class CBaseMessage
 {
@@ -61,11 +62,12 @@ public:
 };
 class CDestroyItem : public CBaseMessage
 {
+	CBattleItem* m_pItem;
 public:
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CDestroyItem(Constructor)"
 	///////////////////////////////////////////////////////////////////
-	CDestroyItem():CBaseMessage(MSG_DESTROY_ITEM){}
+	CDestroyItem(CBattleItem* item):CBaseMessage(MSG_DESTROY_ITEM){m_pItem = item;}
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"~CDestroyItem(Destructor)"
@@ -76,7 +78,7 @@ public:
 	//	Function:	Accessors
 	//	Purpose	:	To get the specified type
 	///////////////////////////////////////
-
+	inline CBattleItem* GetItem() {return m_pItem;}
 };
 class CCreateWeapon : public CBaseMessage
 {

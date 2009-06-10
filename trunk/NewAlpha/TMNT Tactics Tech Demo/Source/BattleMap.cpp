@@ -957,10 +957,20 @@ void CBattleMap::DrawHover()
 		RECT targetRect;
 		if (m_nHoverCharacter > 3)
 		{
-			m_vEnemies[m_nHoverCharacter-(4+m_nNumEnemiesKilled)]->Colorize();
-			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-				if (m_nHoverCharacter-(4+m_nNumEnemiesKilled) != i)
-					m_vEnemies[i]->Colorize(false);
+			if (m_nHoverCharacter == 4 && m_nNumEnemiesLeft > 0)
+			{
+				m_vEnemies[m_nHoverCharacter-(4)]->Colorize();
+				for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+					if (m_nHoverCharacter-(4) != i)
+						m_vEnemies[i]->Colorize(false);
+			}
+			else if (m_nHoverCharacter != 4 && m_nNumEnemiesLeft > 0)
+			{
+				m_vEnemies[m_nHoverCharacter-(4+m_nNumEnemiesKilled)]->Colorize();
+				for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+					if (m_nHoverCharacter-(4+m_nNumEnemiesKilled) != i)
+						m_vEnemies[i]->Colorize(false);
+			}
 		}
 	
 		if (m_nHoverCharacter == m_nCurrTarget && m_bIsMouseAttack)
@@ -1322,9 +1332,12 @@ void CBattleMap::PerformAttack()
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
 	
 		m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
-		m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
+		int index = m_nCurrTarget - 4;
+		if (m_nCurrTarget > 0 && m_nNumEnemiesKilled > 0 && index > 0)
+			index -= m_nNumEnemiesKilled;
+		m_vEnemies[index]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 	
-		if (m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)]->GetHealth() <= 0)
+		if (m_vEnemies[index]->GetHealth() <= 0)
 		{
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
 			
@@ -1332,7 +1345,7 @@ void CBattleMap::PerformAttack()
 			int count = 0;
 			while(iter != m_vEnemies.end())
 			{
-				if ((*iter) == m_vEnemies[m_nCurrTarget-(4+m_nNumEnemiesKilled)])
+				if ((*iter) == m_vEnemies[index])
 				{
 					iter = m_vEnemies.erase(iter);
 					break;

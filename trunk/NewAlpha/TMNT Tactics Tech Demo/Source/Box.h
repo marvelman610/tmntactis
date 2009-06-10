@@ -110,6 +110,6 @@ class CBox
 	void SetActive(bool IsActive = true);
 	void SetType(int type) {m_nType = type;}
 	int BoxRight() {return m_nBoxRight;}
-	bool IsMouseInBox() const { return m_bIsMouseInBox; }
+	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; }
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
 };

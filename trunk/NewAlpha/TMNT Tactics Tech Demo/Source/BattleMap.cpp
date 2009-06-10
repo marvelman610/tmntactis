@@ -326,7 +326,14 @@ void CBattleMap::Render()
 	if (m_bIsPlayersTurn && m_nCurrCharacter > -1)
 	{
 		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 0.5f);
-		m_pBitmapFont->DrawString(m_sCurrSkillDisplay.c_str(), 5, 220, 0.05f, 0.5f);
+		m_pBitmapFont->DrawString(m_sCurrSkillName.c_str(), 5, 220, 0.05f, 0.5f);
+		if (m_nCurrSkillCost > -1)
+		{
+			char temp[32];
+			sprintf_s(temp, "COST: %i", m_nCurrSkillCost);
+			string sCost = temp;
+			m_pBitmapFont->DrawString(sCost.c_str(), 5, 250, 0.05f, 0.5f);
+		}
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
@@ -898,7 +905,7 @@ void CBattleMap::CalculateRanges()
 
 void CBattleMap::DrawHover()
 {
-	if (!m_bxItemBox && !m_bxSkillBox && m_nCurrBtnSelected == -1)
+	if ( m_nCurrBtnSelected == -1)
 	{
 		RECT hoverRect;
 		switch (m_nHoverCharacter)
@@ -1109,12 +1116,14 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	{
 		if (index > -1 && index < 4)		// see if we're clicking on a character (turtle)
 		{
+			m_nCurrSkillCost	 = -1;
 			m_nCurrCharacter	 = index;
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
 			if (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkillIndex() > -1)
 			{
-				vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
-				m_sCurrSkillName = skills[m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkillIndex()].GetSkillName();
+				CSkill* skills = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
+				m_sCurrSkillName = skills->GetSkillName();
+				m_nCurrSkillCost = skills->GetSkillCost();
 			}
 			else
 				m_sCurrSkillName = "NONE";
@@ -1203,7 +1212,8 @@ void CBattleMap::HandleButton()
 		m_bxActionBox->SetActive();
 		return;
 	}
-	else if (m_bxItemBox || m_bxSkillBox && m_nCurrBtnSelected != BTN_BACK)
+	// catches any random invalid input
+	else if ((m_bxItemBox || m_bxSkillBox) && m_nCurrBtnSelected != BTN_BACK)
 		return;
 
 	switch (m_nCurrBtnSelected)

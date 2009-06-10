@@ -65,7 +65,7 @@ void CPlayer::LoadNewSkills(const char* filename)
 		{MessageBox(0, "Failed to load new skills.", "Error", MB_OK); return;}
 
 	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name;
-	vector<CSkill> inactiveSkills;
+	vector<CSkill> inactiveSkills, activeSkill;
 
 	TiXmlElement* pRoot = doc.RootElement();
 	TiXmlElement* pTurtle = pRoot->FirstChildElement("TURTLE");
@@ -86,25 +86,14 @@ void CPlayer::LoadNewSkills(const char* filename)
 			pSkill->Attribute("Cost", &cost);
 			pSkill->Attribute("CombAmt", & combAmt);
 			CSkill Skill = CSkill(name, type, skillID, dmg, range, cost, combAmt);
-			inactiveSkills.push_back(Skill);
+			if (i > 0)
+				inactiveSkills.push_back(Skill);
+			else
+				activeSkill.push_back(Skill);
 			pSkill = pSkill->NextSiblingElement();
 		}
-
-		switch (turtleID)
-		{
-		case LEONARDO:
-			m_pTurtles[LEONARDO]->SetSkillsInactive(inactiveSkills);
-			break;
-		case DONATELLO:
-			m_pTurtles[DONATELLO]->SetSkillsInactive(inactiveSkills);
-			break;
-		case RAPHAEL:
-			m_pTurtles[RAPHAEL]->SetSkillsInactive(inactiveSkills);
-			break;
-		case MIKEY:
-			m_pTurtles[MIKEY]->SetSkillsInactive(inactiveSkills);
-			break;
-		}
+		m_pTurtles[turtleID]->SetSkillsActive(activeSkill);
+		m_pTurtles[turtleID]->SetSkillsInactive(inactiveSkills);
 		inactiveSkills.clear();
 		pTurtle = pTurtle->NextSiblingElement("TURTLE");
 	}

@@ -43,7 +43,7 @@ void CBitmapFont::Load()
 {
 
 }
-void CBitmapFont::DrawString(const char* szString, int posX, int posY, float scale, DWORD dwcolor) //if u want to color text, make fonts white (desaturate)
+void CBitmapFont::DrawString(const char* szString, int posX, int posY, int posZ, float scale, DWORD dwcolor) //if u want to color text, make fonts white (desaturate)
 {
 	int offsetx = posX;
 	int offsety = posY;
@@ -75,7 +75,7 @@ void CBitmapFont::DrawString(const char* szString, int posX, int posY, float sca
 		int id = (int)(ch - m_cStartChar);
 		RECT rcell = CellAlgorithm(id);
 
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,offsetx,offsety, 0.05f, scale, scale,&rcell,0,0,0, dwcolor);
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,offsetx,offsety, posZ, scale, scale,&rcell,0,0,0, dwcolor);
 		offsetx += int(m_nCharWidth*scale);
 	}
 	

@@ -84,7 +84,6 @@ void CHUD::Update(float fElapsedTime)
 		if(m_pPlayer->GetTurtles()[LEONARDO] != NULL && m_pPlayer->GetTurtles()[DONATELLO] != NULL && 
 			m_pPlayer->GetTurtles()[RAPHAEL] != NULL && m_pPlayer->GetTurtles()[MIKEY] != NULL)
 		{
-
 			float healthwidth = 104.0f *((float)m_pPlayer->GetTurtles()[MIKEY]->GetHealth() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetMaxHealth());
 			float  apwidth = 104.0f * ((float)m_pPlayer->GetTurtles()[MIKEY]->GetCurrAP() / (float)m_pPlayer->GetTurtles()[MIKEY]->GetBaseAP()); 
 			m_rMikeyHP.right = (LONG)healthwidth;
@@ -104,9 +103,7 @@ void CHUD::Update(float fElapsedTime)
 			apwidth = 104.0f * ( (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth() / (float)m_pPlayer->GetTurtles()[RAPHAEL]->GetMaxHealth() );
 			m_rRaphHP.right = (LONG)healthwidth;
 			m_rRaphAP.right = (LONG)apwidth;
-
 		}
-
 }
 void CHUD::Render()
 {

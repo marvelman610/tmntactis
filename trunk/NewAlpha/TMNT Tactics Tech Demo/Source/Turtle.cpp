@@ -14,7 +14,7 @@ CTurtle::CTurtle(void)
 {
 	m_nType = OBJECT_TURTLE;
 	m_nCurrSelectedSkill = -1;
-
+	m_bIsAlive = true;
 	SetWidth(64);
 	SetHeight(64);
 }
@@ -41,6 +41,10 @@ void CTurtle::Update(float fElapsedTime)
 		SetDefense( (int) ( (float)GetDefense() * 1.2f ) );
 		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
+	}
+	if( GetHealth() <= 0)
+	{
+		SetAlive(false);
 	}
 }
 void CTurtle::Render()

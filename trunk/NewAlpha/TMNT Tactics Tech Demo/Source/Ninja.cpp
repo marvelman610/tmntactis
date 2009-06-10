@@ -37,6 +37,8 @@ CNinja::CNinja(void)
 
 	SetExperience(0);
 
+	m_pPlayer = CPlayer::GetInstance();
+
 	CAnimation anim;
 	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 1);
 	AddAnim(anim);
@@ -55,131 +57,230 @@ void CNinja::AI()
 {
 	//get current x and y tile position then get the x and y tile positions
 	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
-
 	SetCurrAP(16);
-	for(int i = 0; i < 4; i++)
-	{
-
-		if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
-			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y)  
-			)
-		{
-			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-				)
-			{
-				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
-					)
-				{
-					//set distance to mikey
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
+	
+	int tempRange1 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
 						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
-					
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y; 
-					m_nTurtle = MIKEY;
-				}
-				else
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	int tempRange2 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
+	int tempRange3 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
 						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
-					m_nTurtle = DONATELLO;
-				}
-			}
-			else
-			{
-				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x ) + 
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y) <
-					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
-				    )
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	int tempRange4 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
 						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
 
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y; 
-					m_nTurtle = RAPHAEL;
-				}
-				else
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
 
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
+	
+	if( m_pPlayer->GetTurtles()[MIKEY]->GetAlive() == false)
+	{
+		tempRange1 = 100;
+	}
+	if(m_pPlayer->GetTurtles()[LEONARDO]->GetAlive() == false)
+	{
+		tempRange2 = 100;
+	}
+	if( m_pPlayer->GetTurtles()[DONATELLO]->GetAlive() == false)
+	{
+		tempRange3 = 100;
+	}
+	if( m_pPlayer->GetTurtles()[RAPHAEL]->GetAlive() == false)
+	{
+		tempRange4 = 100;
+	}
+
+	if( m_pPlayer->GetTurtles()[MIKEY]->GetAlive() == true)
+	{
+		if(tempRange1 < tempRange2)
+		{
+			if(tempRange1 < tempRange3)
+			{
+				if(tempRange1 < tempRange4)
+				{
+					m_nInRange = tempRange1;
+					m_nXChange = m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x;
+					m_nYChange = m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y ; 
+					m_nTurtle = MIKEY;
+				}
+			}
+		}
+	}
+
+	if( m_pPlayer->GetTurtles()[LEONARDO]->GetAlive() == true)
+	{
+		if(tempRange2 < tempRange1)
+		{
+			if(tempRange2 < tempRange3)
+			{
+				if(tempRange2 < tempRange4)
+				{
+					m_nInRange = tempRange2;
+					m_nXChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x;
+					m_nYChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y - GetMapCoord().y;
+					m_nTurtle = LEONARDO;
+				}
+			}
+		}
+	}
+
+
+	if( m_pPlayer->GetTurtles()[DONATELLO]->GetAlive() == true)
+	{
+		if(tempRange3 < tempRange1)
+		{
+			if(tempRange3 < tempRange2)
+			{
+				if(tempRange3 < tempRange4)
+				{
+					m_nInRange = tempRange3;
+					m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
+					m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
 					m_nTurtle = DONATELLO;
 				}
 			}
 		}
-		else
+	}
+
+
+	if( m_pPlayer->GetTurtles()[RAPHAEL]->GetAlive() == true)
+	{
+		if(tempRange4 < tempRange1)
 		{
-			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
-				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
-				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)  
-			  )
+			if(tempRange4 < tempRange2)
 			{
-				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
-					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-				  )
+				if(tempRange4 < tempRange3)
 				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
-
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y;
-					m_nTurtle = LEONARDO;
-				}
-				else
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
-
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y; 
-					m_nTurtle = RAPHAEL;
-				}
-			}
-			else
-			{
-				if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x ) + 
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y) <
-					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-				  )
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
-					m_nTurtle = DONATELLO;
-				}
-				else
-				{
-					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
-
-					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
-					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y;
+					m_nInRange = tempRange4;
+					m_nXChange = m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
+					m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
 					m_nTurtle = RAPHAEL;
 				}
 			}
 		}
 	}
+
+
+	//for(int i = 0; i < 4; i++)
+	//{
+
+	//	if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+	//		abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
+	//		abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
+	//		abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y)  
+	//		)
+	//	{
+	//		if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
+	//			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+	//			)
+	//		{
+	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
+	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
+	//				)
+	//			{
+	//				//set distance to mikey
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
+	//				
+	//				m_nXChange =  m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x ;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y ; 
+	//				m_nTurtle = MIKEY;
+	//			}
+	//			else
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+	//				m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
+	//				m_nTurtle = DONATELLO;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x ) + 
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y) <
+	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
+	//			    )
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+	//				m_nXChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
+	//				m_nTurtle = RAPHAEL;
+	//			}
+	//			else
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+	//				m_nXChange = m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
+	//				m_nYChange = m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
+	//				m_nTurtle = DONATELLO;
+	//			}
+	//		}
+	//	}
+	//	else
+	//	{
+	//		if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
+	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
+	//			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)  
+	//		  )
+	//		{
+	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
+	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+	//			  )
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
+
+	//				m_nXChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y - GetMapCoord().y;
+	//				m_nTurtle = LEONARDO;
+	//			}
+	//			else
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+	//				m_nXChange = m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
+	//				m_nTurtle = RAPHAEL;
+	//			}
+	//		}
+	//		else
+	//		{
+	//			if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x ) + 
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y) <
+	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+	//			  )
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+	//				m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x ;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y -	GetMapCoord().y ;
+	//				m_nTurtle = DONATELLO;
+	//			}
+	//			else
+	//			{
+	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+	//				m_nXChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
+	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y ;
+	//				m_nTurtle = RAPHAEL;
+	//			}
+	//		}
+	//	}
+	//}
 
 	//map point to set
 	POINT mapPt;
@@ -194,6 +295,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//one tile away from  turtle
@@ -203,6 +306,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//two tiles away from turtle 1 out of range
@@ -250,6 +355,7 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 		//three tiles, move in two tiles
@@ -300,6 +406,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//four tiles, move in three tiles
@@ -359,6 +467,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//five tiles, move four
@@ -428,6 +538,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//six tiles, move five
@@ -508,6 +620,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//7 tiles, move 6
@@ -599,6 +713,8 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 		//8 tiles, move 7
@@ -699,15 +815,20 @@ void CNinja::AI()
 
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 	default:
 		{
 			//end turn
 			SetCurrAP(0);
+			CBattleMap::GetInstance()->SetTurn(true);
+
 		}
 		break;
 	}
+	CBattleMap::GetInstance()->UpdatePositions();
 }
 void CNinja::Update(float fElapsedTime)
 {

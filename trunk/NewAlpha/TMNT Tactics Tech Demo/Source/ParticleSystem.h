@@ -177,7 +177,9 @@ public:
 		int x = 0;
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
-			if(m_bGravityPoint == true){}
+			if(m_bGravityPoint == true)
+			{
+			}
 			if(m_bGravity == true)
 			{
 				particles[i].pos.x += m_fGravityX;

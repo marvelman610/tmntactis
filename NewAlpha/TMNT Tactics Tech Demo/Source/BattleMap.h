@@ -35,7 +35,6 @@ class CBox;
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
- enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };
 
 #include "Base.h"
 
@@ -71,7 +70,7 @@ class CBattleMap
 			OBJECTS = 0.6f;
 			CHARACTER_AHEAD = 0.5f;
 			ARROW = 0.49f;
-			MENUS = 0.1f;
+			MENUS = 0.11f;
 		}
 	};
 	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
@@ -137,8 +136,9 @@ class CBattleMap
 	int m_ncurrTargetTile;
 	int m_nDistanceToTarget;
 	int m_nMoveDirection;
+	string m_sCurrSkillName;
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
-	vector<CBase*> m_vEnemies;	 // all enemy characters tha are on the current battle map
+	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Turn variables

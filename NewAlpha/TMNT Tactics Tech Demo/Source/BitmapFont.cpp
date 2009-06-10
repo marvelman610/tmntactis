@@ -43,7 +43,7 @@ void CBitmapFont::Load()
 {
 
 }
-void CBitmapFont::DrawString(const char* szString, int posX, int posY, int posZ, float scale, DWORD dwcolor) //if u want to color text, make fonts white (desaturate)
+void CBitmapFont::DrawString(const char* szString, int posX, int posY, float posZ, float scale, DWORD dwcolor) //if u want to color text, make fonts white (desaturate)
 {
 	int offsetx = posX;
 	int offsety = posY;

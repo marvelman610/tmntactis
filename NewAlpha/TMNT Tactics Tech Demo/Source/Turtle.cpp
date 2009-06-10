@@ -13,6 +13,7 @@
 CTurtle::CTurtle(void)
 {
 	m_nType = OBJECT_TURTLE;
+	m_nCurrSelectedSkill = -1;
 
 	SetWidth(64);
 	SetHeight(64);

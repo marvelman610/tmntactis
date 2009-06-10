@@ -105,12 +105,12 @@ void CMainMenuState::Render()
 	// Draw menu item text
 	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f);
 	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f);
-	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 1.5f);
-	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 1.0f);
-	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 1.0f);
-	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 1.0f);
-	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 1.0f);
-	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 1.0f);
+	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 0.09f, 1.0f);
+	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f);
+	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f);
+	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f);
+	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f);
+	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f);
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 	GetTM()->Draw(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3);

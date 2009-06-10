@@ -17,6 +17,7 @@ class CAssets;
 class CSGD_TextureManager;
 class CSGD_Direct3D;
 enum {BOX_NO_BACK, BOX_WITH_BACK, };
+enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };
 
 class CBox
 {
@@ -52,7 +53,7 @@ class CBox
 	// mouse selection (buttons being hovered over/pressed)
 	int m_nCurrSelectedIndex;
 	bool m_bIsActive;
-
+	bool m_bIsMouseInBox;
 	int m_nType;
 
 	CSGD_TextureManager*	m_pTM;
@@ -69,9 +70,11 @@ class CBox
 	void CheckMouse(POINT mousePt);
 
  public:
-	CBox(int numItems, string* sItems, int posX, int posY, float posZ = 0.1f, int width = 256, int height = -1, 
-		int spacing = 35, int startX=40, int startY=40, int imageID = -1, float fScaleX = 1.0f, float fScaleY = 1.0f, 
-		float fTextScale = 1.0f, int red = 0, int green = 0, int blue = 0);
+	CBox(int numItems, string* sItems, 
+		int posX, int posY, float posZ = 0.11f, 
+		int spacing = 35, int startX = 35, int startY = 25, 
+		int imageID = -1, float fTextScale = 1.0f, 
+		int red = 0, int green = 0, int blue = 0);
 	~CBox();
 
 	//////////////////////////////////////////////////////////////////////////
@@ -106,4 +109,7 @@ class CBox
 	bool IsActiveBox() const { return m_bIsActive; }
 	void SetActive(bool IsActive = true);
 	void SetType(int type) {m_nType = type;}
+	int BoxRight() {return m_nBoxRight;}
+	bool IsMouseInBox() const { return m_bIsMouseInBox; }
+	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
 };

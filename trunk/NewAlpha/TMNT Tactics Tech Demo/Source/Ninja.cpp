@@ -12,6 +12,7 @@
 #include <cmath>
 #include "MessageSystem.h"
 #include "ObjectManager.h"
+#include "BattleMap.h"
 
 CNinja::CNinja(void)
 {
@@ -54,23 +55,25 @@ void CNinja::AI()
 {
 	//get current x and y tile position then get the x and y tile positions
 	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
+
+	SetCurrAP(16);
 	for(int i = 0; i < 4; i++)
 	{
 
 		if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
 			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
 			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y)  
 			)
 		{
 			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
 				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
 				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
 				)
 			{
 				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
 					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
 					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
 					)
@@ -78,1622 +81,632 @@ void CNinja::AI()
 					//set distance to mikey
 					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
 						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
+					
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y; 
+					m_nTurtle = MIKEY;
+				}
+				else
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
+					m_nTurtle = DONATELLO;
+				}
+			}
+			else
+			{
+				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x ) + 
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y) <
+					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
+				    )
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y; 
+					m_nTurtle = RAPHAEL;
+				}
+				else
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
+					m_nTurtle = DONATELLO;
+				}
+			}
+		}
+		else
+		{
+			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
+				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
+				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)  
+			  )
+			{
+				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
+					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+				  )
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y;
+					m_nTurtle = LEONARDO;
+				}
+				else
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y; 
+					m_nTurtle = RAPHAEL;
+				}
+			}
+			else
+			{
+				if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x ) + 
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y) <
+					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+				  )
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y; 
+					m_nTurtle = DONATELLO;
+				}
+				else
+				{
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+
+					m_nXChange = GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x;
+					m_nYChange = GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y;
+					m_nTurtle = RAPHAEL;
 				}
 			}
 		}
 	}
 
-
+	//map point to set
+	POINT mapPt;
 	switch(m_nInRange)
 	{
 		//next to turtle
+		
 	case 0:
-		switch(GetCurrAP())
 		{
-			case 0: //end turn
-				break;
-			case 1: 
-				{
-					if(( (float)GetHealth() / (float)GetMaxHealth() )*.1f > .9f)
-					{
-						//throw rock 1 ap 
-					}
-					else {}
-					//defend (ends turn)
-				}
-				break;
-			case 2:
-				{
-					if( ( (float)GetHealth() / (float)GetMaxHealth() )* .1f > .9f )
-					{
-						//check for ninja star(2ap)
-						//else throw rock and then defend
-					}
-					else 
-					{//defend
-					}
-				}
-				break;
-			case 3:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()  *.1f > .9f )
-					{
-						//throw star (2ap) throw rock(1ap)
-					}
-					else
-					{
-						//throw star and defend
-					}
-				}
-				break;
-			case 4:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-					{
-						//attack
-					}
-					else
-					{
-						//throw star, rock then defend
-					}
-				}
-				break;
-			case 5:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-					{
-						//attack then defend
-					}
-					else
-					{
-						//throw 2 stars then defend
-					}
-				}
-				break;
-			case 6:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack and throw star
-					}
-					else
-					{
-						//throw 3 stars if not then throw 5 rocks and defend
-					}
-				}
-				break;
-			case 7:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack, throw star and defend
-					}
-					else
-					{
-						//throw 3 stars then defend else throw 6 rocks and defend
-					}
-				}
-				break;
-			case 8:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack twice
-					}
-					else
-					{
-						//throw 3 stars and defend or move back attack once and move back a space and defend
-					}
-				}
-				break;
-			case 9:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack twice and defend
-					}
-					else
-					{
-						//attack and move back two spaces then defend
-					}
-				}
-				break;
-			case 10:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-					{
-						// attack twice throw rock and defend
-					}
-					else
-					{
-						//attack once move back two spaces and defend
-					}
-				}
-				break;
-			case 11:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-					{
-						//attack twice throw star and defend
-					}
-					else
-					{
-						//attack once move back three spaces throw rock or defend
-					}
-				}
-				break;
-			case 12:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack three times
-					}
-					else
-					{
-						//attack once move back four spaces
-					}
-				}
-				break;
-			case 13:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-					{
-						//attack three times and defend
-					}
-					else
-					{
-						//attack once move back four spaces and defend
-					}
-				}
-				break;
-			case 14:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack three time, throw rock and defend
-					}
-					else
-					{
-						//attack once move back four spaces throw rock and defend
-					}
-				}
-				break;
-			case 15:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth()* .1f > .9f  )
-					{
-						//attack three times, throw star and defend
-					}
-					else
-					{
-						//attack twice move back two space and defend
-					}
-				}
-				break;
-			case 16:
-				{
-					if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f  )
-					{
-						//attack four times
-					}
-					else
-					{
-						//attack twice move back four spaces
-					}
-				}
-				break;
+			//16 ap always
+			// attack four times (4ap * 4 = 16)
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
+			//end turn
+			SetCurrAP(0);
 		}
 		break;
-		//one space away
-		case 1:
+		//one tile away from  turtle
+	case 1:
+		{
+			//attack four times(4ap * 4 = 16)
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//two tiles away from turtle 1 out of range
+	case 2:
+		{
+			//move in 1 tile (2ap)
+			switch(abs(m_nXChange))
 			{
-				switch(GetCurrAP())
+			case 0:
+				mapPt.x = GetMapCoord().x;
+				//if(x == 0) y == 2
+				if(m_nYChange > 0)
 				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw rock
-							}
-							else
-							{
-								//defend
-							}
-						}
-						break;
-					case 2:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star or two rocks
-							}
-							else
-							{
-								//throw rock and defend
-							}
-						}
-						break;
-					case 3:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star and rock or three rocks
-							}
-							else
-							{
-								//throw two rocks and defend
-							}
-						}
-						break;
-					case 4:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack
-							}
-							else
-							{
-								//throw star, rock then defend
-							}
-						}
-						break;
-					case 5:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack and defend
-							}
-							else
-							{
-								//attack and defend
-							}
-						}
-						break;
-					case 6:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack throw star( or throw rock then defend)
-							}
-							else
-							{
-								//attack throw rock then defend
-							}
-						}
-						break;
-					case 7:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack throw star, rock then defend
-							}
-							else
-							{
-								//attack throw star, rock then defend
-							}
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack twice
-							}
-							else
-							{
-								//attack once throw star, rock then defend
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack twice then throw rock 
-							}
-							else
-							{
-								//attack twice and defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack twice and throw star
-							}
-							else
-							{
-								//attack twice throw rock then defend
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack twice, throw star, throw rock
-							}
-							else
-							{
-								//attack twice throw star and defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack three times
-							}
-							else
-							{
-								//attack twice throw star throw rock and defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack three times and throw rock
-							}
-							else
-							{
-								//attack three time and defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3 times throw star
-							}
-							else
-							{
-								//attack 3 times throw rock and defend
-							}
-						}
-						break;
-					case 15:
-						{
-						if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3 times throw star and throw rock
-							}
-							else
-							{
-								//attack 3 times throw star and defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 4 times
-							}
-							else
-							{
-								//attack 4 times
-							}
-						}
-						break;
-					}
-			}
-			break;
-			//two space away (one out of range)
-		case 2:
-			{
-				switch(GetCurrAP())
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else 
 				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw rock
-							}
-							else
-							{
-								//defend
-							}
-						}
-						break;
-					case 2:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star or two rocks
-							}
-							else
-							{
-								//throw rock and defend
-							}
-						}
-						break;
-					case 3:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star and a rock
-							}
-							else
-							{
-								//throw star and defend
-							}
-						}
-						break;
-					case 4:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star x2 
-							}
-							else
-							{
-								//throw star, rock and defend
-							}
-						}
-						break;
-					case 5:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star x2 and rock
-							}
-							else
-							{
-								//throw star x2 and defend
-							}
-						}
-						break;
-					case 6:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward then attack
-							}
-							else
-							{
-								//move one space forward then attack
-							}
-						}
-						break;
-					case 7:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward then attack and throw rock
-							}
-							else
-							{
-								//move one space forward then attack and defend
-							}
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack, throw star
-							}
-							else
-							{
-								//move one space forward attack, throw rock and defend
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack, throw star, throw rock
-							}
-							else
-							{
-								//move one space forward attack, throw star, defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x2
-							}
-							else
-							{
-								//move one space forward attack x2
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x2, throw rock
-							}
-							else
-							{
-								//move one space forward attack x2, defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x2, throw star
-							}
-							else
-							{
-								//move one space forward attack x2, throw rock, defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x2, throw star, throw rock
-							}
-							else
-							{
-								//move one space forward attack x2, throw star, defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move forward one space attack x3
-							}
-							else
-							{
-								//move one space forward attack x3
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x3, throw rock
-							}
-							else
-							{
-								//move one space forward attack x3, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//move one space forward attack x3 throw star
-							}
-							else
-							{
-								//move one space forward attack x3, throw rock, def
-							}
-						}
-						break;
-					}
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 1:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				mapPt.y = GetMapCoord().y;
+				break;
+			case 2:
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+					mapPt.y = GetMapCoord().y;
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+					mapPt.y = GetMapCoord().y;
+				}
+				break;
 			}
-			break;
 			
-		case 3:
-			{
-				switch(GetCurrAP())
-				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw rock
-							}
-							else
-							{
-								//defend
-							}
-						}
-						break;
-					case 2:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star or two rocks
-							}
-							else
-							{
-								//throw rock and defend
-							}
-						}
-						break;
-					case 3:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star and rock
-							}
-							else
-							{
-								//throw star and defend
-							}
-						}
-						break;
-					case 4:
-						{
-							//attack
-						}
-						break;
-					case 5:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack throw rock
-							}
-							else
-							{
-								//attack and defend
-							}
-						}
-						break;
-					case 6:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack throw star
-							}
-							else
-							{
-								//attack throw rock and defend
-							}
-						}
-						break;
-					case 7:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack throw star throw rock
-							}
-							else
-							{
-								//attack throw star and defend
-							}
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 2
-							}
-							else
-							{
-								//attack 2
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 2 throw rock
-							}
-							else
-							{
-								//attack 2 defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 2 throw star
-							}
-							else
-							{
-								//attack 2 throw rock, defend
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 2 throw star throw rock
-							}
-							else
-							{
-								//attack 2 throw star defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3
-							}
-							else
-							{
-								//attack 3
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3 throw rock
-							}
-							else
-							{
-								//attack 3 defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3 throw star
-							}
-							else
-							{
-								//attack 3 throw rock defend
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 3 throw star throw rock
-							}
-							else
-							{
-								//attack 3 throw star defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//attack 4
-							}
-							else
-							{
-								//attack 4
-							}
-						}
-						break;
-					}
-			}
-			break;
-		case 4:
-			{
-				switch(GetCurrAP())
-				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw rock
-							}
-							else
-							{
-								//throw rock
-							}
-						}
-						break;
-					case 2:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star or rock x2
-							}
-							else
-							{
-								//throw rock defend
-							}
-						}
-						break;
-					case 3:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star and rock
-							}
-							else
-							{
-								//throw star, defend
-							}
-						}
-						break;
-					case 4:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star x2
-							}
-							else
-							{
-								//throw star, rock, defend
-							}
-						}
-						break;
-					case 5:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star x2, throw rock
-							}
-							else
-							{
-								//throw star x2, defend
-							}
-						}
-						break;
-					case 6:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
-							{
-								//throw star x3
-							}
-							else
-							{
-								//throw star x2, defend
-							}
-						}
-						break;
-					case 7:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//throw star x3, throw rock 
-							}
-							else
-							{
-								//throw star x3, defend
-							}
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth()* 0.1f > 0.9f )
-							{
-								//throw star x4
-							}
-							else
-							{
-								//throw star x3 throw rock, defend
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//throw star x 4, throw rock
-							}
-							else
-							{
-								//throw star x4, defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() *0.1f > 0.9f )
-							{
-								//move forward 3 spaces and attack
-							}
-							else
-							{
-								// move forward 3 spaces and attack 
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f >0.9f)
-							{
-								//move forward 3 spaces, attack and throw rock
-							}
-							else
-							{
-								//move forward 3 spaces, attack and defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move forward 3 spaces, attack x2 
-							}
-							else
-							{
-								//move forward 3 spaces, attack x2
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move forward 3 spaces, attack x2 and throw rock
-							}
-							else
-							{
-								//move forward 3 spaces, attack x2 and defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move forward 3 spaces, attack x2, throw star
-							}
-							else
-							{
-								//move forward 3 spaces, attack x2, throw rock
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move forward 3 spaces, attack x2, throw star, throw rock
-							}
-							else
-							{
-								//move forward 3 spaces, attack x2, throw star, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move forward 3 spaces, attack x3
-							}
-							else
-							{
-								//move forward 3 spaces, attack x3
-							}
-						}
-						break;
-				
-				}
-			}
-			break;
-			//out of range by 4 spaces
-		case 5:
-			{
-				switch(GetCurrAP())
-				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							//end turn
-						}
-						break;
-					case 2:
-						{
-							//defend
-						}
-						break;
-					case 3:
-						{
-							//defend
-						}
-						break;
-					case 4:
-						{
-							//move one space and defend
-						}
-						break;
-					case 5:
-						{
-							//move one space and defend
-						}
-						break;
-					case 6:
-						{
-							//move two spaces and defend
-						}
-						break;
-					case 7:
-						{
-							//move two spaces, throw rock, defend
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star
-							}
-							else
-							{
-								//move two spaces, throw rock, defend
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star, throw rock
-							}
-							else
-							{
-								//move three spaces, throw rock, defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces,throw star x2
-							}
-							else
-							{
-								//move three spaces, throw star, defend
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x2, throw rock
-							}
-							else
-							{
-								//move three spaces, throw star, throw rock, defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, attack
-							}
-							else
-							{
-								//move three spaces, throw star x2, defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, attack, throw rock
-							}
-							else
-							{
-								//move four spaces, attack, throw rocck
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, attack, throw star
-							}
-							else
-							{
-								//move four spaces, attack, defend
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, attack, throw star, throw rock
-							}
-							else
-							{
-								//move four spaces, attack, throw rock, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, attack x2
-							}
-							else
-							{
-								//move four spaces, attack x2
-							}
-						}
-						break;
-				}
-			}
-			break;
-			//out of range by 5 units
-		case 6:
-			{
-				switch( GetCurrAP() )
-				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							//end turn
-						}
-						break;
-					case 2:
-						{
-							//defend
-						}
-						break;
-					case 3:
-						{
-							//defend
-						}
-						break;
-					case 4:
-						{
-							//move one space, defend
-						}
-						break;
-					case 5:
-						{
-							//move one space, defend
-						}
-						break;
-					case 6:
-						{
-							//move two spaces, defend
-						}
-						break;
-					case 7:
-						{
-							//move two spaces, defend
-						}
-						break;
-					case 8:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star
-							}
-							else
-							{
-								//move three spaces, defend
-							}
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star, throw rock
-							}
-							else
-							{
-								//move three spaces, throw rock, defend
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x2
-							}
-							else
-							{
-								//move three spaces, throw star, defend
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x2, throw rock
-							}
-							else
-							{
-								//move three spaces, throw star, throw rock, defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x3
-							}
-							else
-							{
-								//move three spaces, throw star x2, defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x3, throw rock
-							}
-							else
-							{
-								//move three spaces, throw star x2, throw rock, defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x4
-							}
-							else
-							{
-								//move three spaces, throw star x3, defend
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x4, throw rock
-							}
-							else
-							{
-								//move three spaces, throw star x3, throw rock, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move three spaces, throw star x5
-							}
-							else
-							{
-								//move three spaces, throw star x4, defend
-							}
-						}
-						break;
-				}
-			}
-			break;
-			//out of range by 6 spaces
-		case 7:
-			{
-				switch( GetCurrAP() )
-				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							//end turn
-						}
-						break;
-					case 2:
-						{
-							//move one space
-						}
-						break;
-					case 3:
-						{
-							//move one space
-						}
-						break;
-					case 4:
-						{
-							//move two spaces
-						}
-						break;
-					case 5:
-						{
-							//move two spaces
-						}
-						break;
-					case 6:
-						{
-							//move three spaces
-						}
-						break;
-					case 7:
-						{
-							//move three spaces
-						}
-						break;
-					case 8:
-						{
-							//move four spaces
-						}
-						break;
-					case 9:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw rock
-							}
-							else
-							{
-								//move four spaces throw rock
-							}
-						}
-						break;
-					case 10:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star
-							}
-							else
-							{
-								//move four spaces, defend
-							}
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star, throw rock
-							}
-							else
-							{
-								//move four spaces, throw rock, defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star x2
-							}
-							else
-							{
-								//move four spaces, throw star, defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star x2, throw rock
-							}
-							else
-							{
-								//move four spaces, throw star, throw rock, defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star x3
-							}
-							else
-							{
-								// move four spaces, throw star x2, defend
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star x3, throw rock
-							}
-							else
-							{
-								//move four spaces, throw star x2, throw rock, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move four spaces, throw star x4
-							}
-							else
-							{
-								//move four spaces, throw star x3, defend
-							}
-						}
-						break;
-				}
-			}
-			break;
+			
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
 
-			//out 7 spaces
-		case 8:
+			//attack 3 times (4ap * 3 = 12)
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//three tiles, move in two tiles
+	case 3:
+		{
+			
+			//move in two tiles(4ap)
+			switch(abs(m_nXChange))
 			{
-				switch(GetCurrAP())
+			case 0://if x = 0, y = 3
+				if(m_nYChange > 0)
 				{
-					case 0:
-						{
-							//end turn
-						}
-						break;
-					case 1:
-						{
-							//end turn
-						}
-						break;
-					case 2:
-						{
-							//defend
-						}
-						break;
-					case 3:
-						{
-							//defend
-						}
-						break;
-					case 4:
-						{
-							//move one space, defend
-						}
-						break;
-					case 5:
-						{
-							//move one space, defend
-						}
-						break;
-					case 6:
-						{
-							//move two spaces, defend
-						}
-						break;
-					case 7:
-						{
-							//move two spaces, defend
-						}
-						break;
-					case 8:
-						{
-							//move three spaces, defend
-						}
-						break;
-					case 9:
-						{
-							//move three spaces, defend
-						}
-						break;
-					case 10:
-						{
-							//move four spaces, defend
-						}
-						break;
-					case 11:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw rock
-							}
-							else
-							{
-								//move four spaces, defend
-							}
-						}
-						break;
-					case 12:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw star
-							}
-							else
-							{
-								//move five spaces, defend
-							}
-						}
-						break;
-					case 13:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw star, throw rock
-							}
-							else
-							{
-								//move five spaces, throw rock, defend
-							}
-						}
-						break;
-					case 14:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw star x2
-							}
-							else
-							{
-								//move five spaces, throw star, defend
-							}
-						}
-						break;
-					case 15:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw star x2, throw rock
-							}
-							else
-							{
-								//move five spaces, throw star, throw rock, defend
-							}
-						}
-						break;
-					case 16:
-						{
-							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
-							{
-								//move five spaces, throw star x3
-							}
-							else
-							{
-								//move five spaces, throw star x2, defend
-							}
-						}
-						break;
+					mapPt.x = GetMapCoord().x;
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
 				}
+				else
+				{
+					mapPt.x = GetMapCoord().x;
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 1://if x = 1, y = 2
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x = 2, y = 1
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				mapPt.y = GetMapCoord().y;
+				break;
+			case 3://if x = 3, y = 0
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+					mapPt.y = GetMapCoord().y;
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+					mapPt.y = GetMapCoord().y;
+				}
+				break;
 			}
-			break;
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//attack three times(12ap)= 16ap
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//four tiles, move in three tiles
+	case 4:
+		{
+			//move in three tiles(6ap)
+			switch(abs(m_nXChange))
+			{
+			case 0://if x = 0, y = 4
+				if(m_nYChange > 0)
+				{
+					mapPt.x = GetMapCoord().x;
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x;
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 1://if x1 y3
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x2 y2
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange >0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else 
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 3://if x3 y1
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				mapPt.y = GetMapCoord().y;
+				break;
+			case 4://if x4 y0
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				mapPt.y = GetMapCoord().y;
+				break;
+			}
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//attack twice(8ap) = 14ap
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//five tiles, move four
+	case 5:
+		{
+			//move four tiles(8ap)
+			switch(abs(m_nXChange))
+			{
+			case 0://if x0 y5
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				mapPt.x = GetMapCoord().x;
+				break;
+			case 1://if x1 y4
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x2 y3
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 3://if x3 y2
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 4://if x4 y1
+				mapPt.y = GetMapCoord().y;
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				break;
+			case 5://if x5 y0
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				mapPt.y = GetMapCoord().y;
+				break;
+			}
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//attack twice(8ap) = 16ap
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//six tiles, move five
+	case 6:
+		{
+			//move 5 tiles(10ap)
+			switch(abs(m_nXChange))
+			{
+			case 0://if x0 y6
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				mapPt.x = GetMapCoord().x;
+				break;
+			case 1://if x1 y5
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x2 y4
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 3://if x3 y3
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 4://if x4 y2
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 5://if x5 y1
+				mapPt.y = GetMapCoord().y;
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				break;
+			case 6://if x6 y0
+				mapPt.y = GetMapCoord().y;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			}
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//attack one(4ap) = 14ap
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//7 tiles, move 6
+	case 7:
+		{
+			//move 6 tiles(12ap)
+			switch(abs(m_nXChange))
+			{
+			case 0://if x0 y7
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				mapPt.x = GetMapCoord().x;
+				break;
+			case 1://if x1 y6
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x2 y5
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 3://if x3 y4
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 4://if x4 y3
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 5://if x5 y2
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 6://if x6 y1
+				mapPt.y = GetMapCoord().y;
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				break;
+			case 7://if x7 y0
+				mapPt.y = GetMapCoord().y;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			}
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//attack once(4ap) = 16ap
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+		//8 tiles, move 7
+	case 8:
+		{
+			//move 7 tiles(14ap)
+			switch(abs(m_nXChange))
+			{
+			case 0://if x0 y8
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				mapPt.x = GetMapCoord().x;
+				break;
+			case 1://if x1 y7
+				mapPt.x = GetMapCoord().x;
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				break;
+			case 2://if x2 y6
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 3://if x3 y5
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 4://if x4 y4
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange -1);
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y + (m_nYChange +1);
+				}
+				break;
+			case 5://if x5 y3
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 6://if x6 y2
+				mapPt.y = GetMapCoord().y + m_nYChange;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				break;
+			case 7://if x7 y1
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				mapPt.y = GetMapCoord().y;
+				break;
+			case 8://if x8 y0
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange -1);
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x + (m_nXChange +1);
+				}
+				mapPt.y = GetMapCoord().y;
+				break;
+			}
+			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);
+
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
+	default:
+		{
+			//end turn
+			SetCurrAP(0);
+		}
+		break;
 	}
 }
 void CNinja::Update(float fElapsedTime)
@@ -1711,11 +724,11 @@ void CNinja::Update(float fElapsedTime)
 
 	}
 
-	if( ( (float)GetHealth()/(float)GetMaxHealth()) < ( ( (float)GetMaxHealth() * 0.3f ) / (float)GetMaxHealth() ) )
-	{
-		m_nLowHealth = 1;
-	}
-	else m_nLowHealth = 0;
+	//if( ( (float)GetHealth()/(float)GetMaxHealth()) < ( ( (float)GetMaxHealth() * 0.3f ) / (float)GetMaxHealth() ) )
+	//{
+	//	m_nLowHealth = 1;
+	//}
+	//else m_nLowHealth = 0;
 
 	if( GetExperience() >= 100)
 	{

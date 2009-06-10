@@ -45,6 +45,11 @@ CBattleMap::CBattleMap(void)
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	m_pHUD			= CHUD::GetInstance();
+
+	godbool = false;
+	godcheat = 0;
+	APbool = false;
+	APcheat = 0;
 }
 
 CBattleMap::~CBattleMap(void)
@@ -343,6 +348,15 @@ void CBattleMap::Render()
 
 void CBattleMap::Update(float fElapsedTime)
 {
+	cheat();
+	if(godbool)
+		m_vCharacters[m_nCurrCharacter].SetHealth(100);
+	if(APbool)
+	{
+		m_vCharacters[m_nCurrCharacter].SetCurrAP(20);
+		APcheat = !APcheat;
+		APbool = false;
+	}
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	CHUD::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
@@ -410,14 +424,15 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 
-	// Keyboard input
-	if (!HandleKeyBoardInput(fElapsedTime))
-		return false;	
-	// Mouse movement (edge of screen to move camera)
-	if (m_bIsPlayersTurn)
+	if(!CGamePlayState::GetInstance()->GetPaused())
 	{
-		if(!CGamePlayState::GetInstance()->GetPaused())
+		// Keyboard input
+		if (!HandleKeyBoardInput(fElapsedTime))
+			return false;	
+		// Mouse movement (edge of screen to move camera)
+		if (m_bIsPlayersTurn)
 		{
+
 			if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
 				MoveCamLeft(fElapsedTime);
 			if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
@@ -427,7 +442,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			if (m_ptMouseScreenCoord.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
 				MoveCamDown(fElapsedTime);
 
-			
+
 			// transform the mouse into map coordinates
 			xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 			yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
@@ -465,9 +480,10 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			// debugging
 			if (m_pDI->KeyPressed(DIK_D))
 				int i = 0;
-		}
 
-		HandleMouseInput(fElapsedTime, mouse, xID, yID);
+
+			HandleMouseInput(fElapsedTime, mouse, xID, yID);
+		}
 	}
 
 	return true;
@@ -1247,25 +1263,29 @@ void CBattleMap::HandleButton()
 		break;
 	case BTN_ITEM:
 		{
-			m_bDisplayItemBox = true;
-			if (m_bxItemBox)
-				delete m_bxItemBox;
-			vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
-			
-			string* item = new string[temp.size()];
-
-			for(int i = 0; i < (int)temp.size(); i++)
+			if (m_nCurrCharacter > -1)
 			{
-				temp[0]->SetName("foo");
-				item[i] = temp[i]->GetName();
-				//item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
-			}
+				m_bDisplayItemBox = true;
+				if (m_bxItemBox)
+					delete m_bxItemBox;
 
-			m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f);
-			delete[] item;
-			m_bxItemBox->SetActive(true);
-			m_bxItemBox->SetType(BOX_WITH_BACK);
-			m_bxActionBox->SetActive(false);
+				vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
+				
+				string* item = new string[temp.size()];
+
+				for(int i = 0; i < (int)temp.size(); i++)
+				{
+					//temp[0]->SetName("foo");
+					item[i] = temp[i]->GetName();
+					//item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+				}
+
+				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f);
+				delete[] item;
+				m_bxItemBox->SetActive(true);
+				m_bxItemBox->SetType(BOX_WITH_BACK);
+				m_bxActionBox->SetActive(false);
+			}
 		}
 		break;
 	case BTN_ENDTURN:
@@ -1424,4 +1444,78 @@ void CBattleMap::DrawBoxes()
 		m_bxSkillBox->Render();
 	if(m_bDisplayItemBox)
 		m_bxItemBox->Render();
+}
+void CBattleMap::cheat()
+{
+	switch(godcheat)
+	{
+	case 0:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_G))
+			godcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			godcheat = 0;
+		break;
+	case 1:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_O))
+			godcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			godcheat = 0;
+		break;
+	case 2:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_D))
+			godcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			godcheat = 0;
+		break;
+	}
+	if( godcheat == 3)
+	{
+		godbool = !godbool;
+		godcheat = 0;
+	}
+	
+	switch(APcheat)
+	{
+	case 0:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_Q))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	case 1:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_W))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	case 2:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_E))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	case 3:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_R))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	case 4:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_T))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	case 5:
+		if (CSGD_DirectInput::GetInstance()->KeyPressed(DIK_Y))
+			APcheat++;
+		else if (CSGD_DirectInput::GetInstance()->CheckBufferedKeysEx() != 0)
+			APcheat = 0;
+		break;
+	}
+	if( APcheat == 3)
+	{
+		APbool = !APbool;
+		APcheat = 0;
+	}
 }

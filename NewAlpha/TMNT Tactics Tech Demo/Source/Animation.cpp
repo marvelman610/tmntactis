@@ -26,7 +26,7 @@ CAnimation::CAnimation(void)
 	m_fTimeWaited = 0;
 
 	m_bIsPlaying = false;
-	m_bIsLooping = false;
+	m_bIsLooping = true;
 
 	m_fSpeed = 0.25f;
 
@@ -48,7 +48,7 @@ void CAnimation::Play()
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEMP
-	m_bIsLooping = false;
+	m_bIsLooping = true;
 }
 void CAnimation::Stop() 
 { 

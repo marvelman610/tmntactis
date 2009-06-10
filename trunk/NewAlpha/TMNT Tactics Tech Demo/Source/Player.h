@@ -38,18 +38,21 @@ private:
 	//	Function:	"~CPlayer(Destructor)"
 	///////////////////////////////////////////////////////////////////
 	~CPlayer(void);
+
 	///////////////////////////////////////////////////////////////////
 	//  Function: "LoadNewSkills"
 	//
 	//  Purpose: Loads all skills for a new game.
 	///////////////////////////////////////////////////////////////////
 	void LoadNewSkills(const char* filename);
+
 	///////////////////////////////////////////////////////////////////
-	//  Function: "NewGame"
+	//  Function: "LoadTurtleStats"
 	//
-	//  Purpose: Create the new game, turtles, skills, everything.
+	//  Purpose: Load stats for turtles
 	///////////////////////////////////////////////////////////////////
 	bool LoadTurtleStats(const char* szXMLFileName);
+
 	///////////////////////////////////////////////////////////////////
 	//  Function: "LoadAnimations"
 	//
@@ -91,15 +94,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
+	void AddItem(CBase* a)				{ m_nInventory.push_back(a);}
+	inline int GetNumItems()			{return m_nInventory.size();}
+	vector<CBase*> GetItems()			{return m_nInventory;}
 
-	void AddItem(CBase* a){ m_nInventory.push_back(a);}
-	inline int GetNumItems(){return m_nInventory.size();}
-
-	vector<CBase*> GetItems() {return m_nInventory;}
-
-	//void SetTurtle(int index, );
-
-	/*void Render();
-	void Update(float fElapsedTime);*/
 };
 #endif

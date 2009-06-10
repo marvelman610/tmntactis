@@ -6,7 +6,8 @@
 //	Purpose		:	To define the CGamePlayState class. This state handles
 //					all gameplay code.
 //////////////////////////////////////////////////////////////////////////
-#pragma once
+#ifndef GAMEPLAYSTATE_H
+#define GAMEPLAYSTATE_H
 
 #include "IGameState.h"
 
@@ -101,3 +102,4 @@ public:
 	////////////////////////////////////////////////////////////////
 	//static friend void MessageProc(CBaseMessage* pMsg);
 };
+#endif

@@ -6,7 +6,8 @@
 //	Purpose		:	To dynamically create menu boxes and populate them with
 //					specific information.
 //////////////////////////////////////////////////////////////////////////
-#pragma once
+#ifndef BOX_H
+#define BOX_H
 
 #include <windows.h>
 #include <string>
@@ -113,3 +114,5 @@ class CBox
 	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return -1;}
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
 };
+
+#endif

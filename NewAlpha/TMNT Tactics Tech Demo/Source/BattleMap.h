@@ -35,7 +35,7 @@ class CBox;
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
- enum {ACTION_SPECIAL, ACTION_ITEM, ACTION_ENDTURN, SPECIAL_BACK = 100, };
+ enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };
 
 #include "Base.h"
 
@@ -235,6 +235,7 @@ class CBattleMap
 	//////////////////////////////////////////////////////////////////////////
 	void HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID);
 
+	void HandleButton();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"UpdatePositions"
 	//

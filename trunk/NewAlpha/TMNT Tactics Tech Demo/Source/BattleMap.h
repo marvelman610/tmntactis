@@ -165,6 +165,15 @@ class CBattleMap
 	//FMOD::System*		m_pFMODsys;
 	//////////////////////////////////////////////////////////////////////////
 
+	//////////////////////////////////////////////////////////
+	//cheats
+	bool godbool;
+	bool APbool;
+	int godcheat;
+	int APcheat;
+
+	void cheat();
+
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Reset
 	//
@@ -355,6 +364,8 @@ public:
 	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
 	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
 	void SetStartPositions();
+
+
 };
 
 #endif

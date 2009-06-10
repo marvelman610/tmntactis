@@ -18,6 +18,7 @@
 #include "Animation.h"
 //#include "fmod.hpp"
 #include "MainMenuState.h"
+#include "GamePlayState.h"
 #include "BitmapFont.h"
 #include "ParticleSystem.h"
 #include "HUD.h"
@@ -361,6 +362,7 @@ void CBattleMap::Update(float fElapsedTime)
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
+	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
@@ -371,53 +373,56 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	// Mouse movement (edge of screen to move camera)
 	if (m_bIsPlayersTurn)
 	{
-		if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
-			MoveCamLeft(fElapsedTime);
-		if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
-			MoveCamRight(fElapsedTime);
-		if (m_ptMouseScreenCoord.y < CAM_EDGE_DIST_TO_MOVE)
-			MoveCamUp(fElapsedTime);
-		if (m_ptMouseScreenCoord.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
-			MoveCamDown(fElapsedTime);
-	
-		int xID, yID;
-		// transform the mouse into map coordinates
-		xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-		yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-		// these check for the mouse being off the map
-		// if it is, it is reset to the lowest row/column
-		if (xID >= m_nNumCols && yID >= m_nNumRows)
+		if(!CGamePlayState::GetInstance()->GetPaused())
 		{
-			yID = m_nNumRows-1;
-			xID = m_nNumCols-1;
-		}	
-		else if (xID < 2 && yID < 2)
-			yID = xID = 2;
-		else if (xID < 2 && yID >= m_nNumRows)
-		{
-			xID = 2;
-			yID = m_nNumRows-1;
-		}
-		else if (xID >= m_nNumCols && yID < 2)
-		{
-			yID = 2;
-			xID = m_nNumCols-1;
-		}
-		else if (xID < 2)
-			xID = 2;
-		else if (yID < 2)
-			yID = 2;
-		else if (xID >= m_nNumCols)
-			xID = m_nNumCols-1;
-		else if (yID >= m_nNumRows)
-			yID = m_nNumRows-1;
-	
-		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
-		// Mouse -- determine if the mouse is over a character
+			if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
+				MoveCamLeft(fElapsedTime);
+			if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
+				MoveCamRight(fElapsedTime);
+			if (m_ptMouseScreenCoord.y < CAM_EDGE_DIST_TO_MOVE)
+				MoveCamUp(fElapsedTime);
+			if (m_ptMouseScreenCoord.y > m_nScreenHeight-CAM_EDGE_DIST_TO_MOVE)
+				MoveCamDown(fElapsedTime);
 
-		// debugging
-		if (m_pDI->KeyPressed(DIK_D))
-			int i = 0;
+			
+			// transform the mouse into map coordinates
+			xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+			yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+			// these check for the mouse being off the map
+			// if it is, it is reset to the lowest row/column
+			if (xID >= m_nNumCols && yID >= m_nNumRows)
+			{
+				yID = m_nNumRows-1;
+				xID = m_nNumCols-1;
+			}	
+			else if (xID < 2 && yID < 2)
+				yID = xID = 2;
+			else if (xID < 2 && yID >= m_nNumRows)
+			{
+				xID = 2;
+				yID = m_nNumRows-1;
+			}
+			else if (xID >= m_nNumCols && yID < 2)
+			{
+				yID = 2;
+				xID = m_nNumCols-1;
+			}
+			else if (xID < 2)
+				xID = 2;
+			else if (yID < 2)
+				yID = 2;
+			else if (xID >= m_nNumCols)
+				xID = m_nNumCols-1;
+			else if (yID >= m_nNumRows)
+				yID = m_nNumRows-1;
+
+			m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
+			// Mouse -- determine if the mouse is over a character
+
+			// debugging
+			if (m_pDI->KeyPressed(DIK_D))
+				int i = 0;
+		}
 
 		HandleMouseInput(fElapsedTime, mouse, xID, yID);
 	}
@@ -1143,10 +1148,15 @@ void CBattleMap::HandleButton()
 			if (m_bxItemBox)
 				delete m_bxItemBox;
 			vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
+			
 			string* item = new string[temp.size()];
 
 			for(int i = 0; i < (int)temp.size(); i++)
-				item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+			{
+				temp[0]->SetName("foo");
+				item[i] = temp[i]->GetName();
+				//item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+			}
 
 			m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f);
 			delete[] item;

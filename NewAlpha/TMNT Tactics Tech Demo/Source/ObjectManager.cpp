@@ -169,9 +169,15 @@ void ObjectManager::CheckCollisions(void)
 				if (IntersectRect(&rCollision, &rCollisionRect1, &rCollisionRect2))
 				{
 					if(m_vObjects[j]->GetType()==OBJECT_BATTLEITEM)
+					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[j]));
+						return;
+					}
 					else if(m_vObjects[i]->GetType() == OBJECT_BATTLEITEM)
+					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[i]));
+						return;
+					}
 				}
 										
 			}

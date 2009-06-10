@@ -387,6 +387,14 @@ void CBattleMap::Update(float fElapsedTime)
 			m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 		for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 			m_vCharacters.push_back(*m_vEnemies[i]);
+		m_nCurrCharacter = -1;
+		for(int nx = 2; nx < m_nNumCols; ++nx)
+			for(int ny = 2; ny < m_nNumRows; ++ny)
+			{
+				int id = ny*m_nNumCols+nx;
+				if (m_pTilesL1[id].Alpha() != 255)
+					m_pTilesL1[id].SetAlpha(255);
+			}
 	}
 	cheat();
 	if(godbool)
@@ -905,6 +913,8 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 	for (int i = 0; i < size; ++i)
 	{
 		RECT currRect = m_vCharacters[i].GetRect();
+		if (i < 4 && !m_pPlayer->GetTurtles()[i]->GetAlive())
+			continue;
 		if (mousePt.x >= currRect.left - (int)m_fScrollX &&
 			mousePt.x <= currRect.right - (int)m_fScrollX &&
 			mousePt.y >= currRect.top - (int)m_fScrollY &&
@@ -1121,6 +1131,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		for (int i = 0; i < 4; ++i)
 		{
 			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
+			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_vCharacters[i].GetBaseAP());
 			if (m_nCurrCharacter > -1)
 				CalculateRanges();
 		}

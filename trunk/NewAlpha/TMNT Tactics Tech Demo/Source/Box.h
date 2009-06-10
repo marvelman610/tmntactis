@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////////////////////
+//	Filename	:	Box.h
+//
+//	Author		:	Ramon Johannessen (RJ)
+//
+//	Purpose		:	To dynamically create menu boxes and populate them with
+//					specific information.
+//////////////////////////////////////////////////////////////////////////
 #pragma once
 
 #include <windows.h>
@@ -8,6 +16,7 @@ class CBitmapFont;
 class CAssets;
 class CSGD_TextureManager;
 class CSGD_Direct3D;
+enum {BOX_NO_BACK, BOX_WITH_BACK, };
 
 class CBox
 {
@@ -22,12 +31,13 @@ class CBox
 	int m_nBoxBottom;
 	int m_nPosX;
 	int m_nPosY;
-	float m_nPosZ;
+	float m_fPosZ;
 	int m_nSpacing;
 	int m_nStartTextY;
 	int m_nStartTextX;
 	float m_fScaleX;
 	float m_fScaleY;
+	float m_fTextZ;
 	int m_nAlpha;
 	int r;
 	int g;
@@ -43,11 +53,19 @@ class CBox
 	int m_nCurrSelectedIndex;
 	bool m_bIsActive;
 
+	int m_nType;
+
 	CSGD_TextureManager*	m_pTM;
 	CBitmapFont*			m_pBM;
  	CAssets*				m_pAssets;
  	CSGD_Direct3D*			m_pD3D;
  
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"CheckMouse"
+	//
+	//	Purpose		:	Determine if the mouse is over the box, if so, which
+	//					index (button) is it over?
+	//////////////////////////////////////////////////////////////////////////
 	void CheckMouse(POINT mousePt);
 
  public:
@@ -75,8 +93,8 @@ class CBox
 	//////////////////////////////////////////////////////////////////////////
 	int CurrImage() const { return m_nCurrImage; }
 	void CurrImage(int val) { m_nCurrImage = val; }
-	float PosZ() const { return m_nPosZ; }
-	void PosZ(float val) { m_nPosZ = val; }
+	float PosZ() const { return m_fPosZ; }
+	void PosZ(float val) { m_fPosZ = val; }
 	int PosY() const { return m_nPosY; }
 	void PosY(int val) { m_nPosY = val; }
 	int PosX() const { return m_nPosX; }
@@ -86,5 +104,6 @@ class CBox
 	int BoxWidth() const { return m_nBoxWidth; }
 	void BoxWidth(int val) { m_nBoxWidth = val; }
 	bool IsActiveBox() const { return m_bIsActive; }
-	void SetActive(bool IsActive = true)	{m_bIsActive = IsActive;}
+	void SetActive(bool IsActive = true);
+	void SetType(int type) {m_nType = type;}
 };

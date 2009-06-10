@@ -975,6 +975,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	if (m_bIsPlayersTurn)
 	{
 		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
+		if (m_bxSkillBox)
+			m_nCurrBtnSelected = m_bxSkillBox->Input(m_ptMouseScreenCoord);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
 	}
@@ -1023,8 +1025,11 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 						vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
 						skillNames[i] = skills[i].GetSkillName();
 					}
-					m_bxSkillBox = new CBox(numSkills, skillNames, 10, 10);
+					m_bxSkillBox = new CBox(numSkills, skillNames, 400, 400, 0.1f, 128, -1, 55, 50, 15, m_pAssets->aBMskillBoxID, 1.0f, 1.0f, 0.7f );
 					delete[] skillNames;
+					m_bxSkillBox->SetActive(true);
+					m_bxSkillBox->SetType(BOX_WITH_BACK);
+					m_bxActionBox->SetActive(false);
 				}
 			}
 			break;
@@ -1033,6 +1038,11 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		case ACTION_ENDTURN:
 			m_bIsPlayersTurn = false;
 			break;
+		case SPECIAL_BACK:
+			delete m_bxSkillBox;
+			m_bxSkillBox = NULL;
+			m_bDisplaySpecialBox = false;
+			m_bxActionBox->SetActive();
 		default:
 			break;
 		}
@@ -1097,6 +1107,7 @@ void CBattleMap::PerformAttack()
 		}
 		--m_nNumCharacters;
 		--m_nNumEnemiesLeft;
+		m_ncurrTargetTile = -1;
 	}
 	CalculateRanges();
 }

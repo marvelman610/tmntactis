@@ -147,12 +147,18 @@ bool CGame::Main(POINT mouse)
 	
 	// input, update, render
 	m_pDI->ReadDevices();
-	if ( ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_LMENU) ) || ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_RMENU) ) )
+	/*if ( ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_LMENU) ) || ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_RMENU) ) )
 	{
 		m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, m_pD3D->GetPresentParams()->Windowed);
 		m_pDI->ReadDevices();
-	}
+	}*/
 	
+	if ((m_pDI->KeyDown(DIK_RMENU) && m_pDI->KeyDown(DIK_RETURN))  || (m_pDI->KeyDown(DIK_LMENU) && m_pDI->KeyDown(DIK_RETURN)) )
+	{
+		m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, !m_pD3D->GetPresentParams()->Windowed);
+		m_pDI->ReadDevices();
+	}
+
 	if(m_pCurrentState->Input(m_fElapsedTime, mouse) == false)
 		return false;
 

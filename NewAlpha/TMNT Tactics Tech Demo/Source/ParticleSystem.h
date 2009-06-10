@@ -175,10 +175,26 @@ public:
 	void UpdateParticle(float fElapsedTime, POINT mousePt)
 	{
 		int x = 0;
+
+		m_fGravPointX = mousePt.x;
+		m_fGravPointY = mousePt.y;
+
+		D3DXVECTOR3 gravPoint = D3DXVECTOR3(m_fGravPointX, m_fGravPointY, 0);
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
 			if(m_bGravityPoint == true)
 			{
+				float length;
+				D3DXVECTOR3 subtract;
+				D3DXVECTOR3 newVel;
+				D3DXVECTOR3 scale;
+				
+				D3DXVec3Subtract(&subtract, &gravPoint, &particles[i].pos);
+				length = D3DXVec3Length(&subtract) * 0.00005f;
+				D3DXVec3Scale(&newVel, &subtract, length);
+
+				D3DXVec3Add(&particles[i].vel, &particles[i].vel, &newVel);
+				
 			}
 			if(m_bGravity == true)
 			{
@@ -412,7 +428,8 @@ public:
 				//gravity
 				bool bGravPoint;
 				fs.read(reinterpret_cast<char*>(&bGravPoint), sizeof(bool));
-				m_bGravityPoint = bGravPoint;
+				//m_bGravityPoint = bGravPoint;
+				m_bGravityPoint = true;
 
 				bool bGrav;
 				fs.read(reinterpret_cast<char*>(&bGrav), sizeof(bool));

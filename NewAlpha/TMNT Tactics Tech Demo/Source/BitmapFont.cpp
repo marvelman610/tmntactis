@@ -55,7 +55,8 @@ void CBitmapFont::DrawString(const char* szString, int posX, int posY, float pos
 	for(int i = 0; i < len; i++)
 	{
 		//do cell algorithm for each character
-		char ch = szString[i]; //!!toUpper()
+		char ch = szString[i];
+		ch = toupper(ch);
 		if(ch == ' ')
 		{
 			offsetx += int(m_nCharWidth * scale);
@@ -65,20 +66,15 @@ void CBitmapFont::DrawString(const char* szString, int posX, int posY, float pos
 		{
 			offsetx = posX;
 			offsety += int(m_nCharHeight );
-
-			/*posY += m_nCharHeight;
-			posX = posX - i*m_nCharWidth;*/
-
 			continue;
 		}
 		//convert ascii char to id off sheet
 		int id = (int)(ch - m_cStartChar);
 		RECT rcell = CellAlgorithm(id);
 
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,offsetx,offsety, posZ, scale, scale,&rcell,0,0,0, dwcolor);
-		offsetx += int(m_nCharWidth*scale);
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID,offsetx,offsety, posZ, scale, scale, &rcell,0,0,0, dwcolor);
+		offsetx += int(m_nCharWidth*scale+5);
 	}
-	
 }
 
 void CBitmapFont::DrawChar(char c, int posX, int posY, float scale, DWORD dwcolor) 

@@ -78,7 +78,8 @@ public:
 	inline bool GetActive(void) { return m_bIsActive; }
 	inline vector<CSkill>* GetSkills()  { return &m_vActiveSkills;}
 	inline int GetNumSkills(void) {return m_vActiveSkills.size();}
-	inline int GetCurrSelectedSkill() {return m_nCurrSelectedSkill;}
+	inline int GetCurrSelectedSkillIndex() {return m_nCurrSelectedSkill;}
+	inline CSkill* GetCurrSelectedSkill() {return &m_vActiveSkills[m_nCurrSelectedSkill];}
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
 };
 

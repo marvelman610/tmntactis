@@ -1734,5 +1734,5 @@ void CNinja::Update(float fElapsedTime)
 }
 void CNinja::Render()
 {
-	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.2f);
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.2f, false, m_dwColor);
 }

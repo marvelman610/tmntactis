@@ -90,6 +90,7 @@ class CBattleMap
 	float m_fTimer;
 	bool m_bNotEnoughAP;
 	bool m_bOutOfRange;
+	bool m_bExecuteSkill;
 
 	// Map variables
 	int m_nMapWidth;
@@ -130,13 +131,16 @@ class CBattleMap
 	int m_nNumEnemiesKilled;
 	int m_nNumCharacters;
 	int m_nHoverCharacter;
+	int m_nOldHoverChar;
 	int m_nCurrCharacter;
 	int m_nCurrCharacterTile;
 	int m_nCurrTarget;
 	int m_ncurrTargetTile;
 	int m_nDistanceToTarget;
 	int m_nMoveDirection;
+	int m_nCurrSkillCost;
 	string m_sCurrSkillName;
+	string m_sCurrSkillDisplay;
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
 	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
 

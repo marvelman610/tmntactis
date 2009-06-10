@@ -353,7 +353,7 @@ public:
 	bool GetPaused()	const		{return m_bIsPaused;}
 	CBase* GetCurrEnemyTarget()		{return &m_vCharacters[m_nCurrTarget];}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
-	CBase* GetChars()	{return &m_vCharacters[m_nCurrCharacter];}
+	CBase* GetChars()				{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -368,8 +368,6 @@ public:
 	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
-
-
 };
 
 #endif

@@ -81,6 +81,8 @@ public:
 	inline int GetCurrSelectedSkillIndex() {return m_nCurrSelectedSkill;}
 	inline CSkill* GetCurrSelectedSkill() {return &m_vActiveSkills[m_nCurrSelectedSkill];}
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
+	inline bool GetAlive(void) { return m_bIsAlive; }
+	inline void SetAlive(bool set) { m_bIsAlive = set; }
 };
 
 #endif

@@ -376,6 +376,15 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	if(m_bIsPlayersTurn == false)
+	{
+		for(int i =0; i < m_vEnemies.size(); i++)
+		{	
+			CNinja* ninja = (CNinja*)m_vEnemies[i];
+			
+			ninja->AI();
+		}
+	}
 	cheat();
 	if(godbool)
 		m_vCharacters[m_nCurrCharacter].SetHealth(100);

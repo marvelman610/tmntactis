@@ -20,6 +20,7 @@
 #include "HUD.h"
 //#include "WorldMap.h"
 #include"ObjectManager.h"
+#include"BitmapFont.h"
 #include <fstream>
 
 // Constructor
@@ -137,7 +138,10 @@ void CGamePlayState::Render(void)
 	ObjectManager::GetInstance()->RenderObjects();
 	m_pBattleMap->Render();
 	if(m_bIsPaused)
-		CSGD_Direct3D::GetInstance()->DrawTextA("PAUSE",100,100,255,0,0);
+	{
+		//CSGD_Direct3D::GetInstance()->DrawTextA("PAUSE",100,100,255,0,0);
+		CBitmapFont::GetInstance()->DrawStringAutoCenter("PAUSE",1024,350,0.09f,2,D3DCOLOR_XRGB(0,0,255));
+	}
 
 }
 

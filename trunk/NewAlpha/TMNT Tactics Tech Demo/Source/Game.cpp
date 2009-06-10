@@ -9,6 +9,7 @@
 #include "Factory.h"
 #include "Ninja.h"
 #include "ObjectManager.h"
+#include "Battlemap.h"
 //#include "ParticleSystem.h"
 
 //#include "MessageSystem.h"
@@ -221,6 +222,7 @@ void MessageProc(CBaseMessage* pMsg)
 		{
 			CDestroyItem * pDP = (CDestroyItem*)pMsg;
 			CPlayer::GetInstance()->AddItem(pDP->GetItem());
+			CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].SetCurrAP(CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].GetCurrAP()+30);
 			ObjectManager::GetInstance()->Remove(pDP->GetItem());
 		}
 		break;

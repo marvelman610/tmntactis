@@ -337,6 +337,7 @@ public:
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	CBase* GetCurrEnemyTarget()		{return &m_vCharacters[m_nCurrTarget];}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
+	CBase* GetChars()	{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////

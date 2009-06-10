@@ -87,7 +87,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			break;
 		case LOAD:
 			// TODO:: call to LoadSavedGame would be in the Load Menu State
-			//CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
+			CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
 			//CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
 			break;
 		case EXIT:

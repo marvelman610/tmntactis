@@ -11,6 +11,7 @@
 #include "Factory.h"
 #include "tinyxml/tinyxml.h"
 #include "CSGD_TextureManager.h"
+#include "ObjectManager.h"
 #include "Skill.h"
 #include <string>
 #include <fstream>
@@ -32,7 +33,7 @@ CPlayer::~CPlayer(void)
 {
 	for(int i = 0; i < 4; i++)
 	{
-		for(int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
+		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();
 	}
 }
@@ -55,6 +56,27 @@ void CPlayer::LoadSavedGame(const char* fileName)
 
 	if (!ifs.good())
 		{MessageBox(0, "Failed to load saved game.", "Error", MB_OK); return;}
+	for (int i = 0; i < 4; ++i)
+	{
+		if (m_pTurtles[i])
+		{
+			char* name = m_pTurtles[i]->GetName();
+			ObjectManager::GetInstance()->Remove(m_pTurtles[i]);
+			delete m_pTurtles[i];
+			Factory::GetInstance()->CreateTurtle(name);
+		}
+		ifs.read(reinterpret_cast<char*>(m_pTurtles[i]), sizeof(CTurtle));
+	}
+}
+void CPlayer::SaveGame(const char* fileName)
+{
+	ofstream ofs;
+	ofs.open(fileName, ios_base::out | ios_base::binary);
+
+	for (int i = 0; i < 4; ++i)
+	{
+		ofs.write((char*)m_pTurtles[i], sizeof(CTurtle));
+	}
 }
 
 void CPlayer::LoadNewSkills(const char* filename)
@@ -85,12 +107,13 @@ void CPlayer::LoadNewSkills(const char* filename)
 			pSkill->Attribute("Range", &range);
 			pSkill->Attribute("Cost", &cost);
 			pSkill->Attribute("CombAmt", & combAmt);
-			CSkill Skill = CSkill(name, type, skillID, dmg, range, cost, combAmt);
+			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt);
 			if (i > 0)
-				inactiveSkills.push_back(Skill);
+				inactiveSkills.push_back(*Skill);
 			else
-				activeSkill.push_back(Skill);
+				activeSkill.push_back(*Skill);
 			pSkill = pSkill->NextSiblingElement();
+			delete Skill;
 		}
 		m_pTurtles[turtleID]->SetSkillsActive(activeSkill);
 		m_pTurtles[turtleID]->SetSkillsInactive(inactiveSkills);

@@ -149,10 +149,6 @@ void CBattleMap::Reset()
 	m_vCharacters.clear();
 	m_vEnemies.clear();
 }
-//////////////////////////////////////////////////////////////////////////
-// TODO:: determine if we have to draw all opaque objects first, then any
-//			transparent ones last?
-//////////////////////////////////////////////////////////////////////////
 void CBattleMap::Render()
 {
 	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
@@ -360,16 +356,19 @@ void CBattleMap::Update(float fElapsedTime)
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	CHUD::GetInstance()->Update(fElapsedTime);
 	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
-	if (m_bExecuteSkill && m_fTimer < 5.0f)
+
+	// if a skill is being executed...
+	if (m_bExecuteSkill )
 	{
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->Update(fElapsedTime);
-		m_fTimer += fElapsedTime;
+		CSkill*  skill = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
+		skill->Update(fElapsedTime);
+		if (skill->IsComplete())
+			m_bExecuteSkill = false;
 		return;
 	}
-	else if (m_bExecuteSkill && m_fTimer >= 5.0f)
+	else if (m_bExecuteSkill )
 	{
 		m_bExecuteSkill = false;
-		m_fTimer = 0.0f;
 		return;
 	}
 	if (m_nMoveDirection != -1)
@@ -429,6 +428,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		// Keyboard input
 		if (!HandleKeyBoardInput(fElapsedTime))
 			return false;	
+		if (m_bExecuteSkill)
+			return true;
 		// Mouse movement (edge of screen to move camera)
 		if (m_bIsPlayersTurn)
 		{
@@ -923,7 +924,6 @@ void CBattleMap::DrawHover()
 {
 	if ( m_nCurrBtnSelected == -1)
 	{
-		RECT hoverRect;
 		switch (m_nHoverCharacter)
 		{
 		case LEONARDO:
@@ -954,7 +954,6 @@ void CBattleMap::DrawHover()
 			break;
 		}
 
-		RECT targetRect;
 		if (m_nHoverCharacter > 3)
 		{
 			if (m_nHoverCharacter == 4 && m_nNumEnemiesLeft > 0)
@@ -1187,7 +1186,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		else if (index > 3 && m_nCurrTarget == m_nHoverCharacter)	// otherwise, attempting to attack
 		{
 			// check if in range
-			if (m_nDistanceToTarget > m_vCharacters[m_nCurrCharacter].GetRange())
+			if (m_nDistanceToTarget > m_vCharacters[m_nCurrCharacter].GetRange() && m_sCurrSkillName == "NONE")
+			{
+				m_bOutOfRange = true;
+				return;
+			}
+			else if (m_nDistanceToTarget > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->GetRange() && m_sCurrSkillName != "NONE")
 			{
 				m_bOutOfRange = true;
 				return;

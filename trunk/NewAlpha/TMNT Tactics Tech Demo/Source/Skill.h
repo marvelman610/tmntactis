@@ -46,17 +46,20 @@ typedef void (*updPtr)(float);
 class CSkill
 {
 private:
-	string m_strName;		// The name of the skill
-	int m_nType;		// what type of skill: e.g. Damage, Healing, Creation
+	 string m_strName;		// The name of the skill
+	 int m_nType;		// what type of skill: e.g. Damage, Healing, Creation
 	//int m_nSkillID;
-	int m_nDamage;
-	int m_nRange;
-	int m_nSkillCost;
-	int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
-	int m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	 bool m_bComplete;
+	 int m_nDamage;
+	 int m_nRange;
+	 int m_nSkillCost;
+	 int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
+	 int m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
 
-	CPlayer*	m_pPlayer;
-	CBattleMap* m_pBattleMap;
+	 float m_fTimer;
+
+	 CPlayer*	m_pPlayer;
+	 CBattleMap* m_pBattleMap;
 
 	rendPtr m_pRenderPtr;			// the function pointer to the appropriate Render()
 	updPtr  m_pUpdatePtr;			// the function pointer to the appropriate Update()
@@ -88,6 +91,18 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	string GetSkillName()	{return m_strName;}
 	int GetSkillCost()		{return m_nSkillCost;}
+	int GetDmg()				{return m_nDamage;}
+	int GetRange()			{return m_nRange;}
+	int GetCurrAmtSuccessful(){return m_nCurrAmountSuccessful;}
+	int GetMaxCombAmt()		{return m_nMaxCombinationAmount;}
+	CPlayer* GetPlayer()		{return m_pPlayer;}
+	CBattleMap* GetBattleMap(){return m_pBattleMap;}
+
+	bool IsComplete()				{return m_bComplete;}
+	void IsComplete(bool bComplete)	{m_bComplete = bComplete;}
+
+// 	void RenderSwordJab();
+// 	void UpdateSwordJab(float elapsedTime);
 
 	~CSkill();
 	CSkill();

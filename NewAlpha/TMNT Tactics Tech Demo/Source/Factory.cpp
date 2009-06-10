@@ -104,9 +104,6 @@ bool Factory::LoadItems(const char* fileName)
 
 	}
 
-//breathfirst traversal
-	//depthfirst
-
 	return true;
 }
 CBoss* Factory::CreateBoss()

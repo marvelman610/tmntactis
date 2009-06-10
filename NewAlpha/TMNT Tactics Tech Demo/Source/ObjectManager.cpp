@@ -12,6 +12,7 @@
 #include "Tile.h"
 #include "Base.h"
 #include "CodeProfiler.h"
+#include "MessageSystem.h"
 
 #include <queue>
 using namespace std;
@@ -147,5 +148,33 @@ float ObjectManager::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 	{
 		MessageBox(0, "Current Tile ID = -1", "Incorrect version.", MB_OK);
 		return 0;
+	}
+}
+
+void ObjectManager::CheckCollisions(void)
+{
+	for(unsigned int i = 0; i < m_vObjects.size(); i++)
+	{
+		for(unsigned int j = 0; j < m_vObjects.size(); j++)
+		{
+			if((m_vObjects[i]->GetType()== OBJECT_TURTLE && m_vObjects[j]->GetType()==OBJECT_BATTLEITEM)
+				|| (m_vObjects[j]->GetType()== OBJECT_TURTLE && m_vObjects[i]->GetType()==OBJECT_BATTLEITEM))
+			{
+				RECT rCollision;
+				RECT rCollisionRect1 = {m_vObjects[i]->GetPosX(), m_vObjects[i]->GetPosY(),
+					m_vObjects[i]->GetWidth() + m_vObjects[i]->GetPosX(), m_vObjects[i]->GetHeight() + m_vObjects[i]->GetPosY()};
+				RECT rCollisionRect2 = {m_vObjects[j]->GetPosX(), m_vObjects[j]->GetPosY(),
+					m_vObjects[j]->GetWidth() + m_vObjects[j]->GetPosX(), m_vObjects[j]->GetHeight() + m_vObjects[j]->GetPosY()};
+
+				if (IntersectRect(&rCollision, &rCollisionRect1, &rCollisionRect2))
+				{
+					if(m_vObjects[j]->GetType()==OBJECT_BATTLEITEM)
+						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[j]));
+					else if(m_vObjects[i]->GetType() == OBJECT_BATTLEITEM)
+						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[i]));
+				}
+										
+			}
+		}
 	}
 }

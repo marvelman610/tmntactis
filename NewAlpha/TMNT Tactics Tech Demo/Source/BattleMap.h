@@ -82,8 +82,10 @@ class CBattleMap
 	// button selection
 	int m_nCurrBtnSelected;
 	bool m_bDisplaySpecialBox;
+	bool m_bDisplayItemBox;
 	CBox* m_bxActionBox;
 	CBox* m_bxSkillBox;
+	CBox* m_bxItemBox;
 
 	// Times
 	float m_fTimer;

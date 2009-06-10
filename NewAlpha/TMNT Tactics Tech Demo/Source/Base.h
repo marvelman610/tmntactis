@@ -12,7 +12,6 @@
 
 #include "IBaseInterface.h"
 
-
 #include <windows.h>
 #include "Animation.h"
 #include <vector>
@@ -110,7 +109,7 @@ public:
 	inline int		GetBaseAP(void)		{return m_nBasePoints;	}
 	inline int		GetCurrAP(void)		{return m_nCurrPoints;	}
 	inline int		GetExperience(void)	{return m_nExperience;	}
-	vector<CAnimation> GetAnims(void)   {return m_vAnimations;}
+	//vector<CAnimation> GetAnims(void)   {return m_vAnimations;}
 	vector<CAnimation> GetAnimations() {return m_vAnimations;}
 	RECT			GetRect();
 

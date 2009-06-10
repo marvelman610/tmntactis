@@ -209,21 +209,19 @@ void MessageProc(CBaseMessage* pMsg)
 	{
 	case MSG_CREATE_ITEM:
 		{
-			/*int type = rand()% 2;
-			CCreateItem * pCP = (CCreateItem*)pMsg;
-			Factory::GetInstance()->CreateBattleItem(type, (int)(pCP->GetNinja()->GetPosX()), (int)pCP->GetNinja()->GetPosY() );*/
-			int type = rand()% 2;
+			//int type = rand()% 2;
+			int type = 0;
 			CCreateItem * pCP = (CCreateItem*)pMsg;
 			Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
 
 			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
-
 		}
 		break;
 	case MSG_DESTROY_ITEM:
 		{
 			CDestroyItem * pDP = (CDestroyItem*)pMsg;
-			//ObjectManager::GetInstance()->RemoveObject();
+			CPlayer::GetInstance()->AddItem(pDP->GetItem());
+			ObjectManager::GetInstance()->Remove(pDP->GetItem());
 		}
 		break;
 	case MSG_CREATE_WEAPON:

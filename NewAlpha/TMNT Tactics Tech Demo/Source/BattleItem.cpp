@@ -7,6 +7,7 @@
 //					a special item to be used in battle 
 ////////////////////////////////////////////////////////
 #include "BattleItem.h"
+#include "BattleMap.h"
 #include "Assets.h"
 #include "CSGD_TextureManager.h"
 
@@ -15,15 +16,21 @@ CBattleItem::CBattleItem(void)
 	m_nHeal = 0;
 	m_nDamage = 0;
 	m_nDamageRadius = 1;
+
+	m_nType = OBJECT_BATTLEITEM;
+
+	SetWidth(32);
+	SetHeight(32);
 }
 CBattleItem::~CBattleItem(void)
 {
 }
 void CBattleItem::Update(float fElapsedTime)
 {
-
+	CBattleMap* pBM =  CBattleMap::GetInstance();
+	SetCurrTile(GetMapCoord(),pBM->GetOffsetX(), pBM->GetOffsetY(), pBM->GetTileWidth(), pBM->GetTileHeight(), pBM->GetNumCols(), false);
 }
 void CBattleItem::Render()
 {
-	CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aItemID, GetPosX(), GetPosY(), GetPosZ(),2,2);
+	CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aItemID, (int)GetPosX(), (int)GetPosY(), GetPosZ(),2,2);
 }

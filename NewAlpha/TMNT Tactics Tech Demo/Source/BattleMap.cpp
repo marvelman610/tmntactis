@@ -83,6 +83,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_bxActionBox = new CBox(3, text, 350, 560, 0.1f, 128, -1, 55, 65, 15, m_pAssets->aBMactionBoxID);
 	m_bxActionBox->SetActive();
 	m_bxSkillBox = NULL;
+	m_bxItemBox = NULL;
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -123,6 +124,8 @@ void CBattleMap::Exit()
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
+	if(m_bxItemBox)
+		m_bxItemBox = NULL;
 	if (m_bxSkillBox)
 		m_bxSkillBox = NULL;
 	if (m_bxActionBox)
@@ -903,6 +906,8 @@ void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enem
 		m_pPlayer->GetTurtles()[i]->SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 		m_vEnemies[i]->SetCurrTile(m_vEnemies[i]->GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+
+
 }
 
 bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
@@ -1034,6 +1039,17 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			}
 			break;
 		case ACTION_ITEM:
+			{
+				m_bDisplayItemBox = !m_bDisplayItemBox;
+				vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
+				string* item = new string[temp.size()];
+				
+				for(int i = 0; i < temp.size(); i++)
+					item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+					
+				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(),item,600,400,0.1f,128,-1);
+				delete[] item;
+			}
 			break;
 		case ACTION_ENDTURN:
 			m_bIsPlayersTurn = false;
@@ -1088,11 +1104,15 @@ void CBattleMap::PerformAttack()
 	damage += rand() % (5 - (-4)) -5;
 
 	m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
+	m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
+
 	m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 	m_vEnemies[m_nCurrTarget-4]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
 
 	if (m_vEnemies[m_nCurrTarget-4]->GetHealth() <= 0)
 	{
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
+		
 		vector<CBase*>::iterator iter = m_vEnemies.begin();
 		int count = 0;
 		while(iter != m_vEnemies.end())
@@ -1197,4 +1217,6 @@ void CBattleMap::DrawBoxes()
 	m_bxActionBox->Render();
 	if (m_bDisplaySpecialBox)
 		m_bxSkillBox->Render();
+	if(m_bDisplayItemBox)
+		m_bxItemBox->Render();
 }

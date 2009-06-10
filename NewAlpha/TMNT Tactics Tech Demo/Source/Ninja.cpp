@@ -1167,7 +1167,7 @@ void CNinja::Update(float fElapsedTime)
 		if(type == 0)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 		else			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));*/
 
-		//this->SetHealth(1);
+		
 		MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 		return;
 

@@ -124,6 +124,7 @@ void CGamePlayState::Update(float fElapsedTime)
 	{
 		m_pBattleMap->Update(fElapsedTime);
 		ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
+		ObjectManager::GetInstance()->CheckCollisions();
 	}
 }
 // Render

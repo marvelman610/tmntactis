@@ -87,7 +87,9 @@ public:
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
 
 	void AddItem(CBase* a){ m_nInventory.push_back(a);}
+	inline int GetNumItems(){return m_nInventory.size();}
 
+	vector<CBase*> GetItems() {return m_nInventory;}
 
 	//void SetTurtle(int index, );
 

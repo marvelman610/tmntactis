@@ -45,7 +45,7 @@ public:
 	{
 		avgTime = (totalTime / tickFrequency.QuadPart) / timesRan;
 		ofstream ofs;
-		ofs.open("Resources/code_profile.txt", ios_base::out | ios_base::trunc);
+		ofs.open("Resources/VG_code_profile.txt", ios_base::out | ios_base::trunc);
 
 		if(ofs.is_open())
 		{

@@ -23,6 +23,8 @@ private:
 	int m_nLowHealth;
 	int m_nInRange;
 
+	int m_nTurtle; //store the turtle number id
+
 	int m_nXChange; //difference in x between turtle and ninja
 	int m_nYChange; //difference in y between turtle and ninja
 

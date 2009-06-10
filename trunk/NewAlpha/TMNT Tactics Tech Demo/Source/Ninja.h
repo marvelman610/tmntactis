@@ -12,6 +12,7 @@
 
 #include "Base.h"
 #include "CSGD_TextureManager.h"
+#include "Player.h"
 
 class CNinja : public CBase
 {
@@ -22,6 +23,11 @@ private:
 	int m_nDefend;
 	int m_nLowHealth;
 	int m_nInRange;
+
+	int m_nXChange; //difference in x between turtle and ninja
+	int m_nYChange; //difference in y between turtle and ninja
+
+	CPlayer* m_pPlayer;
 
 
 public:
@@ -59,7 +65,11 @@ public:
 	////////////////////////////////////////////////////////////////////
 	// Function: Accessor and Mutator
 	////////////////////////////////////////////////////////////////////
-	inline int GetInRange(void)		{ return m_nInRange;	}
-	inline void SetInRange(int set)	{ m_nInRange = set;		}
+	inline int GetInRange(void)			{ return m_nInRange;	}
+	inline void SetInRange(int set)		{ m_nInRange = set;		}
+	inline int GetXDifference(void)		{ return m_nXChange;	}
+	inline void SetXDifference(int set)	{ m_nXChange = set;		}
+	inline int GetYDifference(void)		{ return m_nYChange;	}
+	inline void SetYDifference(int set)	{ m_nYChange = set;		}
 };
 #endif

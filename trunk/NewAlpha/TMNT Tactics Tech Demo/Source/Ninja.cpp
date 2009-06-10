@@ -9,7 +9,7 @@
 
 #include "Ninja.h"
 #include "Assets.h"
-
+#include <cmath>
 #include "MessageSystem.h"
 
 
@@ -52,7 +52,38 @@ CNinja::~CNinja(void)
 
 void CNinja::AI()
 {
-	if((( (float)GetHealth() / (float)GetMaxHealth() )*.1f) > (3.0f/10.0f))
+	//get current x and y tile position then get the x and y tile positions
+	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
+	for(int i = 0; i < 4; i++)
+	{
+
+		if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
+			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y)  
+			)
+		{
+			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
+				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
+				)
+			{
+				if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) >
+					abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
+					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
+					)
+				{
+					//set distance to mikey
+					m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
+						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
+				}
+			}
+		}
+	}
+
+
 	switch(m_nInRange)
 	{
 		//next to turtle
@@ -867,291 +898,798 @@ void CNinja::AI()
 				{
 					case 0:
 						{
+							//end turn
 						}
 						break;
 					case 1:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw rock
+							}
+							else
+							{
+								//throw rock
+							}
+						}
 						break;
 					case 2:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw star or rock x2
+							}
+							else
+							{
+								//throw rock defend
+							}
+						}
 						break;
 					case 3:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw star and rock
+							}
+							else
+							{
+								//throw star, defend
+							}
+						}
 						break;
 					case 4:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw star x2
+							}
+							else
+							{
+								//throw star, rock, defend
+							}
+						}
 						break;
 					case 5:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw star x2, throw rock
+							}
+							else
+							{
+								//throw star x2, defend
+							}
+						}
 						break;
 					case 6:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * .1f > .9f )
+							{
+								//throw star x3
+							}
+							else
+							{
+								//throw star x2, defend
+							}
+						}
 						break;
 					case 7:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//throw star x3, throw rock 
+							}
+							else
+							{
+								//throw star x3, defend
+							}
+						}
 						break;
 					case 8:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth()* 0.1f > 0.9f )
+							{
+								//throw star x4
+							}
+							else
+							{
+								//throw star x3 throw rock, defend
+							}
+						}
 						break;
 					case 9:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//throw star x 4, throw rock
+							}
+							else
+							{
+								//throw star x4, defend
+							}
+						}
 						break;
 					case 10:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() *0.1f > 0.9f )
+							{
+								//move forward 3 spaces and attack
+							}
+							else
+							{
+								// move forward 3 spaces and attack 
+							}
+						}
 						break;
 					case 11:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f >0.9f)
+							{
+								//move forward 3 spaces, attack and throw rock
+							}
+							else
+							{
+								//move forward 3 spaces, attack and defend
+							}
+						}
 						break;
 					case 12:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move forward 3 spaces, attack x2 
+							}
+							else
+							{
+								//move forward 3 spaces, attack x2
+							}
+						}
 						break;
 					case 13:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move forward 3 spaces, attack x2 and throw rock
+							}
+							else
+							{
+								//move forward 3 spaces, attack x2 and defend
+							}
+						}
 						break;
 					case 14:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move forward 3 spaces, attack x2, throw star
+							}
+							else
+							{
+								//move forward 3 spaces, attack x2, throw rock
+							}
+						}
 						break;
 					case 15:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move forward 3 spaces, attack x2, throw star, throw rock
+							}
+							else
+							{
+								//move forward 3 spaces, attack x2, throw star, defend
+							}
+						}
 						break;
 					case 16:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move forward 3 spaces, attack x3
+							}
+							else
+							{
+								//move forward 3 spaces, attack x3
+							}
+						}
 						break;
+				
 				}
 			}
 			break;
+			//out of range by 4 spaces
 		case 5:
 			{
 				switch(GetCurrAP())
 				{
 					case 0:
 						{
+							//end turn
 						}
 						break;
 					case 1:
-						{}
+						{
+							//end turn
+						}
 						break;
 					case 2:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 3:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 4:
-						{}
+						{
+							//move one space and defend
+						}
 						break;
 					case 5:
-						{}
+						{
+							//move one space and defend
+						}
 						break;
 					case 6:
-						{}
+						{
+							//move two spaces and defend
+						}
 						break;
 					case 7:
-						{}
+						{
+							//move two spaces, throw rock, defend
+						}
 						break;
 					case 8:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star
+							}
+							else
+							{
+								//move two spaces, throw rock, defend
+							}
+						}
 						break;
 					case 9:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star, throw rock
+							}
+							else
+							{
+								//move three spaces, throw rock, defend
+							}
+						}
 						break;
 					case 10:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces,throw star x2
+							}
+							else
+							{
+								//move three spaces, throw star, defend
+							}
+						}
 						break;
 					case 11:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x2, throw rock
+							}
+							else
+							{
+								//move three spaces, throw star, throw rock, defend
+							}
+						}
 						break;
 					case 12:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, attack
+							}
+							else
+							{
+								//move three spaces, throw star x2, defend
+							}
+						}
 						break;
 					case 13:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, attack, throw rock
+							}
+							else
+							{
+								//move four spaces, attack, throw rocck
+							}
+						}
 						break;
 					case 14:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, attack, throw star
+							}
+							else
+							{
+								//move four spaces, attack, defend
+							}
+						}
 						break;
 					case 15:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, attack, throw star, throw rock
+							}
+							else
+							{
+								//move four spaces, attack, throw rock, defend
+							}
+						}
 						break;
 					case 16:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, attack x2
+							}
+							else
+							{
+								//move four spaces, attack x2
+							}
+						}
 						break;
 				}
 			}
 			break;
+			//out of range by 5 units
 		case 6:
 			{
 				switch( GetCurrAP() )
 				{
 					case 0:
 						{
+							//end turn
 						}
 						break;
 					case 1:
-						{}
+						{
+							//end turn
+						}
 						break;
 					case 2:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 3:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 4:
-						{}
+						{
+							//move one space, defend
+						}
 						break;
 					case 5:
-						{}
+						{
+							//move one space, defend
+						}
 						break;
 					case 6:
-						{}
+						{
+							//move two spaces, defend
+						}
 						break;
 					case 7:
-						{}
+						{
+							//move two spaces, defend
+						}
 						break;
 					case 8:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star
+							}
+							else
+							{
+								//move three spaces, defend
+							}
+						}
 						break;
 					case 9:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star, throw rock
+							}
+							else
+							{
+								//move three spaces, throw rock, defend
+							}
+						}
 						break;
 					case 10:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x2
+							}
+							else
+							{
+								//move three spaces, throw star, defend
+							}
+						}
 						break;
 					case 11:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x2, throw rock
+							}
+							else
+							{
+								//move three spaces, throw star, throw rock, defend
+							}
+						}
 						break;
 					case 12:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x3
+							}
+							else
+							{
+								//move three spaces, throw star x2, defend
+							}
+						}
 						break;
 					case 13:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x3, throw rock
+							}
+							else
+							{
+								//move three spaces, throw star x2, throw rock, defend
+							}
+						}
 						break;
 					case 14:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x4
+							}
+							else
+							{
+								//move three spaces, throw star x3, defend
+							}
+						}
 						break;
 					case 15:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x4, throw rock
+							}
+							else
+							{
+								//move three spaces, throw star x3, throw rock, defend
+							}
+						}
 						break;
 					case 16:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move three spaces, throw star x5
+							}
+							else
+							{
+								//move three spaces, throw star x4, defend
+							}
+						}
 						break;
 				}
 			}
 			break;
+			//out of range by 6 spaces
 		case 7:
 			{
 				switch( GetCurrAP() )
 				{
 					case 0:
 						{
+							//end turn
 						}
 						break;
 					case 1:
-						{}
+						{
+							//end turn
+						}
 						break;
 					case 2:
-						{}
+						{
+							//move one space
+						}
 						break;
 					case 3:
-						{}
+						{
+							//move one space
+						}
 						break;
 					case 4:
-						{}
+						{
+							//move two spaces
+						}
 						break;
 					case 5:
-						{}
+						{
+							//move two spaces
+						}
 						break;
 					case 6:
-						{}
+						{
+							//move three spaces
+						}
 						break;
 					case 7:
-						{}
+						{
+							//move three spaces
+						}
 						break;
 					case 8:
-						{}
+						{
+							//move four spaces
+						}
 						break;
 					case 9:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw rock
+							}
+							else
+							{
+								//move four spaces throw rock
+							}
+						}
 						break;
 					case 10:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star
+							}
+							else
+							{
+								//move four spaces, defend
+							}
+						}
 						break;
 					case 11:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star, throw rock
+							}
+							else
+							{
+								//move four spaces, throw rock, defend
+							}
+						}
 						break;
 					case 12:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star x2
+							}
+							else
+							{
+								//move four spaces, throw star, defend
+							}
+						}
 						break;
 					case 13:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star x2, throw rock
+							}
+							else
+							{
+								//move four spaces, throw star, throw rock, defend
+							}
+						}
 						break;
 					case 14:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star x3
+							}
+							else
+							{
+								// move four spaces, throw star x2, defend
+							}
+						}
 						break;
 					case 15:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star x3, throw rock
+							}
+							else
+							{
+								//move four spaces, throw star x2, throw rock, defend
+							}
+						}
 						break;
 					case 16:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move four spaces, throw star x4
+							}
+							else
+							{
+								//move four spaces, throw star x3, defend
+							}
+						}
 						break;
 				}
 			}
 			break;
+
+			//out 7 spaces
 		case 8:
 			{
 				switch(GetCurrAP())
 				{
 					case 0:
 						{
+							//end turn
 						}
 						break;
 					case 1:
-						{}
+						{
+							//end turn
+						}
 						break;
 					case 2:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 3:
-						{}
+						{
+							//defend
+						}
 						break;
 					case 4:
-						{}
+						{
+							//move one space, defend
+						}
 						break;
 					case 5:
-						{}
+						{
+							//move one space, defend
+						}
 						break;
 					case 6:
-						{}
+						{
+							//move two spaces, defend
+						}
 						break;
 					case 7:
-						{}
+						{
+							//move two spaces, defend
+						}
 						break;
 					case 8:
-						{}
+						{
+							//move three spaces, defend
+						}
 						break;
 					case 9:
-						{}
+						{
+							//move three spaces, defend
+						}
 						break;
 					case 10:
-						{}
+						{
+							//move four spaces, defend
+						}
 						break;
 					case 11:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw rock
+							}
+							else
+							{
+								//move four spaces, defend
+							}
+						}
 						break;
 					case 12:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw star
+							}
+							else
+							{
+								//move five spaces, defend
+							}
+						}
 						break;
 					case 13:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw star, throw rock
+							}
+							else
+							{
+								//move five spaces, throw rock, defend
+							}
+						}
 						break;
 					case 14:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw star x2
+							}
+							else
+							{
+								//move five spaces, throw star, defend
+							}
+						}
 						break;
 					case 15:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw star x2, throw rock
+							}
+							else
+							{
+								//move five spaces, throw star, throw rock, defend
+							}
+						}
 						break;
 					case 16:
-						{}
+						{
+							if( (float)GetHealth() / (float)GetMaxHealth() * 0.1f > 0.9f )
+							{
+								//move five spaces, throw star x3
+							}
+							else
+							{
+								//move five spaces, throw star x2, defend
+							}
+						}
 						break;
 				}
 			}
@@ -1173,7 +1711,7 @@ void CNinja::Update(float fElapsedTime)
 
 	}
 
-	if( ( (float)GetHealth()/(float)GetMaxHealth()) < (3.0f/10.0f))
+	if( ( (float)GetHealth()/(float)GetMaxHealth()) < ( ( (float)GetMaxHealth() * 0.3f ) / (float)GetMaxHealth() ) )
 	{
 		m_nLowHealth = 1;
 	}
@@ -1192,8 +1730,7 @@ void CNinja::Update(float fElapsedTime)
 	}
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 
-	//get current x and y tile position then get the x and y tile positions
-	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
+	
 }
 void CNinja::Render()
 {

@@ -18,6 +18,7 @@
 #include "HowToPlayMenuState.h"
 #include "OptionsMenuState.h"
 #include "CreditState.h"
+//#pragma comment(lib, "fmodexp_vc.lib")
 
 enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 
@@ -61,12 +62,14 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
 		if (GetCurrMenuSelection() == NULL_END)
 			SetCurrMenuSelection(PLAY);
+		//GetFMOD()->playSound(FMOD_CHANNEL_FREE, GetAssets()->aMMsndMenuClick, false, &GetAssets()->channel1);
 	}
 	else if (GetDI()->KeyPressed(DIK_UP))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() -1);
 		if (GetCurrMenuSelection() < PLAY)
 			SetCurrMenuSelection(NULL_END-1);
+		//GetFMOD()->playSound(FMOD_CHANNEL_FREE, GetAssets()->aMMsndMenuClick, false, &GetAssets()->channel1);
 	}
 	else if (GetDI()->KeyPressed(DIK_RETURN))
 	{

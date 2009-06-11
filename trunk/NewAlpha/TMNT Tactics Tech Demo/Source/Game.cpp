@@ -11,11 +11,8 @@
 #include "ObjectManager.h"
 #include "Battlemap.h"
 //#include "ParticleSystem.h"
-
 //#include "MessageSystem.h"
 //#include "ObjectFactory.h"
-//#include "FMod.hpp"
-
 
 CGame::CGame()
 {
@@ -28,9 +25,6 @@ CGame::CGame()
 // 	m_pMessageSystem = NULL;
 // 	m_pObjectFactory = NULL;
 // 	m_pParticleSystem = NULL;
-	//m_pFMODSystem = NULL;
-// 	m_FMChannel1 = NULL;
-// 	m_FMChannel2 = NULL;
 
 	// variables
 	m_bIsRunning = false;
@@ -57,10 +51,6 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pD3D = CSGD_Direct3D::GetInstance();
 	m_pMS = MessageSystem::GetInstance();
 	
-// 	FMOD::System_Create(&m_pFMODSystem);
-// 	m_pFMODSystem->init(10, FMOD_INIT_NORMAL, 0);
-	//m_FMChannel1 = NULL;
-	//m_FMChannel2 = NULL;
 	//m_pMessageSystem = MessageSysterm::GetInstance();
 	//m_pObjectFactory = Factory::GetInstance();
 	//m_pParticleSystem = ParticleSystem::GetInstance();
@@ -95,7 +85,6 @@ void CGame::Shutdown()
 	ChangeState(NULL);
 	if(m_pMS){m_pMS->ShutdownMessageSystem(); m_pMS=NULL;}
 
-
 // 	if(m_pParticleSystem)
 // 	{
 // 		m_pParticleSystem->Shutdown();
@@ -116,11 +105,6 @@ void CGame::Shutdown()
 		m_pDI->ShutdownDirectInput();
 		m_pDI = NULL;
 	}
-// 	if(m_pFMODSystem)
-// 	{
-// 		m_pFMODSystem->Shutdown();
-// 		m_pFMODSystem = NULL;
-// 	}
 	if(m_pTM)
 	{
 		m_pTM->ShutdownTextureManager();

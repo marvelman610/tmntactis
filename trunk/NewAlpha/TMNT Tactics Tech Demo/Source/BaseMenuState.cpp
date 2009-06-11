@@ -5,7 +5,8 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "BitmapFont.h"
-//#include "fmod.hpp"
+#pragma comment(lib, "fmodexp_vc.lib")
+/*#include "fmod.hpp"*/
 
 CBaseMenuState::CBaseMenuState()
 {
@@ -36,7 +37,7 @@ void CBaseMenuState::Enter()
 	m_pGame			= CGame::GetInstance();
 
 	m_nMenuItemSpacing = 45;
-	//m_pFMOD		= CGame::GetInstance()->GetFMODSystem();
+	//m_pFMOD		= CGame::GetInstance()->GetFMSys();
 }
 
 bool CBaseMenuState::Input(float elapsedTime, POINT mousePt)

@@ -3,7 +3,6 @@
 
 #include "windows.h"
 #include "IGameState.h"
-//#include "fmod.hpp"
 
 //class CBitmapFont;
 class CSGD_DirectInput;
@@ -31,9 +30,6 @@ private:
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
 	//Factory* m_pObjectFactory;
-// 	FMOD::System* m_pFMODSystem;
-// 	FMOD::Channel m_FMChannel1;
-// 	FMOD::Channel m_FMChannel2;
 
 	// variables
 	bool	m_bIsRunning;

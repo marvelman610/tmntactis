@@ -23,35 +23,34 @@
 // CBattleMap* CSkill::m_pBattleMap = NULL;
 // prototypes for all types of skills' renders and updates
 #define Prototypes 1
-typedef CSkill cs;
 
 #if Prototypes 
-void RenderSwordSpin();
-void UpdateSwordSpin(float elapsedTime);
-void RenderFlipBackstab();
-void UpdateFlipBackstab(float elapsedTime);
-void RenderCounterAttack();
-void UpdateCounterAttack(float elapsedTime);
-void RenderKnockBack();
-void UpdateKnockBack(float elapsedTime);
-void RenderStaffSpin();
-void UpdateStaffSpin(float elapsedTime);
-void RenderStaffUppercut();
-void UpdateStaffUppercut(float elapsedTime);
-void RenderBackflipAway();
-void UpdateBackflipAway(float elapsedTime);
-void RenderCreateBomb();
-void UpdateCreateBomb(float elapsedTime);
-void RenderFlyingSaiStab();
-void UpdateFlyingSaiStab(float elapsedTime);
-void RenderSaiFury();
-void UpdateSaiFury(float elapsedTime);
-void RenderNunchuckSkullSplitter();
-void UpdateNunchuckSkullSplitter(float elapsedTime);
-void RenderNunchuckSpin();
-void UpdateNunchuckSpin(float elapsedTime);
-void RenderRollAway();
-void UpdateRollAway(float elapsedTime);
+void RenderSwordSpin(CSkill* skill);
+void UpdateSwordSpin(float elapsedTime, CSkill* skill);
+void RenderFlipBackstab(CSkill* skill);
+void UpdateFlipBackstab(float elapsedTime, CSkill* skill);
+void RenderCounterAttack(CSkill* skill);
+void UpdateCounterAttack(float elapsedTime, CSkill* skill);
+void RenderKnockBack(CSkill* skill);
+void UpdateKnockBack(float elapsedTime, CSkill* skill);
+void RenderStaffSpin(CSkill* skill);
+void UpdateStaffSpin(float elapsedTime, CSkill* skill);
+void RenderStaffUppercut(CSkill* skill);
+void UpdateStaffUppercut(float elapsedTime, CSkill* skill);
+void RenderBackflipAway(CSkill* skill);
+void UpdateBackflipAway(float elapsedTime, CSkill* skill);
+void RenderCreateBomb(CSkill* skill);
+void UpdateCreateBomb(float elapsedTime, CSkill* skill);
+void RenderFlyingSaiStab(CSkill* skill);
+void UpdateFlyingSaiStab(float elapsedTime, CSkill* skill);
+void RenderSaiFury(CSkill* skill);
+void UpdateSaiFury(float elapsedTime, CSkill* skill);
+void RenderNunchuckSkullSplitter(CSkill* skill);
+void UpdateNunchuckSkullSplitter(float elapsedTime, CSkill* skill);
+void RenderNunchuckSpin(CSkill* skill);
+void UpdateNunchuckSpin(float elapsedTime, CSkill* skill);
+void RenderRollAway(CSkill* skill);
+void UpdateRollAway(float elapsedTime, CSkill* skill);
 #endif
 
 CSkill::~CSkill() {}
@@ -136,28 +135,28 @@ void CSkill::SetFunctions(int skillID)
 }
 
 
-void CSkill::Update(float fElapsedTime)
+void CSkill::Update(float fElapsedTime, CSkill* skill)
 {
-	m_pUpdatePtr(fElapsedTime);
+	m_pUpdatePtr(fElapsedTime,skill);
 	m_fTimer += fElapsedTime;
 	// TODO::add quick-time event code here
 	if (m_fTimer > 5.0f)
 		m_bComplete = true;
 }
 
-void CSkill::Render()
+void CSkill::Render(CSkill* skill)
 {
-	m_pRenderPtr();
+	m_pRenderPtr(skill);
 }
 
 //////////////////////////////////////////////////////////////////////////
 //	SWORD SPIN
-void RenderSwordSpin()
+void RenderSwordSpin(CSkill* skill)
 {
 	
 }
 
-void UpdateSwordSpin( float elapsedTime )
+void UpdateSwordSpin( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -165,7 +164,7 @@ void UpdateSwordSpin( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	SWORD JAB
 
-void RenderSwordJab()
+void RenderSwordJab(CSkill* skill)
 {
 	
 }
@@ -185,12 +184,12 @@ void RenderSwordJab()
 //////////////////////////////////////////////////////////////////////////
 //	SFLIP BACKSTAB
 
-void RenderFlipBackstab()
+void RenderFlipBackstab(CSkill* skill)
 {
 
 }
 
-void UpdateFlipBackstab( float elapsedTime )
+void UpdateFlipBackstab( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -198,12 +197,12 @@ void UpdateFlipBackstab( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	COUNTER-ATTACK
 
-void RenderCounterAttack()
+void RenderCounterAttack(CSkill* skill)
 {
 
 }
 
-void UpdateCounterAttack( float elapsedTime )
+void UpdateCounterAttack( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -211,12 +210,12 @@ void UpdateCounterAttack( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	KNOCK BACK
 
-void RenderKnockBack()
+void RenderKnockBack(CSkill* skill)
 {
 
 }
 
-void UpdateKnockBack( float elapsedTime )
+void UpdateKnockBack( float elapsedTime, CSkill* skill )
 {
 // 	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
 // 	CPlayer* player= cs::GetPlayer();
@@ -231,12 +230,12 @@ void UpdateKnockBack( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	STAFF SPIN
 
-void RenderStaffSpin()
+void RenderStaffSpin(CSkill* skill)
 {
 
 }
 
-void UpdateStaffSpin( float elapsedTime )
+void UpdateStaffSpin( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -244,12 +243,12 @@ void UpdateStaffSpin( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	STAFF UPPERCUT
 
-void RenderStaffUppercut()
+void RenderStaffUppercut(CSkill* skill)
 {
 
 }
 
-void UpdateStaffUppercut( float elapsedTime )
+void UpdateStaffUppercut( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -257,12 +256,12 @@ void UpdateStaffUppercut( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	BACK FLIP AWAY
 
-void RenderBackflipAway()
+void RenderBackflipAway(CSkill* skill)
 {
 
 }
 
-void UpdateBackflipAway( float elapsedTime )
+void UpdateBackflipAway( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -270,12 +269,12 @@ void UpdateBackflipAway( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	CREATE BOMB
 
-void RenderCreateBomb()
+void RenderCreateBomb(CSkill* skill)
 {
 
 }
 
-void UpdateCreateBomb( float elapsedTime )
+void UpdateCreateBomb( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -283,12 +282,12 @@ void UpdateCreateBomb( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	SAI STAB
 
-void RenderFlyingSaiStab()
+void RenderFlyingSaiStab(CSkill* skill)
 {
 
 }
 
-void UpdateFlyingSaiStab( float elapsedTime )
+void UpdateFlyingSaiStab( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -296,12 +295,12 @@ void UpdateFlyingSaiStab( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	SAI FURY
 
-void RenderSaiFury()
+void RenderSaiFury(CSkill* skill)
 {
 
 }
 
-void UpdateSaiFury( float elapsedTime )
+void UpdateSaiFury( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -309,12 +308,12 @@ void UpdateSaiFury( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	SKULL SPLITTER
 
-void RenderNunchuckSkullSplitter()
+void RenderNunchuckSkullSplitter(CSkill* skill)
 {
 
 }
 
-void UpdateNunchuckSkullSplitter( float elapsedTime )
+void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -322,12 +321,12 @@ void UpdateNunchuckSkullSplitter( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	NUNCHUCK SPIN
 
-void RenderNunchuckSpin()
+void RenderNunchuckSpin(CSkill* skill)
 {
 
 }
 
-void UpdateNunchuckSpin( float elapsedTime )
+void UpdateNunchuckSpin( float elapsedTime, CSkill* skill )
 {
 
 }
@@ -335,12 +334,12 @@ void UpdateNunchuckSpin( float elapsedTime )
 //////////////////////////////////////////////////////////////////////////
 //	ROLL AWAY
 
-void RenderRollAway()
+void RenderRollAway(CSkill* skill)
 {
 
 }
 
-void UpdateRollAway( float elapsedTime )
+void UpdateRollAway( float elapsedTime, CSkill* skill )
 {
 
 }

@@ -141,13 +141,25 @@ void CBattleMap::Reset()
 	delete[] m_pFreeTiles;
 	delete m_pParticleSys;
 	if(m_bxItemBox)
+	{
+		delete m_bxItemBox;
 		m_bxItemBox = NULL;
+	}
 	if (m_bxSkillBox)
+	{
+		delete m_bxSkillBox;
 		m_bxSkillBox = NULL;
+	}
 	if (m_bxActionBox)
+	{
+		delete m_bxActionBox;
 		m_bxActionBox = NULL;
+	}
 	if (m_bxPauseBox)
+	{
+		delete m_bxPauseBox;
 		m_bxPauseBox = NULL;
+	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
@@ -413,7 +425,7 @@ void CBattleMap::Update(float fElapsedTime)
 	if (m_bExecuteSkill )
 	{
 		CSkill*  skill = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
-		skill->Update(fElapsedTime);
+		skill->Update(fElapsedTime, skill);
 		if (skill->IsComplete())
 			m_bExecuteSkill = false;
 		return;

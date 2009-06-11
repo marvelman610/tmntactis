@@ -9,6 +9,7 @@
 #define CBASEMENUSTATE_H
 #include "IGameState.h"
 #include "Player.h"
+#include <fmod.hpp>
 
 class CBitmapFont;
 class CAssets;
@@ -34,7 +35,6 @@ private:
 	int m_nMenuX;					// used for menu items, should be the same for all
 	int m_nMenuY;					
 	int m_nMenuItemSpacing;			// the distance between one menu item and the next
-	//FMOD::Sound m_sBGMusicID;		// bg music track
 
 	CBitmapFont*		m_pBitmapFont;	// a pointer to the bitmap font singleton
 	CAssets*			m_pAssets;
@@ -42,15 +42,14 @@ private:
 	CSGD_Direct3D*		m_pD3D;
 	CSGD_DirectInput*	m_pDI;
 	CGame*				m_pGame;
-	//FMOD::System*		m_pFMOD;
 
 	//CBaseMenuState* m_pCurrentState;// a pointer to the current menu state
-
 
 	CBaseMenuState(const CBaseMenuState&);
 	CBaseMenuState& operator= (const CBaseMenuState&);
 protected:
 
+	FMOD::System*		m_pFMOD;
 	int m_nMouseX;
 	int m_nMouseY;
 
@@ -107,6 +106,7 @@ public:
 	CSGD_Direct3D* GetD3D()			{return m_pD3D;}
 	CBitmapFont* GetBitmapFont()	{return m_pBitmapFont;}
 	CGame* GetGame()				{return m_pGame;}
+	FMOD::System* GetFMOD()			{return m_pFMOD;}
 	int GetCurrMenuSelection()		{return m_nCurrMenuSelection;}
 	int GetMenuItemSpacing()		{return m_nMenuItemSpacing;}
 	int GetCursorX()				{return m_nMenuCursorX;}
@@ -128,7 +128,6 @@ public:
 	void SetCursorImageID(int cursorID) 		{m_nCursorImageID = cursorID;}
 	void SetMenuX(int val)						{m_nMenuX = val; }
 	void SetMenuY(int val)						{m_nMenuY = val; }
-
 };
 
 #endif

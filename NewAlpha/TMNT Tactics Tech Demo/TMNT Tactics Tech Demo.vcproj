@@ -203,6 +203,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\CSGD_FModManager.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
@@ -310,6 +314,14 @@
 			</File>
 			<File
 				RelativePath=".\Source\CreditState.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CSGD_Flags.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CSGD_FModManager.h"
 				>
 			</File>
 			<File

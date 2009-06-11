@@ -39,9 +39,10 @@ NUNCHUCK_SPIN			= 12,
 ROLL_AWAY				= 13,
 
 };
+class CSkill;
 // member function pointer typedefs
-typedef void (*rendPtr)();
-typedef void (*updPtr)(float);
+typedef void (*rendPtr)( CSkill* );
+typedef void (*updPtr)(float, CSkill* );
 
 class CSkill
 {
@@ -70,13 +71,13 @@ public:
 	//
 	//	Purpose		:	Update the main menu
 	//////////////////////////////////////////////////////////////////////////
-	void Update(float fElapsedTime);
+	void Update(float fElapsedTime, CSkill* skill);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Render
 	//
 	//	Purpose		:	Render the main menu
 	//////////////////////////////////////////////////////////////////////////
-	void Render();
+	void Render(CSkill* skill);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	SetFunctions

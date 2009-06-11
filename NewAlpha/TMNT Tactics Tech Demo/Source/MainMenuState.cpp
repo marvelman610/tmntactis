@@ -53,6 +53,7 @@ void CMainMenuState::Enter()
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
+	CBaseMenuState::Input(fElapsedTime, mousePt);
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
 

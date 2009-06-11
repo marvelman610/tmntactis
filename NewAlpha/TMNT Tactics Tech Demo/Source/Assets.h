@@ -75,8 +75,7 @@ public:
 
 	// Main Menu IDs
 	int aMMBGimageID;
-	//FMOD::Sound*	aMMsndMenuClick;
-	//FMOD::Sound*	aMMsndMenuMusic;
+	int aMMmenuClickSnd;
 
 	// Options Menu IDs
 	int aOMbgID;

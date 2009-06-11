@@ -22,6 +22,7 @@ class CBaseMenuState : public IGameState
 {
 private:
 	int	m_nBGImageID;				// bg image ID
+	int m_nMenuClick;				// sound ID for when the user moves from one menu selection to the next
 	int m_nScreenWidth;				// the program's width and height
 	int m_nScreenHeight;
 	int m_nBGX;						// where the background x is

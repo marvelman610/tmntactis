@@ -9,7 +9,6 @@
 #define CBASEMENUSTATE_H
 #include "IGameState.h"
 #include "Player.h"
-#include <fmod.hpp>
 
 class CBitmapFont;
 class CAssets;
@@ -17,6 +16,7 @@ class CSGD_TextureManager;
 class CSGD_Direct3D;
 class CSGD_DirectInput;
 class CGame;
+class CSGD_FModManager;
 
 class CBaseMenuState : public IGameState
 {
@@ -49,7 +49,7 @@ private:
 	CBaseMenuState& operator= (const CBaseMenuState&);
 protected:
 
-	FMOD::System*		m_pFMOD;
+	CSGD_FModManager*	m_pFMOD;
 	int m_nMouseX;
 	int m_nMouseY;
 
@@ -106,7 +106,7 @@ public:
 	CSGD_Direct3D* GetD3D()			{return m_pD3D;}
 	CBitmapFont* GetBitmapFont()	{return m_pBitmapFont;}
 	CGame* GetGame()				{return m_pGame;}
-	FMOD::System* GetFMOD()			{return m_pFMOD;}
+	CSGD_FModManager* GetFMOD()		{return m_pFMOD;}
 	int GetCurrMenuSelection()		{return m_nCurrMenuSelection;}
 	int GetMenuItemSpacing()		{return m_nMenuItemSpacing;}
 	int GetCursorX()				{return m_nMenuCursorX;}

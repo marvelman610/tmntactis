@@ -16,11 +16,11 @@
 #include <list>
 using std::vector;
 using std::list;
-#include "fmod.hpp"
-#include "fmod_errors.h"
+#include "FModSDK/inc/fmod.hpp"
+#include "FModSDK/inc/fmod_errors.h"
 
 #if _DEBUG
-	#pragma comment( lib, "fmodexL_vc.lib" ) 
+	#pragma comment( lib, "./fmodexL_vc.lib" ) 
 #else
 	#pragma comment( lib, "fmodex_vc.lib" ) 
 #endif

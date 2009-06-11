@@ -8,9 +8,9 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Assets.h"
 #include "CSGD_TextureManager.h"
+#include "CSGD_FModManager.h"
 #include "CSGD_Direct3D.h"
 #include "Game.h"
-//#pragma comment(lib, "fmodexp_vc.lib")
 
 CAssets* CAssets::GetInstance()
 {
@@ -21,15 +21,15 @@ CAssets* CAssets::GetInstance()
 CAssets::CAssets()
 {
 	m_pTM = CSGD_TextureManager::GetInstance();
+	m_pFMOD = CSGD_FModManager::GetInstance();
 	LoadAssets();
 }
 CAssets::~CAssets()
 {
-// 	if(m_pFMODSystem)
-// 	{
-// 		m_pFMODSystem->release();
-// 		m_pFMODSystem = NULL;
-// 	}
+	if(m_pFMOD)
+	{
+		m_pFMOD = NULL;
+	}
 
 }
 
@@ -66,9 +66,6 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 	// Main Menu IDs
 	aMMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_MainMenuBG.png", D3DCOLOR_XRGB(255,255,255));
-// 	FMOD::System_Create(&m_pFMODSystem);
-// 	m_pFMODSystem->init(50, FMOD_INIT_NORMAL, 0);
-// 	m_pFMODSystem->createSound("Resources/Sounds/VG_menuClick.mp3", FMOD_DEFAULT, 0, &aMMsndMenuClick);
 
 	//////////////////////////////////////////////////////////////////////////
 

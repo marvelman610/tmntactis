@@ -10,6 +10,7 @@
 #include "Ninja.h"
 #include "ObjectManager.h"
 #include "Battlemap.h"
+#include "CSGD_FModManager.h"
 //#include "ParticleSystem.h"
 //#include "MessageSystem.h"
 //#include "ObjectFactory.h"
@@ -59,6 +60,10 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
 	m_pMS->InitMessageSystem(MessageProc);
+	if (!CSGD_FModManager::GetInstance()->InitFModManager(hWnd))
+	{
+		int failed = 0;
+	}
 
 	// assets class requires texture manager to be initialized
 	m_pAssets = CAssets::GetInstance();
@@ -115,6 +120,7 @@ void CGame::Shutdown()
 		m_pD3D->ShutdownDirect3D();
 		m_pD3D = NULL;
 	}
+	CSGD_FModManager::GetInstance()->ShutdownFModManager();
 }
 
 
@@ -147,6 +153,8 @@ bool CGame::Main(POINT mouse)
 		return false;
 
 	m_pCurrentState->Update(m_fElapsedTime);
+	CSGD_FModManager::GetInstance()->Update();
+
 	m_pMS->ProcessMsgs();
 
 	m_pD3D->Clear(255,255,255);

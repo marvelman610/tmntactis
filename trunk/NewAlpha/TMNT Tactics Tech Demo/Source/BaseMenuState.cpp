@@ -37,12 +37,18 @@ void CBaseMenuState::Enter()
 	m_pGame			= CGame::GetInstance();
 	m_pFMOD			= CSGD_FModManager::GetInstance();
 
+	m_nMenuClick	= m_pAssets->aMMmenuClickSnd;
 	m_nMenuItemSpacing = 45;
 }
 
 bool CBaseMenuState::Input(float elapsedTime, POINT mousePt)
 {
-
+	if (m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_UP))
+	{
+		if (m_pFMOD->IsSoundPlaying(m_nMenuClick))
+			m_pFMOD->StopSound(m_nMenuClick);
+		m_pFMOD->PlaySound(m_nMenuClick);
+	}
 	return true;
 }
 

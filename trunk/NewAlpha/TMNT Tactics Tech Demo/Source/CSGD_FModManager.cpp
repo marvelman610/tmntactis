@@ -128,6 +128,8 @@ int CSGD_FModManager::LoadSound(const char *szFilename, FMOD_MODE unMode )
 		}
 
 		//	push new allocated sound onto vector
+		FMOD::Channel* channel;
+		newSound.m_SoundChannels.push_back(channel);
 		m_SoundList.push_back( newSound );
 
 		return (int)m_SoundList.size() - 1;
@@ -258,7 +260,6 @@ bool CSGD_FModManager::SetVolume( int nID, float fVolume )
 
 	//	iterate all the channels in this sound
 	list<FMOD::Channel*>::iterator iter = m_SoundList[nID].m_SoundChannels.begin();
-
 	while( iter != m_SoundList[nID].m_SoundChannels.end() ) 
 	{
 		if( ( result = (*iter)->isPlaying( &bOutcome ) ) == FMOD_OK ) 

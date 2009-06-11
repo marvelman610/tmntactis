@@ -16,15 +16,14 @@
 //		the template is a<all capital letters of class name minus the "C">_<what the image is>ID
 //////////////////////////////////////////////////////////////////////////
 
-//#include <fmod.hpp>
-//#include <fmod_errors.h>
+class CSGD_FModManager;
 class CSGD_TextureManager;
 
 class CAssets
 {
 private:
 	CSGD_TextureManager* m_pTM;
-	//FMOD::System* m_pFMODSystem;
+	CSGD_FModManager*	 m_pFMOD;
 
 	CAssets(void);
 	~CAssets(void);
@@ -46,8 +45,8 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void LoadAssets();
 
-	//FMOD::Channel* channel1;
-	//FMOD::Channel* channel2;
+	CSGD_FModManager* GetFMOD() {return m_pFMOD;}
+
 	// all assets are public...no need to write accessors/mutators for all of them
 
 	// Images common to multiple classes

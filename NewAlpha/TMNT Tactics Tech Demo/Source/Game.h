@@ -5,13 +5,13 @@
 #include "IGameState.h"
 
 //class CBitmapFont;
+//class ParticleSystem;
 class CSGD_DirectInput;
 class CBattleMap;
 class CSGD_Direct3D;
 class CSGD_TextureManager;
 class CAssets;
 class CPlayer;
-//class ParticleSystem;
 class MessageSystem;
 class CBaseMessage;
 class Factory;
@@ -25,8 +25,8 @@ private:
 	CSGD_TextureManager* m_pTM;
 	CSGD_DirectInput*   m_pDI;
 	CAssets*			m_pAssets;
-	CPlayer* m_pPlayer;
-	MessageSystem* m_pMS;
+	CPlayer*			m_pPlayer;
+	MessageSystem*		m_pMS;
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
 	//Factory* m_pObjectFactory;

@@ -2,11 +2,11 @@
 #include "Assets.h"
 #include "Game.h"
 #include "CSGD_TextureManager.h"
+#include "CSGD_FModManager.h"
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "BitmapFont.h"
-#pragma comment(lib, "fmodexp_vc.lib")
-/*#include "fmod.hpp"*/
+#include "FModSDK/inc/fmod.hpp"
 
 CBaseMenuState::CBaseMenuState()
 {
@@ -35,9 +35,9 @@ void CBaseMenuState::Enter()
 	m_nScreenHeight = CGame::GetInstance()->GetScreenHeight();
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	m_pGame			= CGame::GetInstance();
+	m_pFMOD			= CSGD_FModManager::GetInstance();
 
 	m_nMenuItemSpacing = 45;
-	//m_pFMOD		= CGame::GetInstance()->GetFMSys();
 }
 
 bool CBaseMenuState::Input(float elapsedTime, POINT mousePt)
@@ -56,8 +56,8 @@ void CBaseMenuState::Exit()
 		m_pDI = NULL;
 	if (m_pBitmapFont)
 		m_pBitmapFont = NULL;
-// 	if (m_pFMOD)
-// 		m_pFMOD = NULL;
+	if (m_pFMOD)
+		m_pFMOD = NULL;
 }
 
 void CBaseMenuState::CenterBGImage()

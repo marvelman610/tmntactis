@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Code\SGP\Code\SVN\New Alpha\TMNT Tactics Tech Demo\Source&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Code\SGP\Code\SVN\Beta\TMNT Tactics Tech Demo\Source\FModSDK\lib&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -203,10 +203,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\CSGD_FModManager.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\Factory.cpp"
 				>
 			</File>
@@ -317,14 +313,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\Source\CSGD_Flags.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\CSGD_FModManager.h"
-				>
-			</File>
-			<File
 				RelativePath=".\Source\Factory.h"
 				>
 			</File>
@@ -427,6 +415,18 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\CSGD_Flags.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CSGD_FModManager.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CSGD_FModManager.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\CSGD_TextureManager.cpp"
 				>
 			</File>
@@ -463,6 +463,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath=".\Source\FModSDK\lib\fmodexL_vc.lib"
+			>
+		</File>
 		<File
 			RelativePath=".\helpful info\VG_pathfinding.txt"
 			>

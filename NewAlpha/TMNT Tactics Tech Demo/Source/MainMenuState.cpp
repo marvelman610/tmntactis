@@ -18,7 +18,6 @@
 #include "HowToPlayMenuState.h"
 #include "OptionsMenuState.h"
 #include "CreditState.h"
-//#pragma comment(lib, "fmodexp_vc.lib")
 
 enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 

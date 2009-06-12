@@ -67,7 +67,8 @@ void CAssets::LoadAssets()
 	// Main Menu IDs
 	aMMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_MainMenuBG.png", D3DCOLOR_XRGB(255,255,255));
 	aMMmenuClickSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuClick.mp3");
-	if(m_pFMOD->SetVolume(aMMmenuClickSnd, 0.0f))
+	m_pFMOD->PlaySound(aMMmenuClickSnd);
+	if(bool b = m_pFMOD->SetVolume(aMMmenuClickSnd, 0.0f))
 		int i = 0;
 
 	//////////////////////////////////////////////////////////////////////////

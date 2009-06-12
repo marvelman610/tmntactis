@@ -60,10 +60,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
 	m_pMS->InitMessageSystem(MessageProc);
-	if (!CSGD_FModManager::GetInstance()->InitFModManager(hWnd))
-	{
-		int failed = 0;
-	}
+	CSGD_FModManager::GetInstance()->InitFModManager(hWnd);
 
 	// assets class requires texture manager to be initialized
 	m_pAssets = CAssets::GetInstance();
@@ -122,7 +119,6 @@ void CGame::Shutdown()
 	}
 	CSGD_FModManager::GetInstance()->ShutdownFModManager();
 }
-
 
 bool CGame::Main(POINT mouse)
 {

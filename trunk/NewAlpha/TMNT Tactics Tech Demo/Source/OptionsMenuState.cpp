@@ -61,7 +61,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection()+1);
 		if (GetCurrMenuSelection() == NULL_END)
-			SetCurrMenuSelection(SFX_VOLUME);
+			SetCurrMenuSelection(MUSIC_VOLUME);
 	}
 	else if (GetDI()->KeyPressed(DIK_UP))
 	{
@@ -134,7 +134,7 @@ void COptionsMenuState::Render()
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY());
 	sprintf_s(szText, "SFX VOLUME  (%i)", m_nSFXVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 1.0f);
-	CBitmapFont::GetInstance()->DrawString("EXIT", 400,430);
+	CBitmapFont::GetInstance()->DrawString("EXIT", 400,GetMenuY()+ (2*GetMenuItemSpacing()));
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

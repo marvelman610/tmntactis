@@ -24,7 +24,7 @@ private:
 	CTurtle*  m_pTurtles[4];
 
 	//int m_pItemsArr[50];
-	vector<CBase*> m_nInventory;
+	vector<CBase> m_nInventory;
 	int m_nCurrStage;
 
 	///////////////////////////////////////////////////////////////////
@@ -94,9 +94,9 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
-	void AddItem(CBase* a)				{ m_nInventory.push_back(a);}
+	void AddItem(CBase a)				{ m_nInventory.push_back(a);}
 	inline int GetNumItems()			{return m_nInventory.size();}
-	vector<CBase*> GetItems()			{return m_nInventory;}
+	vector<CBase>* GetItems()			{return &m_nInventory;}
 
 };
 #endif

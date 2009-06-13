@@ -11,6 +11,7 @@
 #include "ObjectManager.h"
 #include "Battlemap.h"
 #include "CSGD_FModManager.h"
+#include <ctime>
 //#include "ParticleSystem.h"
 //#include "MessageSystem.h"
 //#include "ObjectFactory.h"
@@ -32,6 +33,9 @@ CGame::CGame()
 	m_nSFXVolume = 0;
 	m_nMusicVolume = 0;
 /*	m_PlayerInfo = 0;*/
+
+	srand((unsigned int)(time(0)));
+
 }
 
 CGame::~CGame()
@@ -204,27 +208,28 @@ void MessageProc(CBaseMessage* pMsg)
 	{
 	case MSG_CREATE_ITEM:
 		{
-			//int type = rand()% 2;
-			int type = 0;
+			int type = rand()% 3;
 			CCreateItem * pCP = (CCreateItem*)pMsg;
-			Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
-
+			CBattleItem* item = Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
 			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
 		}
 		break;
 	case MSG_DESTROY_ITEM:
 		{
 			CDestroyItem * pDP = (CDestroyItem*)pMsg;
-			CPlayer::GetInstance()->AddItem(pDP->GetItem());
-			CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].SetCurrAP(CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].GetCurrAP()+30);
+			CBase p = *(pDP->GetItem());
+			CPlayer::GetInstance()->AddItem(p);
+			//CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].SetCurrAP(CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].GetCurrAP()+30);
 			ObjectManager::GetInstance()->Remove(pDP->GetItem());
 		}
 		break;
 	case MSG_CREATE_WEAPON:
 		{
-			int type = rand()% 11;
+			int type = rand()% 12;
 			CCreateWeapon * pCP = (CCreateWeapon*)pMsg;
 			Factory::GetInstance()->CreateWeapon(type,pCP->GetNinja()->GetMapCoord() );
+			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
+			
 		}
 		break;
 	}

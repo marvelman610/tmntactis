@@ -11,8 +11,9 @@
 #include "Assets.h"
 #include "CSGD_TextureManager.h"
 
-CBattleItem::CBattleItem(void)
+CBattleItem::CBattleItem(void):CBase()
 {
+	
 	m_nHeal = 0;
 	m_nDamage = 0;
 	m_nDamageRadius = 1;
@@ -21,6 +22,8 @@ CBattleItem::CBattleItem(void)
 
 	SetWidth(32);
 	SetHeight(32);
+
+	
 }
 CBattleItem::~CBattleItem(void)
 {

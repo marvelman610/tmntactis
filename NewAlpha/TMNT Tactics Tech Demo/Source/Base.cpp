@@ -13,6 +13,18 @@
 CBase::CBase(void)
 {
 	m_szName = NULL;
+	m_nImageID = -1;
+
+	m_nHealthMax = 100;
+	m_nHealth = 0;
+
+	m_nLevel = 1;
+	m_nStrength = 0;
+	m_nDefense = 0;
+	m_nAccuracy = 0;
+	m_nSpeed = 0;
+	m_nRange = 0;
+
 	m_fPosZ = 0.0f;	// draw in front of everything by default
 	m_nCurrAnimation = 0;
 	m_nSkillXP = m_nExperience = 0;

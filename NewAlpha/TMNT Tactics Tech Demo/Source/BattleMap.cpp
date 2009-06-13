@@ -1207,6 +1207,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_vCharacters[i].GetBaseAP());
 			if (m_nCurrCharacter > -1)
 				CalculateRanges();
+			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_pPlayer->GetTurtles()[i]->GetBaseAP());
 		}
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
@@ -1425,15 +1426,14 @@ void CBattleMap::HandleButton()
 				if (m_bxItemBox)
 					delete m_bxItemBox;
 
-				vector<CBase*> temp = m_pPlayer->GetInstance()->GetItems();
+				int numItems = m_pPlayer->GetInstance()->GetNumItems();
+				vector<CBase>* temp = m_pPlayer->GetInstance()->GetItems();
 				
-				string* item = new string[temp.size()];
+				string* item = new string[temp->size()];
 
-				for(int i = 0; i < (int)temp.size(); i++)
+				for(int i = 0; i < (int)temp->size(); i++)
 				{
-					//temp[0]->SetName("foo");
-					item[i] = temp[i]->GetName();
-					//item[i].assign(temp[i]->GetName(), strlen(temp[i]->GetName()));
+					item[i] = (*temp)[i].GetName();
 				}
 
 				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f);

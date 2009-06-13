@@ -141,17 +141,17 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 	switch(type)
 	{
 	case BLACK_EGGS:
-		item->SetName(blackeggs.GetName());
+		item->SetName("Black Eggs");
 		item->SetRange(blackeggs.GetRange());
 		item->SetDamage(blackeggs.GetDamage());
 		break;
 	case GRENADO:
-		item->SetName(grenado.GetName());
+		item->SetName("Grenado");
 		item->SetRange(grenado.GetRange());
 		item->SetDamage(grenado.GetDamage());
 		break;
 	case PIZZA:
-		item->SetName(pizza.GetName());
+		item->SetName("Pizza");
 		item->SetHeal(pizza.GetDamage());
 		break;
 	}

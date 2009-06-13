@@ -52,6 +52,14 @@ void CMainMenuState::Enter()
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
 	CBaseMenuState::Input(fElapsedTime, mousePt);
+	if (mousePt.y != m_nMouseY)
+	{
+		SetCurrMenuSelection( (mousePt.y - GetMenuY()) / GetMenuItemSpacing() );
+		if (GetCurrMenuSelection() < 0)
+			SetCurrMenuSelection(PLAY);
+		else if (GetCurrMenuSelection() > NULL_END-1)
+			SetCurrMenuSelection(NULL_END-1);
+	}
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
 
@@ -67,7 +75,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		if (GetCurrMenuSelection() < PLAY)
 			SetCurrMenuSelection(NULL_END-1);
 	}
-	else if (GetDI()->KeyPressed(DIK_RETURN))
+	else if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT))
 	{
 		switch(GetCurrMenuSelection())
 		{

@@ -74,8 +74,8 @@ void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, in
 	}
 	else
 	{
-		mapPt.x = (float)(m_ptMapCoord.x - m_ptMapCoord.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1);
-		mapPt.y = (float)(m_ptMapCoord.x + m_ptMapCoord.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1);
+		mapPt.x = (LONG)(m_ptMapCoord.x - m_ptMapCoord.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1);
+		mapPt.y = (LONG)(m_ptMapCoord.x + m_ptMapCoord.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1);
 		SetPosPt(mapPt);
 	}
 }

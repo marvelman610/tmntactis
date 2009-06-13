@@ -29,14 +29,14 @@ CBox::CBox(int numItems, string* sItems,
 	m_nPosY = posY;
 	m_fPosZ = posZ;
 
-	m_nLongestString = 0;
+	m_nLongestString = 8;
 	for (int i = 0; i < numItems; ++i)
 	{
 		m_sItems[i] = sItems[i];
 		if ((int)sItems[i].size() > m_nLongestString)
 			m_nLongestString = sItems[i].size();
 	}
-	m_nLongestString *= 34 * fTextScale; 
+	m_nLongestString *= (int)(34.0f * fTextScale); 
 	m_fScaleX = (float)(m_nLongestString + (float)spacing * 2.5f) / DEFAULT_SIZE; 
 	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 2.5f) + startY) / DEFAULT_SIZE;
 	
@@ -127,7 +127,7 @@ void CBox::Render()
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+300.0f*m_fTextScale)), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale, m_dwColor);
+		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale, m_dwColor);
 	}
 	//m_pBM->Reset();
 }

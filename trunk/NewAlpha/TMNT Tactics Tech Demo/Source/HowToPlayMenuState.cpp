@@ -7,10 +7,12 @@
 //					play the game. 
 //////////////////////////////////////////////////////////////////////////
 #include "HowToPlayMenuState.h"
+#include "BaseMenuState.h"
 #include "MainMenuState.h"
 #include "CSGD_TextureManager.h"
 #include "CSGD_DirectInput.h"
 #include "BitmapFont.h"
+#include "Assets.h"
 #include "Game.h"
 
 // if we have any menu options in this menu, 
@@ -25,10 +27,11 @@ CHowToPlayMenuState* CHowToPlayMenuState::GetInstance()
 void CHowToPlayMenuState::Enter()
 {
 	CBaseMenuState::Enter();
-// 	SetBGImageID(GetAssets()->aHTPMBGimageID);
-// 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aMMBGimageID));
-// 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aMMBGimageID));
-/*	CenterBGImage();*/
+ 	SetBGImageID(GetAssets()->aTutorialID);
+ 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aTutorialID));
+ 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aTutorialID));
+	CenterBGImage();
+
 	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
 	SetCurrMenuSelection( BACK );

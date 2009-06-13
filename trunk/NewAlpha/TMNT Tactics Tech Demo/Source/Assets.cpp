@@ -71,6 +71,8 @@ void CAssets::LoadAssets()
 	//if(bool b = m_pFMOD->SetVolume(aMMmenuClickSnd, 0.0f))
 		int i = 0;
 
+	aOMbgID			= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu1.png");
+	aTutorialID		= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu.png");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -100,4 +102,11 @@ void CAssets::LoadAssets()
 	//Items and weapons
 	//temp item
 	aItemID = m_pTM->LoadTexture("Resources/Images/VG_tempItem.png");
+
+	////////////////////////////////////////////////////////////////////////
+	//Particles
+	aGlowParticle = aFireParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
+	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
+	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
+
 }

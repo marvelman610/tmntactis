@@ -38,10 +38,11 @@ void COptionsMenuState::Enter()
 	CBaseMenuState::Enter();
 	m_bHasASettingChanged = false;
 
-	SetCursorImageID(GetAssets()->aMenuCursorImageID);
-// 	SetBGImageID(GetAssets()->aOMbgID);
-// 	SetBGWidth(m_pTM->GetTextureWidth(m_nBGImageID));
-// 	SetBGHeight(m_pTM->GetTextureHeight(m_nBGImageID));
+	SetBGImageID(GetAssets()->aOMbgID);
+	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aOMbgID));
+	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aOMbgID));
+	
+	
 //	m_fmsBGMusicID		= GetAssets()->m_fmsOMBGmusic;
 
 	SetMenuX(400); SetMenuY(350);
@@ -133,7 +134,7 @@ void COptionsMenuState::Render()
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY());
 	sprintf_s(szText, "SFX VOLUME  (%i)", m_nSFXVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 1.0f);
-	CBitmapFont::GetInstance()->DrawString("EXIT", 400,430, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	CBitmapFont::GetInstance()->DrawString("EXIT", 400,430);
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

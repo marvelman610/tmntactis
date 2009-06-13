@@ -46,46 +46,48 @@ struct PARTICLE
 class CParticleSystem
 {
 public:
-	CSGD_Direct3D* m_pd3d;					//direct 3d pointer
-	PARTICLE* particles;					//particle structure pointer
-	IDirect3DVertexDeclaration9 *vertexDecl;//vertex declaration not used
-	IDirect3DVertexBuffer9 *particleBuff;	//vertex buffer not used
-	IDirect3DTexture9 *texture;				//texture pointer
-	CSGD_TextureManager* m_pTM;				//texture manager
+	CSGD_Direct3D* m_pd3d;						//direct 3d pointer
+	PARTICLE* particles;						//particle structure pointer
+	IDirect3DVertexDeclaration9 *vertexDecl;	//vertex declaration not used
+	IDirect3DVertexBuffer9 *particleBuff;		//vertex buffer not used
+	IDirect3DTexture9 *texture;					//texture pointer
+	CSGD_TextureManager* m_pTM;					//texture manager
 
-	float m_fOffsetX;						//offset from emitter position
-	float m_fOffsetY;						//offset from emitter position
-	float m_fForceX;						//external force on particle
-	float m_fForceY;						//external force on particle
-	float m_fGravityX;						//gravitational force on particle
-	float m_fGravityY;						//gravitational force on particle
-	float m_fGravPointX;					//gravitational point
-	float m_fGravPointY;					//gravitational point
-	float m_fVelDiff;						//acceleration of particle
-	//float m_fScale;						//replaced by particle size
-	float m_fRotation;						//current rotation of the particle
-	float m_fRotationVelocity;				//particles rotational velocity
-	int m_nImageID;							//texture image id
-	int m_nNumParticles;					//number of particles in system
-	int m_nMaxLife;							//max life of each particle
+	float m_fOffsetX;							//offset from emitter position
+	float m_fOffsetY;							//offset from emitter position
+	float m_fForceX;							//external force on particle
+	float m_fForceY;							//external force on particle
+	float m_fGravityX;							//gravitational force on particle
+	float m_fGravityY;							//gravitational force on particle
+	float m_fGravPointX;						//gravitational point
+	float m_fGravPointY;						//gravitational point
+	float m_fVelDiff;							//acceleration of particle
+	//float m_fScale;							//replaced by particle size
+	float m_fRotation;							//current rotation of the particle
+	float m_fRotationVelocity;					//particles rotational velocity
+	int m_nImageID;								//texture image id
+	int m_nNumParticles;						//number of particles in system
+	int m_nMaxLife;								//max life of each particle
 
-	bool m_bActive;							//boolean for Active system state
-	bool m_bGravityPoint;					//boolean for gravitational point
-	bool m_bGravity;						//boolean for gravitational force
-	bool m_bAlphaChange;					//boolean for alpha change in particle
-	bool m_bColorChange;					//boolean for rgb change of particle
-	bool m_bColorChangeRand;				//boolean for random rgb values of particles
-	bool m_bCollision;						//boolean for collision of particle(not used)
-	bool m_bScaling;						//boolean for particles scaling 
-	bool m_bLoop;							//boolean for looping particle lifetimes
-	bool m_bRandAge;						//boolean to set age of each particle randomly
-	bool m_bRotation;						//boolean to allow rotation of particle
-	bool m_bVelDiff;						//boolean to allow acceleration of particle
-	D3DXVECTOR3 m_vEmitterPos;				//emitter position(initial position of particle)
+	bool m_bActive;								//boolean for Active system state
+	bool m_bGravityPoint;						//boolean for gravitational point
+	bool m_bGravity;							//boolean for gravitational force
+	bool m_bAlphaChange;						//boolean for alpha change in particle
+	bool m_bColorChange;						//boolean for rgb change of particle
+	bool m_bColorChangeRand;					//boolean for random rgb values of particles
+	bool m_bCollision;							//boolean for collision of particle(not used)
+	bool m_bScaling;							//boolean for particles scaling 
+	bool m_bLoop;								//boolean for looping particle lifetimes
+	bool m_bRandAge;							//boolean to set age of each particle randomly
+	bool m_bRotation;							//boolean to allow rotation of particle
+	bool m_bVelDiff;							//boolean to allow acceleration of particle
+	D3DXVECTOR3 m_vEmitterPos;					//emitter position(initial position of particle)
 	DWORD m_dwSrcblend;							//Source Blend Enum stored
 	DWORD m_dwDestblend;						//Destination Blend Enum stored
-
+	
+	//////////////////////////////
 	//Consturctor
+	//////////////////////////////
 	CParticleSystem(void)
 	{
 		srand(unsigned int(time(0)));
@@ -119,7 +121,7 @@ public:
 	{
 		m_nNumParticles = MAX_NUM_PARTS;
 		particles = new PARTICLE[m_nNumParticles];
-		m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Ship.bmp", D3DCOLOR_XRGB(0,0,0));
+		m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Particle.bmp", D3DCOLOR_XRGB(0,0,0));
 
 		m_fOffsetX = 10.0f;
 		m_fOffsetY = 10.0f;
@@ -329,7 +331,7 @@ public:
 	//
 	// Purposer : Render the particle with its source and dest blend 
 	//////////////////////////////////////////////////////////////////////////////////////
-	void DrawParticle(void)
+	void DrawParticle(int ImageID)
 	{
 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetVertexDeclaration(vertexDecl);
 		//draw point sprites transparent
@@ -374,6 +376,8 @@ public:
 		// DRAW		
 		//set the blend modes
 
+		m_nImageID = ImageID;
+
 		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_SRCBLEND,&m_dwSrcblend);
 		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_DESTBLEND, &m_dwDestblend);
 
@@ -400,7 +404,9 @@ public:
 
 	}
 
+	/////////////////////////////////////////////////
 	//Destructor
+	/////////////////////////////////////////////////
 	~CParticleSystem(void)
 	{
 		if (particles != NULL)

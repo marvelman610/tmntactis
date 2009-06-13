@@ -119,8 +119,8 @@ void CHUD::Update(float fElapsedTime)
 		{
 			float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetMaxHealth() );
 			float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetBaseAP() );		
-			m_rEnemyHP.left = (float)(104 - hpWidth);
-			m_rEnemyAP.left = (float)(104 - apWidth);
+			m_rEnemyHP.right = (LONG)hpWidth;
+			m_rEnemyAP.right = (LONG)apWidth;
 		}
 
 }
@@ -160,8 +160,8 @@ void CHUD::Render()
 	{
 		m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540,0,1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
 		//get current target 
-		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 795, 61, 1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
-		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 795, 105,1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 	}
 	
 }

@@ -11,7 +11,7 @@
 #include "BitmapFont.h"
 #include "Player.h"
 #include "CSGD_TextureManager.h"
-//#include "CSGD_Direct3D.h"
+#include "CSGD_Direct3D.h"
 #include "Turtle.h"
 #include "Assets.h"
 #include "Battlemap.h"
@@ -21,6 +21,7 @@ CHUD::CHUD(void)
 	m_pPlayer = CPlayer::GetInstance();
 	m_pBitmapFont = CBitmapFont::GetInstance();
 	m_pTM = CSGD_TextureManager::GetInstance();
+	m_pD3D = CSGD_Direct3D::GetInstance();
 
 	m_rMikeyHP.top = 0;
 	m_rMikeyHP.bottom = 16;
@@ -114,7 +115,7 @@ void CHUD::Update(float fElapsedTime)
 			m_rRaphHP.right = (LONG)healthwidth;
 			m_rRaphAP.right = (LONG)apwidth;
 		}
-		if(CBattleMap::GetInstance()->GetCurrTarget() > -1)
+		if(CBattleMap::GetInstance()->GetCurrTarget() > -1 &&CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth() > 0)
 		{
 			float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetMaxHealth() );
 			float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetBaseAP() );		

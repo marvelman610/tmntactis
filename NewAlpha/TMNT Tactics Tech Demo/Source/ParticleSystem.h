@@ -27,7 +27,8 @@ struct VERTEX
 	D3DXVECTOR2 uv;
 	float size;
 	D3DCOLOR color;
-};
+};//not being used
+
 struct PARTICLE
 {
 	D3DXVECTOR3 pos;
@@ -45,57 +46,63 @@ struct PARTICLE
 class CParticleSystem
 {
 public:
-	CSGD_Direct3D* m_pd3d;
-	PARTICLE* particles;
-	IDirect3DVertexDeclaration9 *vertexDecl;
-	IDirect3DVertexBuffer9 *particleBuff;
-	IDirect3DTexture9 *texture;
-	CSGD_TextureManager* m_pTM;
-	
-	float m_fOffsetX;
-	float m_fOffsetY;
-	float m_fForceX;
-	float m_fForceY;
-	float m_fGravityX;
-	float m_fGravityY;
-	float m_fGravPointX;
-	float m_fGravPointY;
-	float m_fVelDiff;
-	//float m_fScale;
-	float m_fRotation;
-	float m_fRotationVelocity;
-	int m_nImageID;
-	int m_nNumParticles;
-	int m_nMaxLife;
-	int m_nDestinationBlend;
-	int m_nSourceBlend;
-	bool m_bGravityPoint;
-	bool m_bGravity;
-	bool m_bAlphaChange;
-	bool m_bColorChange;
-	bool m_bColorChangeRand;
-	bool m_bCollision;
-	bool m_bScaling;
-	bool m_bLoop;
-	bool m_bRandAge;
-	bool m_bRotation;
-	bool m_bVelDiff;
-	DWORD srcblend;
-	DWORD destblend;
+	CSGD_Direct3D* m_pd3d;					//direct 3d pointer
+	PARTICLE* particles;					//particle structure pointer
+	IDirect3DVertexDeclaration9 *vertexDecl;//vertex declaration not used
+	IDirect3DVertexBuffer9 *particleBuff;	//vertex buffer not used
+	IDirect3DTexture9 *texture;				//texture pointer
+	CSGD_TextureManager* m_pTM;				//texture manager
 
+	float m_fOffsetX;						//offset from emitter position
+	float m_fOffsetY;						//offset from emitter position
+	float m_fForceX;						//external force on particle
+	float m_fForceY;						//external force on particle
+	float m_fGravityX;						//gravitational force on particle
+	float m_fGravityY;						//gravitational force on particle
+	float m_fGravPointX;					//gravitational point
+	float m_fGravPointY;					//gravitational point
+	float m_fVelDiff;						//acceleration of particle
+	//float m_fScale;						//replaced by particle size
+	float m_fRotation;						//current rotation of the particle
+	float m_fRotationVelocity;				//particles rotational velocity
+	int m_nImageID;							//texture image id
+	int m_nNumParticles;					//number of particles in system
+	int m_nMaxLife;							//max life of each particle
+
+	bool m_bActive;							//boolean for Active system state
+	bool m_bGravityPoint;					//boolean for gravitational point
+	bool m_bGravity;						//boolean for gravitational force
+	bool m_bAlphaChange;					//boolean for alpha change in particle
+	bool m_bColorChange;					//boolean for rgb change of particle
+	bool m_bColorChangeRand;				//boolean for random rgb values of particles
+	bool m_bCollision;						//boolean for collision of particle(not used)
+	bool m_bScaling;						//boolean for particles scaling 
+	bool m_bLoop;							//boolean for looping particle lifetimes
+	bool m_bRandAge;						//boolean to set age of each particle randomly
+	bool m_bRotation;						//boolean to allow rotation of particle
+	bool m_bVelDiff;						//boolean to allow acceleration of particle
+	D3DXVECTOR3 m_vEmitterPos;				//emitter position(initial position of particle)
+	DWORD m_dwSrcblend;							//Source Blend Enum stored
+	DWORD m_dwDestblend;						//Destination Blend Enum stored
+
+	//Consturctor
 	CParticleSystem(void)
 	{
 		srand(unsigned int(time(0)));
 		m_fOffsetX = m_fOffsetY = m_fForceX = m_fForceY = m_fGravityX = m_fGravityY = m_fGravPointX = m_fGravPointY=
 			m_fVelDiff = m_fRotation = m_fRotationVelocity = 0.0f;
 
-		srcblend = destblend = NULL;
+		m_vEmitterPos = D3DXVECTOR3(0.0f,0.0f,0.0f);
+
+		m_dwSrcblend = 6;
+		m_dwDestblend = 7;
+
 		m_nImageID = -1;
-		m_nNumParticles = m_nMaxLife = m_nDestinationBlend = m_nSourceBlend = 0;
+		m_nNumParticles = m_nMaxLife = 0;
 
 		m_bGravityPoint = m_bGravity = m_bAlphaChange = m_bColorChange = m_bColorChangeRand = m_bCollision = 
-			m_bScaling = m_bLoop = m_bRandAge = m_bRotation = m_bVelDiff = false;
-		
+			m_bScaling = m_bLoop = m_bRandAge = m_bRotation = m_bVelDiff = m_bActive = false;
+
 		m_pTM = CSGD_TextureManager::GetInstance();
 		m_pd3d = CSGD_Direct3D::GetInstance();
 		//particles = NULL;
@@ -103,7 +110,11 @@ public:
 		particleBuff = NULL;
 		texture = NULL;
 	}
-	
+	///////////////////////////////////////////////////////////////////////////////////////////
+	// Function : InitParticle
+	//
+	// Purpose : To initialize each particle to a default value
+	///////////////////////////////////////////////////////////////////////////////////////////
 	void InitParticle(void)
 	{
 		m_nNumParticles = MAX_NUM_PARTS;
@@ -132,8 +143,7 @@ public:
 		m_nEndRed = 255;
 		m_nEndGreen = 255;
 		m_nEndBlue = 255;*/
-		m_nDestinationBlend = 0;
-		m_nSourceBlend = 0;
+
 
 		m_bGravityPoint = false;
 		m_bGravity = false;
@@ -155,7 +165,7 @@ public:
 				particles[i].ea = particles[i].er = particles[i].eg = particles[i].eb = 255;
 			particles[i].m_fScale = 1.0f;
 
-			particles[i].pos = D3DXVECTOR3(100,100,0.0f);//start position
+			particles[i].pos = m_vEmitterPos;//start position
 			particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
 			if(m_bRandAge == true)
 			{
@@ -172,181 +182,230 @@ public:
 			else particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
 		}
 	}
-	void UpdateParticle(float fElapsedTime, POINT mousePt)
+
+	/////////////////////////////////////////////////////////////////////////////////
+	// Function : Emit
+	//
+	// Purpose : To initialize a particle at a certain emitter point
+	/////////////////////////////////////////////////////////////////////////////////
+	void Emit(float x, float y)
 	{
-		int x = 0;
-
-		m_fGravPointX = (float)mousePt.x;
-		m_fGravPointY = (float)mousePt.y;
-
-		D3DXVECTOR3 gravPoint = D3DXVECTOR3(m_fGravPointX, m_fGravPointY, 0);
+		m_vEmitterPos = D3DXVECTOR3(x,y,0.0f);
 		for(int i = 0; i < m_nNumParticles; i++)
 		{
-			if(m_bGravityPoint == true)
-			{
-				float length;
-				D3DXVECTOR3 subtract;
-				D3DXVECTOR3 newVel;
-				D3DXVECTOR3 scale;
-				
-				D3DXVec3Subtract(&subtract, &gravPoint, &particles[i].pos);
-				length = D3DXVec3Length(&subtract) * 0.00005f;
-				D3DXVec3Scale(&newVel, &subtract, length);
+			particles[i].pos = m_vEmitterPos;
+			particles[i].life = 0.0f;
+		}
+	}
+	void Emit(POINT emitPt)
+	{
+		m_vEmitterPos = D3DXVECTOR3(emitPt.x, emitPt.y, 0.0f);
+		for(int i = 0; i< m_nNumParticles; i++)
+		{
+			particles[i].pos = m_vEmitterPos;
+			particles[i].life = 0.0f;
+		}
+	}
 
-				D3DXVec3Add(&particles[i].vel, &particles[i].vel, &newVel);
-				
-			}
-			if(m_bGravity == true)
-			{
-				particles[i].pos.x += m_fGravityX;
-				particles[i].pos.y += m_fGravityY;
-			}
-			if(m_bAlphaChange == true)
-			{
-				if(particles[i].ca < particles[i].ea)
-				{
-					particles[i].ca++;
-				}
-				particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
-			}
-			if(m_bColorChange == true)
-			{
-				if( particles[i].ca < particles[i].ea)
-				{
-					particles[i].ca++;
-				}
-				else if(particles[i].ca > particles[i].ea)
-				{
-					particles[i].ca--;
-				}
-				if(particles[i].cr < particles[i].er)
-				{
-					particles[i].cr++;
-				}
-				else if(particles[i].cr > particles[i].er)
-				{
-					particles[i].cr--;
-				}
-				if(particles[i].cg < particles[i].eg)
-				{
-					particles[i].cg++;
-				}
-				else if(particles[i].cg > particles[i].eg)
-				{
-					particles[i].cg--;
-				}
-				if(particles[i].cb < particles[i].eb)
-				{
-					particles[i].cb++;
-				}
-				else if(particles[i].cb > particles[i].eb)
-				{
-					particles[i].cb--;
-				}
-				particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
-			}
-			
-			if(m_bCollision == true){}
-			if(m_bScaling == true){}
-			
-			if(m_bRotation == true)
-			{
-				m_fRotation += m_fRotationVelocity;
-			}
+	//////////////////////////////////////////////////////////////////////////////
+	// Function : UpdateParticle
+	//
+	// Purpose : To update each particle in the system
+	//////////////////////////////////////////////////////////////////////////////
+	void UpdateParticle(float fElapsedTime)
+	{
+		if(m_bActive == false)
+		{
+		}
+		else
+		{
+			//emitter position = emitpt
+			//m_vEmitterPos = D3DXVECTOR(emitPt.x, emitPt.y, 0.0f);
 
-			if(m_bVelDiff == true){}
+			m_fGravPointX = m_vEmitterPos.x;
+			m_fGravPointY = m_vEmitterPos.y;
 
-			particles[i].pos += particles[i].vel * fElapsedTime;
-			particles[i].life++;
-			if(m_bLoop == true)
+			D3DXVECTOR3 gravPoint = D3DXVECTOR3(m_fGravPointX, m_fGravPointY, 0);
+			for(int i = 0; i < m_nNumParticles; i++)
 			{
-				if(particles[i].life > m_nMaxLife)
+				if(m_bGravityPoint == true)
 				{
-					particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
-					particles[i].life = 0.0f;
-					particles[i].pos = D3DXVECTOR3((float)(mousePt.x) - 50.0f, (float)(mousePt.y), 0.0f);
-					if(m_bColorChangeRand == true)
+					float length;
+					D3DXVECTOR3 subtract;
+					D3DXVECTOR3 newVel;
+					D3DXVECTOR3 scale;
+
+					D3DXVec3Subtract(&subtract, &gravPoint, &particles[i].pos);
+					length = D3DXVec3Length(&subtract) * 0.00005f;
+					D3DXVec3Scale(&newVel, &subtract, length);
+
+					D3DXVec3Add(&particles[i].vel, &particles[i].vel, &newVel);
+
+				}
+				if(m_bGravity == true)
+				{
+					particles[i].pos.x += m_fGravityX;
+					particles[i].pos.y += m_fGravityY;
+				}
+				if(m_bAlphaChange == true)
+				{
+					if(particles[i].ca < particles[i].ea)
 					{
-						particles[i].color = D3DCOLOR_ARGB(rand()%255,rand()%55, rand()%55, rand()%55);
+						particles[i].ca++;
 					}
-					else particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
+					particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
+				}
+				if(m_bColorChange == true)
+				{
+					if( particles[i].ca < particles[i].ea)
+					{
+						particles[i].ca++;
+					}
+					else if(particles[i].ca > particles[i].ea)
+					{
+						particles[i].ca--;
+					}
+					if(particles[i].cr < particles[i].er)
+					{
+						particles[i].cr++;
+					}
+					else if(particles[i].cr > particles[i].er)
+					{
+						particles[i].cr--;
+					}
+					if(particles[i].cg < particles[i].eg)
+					{
+						particles[i].cg++;
+					}
+					else if(particles[i].cg > particles[i].eg)
+					{
+						particles[i].cg--;
+					}
+					if(particles[i].cb < particles[i].eb)
+					{
+						particles[i].cb++;
+					}
+					else if(particles[i].cb > particles[i].eb)
+					{
+						particles[i].cb--;
+					}
+					particles[i].color = D3DCOLOR_ARGB(particles[i].ca, particles[i].cr, particles[i].cg, particles[i].cb);
+				}
+
+				if(m_bCollision == true){}
+				if(m_bScaling == true)
+				{
+					particles[i].size--;
+				}
+
+				if(m_bRotation == true)
+				{
+					m_fRotation += m_fRotationVelocity;
+				}
+
+				if(m_bVelDiff == true){}
+
+				particles[i].pos += particles[i].vel;// * fElapsedTime;
+				particles[i].life++;
+				if(m_bLoop == true)
+				{
+					if(particles[i].life > m_nMaxLife)
+					{
+						//particles[i].vel = D3DXVECTOR3(RandomFloat(-100.0f, 100.0f),RandomFloat(-100.0f, 100.0f),0.0f);
+						particles[i].life = 0.0f;
+						particles[i].pos = m_vEmitterPos;
+						if(m_bColorChangeRand == true)
+						{
+							particles[i].color = D3DCOLOR_ARGB(rand()%255,rand()%55, rand()%55, rand()%55);
+						}
+						else particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
+					}
 				}
 			}
 		}
 	}
+	//////////////////////////////////////////////////////////////////////////////////////
+	// Function : DrawParticle
+	//
+	// Purposer : Render the particle with its source and dest blend 
+	//////////////////////////////////////////////////////////////////////////////////////
 	void DrawParticle(void)
 	{
 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetVertexDeclaration(vertexDecl);
- 		//draw point sprites transparent
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ZWRITEENABLE, true);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
- 		//set the blend modes
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCALPHA);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
- 		//set up the point sprites
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALEENABLE, true);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE, 1);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MIN, 1);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MAX, 100);
- 		//// new size = base size * sqrt(1/(A+B*Dis+C*Dis*Dis))
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_A, 0);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_B, 0);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_C, 1);
- 		//use alpha value of vertex color with texture
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP, D3DTOP_MODULATE);
- 		//rewrite the dynamic vertex buffer
- 		//VERTEX *pvbuff;
- 		//particleBuff->Lock(0,1*sizeof(VERTEX), (void**)&pvbuff, D3DLOCK_DISCARD);
- 		//for(int i = 0; i < 1; i++)
- 		//{
- 		//	pvbuff->pos = particles[i].pos;
- 		//	pvbuff->size = particles[i].size;
- 		//	pvbuff->color = particles[i].color;
- 		//	pvbuff++;
- 		//}
- 		//particleBuff->Unlock();
- 		////draw
- 		//D3DXMATRIX transform;
- 		//D3DXMatrixIdentity(&transform);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTransform(D3DTS_WORLD, &transform);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTexture(0,texture);
-  		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetStreamSource(0,particleBuff,0,sizeof(VERTEX));
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->DrawPrimitive(D3DPT_POINTLIST,0,1);
- 		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
+		//draw point sprites transparent
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ZWRITEENABLE, true);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHATESTENABLE, true);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_ALPHABLENDENABLE, true);
+		//set the blend modes
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_INVSRCALPHA);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCCOLOR);
+		//set up the point sprites
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSPRITEENABLE, true);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALEENABLE, true);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE, 1);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MIN, 1);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSIZE_MAX, 100);
+		//// new size = base size * sqrt(1/(A+B*Dis+C*Dis*Dis))
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_A, 0);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_B, 0);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetRenderState(D3DRS_POINTSCALE_C, 1);
+		//use alpha value of vertex color with texture
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP, D3DTOP_MODULATE);
+		//rewrite the dynamic vertex buffer
+		//VERTEX *pvbuff;
+		//particleBuff->Lock(0,1*sizeof(VERTEX), (void**)&pvbuff, D3DLOCK_DISCARD);
+		//for(int i = 0; i < 1; i++)
+		//{
+		//	pvbuff->pos = particles[i].pos;
+		//	pvbuff->size = particles[i].size;
+		//	pvbuff->color = particles[i].color;
+		//	pvbuff++;
+		//}
+		//particleBuff->Unlock();
+		////draw
+		//D3DXMATRIX transform;
+		//D3DXMatrixIdentity(&transform);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTransform(D3DTS_WORLD, &transform);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTexture(0,texture);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetStreamSource(0,particleBuff,0,sizeof(VERTEX));
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->DrawPrimitive(D3DPT_POINTLIST,0,1);
+		//CSGD_Direct3D::GetInstance()->GetDirect3DDevice()->SetTextureStageState(0,D3DTSS_ALPHAOP,D3DTOP_SELECTARG1);
 
 		// DRAW		
- 		//set the blend modes
-		
-		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_SRCBLEND,&srcblend);
-		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_DESTBLEND, &destblend);
+		//set the blend modes
+
+		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_SRCBLEND,&m_dwSrcblend);
+		m_pd3d->GetDirect3DDevice()->GetRenderState(D3DRS_DESTBLEND, &m_dwDestblend);
 
 		m_pd3d->GetSprite()->Flush();
-		
- 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
- 		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_ONE);
+
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, D3DBLEND_SRCALPHA);
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_DESTALPHA);
 
 		for (int i = 0; i < m_nNumParticles; ++i)
 		{
-			CSGD_TextureManager::GetInstance()->Draw(m_nImageID, (int)(particles[i].pos.x),
-				(int)(particles[i].pos.y), particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
-				particles[i].pos.y, m_fRotation, particles[i].color );
+			if(particles[i].life < m_nMaxLife)
+			{
+				CSGD_TextureManager::GetInstance()->Draw(m_nImageID, (int)(particles[i].pos.x),
+					(int)(particles[i].pos.y), particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
+					particles[i].pos.y, m_fRotation, particles[i].color );
+			}
 		}
 
 		m_pd3d->GetSprite()->Flush();
 
 
-		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, srcblend);
-		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, destblend);
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_SRCBLEND, m_dwSrcblend);
+		m_pd3d->GetDirect3DDevice()->SetRenderState(D3DRS_DESTBLEND, m_dwDestblend);
 
 	}
 
+	//Destructor
 	~CParticleSystem(void)
 	{
-		if (particles)
+		if (particles != NULL)
 		{
-			delete[] particles;
+			delete [] particles;
 		}
 		if(vertexDecl)
 		{
@@ -365,6 +424,7 @@ public:
 			m_pTM->UnloadTexture(m_nImageID);
 		}
 	}
+
 	///////////////////////////////////////////////////////////////////////
 	// Function : Load
 	//
@@ -378,7 +438,7 @@ public:
 		{
 			fs.exceptions(~ios_base::goodbit);
 			fs.open(binFileName, ios::in | ios::binary);//attempt to open file
-			
+
 			/*char buffer[512];
 			ZeroMemory(buffer, 512);
 			char size;
@@ -391,7 +451,7 @@ public:
 
 			//set texture
 			m_nImageID = m_pTM->LoadTexture("Resources/Images/VG_Particle.png", D3DCOLOR_XRGB(0,0,0));
-			
+
 			int numparticles;
 			fs.read(reinterpret_cast<char*>(&numparticles), sizeof(int));
 			particles = new PARTICLE[numparticles];
@@ -414,7 +474,7 @@ public:
 			float offsety;
 			fs.read(reinterpret_cast<char*>(&offsety), sizeof(float));
 			m_fOffsetY = offsety;
-			
+
 			for(int i = 0; i < numparticles; i++)
 			{
 				//velocity
@@ -428,8 +488,8 @@ public:
 				//gravity
 				bool bGravPoint;
 				fs.read(reinterpret_cast<char*>(&bGravPoint), sizeof(bool));
-				//m_bGravityPoint = bGravPoint;
-				m_bGravityPoint = true;
+				m_bGravityPoint = bGravPoint;
+				//m_bGravityPoint = true;
 
 				bool bGrav;
 				fs.read(reinterpret_cast<char*>(&bGrav), sizeof(bool));
@@ -444,7 +504,7 @@ public:
 				m_fGravityY = gravy;
 
 
-				//start color
+				//start color A R G B values
 				int salpha;
 				fs.read(reinterpret_cast<char*>(&salpha), sizeof(int));
 				particles[i].sa = salpha;
@@ -568,6 +628,7 @@ public:
 			if (fs.eof())
 			{fs.close();return;}	
 		}
+
 	};
 };
 

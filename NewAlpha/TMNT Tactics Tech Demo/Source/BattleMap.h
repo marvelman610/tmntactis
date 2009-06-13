@@ -35,6 +35,7 @@ class CBox;
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
+ enum {FIRE, SMOKE, BLOOD, GLOW};
 
 #include "Base.h"
 
@@ -155,7 +156,7 @@ class CBattleMap
 	bool m_bIsPlayersTurn;
 
 	// temp particles
-	CParticleSystem* m_pParticleSys;
+	CParticleSystem* m_pParticleSystem;
 	// temp ninja
 
 	//////////////////////////////////////////////////////////////////////////

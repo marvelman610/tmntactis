@@ -45,6 +45,7 @@ CBattleMap::CBattleMap(void)
 	m_pBitmapFont   = CBitmapFont::GetInstance();
 	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
 	m_pHUD			= CHUD::GetInstance();
+	
 
 	godbool = false;
 	godcheat = 0;
@@ -112,8 +113,16 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
-	m_pParticleSys = new CParticleSystem();
-	m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
+	//m_pParticleSys = new CParticleSystem();
+	//m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
+
+	//particle test
+	m_pParticleSystem = new CParticleSystem[4]();
+
+	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
+	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
+	m_pParticleSystem[GLOW].Load("Resources/ParticleInfo/VG_Test.dat");
+	m_pParticleSystem[BLOOD].Load("Resources/ParticleInfo/VG_Blood.dat");
 
 	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
@@ -139,7 +148,7 @@ void CBattleMap::Reset()
 	delete[] m_pTilesL1;
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
-	delete m_pParticleSys;
+	delete [] m_pParticleSystem;
 	if(m_bxItemBox)
 	{
 		delete m_bxItemBox;
@@ -354,7 +363,8 @@ void CBattleMap::Render()
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
-	//m_pParticleSys->DrawParticle();
+	if(m_pParticleSystem[FIRE].m_bActive == true)
+	{	m_pParticleSystem[FIRE].DrawParticle(); }
 	DrawDebugInfo();
 }
 void CBattleMap::SetPaused(bool IsPaused)
@@ -452,8 +462,10 @@ void CBattleMap::Update(float fElapsedTime)
 	}
 	//CPlayer::GetInstance()->Update(fElapsedTime);
 	CHUD::GetInstance()->Update(fElapsedTime);
-	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
 
+	//update the particle system
+	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{
@@ -1464,7 +1476,13 @@ void CBattleMap::PerformAttack()
 		if (m_nCurrTarget > 0 && m_nNumEnemiesKilled > 0 && index > 0)
 			index -= m_nNumEnemiesKilled;
 		m_vEnemies[index]->SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
-	
+		
+		/*POINT point;
+		point.x = m_vEnemies[index]->GetPosX();
+		point.y = m_vEnemies[index]->GetPosY();
+		m_pParticleSystem[FIRE].UpdateParticle(0,point);
+		m_pParticleSystem[FIRE].DrawParticle();*/
+
 		if (m_vEnemies[index]->GetHealth() <= 0)
 		{
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);

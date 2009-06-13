@@ -60,7 +60,6 @@ private:
 	int m_nExperience;
 	int m_nSkillXP;
 	//////////////////////////////////////////////////////////////////////////
-
 	//CTile m_pTileArray;
 	CBase* m_pOwner;
 

@@ -388,6 +388,7 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	// AI's turn
 	if(m_bIsPlayersTurn == false && m_vEnemies.size() != 0)
 	{
 		int index = rand()%m_vEnemies.size();
@@ -408,6 +409,38 @@ void CBattleMap::Update(float fElapsedTime)
 					m_pTilesL1[id].SetAlpha(255);
 			}
 	}
+	// a turtle has been moved...execute the animation and position change over time
+	if (m_bMoving)
+	{
+		if (m_vPath.size() > 0)
+		{
+			// determine which direction the next move is in
+			POINT newPoint = m_vPath[0];
+			vector<POINT>::iterator first = m_vPath.begin();
+			m_vPath.erase(first);
+			POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
+			if (newPoint.x < currPoint.x)
+			{
+				m_nMoveDirection = MOVE_MINUS_X;
+			}
+			else if (newPoint.x > currPoint.x)
+			{
+				m_nMoveDirection = MOVE_ADD_X;
+			}
+			else if (newPoint.y < currPoint.y)
+			{
+				m_nMoveDirection = MOVE_MINUS_Y;
+			}
+			else if (newPoint.y > currPoint.y)
+			{
+				m_nMoveDirection = MOVE_ADD_Y;
+			}
+		}
+		else
+		{
+			m_bMoving = false;
+		}
+	}
 	cheat();
 	if(godbool)
 		m_vCharacters[m_nCurrCharacter].SetHealth(100);
@@ -422,7 +455,7 @@ void CBattleMap::Update(float fElapsedTime)
 	m_pParticleSys->UpdateParticle(fElapsedTime, m_ptMouseScreenCoord);
 
 	// if a skill is being executed...
-	if (m_bExecuteSkill )
+	if ( m_bExecuteSkill )
 	{
 		CSkill*  skill = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
 		skill->Update(fElapsedTime, skill);
@@ -430,7 +463,7 @@ void CBattleMap::Update(float fElapsedTime)
 			m_bExecuteSkill = false;
 		return;
 	}
-	else if (m_bExecuteSkill )
+	else if ( m_bExecuteSkill )
 	{
 		m_bExecuteSkill = false;
 		return;
@@ -462,16 +495,19 @@ void CBattleMap::Update(float fElapsedTime)
 			break;
 		}
 		int id = newPt.y * m_nNumCols + newPt.x;
-		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
-			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
-				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
-		{
+// 		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
+// 			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
+// 				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
+// 		{
+			// TODO::make the character move to the next tile...pos * vel
+
+			//TODO::after the movement has finished, set the current tile and recalculate the range and decrement the AP accordingly...will have to move these somewhere else
 			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
 			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
 			CalculateRanges();
-		}
+//  	}
 		m_nMoveDirection = -1;
 	}
 	if (m_bNotEnoughAP || m_bOutOfRange)
@@ -486,6 +522,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		SetPaused(true);
 	else
 		SetPaused(false);
+	if (m_bMoving)
+		return true;
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
@@ -543,15 +581,14 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			yID = m_nNumRows-1;
 
 		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
-		// Mouse -- determine if the mouse is over a character
+
+		if (m_bIsPlayersTurn || m_bIsPaused)
+			HandleMouseInput(fElapsedTime, mouse, xID, yID);
 
 		// debugging
 		if (m_pDI->KeyPressed(DIK_D))
 			int i = 0;
-		if (m_bIsPlayersTurn || m_bIsPaused)
-			HandleMouseInput(fElapsedTime, mouse, xID, yID);
 	}
-
 	return true;
 }
 
@@ -1149,7 +1186,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		}
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
-		return false;
+	{CGamePlayState::GetInstance()->SetPaused(true);return true;}
 	else if (m_pDI->KeyPressed(DIK_ESCAPE) )
 	{
 		m_nCurrBtnSelected = BTN_BACK;
@@ -1192,21 +1229,23 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			// is tile occupied?
 			bool bOccupied = false;	
 			int tileID = yID * m_nNumCols + xID;
+			m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
 			for (int i = 0; i < m_nNumCharacters; ++i)
 				if (m_vCharacters[i].GetCurrTile() == tileID)
 				{bOccupied = true; break; }
 
 			// now check if the character has enough Action Points
 			int dist = (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist && !bOccupied)
+			if (/*m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist &&*/ !bOccupied)
 			{
-				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
-				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
-				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
-				UpdatePositions();
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-				CalculateRanges();
+				FindPathToTarget();
+// 				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
+// 				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+// 				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
+// 				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
+// 				UpdatePositions();
+// 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+// 				CalculateRanges();
 			}
 		}
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
@@ -1262,27 +1301,15 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		{
 			// check if in range
 			if (m_nDistanceToTarget > m_vCharacters[m_nCurrCharacter].GetRange() && m_sCurrSkillName == "NONE")
-			{
-				m_bOutOfRange = true;
-				return;
-			}
+			{ m_bOutOfRange = true; return; }
 			else if (m_sCurrSkillName != "NONE" && m_nDistanceToTarget > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->GetRange())
-			{
-				m_bOutOfRange = true;
-				return;
-			}
+			{ m_bOutOfRange = true; return; }
 			// check if enough AP for a regular attack
 			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < 4 && m_sCurrSkillName == "NONE")
-			{
-				m_bNotEnoughAP = true;
-				return;
-			}
+			{ m_bNotEnoughAP = true; return; }
 			// check if enough AP for the selected skill
 			else if (m_sCurrSkillName != "NONE" && m_vCharacters[m_nCurrCharacter].GetCurrAP() < m_nCurrSkillCost)
-			{
-				m_bNotEnoughAP = true;
-				return;
-			}
+			{ m_bNotEnoughAP = true; return; }
 			else
 				PerformAttack();
 		}
@@ -1473,37 +1500,79 @@ void CBattleMap::PerformAttack()
 }
 void CBattleMap::FindPathToTarget()
 {
-	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
-	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
-	int currTile = m_nCurrCharacterTile;
-	int adjTiles[4]; int count = 0;
+	m_vPath.clear();
+	POINT ptCurr = m_vCharacters[m_nCurrCharacter].GetMapCoord(); // begin point
+	POINT ptTarget = m_ptEndCoord;	// end point
+	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();	// max distance moveable
+	int pathWeight = 0;
+	vector<int> pathX;
+	vector<int> pathY;
+	int oldX = ptCurr.x;
+	int oldY = ptCurr.y;
 
-	while (currTile != m_ncurrTargetTile)
+	while (true)
 	{
-		for(int nx = ptGridLocation.x - 1; nx <= ptGridLocation.x + 1; ++nx)
+		if (pathWeight-4 > -1)
 		{
-			if (count == 4)
-				count = 0;
-			for(int ny = ptGridLocation.y - 1; ny <= ptGridLocation.y + 1; ++ny)
-			{
-				// skip tiles that are diagonal from the currTile
-				if ((nx == ptGridLocation.x - 1 && ny == ptGridLocation.y - 1) ||
-					(nx == ptGridLocation.x + 1 && ny == ptGridLocation.y - 1) ||
-					(nx == ptGridLocation.x - 1 && ny == ptGridLocation.y + 1) ||
-					(nx == ptGridLocation.x + 1 && ny == ptGridLocation.y + 1) )
-				{
-					continue;
-					++count;
-				}
-				//make sure the neighbor is on the map
-				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
-					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
-				{
-
-					++count;
-				}
-			}
+			if ( (ptCurr.x == pathX[pathWeight-4]) && (ptCurr.y == pathY[pathWeight-4]) )
+			{ pathWeight = 10000; break; }
 		}
+		if (pathWeight-1 > -1)
+		{
+			pathX.push_back(ptCurr.x);
+			pathY.push_back(ptCurr.y);
+			m_vPath.push_back(ptCurr);
+			oldX = pathX[pathWeight-1];
+			oldY = pathY[pathWeight-1];
+		}
+		++pathWeight;
+		if (ptTarget.x == ptCurr.x && ptTarget.y == ptCurr.y)
+			break;
+		if (pathWeight > m_nNumCols)
+		{pathWeight = 10000; break;}
+
+		if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
+			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE)
+		{ ++ptCurr.x; continue; }
+		if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
+			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE)
+		{ --ptCurr.x; continue; }
+		if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
+			m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		{ ++ptCurr.y; continue; }
+		if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
+			m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		{ --ptCurr.y; continue; }
+
+		if (ptCurr.x == ptTarget.x)
+		{
+			if (oldX != ptCurr.x+1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x+1].Flag() == FLAG_NONE)
+			{ ++ptCurr.x; continue; }
+			if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE)
+			{ --ptCurr.x; continue; }
+		}
+		else if (ptCurr.y == ptTarget.y)
+		{
+			if (oldY != ptCurr.y+1 && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			{ ++ptCurr.y; continue; }
+			if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			{ --ptCurr.y; continue; }
+		}
+		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE)
+		{++ptCurr.x; continue;}
+		else if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE)
+		{--ptCurr.x; continue;}
+		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		{++ptCurr.y; continue;}
+		else if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		{--ptCurr.y; continue;}
+		pathWeight = 10000; break;
+	}
+	if (m_vPath.size() > 0)
+	{
+		m_bMoving = true;
+		for (int i = 0; i < m_vPath.size(); ++i)
+			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(255);
 	}
 }
 

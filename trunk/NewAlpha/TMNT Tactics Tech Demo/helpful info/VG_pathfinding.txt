@@ -38,7 +38,8 @@ function(fStart,fEnd,fDir,fRev) {
 			else if ((oldx != curx-1)&&(this.map[curx-1][cury])) { curx--; continue; }
 			if ((cury > endy)&&(oldy != cury+1)&&(this.map[curx][cury+1])) { cury++; continue; }
 			else if ((oldy != cury-1)&&(this.map[curx][cury-1])) { cury--; continue; }
-		} else { // favour y movements
+		} 
+		else { // favour y movements
 			// move towards end:
 			if ((cury < endy)&&(oldy != cury+1)&&(this.map[curx][cury+1])) { cury++; continue; }
 			if ((cury > endy)&&(oldy != cury-1)&&(this.map[curx][cury-1])) { cury--; continue; }

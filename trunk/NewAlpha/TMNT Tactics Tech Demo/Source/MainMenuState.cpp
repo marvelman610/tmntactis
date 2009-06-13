@@ -43,12 +43,10 @@ void CMainMenuState::Enter()
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aMMBGimageID));
 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aMMBGimageID));
 	CenterBGImage();
-	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
 	SetCurrMenuSelection( PLAY );
 	SetMenuX(400); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
-	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 }
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
@@ -62,14 +60,12 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
 		if (GetCurrMenuSelection() == NULL_END)
 			SetCurrMenuSelection(PLAY);
-		//GetFMOD()->playSound(FMOD_CHANNEL_FREE, GetAssets()->aMMsndMenuClick, false, &GetAssets()->channel1);
 	}
 	else if (GetDI()->KeyPressed(DIK_UP))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() -1);
 		if (GetCurrMenuSelection() < PLAY)
 			SetCurrMenuSelection(NULL_END-1);
-		//GetFMOD()->playSound(FMOD_CHANNEL_FREE, GetAssets()->aMMsndMenuClick, false, &GetAssets()->channel1);
 	}
 	else if (GetDI()->KeyPressed(DIK_RETURN))
 	{

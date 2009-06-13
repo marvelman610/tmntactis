@@ -44,6 +44,11 @@ class CBox;
 	 int x;
 	 int y;
  };
+//  struct MY_POINT_FLOAT
+//  {
+// 	 float x;
+// 	 float y;
+//  };
 class CBattleMap
 {
 	struct sTileset 
@@ -110,7 +115,7 @@ class CBattleMap
 	bool  m_bMoving;			// is the character in the middle of moving?
 	bool  m_bPathDisplayed;		// has the user clicked to see the path they could move on?
 	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to
-	POINT m_ptStartXY;			// keeps track of the starting position for each tile move
+	MY_POINT_FLOAT m_ptStartXY;			// keeps track of the starting position for each tile move
 	vector<POINT> m_vPath;		// the path to take
 
 	int m_nScrenWidth;

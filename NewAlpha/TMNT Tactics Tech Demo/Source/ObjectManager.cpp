@@ -161,10 +161,10 @@ void ObjectManager::CheckCollisions(void)
 				|| (m_vObjects[j]->GetType()== OBJECT_TURTLE && m_vObjects[i]->GetType()==OBJECT_BATTLEITEM))
 			{
 				RECT rCollision;
-				RECT rCollisionRect1 = {m_vObjects[i]->GetPosX(), m_vObjects[i]->GetPosY(),
-					m_vObjects[i]->GetWidth() + m_vObjects[i]->GetPosX(), m_vObjects[i]->GetHeight() + m_vObjects[i]->GetPosY()};
-				RECT rCollisionRect2 = {m_vObjects[j]->GetPosX(), m_vObjects[j]->GetPosY(),
-					m_vObjects[j]->GetWidth() + m_vObjects[j]->GetPosX(), m_vObjects[j]->GetHeight() + m_vObjects[j]->GetPosY()};
+				RECT rCollisionRect1 = {(LONG)m_vObjects[i]->GetPosX(), (LONG)m_vObjects[i]->GetPosY(),
+					(LONG)(m_vObjects[i]->GetWidth() + m_vObjects[i]->GetPosX()), (LONG)(m_vObjects[i]->GetHeight() + m_vObjects[i]->GetPosY())};
+				RECT rCollisionRect2 = {(LONG)m_vObjects[j]->GetPosX(), (LONG)m_vObjects[j]->GetPosY(),
+					(LONG)(m_vObjects[j]->GetWidth() + m_vObjects[j]->GetPosX()), (LONG)(m_vObjects[j]->GetHeight() + m_vObjects[j]->GetPosY())};
 
 				if (IntersectRect(&rCollision, &rCollisionRect1, &rCollisionRect2))
 				{

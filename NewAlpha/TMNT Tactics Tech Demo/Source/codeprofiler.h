@@ -43,7 +43,7 @@ public:
 	///////////////////////////////////////////////////////////////////
 	~CCodeProfiler()
 	{
-		avgTime = (totalTime / tickFrequency.QuadPart) / timesRan;
+		avgTime = (float)(totalTime / tickFrequency.QuadPart) / timesRan;
 		ofstream ofs;
 		ofs.open("Resources/VG_code_profile.txt", ios_base::out | ios_base::trunc);
 

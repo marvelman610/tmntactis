@@ -429,37 +429,72 @@ void CBattleMap::Update(float fElapsedTime)
 			}
 	}
 	// a turtle has been moved...execute the animation and position change over time
-	if (m_bMoving)
-	{
-		if (m_vPath.size() > 0)
-		{
-			// determine which direction the next move is in
-			POINT newPoint = m_vPath[0];
-			vector<POINT>::iterator first = m_vPath.begin();
-			m_vPath.erase(first);
-			POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
-			if (newPoint.x < currPoint.x)
-			{
-				m_nMoveDirection = MOVE_MINUS_X;
-			}
-			else if (newPoint.x > currPoint.x)
-			{
-				m_nMoveDirection = MOVE_ADD_X;
-			}
-			else if (newPoint.y < currPoint.y)
-			{
-				m_nMoveDirection = MOVE_MINUS_Y;
-			}
-			else if (newPoint.y > currPoint.y)
-			{
-				m_nMoveDirection = MOVE_ADD_Y;
-			}
-		}
-		else
-		{
-			m_bMoving = false;
-		}
-	}
+// 	if (m_bMoving/* && m_fTimer > 0.15f*/)
+// 	{
+// 		if (m_vPath.size() > 0)
+// 		{
+// 			// grab the next move and take it out of the vector
+// 			POINT newPoint = m_vPath[0];
+// 			bool bMoveComplete = false;
+// 			// set up variables
+// 			//POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
+// 			CTurtle* turtle = m_pPlayer->GetTurtles()[m_nCurrCharacter];
+// 			float currPosX = turtle->GetPosX();
+// 			float currPosY = turtle->GetPosY();
+// 
+// 			// TODO::make the character move to the next tile...pos * vel
+// 			// determine which direction the next move is in
+// 			if ( abs(m_ptStartXY.x - currPosX) < 64 && abs(m_ptStartXY.y - currPosY) < 32)
+// 			{
+// 				currPosX -= turtle->GetVelX() * fElapsedTime;
+// 				turtle->SetPosX(currPosX);
+// 				currPosY -= turtle->GetVelY() * fElapsedTime;
+// 				turtle->SetPosY(currPosY);
+// 			}
+// 			else if ( abs(m_ptStartXY.x - currPosX) < 64 && abs(m_ptStartXY.y - currPosY) < 32)
+// 			{
+// 				currPosX += turtle->GetVelX() * fElapsedTime;
+// 				turtle->SetPosX(currPosX);
+// 				currPosY += turtle->GetVelY() * fElapsedTime;
+// 				turtle->SetPosY(currPosY);
+// 			}
+// 			if ( abs(m_ptStartXY.x - currPosX) < 64 && abs(m_ptStartXY.y - currPosY) < 32/*newPoint.y < currPoint.y*/)
+// 			{
+// 				currPosY -= turtle->GetVelY() * fElapsedTime;
+// 				turtle->SetPosY(currPosY);
+// 				currPosX += turtle->GetVelX() * fElapsedTime;
+// 				turtle->SetPosX(currPosX);
+// 			}
+// 			else if ( abs(m_ptStartXY.x - currPosX) < 64 && abs(m_ptStartXY.y - currPosY) < 32)
+// 			{
+// 				currPosY += turtle->GetVelY() * fElapsedTime;
+// 				turtle->SetPosY(currPosY);
+// 				currPosX -= turtle->GetVelX() * fElapsedTime;
+// 				turtle->SetPosX(currPosX);
+// 			}
+// 			// check to see if this current tile move is complete
+// 			if ( abs(m_ptStartXY.x - currPosX) >= 64 && abs(m_ptStartXY.y - currPosY) >= 32)
+// 			{
+// 				vector<POINT>::iterator first = m_vPath.begin();
+// 				m_vPath.erase(first);
+// 				m_vCharacters[m_nCurrCharacter].SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+// 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+// 				m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
+//  				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
+// 				m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
+// 				m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+//  				CalculateRanges();
+// // 				m_fTimer = 0.0f;
+// 			}
+// 			// TODO::after the movement has finished, set the current tile and 
+// 			// TODO::recalculate the range and decrement the AP accordingly...
+// 		}
+// 		else
+// 		{
+// 			m_bMoving = false;
+// 			m_bPathDisplayed = false;
+// 		}
+// 	}
 	cheat();
 	if(godbool)
 		m_vCharacters[m_nCurrCharacter].SetHealth(100);
@@ -492,6 +527,7 @@ void CBattleMap::Update(float fElapsedTime)
 		m_bExecuteSkill = false;
 		return;
 	}
+	// for keyboard movement
 	if (m_nMoveDirection != -1)
 	{
 		POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
@@ -519,22 +555,19 @@ void CBattleMap::Update(float fElapsedTime)
 			break;
 		}
 		int id = newPt.y * m_nNumCols + newPt.x;
-// 		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
-// 			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
-// 				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
-// 		{
-			// TODO::make the character move to the next tile...pos * vel
-
-			//TODO::after the movement has finished, set the current tile and recalculate the range and decrement the AP accordingly...will have to move these somewhere else
+		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
+			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
+				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
+		{
 			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
 			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
 			CalculateRanges();
-//  	}
+	  	}
 		m_nMoveDirection = -1;
 	}
-	if (m_bNotEnoughAP || m_bOutOfRange)
+	if (m_bNotEnoughAP || m_bOutOfRange || m_bMoving)
 	{
 		m_fTimer += fElapsedTime;
 	}
@@ -1254,23 +1287,40 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			// is tile occupied?
 			bool bOccupied = false;	
 			int tileID = yID * m_nNumCols + xID;
-			m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
 			for (int i = 0; i < m_nNumCharacters; ++i)
 				if (m_vCharacters[i].GetCurrTile() == tileID)
 				{bOccupied = true; break; }
+			// the user has clicked on the same location to move to again..moving now
+			if (m_bPathDisplayed && !bOccupied && m_ptEndCoord.x == xID && m_ptEndCoord.y == yID)
+				m_bMoving = true;
+			// reset..a new path needs to be evaluated
+			else if (m_bPathDisplayed && !bOccupied && (m_ptEndCoord.x != xID || m_ptEndCoord.y != yID) )
+			{
+				// reset alphas
+				for(int nx = 2; nx < m_nNumCols; ++nx)
+					for(int ny = 2; ny < m_nNumRows; ++ny)
+					{
+						int id = ny*m_nNumCols+nx;
+						if (m_pTilesL1[id].Alpha() != 255)
+							m_pTilesL1[id].SetAlpha(255);
+					}
+					CalculateRanges();
+			}
 
 			// now check if the character has enough Action Points
 			int dist = (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
-			if (/*m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist &&*/ !bOccupied)
+			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist && !bOccupied)
 			{
-				FindPathToTarget();
-// 				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
-// 				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-// 				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
-// 				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
-// 				UpdatePositions();
-// 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-// 				CalculateRanges();
+				m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
+				//FindPathToTarget();
+				m_bPathDisplayed = true;
+				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
+				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
+				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
+				UpdatePositions();
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+				CalculateRanges();
 			}
 		}
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
@@ -1600,8 +1650,9 @@ void CBattleMap::FindPathToTarget()
 	}
 	if (m_vPath.size() > 0)
 	{
-		m_bMoving = true;
-		for (int i = 0; i < m_vPath.size(); ++i)
+		m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
+		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+		for (unsigned int i = 0; i < m_vPath.size(); ++i)
 			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(255);
 	}
 }

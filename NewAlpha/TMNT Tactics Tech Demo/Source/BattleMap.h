@@ -105,10 +105,13 @@ class CBattleMap
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
 	int m_nCurrMouseTileTarget;
+
 	// movement
-	bool  m_bMoving;
-	POINT m_ptEndCoord;
-	vector<POINT> m_vPath;
+	bool  m_bMoving;			// is the character in the middle of moving?
+	bool  m_bPathDisplayed;		// has the user clicked to see the path they could move on?
+	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to
+	POINT m_ptStartXY;			// keeps track of the starting position for each tile move
+	vector<POINT> m_vPath;		// the path to take
 
 	int m_nScrenWidth;
 	int m_nScreenHeight;

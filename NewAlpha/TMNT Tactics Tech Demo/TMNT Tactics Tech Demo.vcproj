@@ -463,34 +463,6 @@
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="FMOD"
-			>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod_codec.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod_dsp.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod_errors.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\inc\fmod_output.h"
-				>
-			</File>
-		</Filter>
 		<File
 			RelativePath=".\Source\FModSDK\lib\fmodexL_vc.lib"
 			>

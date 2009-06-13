@@ -15,6 +15,7 @@
 class CPlayer;
 class CBitmapFont;
 class CSGD_TextureManager;
+class CSGD_Direct3D;
 
 class CHUD
 {
@@ -39,6 +40,7 @@ private:
 	CPlayer* m_pPlayer;
 	CBitmapFont* m_pBitmapFont;
 	CSGD_TextureManager* m_pTM;
+	CSGD_Direct3D* m_pD3D;
 
 public:
 	///////////////////////////////////////////////////////////////////

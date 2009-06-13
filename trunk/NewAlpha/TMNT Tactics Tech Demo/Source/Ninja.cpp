@@ -287,7 +287,6 @@ void CNinja::AI()
 	switch(m_nInRange)
 	{
 		//next to turtle
-		
 	case 0:
 		{
 			//16 ap always

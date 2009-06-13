@@ -19,6 +19,12 @@ using std::vector;
 
 enum TYPE{ OBJECT_WEAPON, OBJECT_BATTLEITEM, OBJECT_BOSS, OBJECT_NINJA, OBJECT_TURTLE};
 
+struct MY_POINT_FLOAT
+{
+	float x;
+	float y;
+};
+
 class CBase : public IBaseInterface
 {
 private:
@@ -126,6 +132,7 @@ public:
 	inline void SetPosX(float fPosX)		{m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
 	inline void SetPosY(float fPosY)		{m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
 	inline void SetPosPt(POINT pos)			{m_fPosX = (float)pos.x; m_fPosY = (float)pos.y;}
+	inline void SetPosPtF(MY_POINT_FLOAT pos){m_fPosX = pos.x; m_fPosY = pos.y;}
 	inline void SetPosZ(float fPosZ)		{m_fPosZ = fPosZ;}
 	inline void SetVelX(float fVelX)		{m_fVelX = fVelX;}
 	inline void SetVelY(float fVelY)		{m_fVelY = fVelY;}

@@ -74,14 +74,14 @@ class CBattleMap
 		}
 	};
 	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
-	int m_nCurrMousePtr;
+	int m_nCurrMousePtr;		// which image is currently being used as the mouse pointer
 	DEPTH depth;				// struct that holds all the z-depth draw values
 	string m_strCurrVersion;
 
 	// button selection
-	int m_nCurrBtnSelected;
-	bool m_bDisplaySpecialBox;
-	bool m_bDisplayItemBox;
+	int   m_nCurrBtnSelected;
+	bool  m_bDisplaySpecialBox;
+	bool  m_bDisplayItemBox;
 	CBox* m_bxActionBox;
 	CBox* m_bxSkillBox;
 	CBox* m_bxItemBox;
@@ -104,6 +104,10 @@ class CBattleMap
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
 	int m_nCurrMouseTileTarget;
+	// movement
+	bool  m_bMoving;
+	POINT m_ptEndCoord;
+	vector<POINT> m_vPath;
 
 	int m_nScrenWidth;
 	int m_nScreenHeight;
@@ -351,7 +355,7 @@ public:
 	int GetCurrTarget() const		{return m_nCurrTarget;}
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	bool GetPaused()	const		{return m_bIsPaused;}
-	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];}
+	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetChars()				{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}

@@ -118,8 +118,8 @@ void CHUD::Update(float fElapsedTime)
 		{
 			float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetMaxHealth() );
 			float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetBaseAP() );		
-			m_rEnemyHP.left = 104 - hpWidth;
-			m_rEnemyAP.left = 104 - apWidth;
+			m_rEnemyHP.left = (float)(104 - hpWidth);
+			m_rEnemyAP.left = (float)(104 - apWidth);
 		}
 
 }

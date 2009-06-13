@@ -15,6 +15,8 @@ CTurtle::CTurtle(void)
 	m_nType = OBJECT_TURTLE;
 	m_nCurrSelectedSkill = -1;
 	m_bIsAlive = true;
+	SetVelX(100.0f);
+	SetVelY(100.0f);
 	SetWidth(64);
 	SetHeight(64);
 }

@@ -176,8 +176,8 @@ public:
 	{
 		int x = 0;
 
-		m_fGravPointX = mousePt.x;
-		m_fGravPointY = mousePt.y;
+		m_fGravPointX = (float)mousePt.x;
+		m_fGravPointY = (float)mousePt.y;
 
 		D3DXVECTOR3 gravPoint = D3DXVECTOR3(m_fGravPointX, m_fGravPointY, 0);
 		for(int i = 0; i < m_nNumParticles; i++)

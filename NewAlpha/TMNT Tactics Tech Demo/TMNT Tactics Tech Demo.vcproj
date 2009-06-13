@@ -490,22 +490,6 @@
 				RelativePath=".\Source\FModSDK\inc\fmod_output.h"
 				>
 			</File>
-			<File
-				RelativePath=".\Source\FModSDK\lib\fmodex_vc.lib"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\lib\libfmodex.a"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\lib\libfmodexL.a"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\FModSDK\lib\libfmodexp.a"
-				>
-			</File>
 		</Filter>
 		<File
 			RelativePath=".\Source\FModSDK\lib\fmodexL_vc.lib"

@@ -114,6 +114,7 @@ public:
 	int GetCursorY()				{return m_nMenuCusorY;}
 	int GetScreenWidth()			{return m_nScreenWidth;}
 	int GetScreenHeight()			{return m_nScreenHeight;}
+	int GetBGImageID()				{return m_nBGImageID; }
 	int GetMenuX() const			{return m_nMenuX; }
 	int GetMenuY() const			{return m_nMenuY; }
 

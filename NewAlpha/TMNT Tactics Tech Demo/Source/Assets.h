@@ -79,6 +79,7 @@ public:
 
 	// Options Menu IDs
 	int aOMbgID;
+	int aTutorialID;
 
 	// How To Play Menu IDs
 	int aHTPMBGimageID;
@@ -99,6 +100,12 @@ public:
 	int aShredderHUDID;
 
 	int aItemID;
+
+	//particles
+	int aFireParticle;
+	int aBloodParticle;
+	int aSmokeParticle;
+	int aGlowParticle;
 };
 
 #endif

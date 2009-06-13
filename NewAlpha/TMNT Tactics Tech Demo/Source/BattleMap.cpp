@@ -363,8 +363,17 @@ void CBattleMap::Render()
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
+	/////////////////////////////////////////////////////////////////////////////
+	//draw particles when active
 	if(m_pParticleSystem[FIRE].m_bActive == true)
-	{	m_pParticleSystem[FIRE].DrawParticle(); }
+	{	m_pParticleSystem[FIRE].DrawParticle(m_pAssets->aFireParticle); }
+	if(m_pParticleSystem[GLOW].m_bActive == true)
+	{ m_pParticleSystem[GLOW].DrawParticle(m_pAssets->aGlowParticle);	}
+	if(m_pParticleSystem[SMOKE].m_bActive == true)
+	{ m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle); }
+	if(m_pParticleSystem[BLOOD].m_bActive == true)
+	{ m_pParticleSystem[BLOOD].DrawParticle(m_pAssets->aBloodParticle); }
+
 	DrawDebugInfo();
 }
 void CBattleMap::SetPaused(bool IsPaused)
@@ -465,6 +474,9 @@ void CBattleMap::Update(float fElapsedTime)
 
 	//update the particle system
 	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )

@@ -481,11 +481,12 @@ void CBattleMap::Update(float fElapsedTime)
  				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
 				m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
 				m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
- 				CalculateRanges();
+				m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
 			}
 		}
 		else
 		{
+			CalculateRanges();
 			m_bMoving = false;
 			m_bPathDisplayed = false;
 		}

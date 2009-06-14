@@ -201,7 +201,7 @@ public:
 	}
 	void Emit(POINT emitPt)
 	{
-		m_vEmitterPos = D3DXVECTOR3(emitPt.x, emitPt.y, 0.0f);
+		m_vEmitterPos = D3DXVECTOR3((float)emitPt.x, (float)emitPt.y, 0.0f);
 		for(int i = 0; i< m_nNumParticles; i++)
 		{
 			particles[i].pos = m_vEmitterPos;

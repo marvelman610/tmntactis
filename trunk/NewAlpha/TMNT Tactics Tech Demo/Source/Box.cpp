@@ -44,7 +44,7 @@ CBox::CBox(int numItems, string* sItems,
 	}
 	m_nLongestString *= (int)(34.0f * fTextScale); 
 	m_fScaleX = (float)(m_nLongestString + (float)spacing * 3.5f) / DEFAULT_SIZE; 
-	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 2.5f) + startY) / DEFAULT_SIZE;
+	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 3.5f) + startY) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
 	m_nBoxHeight = (int)(DEFAULT_SIZE * m_fScaleY);

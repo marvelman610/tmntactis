@@ -195,7 +195,6 @@ void CBattleMap::Reset()
 			m_pPlayer->GetTurtles()[i]->SetAlive(true);
 			m_pPlayer->GetTurtles()[i]->SetHealth(m_pPlayer->GetTurtles()[i]->GetMaxHealth());
 		}
-		
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
@@ -1634,6 +1633,7 @@ void CBattleMap::PerformAttack()
 		damage += rand() % (5 - (-4)) -5;
 	
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
 	
 		m_vCharacters[m_nCurrTarget].SetHealth(m_vCharacters[m_nCurrTarget].GetHealth() - damage);
@@ -1676,6 +1676,7 @@ void CBattleMap::PerformAttack()
 	{
 		m_bExecuteSkill = true;
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(m_nCurrSkillCost);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(m_nCurrSkillCost);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);

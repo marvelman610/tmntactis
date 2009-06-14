@@ -99,7 +99,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 		case MUSIC_VOLUME:
 			if (m_nMusicVolume < 100)
 			{
-				m_nMusicVolume--;
+				m_nMusicVolume++;
 				GetGame()->SetMusicVolume(m_nMusicVolume);
 				m_bHasASettingChanged = true;
 			}
@@ -130,9 +130,9 @@ void COptionsMenuState::Render()
 	CBaseMenuState::Render();
 	// TODO:: finish options rendering here
 	char szText[64];
-	sprintf_s(szText, "MUSIC VOLUME  (%i)", m_nMusicVolume);
+	sprintf_s(szText, "MUSIC VOLUME (%i)", m_nMusicVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY());
-	sprintf_s(szText, "SFX VOLUME  (%i)", m_nSFXVolume);
+	sprintf_s(szText, "SFX VOLUME (%i)", m_nSFXVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 1.0f);
 	CBitmapFont::GetInstance()->DrawString("EXIT", 400,GetMenuY()+ (2*GetMenuItemSpacing()));
 	// Draw menu cursor

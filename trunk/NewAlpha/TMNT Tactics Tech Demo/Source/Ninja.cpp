@@ -28,6 +28,9 @@ CNinja::CNinja(void)
 	SetHealthMax(100);
 	SetHealth(100);
 
+	/*SetVelX(100.0f);
+	SetVelY(50.0f);*/
+
 	SetLevel(1);
 	SetStrength(10);
 	SetDefense(5);
@@ -38,6 +41,7 @@ CNinja::CNinja(void)
 	SetExperience(0);
 
 	m_pPlayer = CPlayer::GetInstance();
+	m_pTile = CBattleMap::GetInstance()->GetTiles();
 
 	CAnimation anim;
 	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 1);
@@ -157,6 +161,14 @@ void CNinja::AI()
 		}
 	}
 
+	POINT begin = GetMapCoord();
+	if(m_nTurtle <= -1)
+	{
+		m_nTurtle = 0;
+	}
+	POINT end;
+	
+	
 
 	//for(int i = 0; i < 4; i++)
 	//{
@@ -344,16 +356,16 @@ void CNinja::AI()
 				}
 				break;
 			}
-			
-			
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			m_bMoving = true;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
 
 			//attack 3 times (4ap * 3 = 12)
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
 			//end turn
-			SetCurrAP(0);
+			
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
@@ -397,14 +409,17 @@ void CNinja::AI()
 				}
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+
+			m_bMoving = true;
 
 			//attack three times(12ap)= 16ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
 			//end turn
-			SetCurrAP(0);
+			
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -458,14 +473,17 @@ void CNinja::AI()
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+			
+			m_bMoving = true;
 
 			//attack twice(8ap) = 14ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
-			SetCurrAP(0);
+			
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -529,14 +547,17 @@ void CNinja::AI()
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+
+			m_bMoving = true;
 
 			//attack twice(8ap) = 16ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
-			SetCurrAP(0);
+
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -611,14 +632,17 @@ void CNinja::AI()
 				}
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+			
+			m_bMoving = true;
 
 			//attack one(4ap) = 14ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
-			SetCurrAP(0);
+
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -704,14 +728,17 @@ void CNinja::AI()
 				}
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+			end = mapPt;
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+
+			m_bMoving = true;
 
 			//attack once(4ap) = 16ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
-			SetCurrAP(0);
+
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -808,12 +835,16 @@ void CNinja::AI()
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
-			SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+
+			end = mapPt;
+
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);
+				CBattleMap::GetInstance()->GetNumCols(), true);*/
+
+			m_bMoving = true;
 
 			//end turn
-			SetCurrAP(0);
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -827,10 +858,187 @@ void CNinja::AI()
 		}
 		break;
 	}
-	CBattleMap::GetInstance()->UpdatePositions();
+	if(m_bMoving == true)
+	{
+		FindPath(begin, end);
+	}
+	
 }
+///////////////////////////////////////////////////////////////////////////////
+// Function: FindPath
+//
+// Purpose: To find a path to get to the turtles
+///////////////////////////////////////////////////////////////////////////////
+void CNinja::FindPath(POINT begin, POINT end)
+{
+	m_vPath.clear();
+	POINT ptCurr = begin; // begin point
+	POINT ptTarget = end;	// end point
+	int range = GetCurrAP();	// max distance moveable
+	int pathWeight = 0;
+	vector<int> pathX;
+	vector<int> pathY;
+	int oldX = ptCurr.x;
+	int oldY = ptCurr.y;
+
+	while (true)
+	{
+		if (pathWeight-4 > -1)
+		{
+			if ( (ptCurr.x == pathX[pathWeight-4]) && (ptCurr.y == pathY[pathWeight-4]) )
+			{ pathWeight = 10000; break; }
+		}
+		if (pathWeight-1 > -1)
+		{
+			pathX.push_back(ptCurr.x);
+			pathY.push_back(ptCurr.y);
+			m_vPath.push_back(ptCurr);
+			oldX = pathX[pathWeight-1];
+			oldY = pathY[pathWeight-1];
+		}
+		++pathWeight;
+		if (pathWeight*2 > GetCurrAP())
+			break;
+		if (ptTarget.x == ptCurr.x && ptTarget.y == ptCurr.y)
+			break;
+		if (pathWeight > CBattleMap::GetInstance()->GetNumCols())
+		{pathWeight = 10000; break;}
+
+		if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
+			m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x+1)))
+		{ ++ptCurr.x; continue; }
+
+		if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
+			m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x-1)))
+		{ --ptCurr.x; continue; }
+
+		if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
+			m_pTile[(ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+		{ ++ptCurr.y; continue; }
+
+		if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
+			m_pTile[(ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+		{ --ptCurr.y; continue; }
+
+		if (ptCurr.x == ptTarget.x)
+		{
+			if (oldX != ptCurr.x+1 && m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x+1].Flag() == FLAG_NONE &&
+				!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x+1) )
+			{ ++ptCurr.x; continue; }
+			if (oldX != ptCurr.x-1 && m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x-1].Flag() == FLAG_NONE &&
+				!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x-1))
+			{ --ptCurr.x; continue; }
+		}
+		else if (ptCurr.y == ptTarget.y)
+		{
+			if (oldY != ptCurr.y+1 && m_pTile[(ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+				!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+			{ ++ptCurr.y; continue; }
+			if (oldY != ptCurr.y-1 && m_pTile[(ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+				!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+			{ --ptCurr.y; continue; }
+		}
+
+		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x+1)))
+		{++ptCurr.x; continue;}
+		else if (oldX != ptCurr.x-1 && m_pTile[ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied(ptCurr.y * CBattleMap::GetInstance()->GetNumCols() + (ptCurr.x-1)))
+		{--ptCurr.x; continue;}
+
+		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTile[(ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y+1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+		{++ptCurr.y; continue;}
+		else if (oldY != ptCurr.y-1 && m_pTile[(ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x].Flag() == FLAG_NONE &&
+			!CBattleMap::GetInstance()->CheckTileOccupied((ptCurr.y-1) * CBattleMap::GetInstance()->GetNumCols() + ptCurr.x))
+		{--ptCurr.y; continue;}
+		pathWeight = 10000; break;
+	}
+	if (m_vPath.size() > 0)
+	{
+		m_ptStartXY.x = GetPosX();
+		m_ptStartXY.y = GetPosY();
+		for (unsigned int i = 0; i < m_vPath.size(); ++i)
+			m_pTile[m_vPath[i].y * CBattleMap::GetInstance()->GetNumCols() + m_vPath[i].x].SetAlpha(199);
+	}
+}
+///////////////////////////////////////////////////////////////////////////////
+// Function: Update
+//
+// Purpose: To update the ninja information
+///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
+
+	// a ninja has been moved...execute the animation and position change over time
+	if (m_bMoving)
+	{
+		if (m_vPath.size() > 0)
+		{
+			// grab the next move and take it out of the vector..if the previous move is complete
+			POINT newPoint = m_vPath[0];
+			bool bMoveComplete = false;
+			// set up variables
+			POINT currPoint= GetMapCoord();
+			MY_POINT_FLOAT currPos; 
+			currPos.x = GetPosX(); currPos.y = GetPosY();
+
+			// NORTHWEST
+			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+			{
+				currPos.x -= GetVelX() * fElapsedTime;
+				currPos.y -= GetVelY() * fElapsedTime;
+				SetPosPtF(currPos);
+			}
+			// SOUTHEAST
+			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+			{
+				currPos.x += GetVelX() * fElapsedTime;
+				currPos.y += GetVelY() * fElapsedTime;
+				SetPosPtF(currPos);
+			}
+			// NORTHEAST
+			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+			{
+				currPos.y -= GetVelY() * fElapsedTime;
+				currPos.x += GetVelX() * fElapsedTime;
+				SetPosPtF(currPos);
+			}
+			// SOUTHWEST
+			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+			{
+				currPos.y += GetVelY() * fElapsedTime;
+				currPos.x -= GetVelX() * fElapsedTime;
+				SetPosPtF(currPos);
+			}
+			// check to see if this current tile move is complete
+			if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
+			{
+				vector<POINT>::iterator first = m_vPath.begin();
+				m_vPath.erase(first);
+				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
+					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
+					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+				
+ 				DecrementCurrAP(2);
+				m_ptStartXY.x = GetPosX();
+				m_ptStartXY.y = GetPosY();
+			}
+		}
+		else // movement is done
+		{
+			SetCurrAP(GetCurrAP());
+			m_bMoving = false;
+		}
+		CBattleMap::GetInstance()->UpdatePositions();
+	}
+
+
 	if(GetHealth() <= 0)
 	{
 		int type = rand()% 2;

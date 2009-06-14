@@ -68,6 +68,8 @@ void CBaseMenuState::Exit()
 		m_pBitmapFont = NULL;
 	if (m_pFMOD != NULL)
 		m_pFMOD = NULL;
+	if(m_pGame)
+		m_pGame = NULL;
 }
 
 void CBaseMenuState::CenterBGImage()

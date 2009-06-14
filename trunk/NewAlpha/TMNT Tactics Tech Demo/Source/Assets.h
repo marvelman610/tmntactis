@@ -81,10 +81,14 @@ public:
 	ASSET aMMBGimageID;
 	ASSET aMMmenuClickSnd;
 	ASSET aMMmenuMoveSnd;
+	ASSET aMMmusicID;
 
 	// Options Menu IDs
 	ASSET aOMbgID;
 	ASSET aTutorialID;
+
+	// Credits Menu IDs
+	ASSET aCMmusicID;
 
 	// How To Play Menu IDs
 	ASSET aHTPMBGimageID;

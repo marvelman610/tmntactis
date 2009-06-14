@@ -29,8 +29,8 @@ CBox::CBox(int numItems, string* sItems,
 	m_bHasTitle = bHasTitle;
 	if (bHasTitle)
 		m_nTitleWidth = (int)(sItems[0].size()) * (34.0f * fTextScale);
-	m_bIsActive = false;
-	m_nType = BOX_NO_BACK;
+	m_bIsActive = m_bIsMsgBox = false;
+	m_nBackType = BOX_NO_BACK;
 	m_nPosX = posX;
 	m_nPosY = posY;
 	m_fPosZ = posZ;
@@ -43,7 +43,7 @@ CBox::CBox(int numItems, string* sItems,
 			m_nLongestString = sItems[i].size();
 	}
 	m_nLongestString *= (int)(34.0f * fTextScale); 
-	m_fScaleX = (float)(m_nLongestString + (float)spacing * 2.9f) / DEFAULT_SIZE; 
+	m_fScaleX = (float)(m_nLongestString + (float)spacing * 3.5f) / DEFAULT_SIZE; 
 	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 2.5f) + startY) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
@@ -84,6 +84,11 @@ CBox::CBox(int numItems, string* sItems,
 CBox::~CBox()
 {
 	m_pTM = NULL;
+	m_pD3D = NULL;
+	m_pBM = NULL;
+	m_pAssets = NULL;
+	m_pDI = NULL;
+	m_pFMOD = NULL;
 	delete[] m_sItems;
 }
 
@@ -107,11 +112,10 @@ void CBox::CheckMouse(POINT mousePt)
 			m_nCurrSelectedIndex = BTN_BACK;
 			return;
 		}
-		//if (!m_bHasTitle)
+		if (!m_bIsMsgBox)
 			m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
 		if (m_bHasTitle)
 		{
-			//m_nCurrSelectedIndex = (mousePt.y - (m_nStartTextY + (int)((float)m_nSpacing*1.5f))) / (int)((float)m_nSpacing*1.5f);
  			if (m_nCurrSelectedIndex == 0)
  				m_nCurrSelectedIndex = -1;
 		}
@@ -121,7 +125,7 @@ void CBox::CheckMouse(POINT mousePt)
 	}
 	else
 	{ 
-		if (m_nType != BOX_WITH_BACK)
+		if (m_nBackType != BOX_WITH_BACK)
 			m_nAlpha = 100; 
 		m_bIsMouseInBox = false;
 		m_nCurrSelectedIndex = -1;
@@ -150,13 +154,16 @@ void CBox::Render()
 								0, 0, 0);
 		}
 	}
-	if (m_nType == BOX_WITH_BACK)
+	if (m_nBackType == BOX_WITH_BACK)
 	{
 		if (m_nCurrSelectedIndex == BTN_BACK)
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
+		if (!m_bIsMsgBox)
+			m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
+		else
+			m_pBM->DrawString("OK", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
 	}
 	//m_pBM->Reset();
 }

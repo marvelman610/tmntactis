@@ -37,6 +37,7 @@ class CBox;
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
  enum {FIRE, SMOKE, BLOOD, GLOW};
+ enum {BX_ACTION, BX_MSG, BX_SKILL, BX_ITEM, BX_PAUSE, BX_LOAD, BX_SAVE, BX_NULL, };	// all the box types
 
 #include "Base.h"
 
@@ -92,6 +93,8 @@ class CBattleMap
 	CBox* m_bxPauseBox;
 	CBox* m_bxLoadBox;
 	CBox* m_bxSaveBox;
+	CBox* m_bxMessageBox;
+	CBox* m_bxCurrActiveBox;	// pointer used to handle the currently active box's functionality
 
 	// Times
 	float m_fTimer;
@@ -112,6 +115,7 @@ class CBattleMap
 	int m_nCurrMouseTileTarget;	// the tile of the target that the mouse is over
 
 	// movement
+	bool  m_bHaveMoved;
 	bool  m_bMoving;			// is the character in the middle of moving?
 	bool  m_bPathDisplayed;		// has the user clicked to see the path they could move on?
 	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to

@@ -175,7 +175,7 @@ void UpdateSwordJab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
 
-	int damage = character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy();
+	int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f);
 	target->SetHealth(target->GetHealth() - damage);
 
 

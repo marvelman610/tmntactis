@@ -9,10 +9,10 @@
 #include "MainMenuState.h"
 #include "CSGD_TextureManager.h"
 #include "CSGD_DirectInput.h"
+#include "CSGD_FModManager.h"
 #include "BitmapFont.h"
 #include "Assets.h"
 #include "Game.h"
-
 
 CCreditState::CCreditState()
 {
@@ -30,24 +30,28 @@ CCreditState* CCreditState::GetInstance()
 
 void CCreditState::Enter()
 {
-	
+	CBaseMenuState::Enter();
+	GetFMOD()->PlaySound(GetAssets()->aCMmusicID);
+	GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 }
 
 bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
 {
-	if(CSGD_DirectInput::GetInstance()->KeyPressed(DIK_ESCAPE))
+	if(GetDI()->KeyPressed(DIK_ESCAPE))
 	{
-		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+		GetGame()->ChangeState(CMainMenuState::GetInstance());
 	}
 	return true;
 }
 
 void CCreditState::Render()
 {
-	CBitmapFont::GetInstance()->DrawString("ESC", 440, 384, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString("ESC", 440, 384, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 }
 
 void CCreditState::Exit()
 {
-
+	GetFMOD()->StopSound(GetAssets()->aCMmusicID);
+	GetFMOD()->ResetSound(GetAssets()->aCMmusicID);
+	CBaseMenuState::Exit();
 }

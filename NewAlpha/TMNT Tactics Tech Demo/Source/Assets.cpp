@@ -35,7 +35,7 @@ void CAssets::LoadAssets()
 {
 	m_bLoading = true;
 	CSGD_Direct3D *d3d = CSGD_Direct3D::GetInstance();
-	//d3d->Clear(255,255,255);
+	d3d->Clear(0,0,0);
 	d3d->DeviceBegin();
 	d3d->SpriteBegin();
 	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...", CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(255, 0, 0));
@@ -79,16 +79,22 @@ void CAssets::LoadAssets()
 
 	aMMmenuClickSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuClick.mp3");
 	aMMmenuMoveSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuSelectMove.mp3");
+	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Options Menu IDs
-	aOMbgID			= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu1.png");
+	aOMbgID			= m_pTM->LoadTexture("Resources/Images/VG_OptionsMenuBG.png");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Tutorial IDs
-	aTutorialID		= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu.png");
+	aTutorialID		= m_pTM->LoadTexture("Resources/Images/VG_TutorialMenuBG.png");
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	// Credits IDs
+	aCMmusicID		= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

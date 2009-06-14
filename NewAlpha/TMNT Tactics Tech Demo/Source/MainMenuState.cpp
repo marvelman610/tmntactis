@@ -48,6 +48,9 @@ void CMainMenuState::Enter()
 	SetCurrMenuSelection( PLAY );
 	SetMenuX(400); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
+
+	GetFMOD()->PlaySound(GetAssets()->aMMmusicID);
+	GetFMOD()->SetVolume(GetAssets()->aMMmusicID, GetGame()->GetMusicVolume());
 }
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
@@ -58,6 +61,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	{
 		int oldSelection = GetCurrMenuSelection(); 
 		int newSelection = (mousePt.y - GetMenuY()) / GetMenuItemSpacing();
+		if (newSelection < 0)
+			newSelection = 0;
+		else if (newSelection > NULL_END-1)
+			newSelection = NULL_END-1;
 		if ( oldSelection != newSelection )
 		{
 			SetCurrMenuSelection( newSelection );
@@ -150,5 +157,7 @@ void CMainMenuState::Update(float fElapsedTime)
 
 void CMainMenuState::Exit()
 {
+	GetFMOD()->StopSound(GetAssets()->aMMmusicID);
+	GetFMOD()->ResetSound(GetAssets()->aMMmusicID);
 	CBaseMenuState::Exit();
 }

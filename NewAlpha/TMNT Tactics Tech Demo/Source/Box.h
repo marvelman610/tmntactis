@@ -48,6 +48,8 @@ class CBox
 	int b;
 
 	// menu items (buttons)
+	bool m_bHasTitle;
+	int  m_nTitleWidth;
 	string* m_sItems;
 	float m_fTextScale;
 	int m_nNumItems;
@@ -76,7 +78,7 @@ class CBox
 
  public:
 	CBox(int numItems, string* sItems, 
-		int posX, int posY, float posZ = 0.11f, 
+		int posX, int posY, float posZ = 0.11f, bool bhasTitle = false,
 		int spacing = 35, int startX = 35, int startY = 25, 
 		int imageID = -1, float fTextScale = 1.0f, 
 		int red = 0, int green = 0, int blue = 0);
@@ -117,6 +119,7 @@ class CBox
 	int BoxRight() {return m_nBoxRight;}
 	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return -1;}
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
+	string* GetItems() {return m_sItems;}
 };
 
 #endif

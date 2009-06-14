@@ -98,6 +98,7 @@ public:
 	ASSET aRedHealthBarID;
 	ASSET aGreenHealthBarID;
 	ASSET aBlueHealthBarID;
+
 	//HUD Character Faces
 	ASSET aMikeyHUDFaceID;
 	ASSET aLeonardoHUDID;

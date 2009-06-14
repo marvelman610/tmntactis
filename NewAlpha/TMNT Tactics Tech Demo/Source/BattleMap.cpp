@@ -85,11 +85,13 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	string text[3];
 	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
-	m_bxActionBox = new CBox(3, text, 20, 575, depth.MENUS, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+	m_bxActionBox = new CBox(3, text, 20, 575, depth.MENUS, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = NULL;
 	m_bxItemBox = NULL;
 	m_bxPauseBox = NULL;
+	m_bxLoadBox = NULL;
+	m_bxSaveBox = NULL;
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
@@ -151,7 +153,7 @@ void CBattleMap::Reset()
 	delete[] m_pTilesL1;
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
-	delete [] m_pParticleSystem;
+	delete[] m_pParticleSystem;
 	if(m_bxItemBox)
 	{
 		delete m_bxItemBox;
@@ -171,6 +173,16 @@ void CBattleMap::Reset()
 	{
 		delete m_bxPauseBox;
 		m_bxPauseBox = NULL;
+	}
+	if (m_bxSaveBox)
+	{
+		delete m_bxSaveBox;
+		m_bxSaveBox = NULL;
+	}
+	if (m_bxLoadBox)
+	{
+		delete m_bxLoadBox;
+		m_bxLoadBox = NULL;
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
@@ -244,9 +256,9 @@ void CBattleMap::Render()
 
 	// draw layer one & two
 	MY_POINT mapPT;
-	for (int x = 0; x < m_nNumCols; ++x)
+	for (int x = 2; x < m_nNumCols; ++x)
 	{
-		for (int y = 0; y < m_nNumRows; ++y)
+		for (int y = 2; y < m_nNumRows; ++y)
 		{
 			int tileID = y*m_nNumCols+x;
 			if (m_pTilesL1[tileID].DestXID() == -1)
@@ -393,10 +405,11 @@ void CBattleMap::SetPaused(bool IsPaused)
 	{
 		if (m_bxPauseBox)
 			delete m_bxPauseBox;
-		string text[3]; text[0] = "SAVE GAME"; text[1] = "LOAD GAME"; text[2] = "QUIT";
-		m_bxPauseBox = new CBox(3, text, 400, 300, 0.1f);
+		string text[4]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "QUIT"; text[0] = "PAUSED";
+		m_bxPauseBox = new CBox(4, text, 320, 300, 0.1f, true);
 		m_bxPauseBox->SetActive();
 		m_bxPauseBox->SetType(BOX_WITH_BACK);
+		m_bxActionBox->SetActive(false);
 		if (m_bxItemBox)
 			m_bxItemBox->SetActive(false);
 		if (m_bxSkillBox)
@@ -582,9 +595,9 @@ void CBattleMap::Update(float fElapsedTime)
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
-	if(CGamePlayState::GetInstance()->GetPaused())
+	if(CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
 		SetPaused(true);
-	else
+	else if (!CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
 		SetPaused(false);
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
@@ -1053,6 +1066,13 @@ int CBattleMap::IsMousePosValid(POINT mousePt)
 	return -1;
 }
 
+bool CBattleMap::CheckTileOccupied(int tileID)
+{
+	for (int i = 0; i < m_nNumCharacters; ++i)
+		if (m_vCharacters[i].GetCurrTile() == tileID)
+			return true;
+	return false;
+}
 void CBattleMap::CalculateRanges()
 {
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
@@ -1291,6 +1311,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	}
 	if (m_bxPauseBox)
 		m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
+	if (m_bxLoadBox)
+		m_nCurrBtnSelected = m_bxLoadBox->Input(m_ptMouseScreenCoord);
 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
@@ -1305,7 +1327,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			int tileID = yID * m_nNumCols + xID;
 			for (int i = 0; i < m_nNumCharacters; ++i)
 				if (m_vCharacters[i].GetCurrTile() == tileID)
-				{bOccupied = true; break; }
+				{bOccupied = true; return; }
 
 			// the user has clicked for the second time on the same location to move to..moving now
 			if (m_bPathDisplayed && !bOccupied && m_ptEndCoord.x == xID && m_ptEndCoord.y == yID)
@@ -1361,7 +1383,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 					skillNames[i] += cost;
 				}
 				skillNames[numSkills] = "NONE";
-				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, 35, 35, 15, -1, 0.7f );
+				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, false, 35, 35, 15, -1, 0.7f );
 				delete[] skillNames;
 				m_bxSkillBox->SetActive(true);
 				m_bxSkillBox->SetType(BOX_WITH_BACK);
@@ -1418,24 +1440,33 @@ void CBattleMap::HandleButton()
 	else if (m_bxSkillBox && m_nCurrBtnSelected == m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills())
 	{
 		m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; 
-		delete m_bxSkillBox;
-		m_bxSkillBox = NULL;
+		delete m_bxSkillBox; m_bxSkillBox = NULL;
 		m_bDisplaySpecialBox = false;
 		m_bxActionBox->SetActive();
 		return;
 	}
 	else if (m_bxPauseBox)
 	{
-		if (m_nCurrBtnSelected == 2 /*Quit*/)
+		if (m_nCurrBtnSelected == 3 /*Quit*/)
 		{
 			delete m_bxPauseBox; m_bxPauseBox = NULL;
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 			return;
 		}
-		else if (m_nCurrBtnSelected == 1 /*Load*/)
+		else if (m_nCurrBtnSelected == 2 /*Load*/)
 		{
+			// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
+			delete m_bxPauseBox; m_bxPauseBox = NULL;
+			string* sLoadGame = new string[2];
+			sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
+			m_bxLoadBox = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
+			m_bxLoadBox->SetType(BOX_WITH_BACK);
+			m_bxLoadBox->SetActive();
+			//m_bDisplayLoadBox = true;
+			delete[] sLoadGame;
+			return;
 		}
-		else if (m_nCurrBtnSelected == 0 /*Save*/)
+		else if (m_nCurrBtnSelected == 1 /*Save*/)
 		{
 
 		}
@@ -1465,7 +1496,7 @@ void CBattleMap::HandleButton()
 					skillNames[i] += cost;
 				}
 				skillNames[numSkills] = "NONE";
-				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, 35, 35, 15, -1, 0.7f );
+				m_bxSkillBox = new CBox(numSkills+1, skillNames, m_bxActionBox->BoxRight()+20, 470, depth.MENUS-0.04f, false, 35, 35, 15, -1, 0.7f );
 				delete[] skillNames;
 				m_bxSkillBox->SetActive(true);
 				m_bxSkillBox->SetType(BOX_WITH_BACK);
@@ -1517,11 +1548,26 @@ void CBattleMap::HandleButton()
 			m_bDisplayItemBox = false;
 			m_bxActionBox->SetActive();
 		}
-		if (m_bxPauseBox)
+		if (m_bxPauseBox && (!m_bxLoadBox && !m_bxSaveBox))
 		{
 			delete m_bxPauseBox;
 			m_bxPauseBox = NULL;
 			CGamePlayState::GetInstance()->SetPaused(false);
+		}
+		if (m_bxSaveBox)
+		{
+			delete m_bxSaveBox;
+			m_bxSaveBox = NULL;
+			m_bxPauseBox->SetActive();
+		}
+		if (m_bxLoadBox)
+		{
+			delete m_bxLoadBox;
+			m_bxLoadBox = NULL;
+			string text[4]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "QUIT"; text[0] = "PAUSED";
+			m_bxPauseBox = new CBox(4, text, 320, 300, 0.1f, true);
+			m_bxPauseBox->SetActive();
+			m_bxPauseBox->SetType(BOX_WITH_BACK);
 		}
 	default:
 		break;
@@ -1619,39 +1665,51 @@ void CBattleMap::FindPathToTarget()
 		{pathWeight = 10000; break;}
 
 		if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
-			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE)
+			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
 		{ ++ptCurr.x; continue; }
 		if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
-			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE)
+			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
 		{ --ptCurr.x; continue; }
 		if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
-			m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+			!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
 		{ ++ptCurr.y; continue; }
 		if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
-			m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+			!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
 		{ --ptCurr.y; continue; }
 
 		if (ptCurr.x == ptTarget.x)
 		{
-			if (oldX != ptCurr.x+1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x+1].Flag() == FLAG_NONE)
+			if (oldX != ptCurr.x+1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x+1].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x+1) )
 			{ ++ptCurr.x; continue; }
-			if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE)
+			if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x-1))
 			{ --ptCurr.x; continue; }
 		}
 		else if (ptCurr.y == ptTarget.y)
 		{
-			if (oldY != ptCurr.y+1 && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			if (oldY != ptCurr.y+1 && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
 			{ ++ptCurr.y; continue; }
-			if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+			if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
 			{ --ptCurr.y; continue; }
 		}
-		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE)
+		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
 		{++ptCurr.x; continue;}
-		else if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE)
+		else if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
 		{--ptCurr.x; continue;}
-		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+			!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
 		{++ptCurr.y; continue;}
-		else if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE)
+		else if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+			!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
 		{--ptCurr.y; continue;}
 		pathWeight = 10000; break;
 	}
@@ -1716,6 +1774,10 @@ void CBattleMap::DrawBoxes()
 		m_bxSkillBox->Render();
 	if(m_bDisplayItemBox)
 		m_bxItemBox->Render();
+	if(m_bxLoadBox)
+		m_bxLoadBox->Render();
+	if(m_bxSaveBox)
+		m_bxSaveBox->Render();
 }
 void CBattleMap::cheat()
 {

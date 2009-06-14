@@ -13,6 +13,8 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
+#define LOAD_MUSIC 0
+
 CAssets* CAssets::GetInstance()
 {
 	static CAssets instance;
@@ -38,7 +40,7 @@ void CAssets::LoadAssets()
 	d3d->Clear(0,0,0);
 	d3d->DeviceBegin();
 	d3d->SpriteBegin();
-	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...", CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(255, 0, 0));
+	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...", CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(0, 255, 0));
 	d3d->SpriteEnd();
 	d3d->DeviceEnd();
 	d3d->Present();
@@ -70,7 +72,6 @@ void CAssets::LoadAssets()
 	aBMactionBoxID		= m_pTM->LoadTexture("Resources/Images/VG_actionBox.png", D3DCOLOR_XRGB(255,255,255));
 	aBMskillBoxID		= m_pTM->LoadTexture("Resources/Images/VG_skillBoxBG.png", D3DCOLOR_XRGB(255,255,255));
 
-	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -79,7 +80,6 @@ void CAssets::LoadAssets()
 
 	aMMmenuClickSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuClick.mp3");
 	aMMmenuMoveSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuSelectMove.mp3");
-	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,6 @@ void CAssets::LoadAssets()
 
 	//////////////////////////////////////////////////////////////////////////
 	// Credits IDs
-	aCMmusicID		= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -127,6 +126,12 @@ void CAssets::LoadAssets()
 	aGlowParticle = aFireParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
 	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
 	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
+
+#if LOAD_MUSIC
+	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
+	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
+	aCMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
+#endif
 
 	m_bLoading = false;
 }

@@ -11,9 +11,13 @@
 
 #include "BaseMenuState.h"
 
+class CBox;
+
 class CMainMenuState : public CBaseMenuState
 {
 private:
+	CBox*	m_bxLoadGame;
+	bool	m_bDisplayLoadBox;
 
 	CMainMenuState();
 	~CMainMenuState();

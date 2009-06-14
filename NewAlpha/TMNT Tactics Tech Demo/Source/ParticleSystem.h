@@ -197,6 +197,7 @@ public:
 		{
 			particles[i].pos = m_vEmitterPos;
 			particles[i].life = 0.0f;
+			particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
 		}
 	}
 	void Emit(POINT emitPt)
@@ -206,6 +207,7 @@ public:
 		{
 			particles[i].pos = m_vEmitterPos;
 			particles[i].life = 0.0f;
+			particles[i].color = D3DCOLOR_ARGB(particles[i].sa, particles[i].sr, particles[i].sg, particles[i].sb);
 		}
 	}
 

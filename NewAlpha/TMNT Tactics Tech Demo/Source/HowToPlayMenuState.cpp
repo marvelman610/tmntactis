@@ -27,10 +27,10 @@ CHowToPlayMenuState* CHowToPlayMenuState::GetInstance()
 void CHowToPlayMenuState::Enter()
 {
 	CBaseMenuState::Enter();
- 	SetBGImageID(GetAssets()->aTutorialID);
- 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aTutorialID));
- 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aTutorialID));
-	CenterBGImage();
+	SetBGImageID(GetAssets()->aHTPMSelectID);
+ 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aHTPMSelectID));
+ 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aHTPMSelectID));
+	//CenterBGImage();
 
 	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
 
@@ -47,6 +47,29 @@ void CHowToPlayMenuState::Exit()
 
 bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 {
+	if(GetDI()->KeyPressed(DIK_RETURN))
+	{
+		if(GetBGImageID() == GetAssets()->aHTPMSelectID)
+		{
+			SetBGImageID(GetAssets()->aHTPMMoveID);
+		}
+		else if(GetBGImageID() == GetAssets()->aHTPMMoveID)
+		{
+			SetBGImageID(GetAssets()->aHTPMAttackID);
+		}
+		else if(GetBGImageID() == GetAssets()->aHTPMAttackID)
+		{
+			SetBGImageID(GetAssets()->aHTPMSpecialID);
+		}
+		else if(GetBGImageID() == GetAssets()->aHTPMSpecialID)
+		{
+			SetBGImageID(GetAssets()->aHTPMItemID);
+		}
+		else if(GetBGImageID() == GetAssets()->aHTPMItemID)
+		{
+			SetBGImageID(GetAssets()->aHTPMSelectID);
+		}
+	}
 	if (GetDI()->KeyPressed(DIK_ESCAPE))
 	{
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
@@ -59,7 +82,7 @@ void CHowToPlayMenuState::Render()
 	CBaseMenuState::Render();
 
 	// TODO:: add the how to play info here
-	CBitmapFont::GetInstance()->DrawString("ESC", 512, 384);
+	CBitmapFont::GetInstance()->DrawString("ESC", 512, 730);
 }
 
 void CHowToPlayMenuState::Update(float fElapsedTime)

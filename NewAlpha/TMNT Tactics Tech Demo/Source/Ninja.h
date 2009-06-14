@@ -13,6 +13,7 @@
 #include "Base.h"
 #include "CSGD_TextureManager.h"
 #include "Player.h"
+#include "Tile.h"
 
 class CNinja : public CBase
 {
@@ -28,7 +29,11 @@ private:
 	int m_nXChange; //difference in x between turtle and ninja
 	int m_nYChange; //difference in y between turtle and ninja
 
-	CPlayer* m_pPlayer;
+	CPlayer* m_pPlayer; //pointer to player
+	CTile* m_pTile; //pointer to tile
+	vector<POINT> m_vPath; //path to take
+	MY_POINT_FLOAT m_ptStartXY; //point for movement
+	bool m_bMoving;
 
 
 public:
@@ -48,6 +53,13 @@ public:
 	// Purpose: Function to handle artificial intelligence of the object.
 	////////////////////////////////////////////////////////////////////
 	void AI();
+
+	/////////////////////////////////////////////////////////////////////
+	// Function : "FindPath"
+	//
+	// Purpose : Function to handle the path finding for the ninja
+	/////////////////////////////////////////////////////////////////////
+	void FindPath(POINT begin, POINT end);
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

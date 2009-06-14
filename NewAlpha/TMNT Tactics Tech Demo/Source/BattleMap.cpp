@@ -87,16 +87,14 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
 	m_bxActionBox = new CBox(3, text, 20, 575, depth.MENUS, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxActionBox->SetActive(); 
-	m_bxSkillBox = NULL;
-	m_bxItemBox = NULL;
-	m_bxPauseBox = NULL;
-	m_bxLoadBox = NULL;
-	m_bxSaveBox = NULL;
+	m_bxSkillBox = m_bxItemBox = m_bxPauseBox = m_bxLoadBox = m_bxSaveBox = m_bxMessageBox = NULL;
+	//m_bxCurrActiveBox = m_bxActionBox; m_bxCurrActiveBox->BoxType(BX_ACTION);
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
 	//m_pMoveableTiles = NULL;
+	m_bHaveMoved = false;
 	m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; m_nCurrSkillCost = -1; m_bExecuteSkill = false;
 	m_nCurrCharacter = -1;
 	m_nHoverCharacter = -1; m_nMoveDirection = -1; m_nCurrMouseTileTarget = -1; m_ncurrTargetTile = -1; m_nCurrTarget = -1;
@@ -184,6 +182,16 @@ void CBattleMap::Reset()
 		delete m_bxLoadBox;
 		m_bxLoadBox = NULL;
 	}
+	if (m_bxMessageBox)
+	{
+		delete m_bxMessageBox;
+		m_bxMessageBox = NULL;
+	}
+// 	if (m_bxCurrActiveBox)
+// 	{
+// 		delete m_bxCurrActiveBox;
+// 		m_bxCurrActiveBox = NULL;
+// 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
@@ -433,6 +441,7 @@ void CBattleMap::Update(float fElapsedTime)
 	// AI's turn
 	if(m_bIsPlayersTurn == false && m_vEnemies.size() != 0)
 	{
+		m_bHaveMoved = false;
 		int index = rand()%m_vEnemies.size();
 		CNinja* ninja = (CNinja*)m_vEnemies[index];
 		ninja->AI();
@@ -456,7 +465,7 @@ void CBattleMap::Update(float fElapsedTime)
 	{
 		if (m_vPath.size() > 0)
 		{
-			// grab the next move and take it out of the vector
+			// grab the next move and take it out of the vector..if the previous move is complete
 			POINT newPoint = m_vPath[0];
 			bool bMoveComplete = false;
 			// set up variables
@@ -509,6 +518,7 @@ void CBattleMap::Update(float fElapsedTime)
 		}
 		else // movement is done
 		{
+			m_bHaveMoved = true;
 			CalculateRanges();
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 			m_bMoving = false;
@@ -1298,7 +1308,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	else
 		m_nHoverCharacter = -1;
 
-	// is the mouse over an action box button?
+	// is the mouse over a box button?
 	if ((m_bIsPlayersTurn || m_bIsPaused) && m_nCurrCharacter > -1)
 	{
 		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
@@ -1306,6 +1316,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			m_nCurrBtnSelected = m_bxSkillBox->Input(m_ptMouseScreenCoord);
 		if (m_bxItemBox)
 			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord);
+		if (m_bxMessageBox)
+			m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
 	}
@@ -1314,11 +1326,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	if (m_bxLoadBox)
 		m_nCurrBtnSelected = m_bxLoadBox->Input(m_ptMouseScreenCoord);
 
-	// when the left mouse button is clicked
+	// when the left mouse button is clicked...handling non-box input only
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
 		// for movement, see if the tile is open
-		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && !m_bxSkillBox && !m_bxActionBox->IsMouseInBox() && !m_bxItemBox && !m_bIsPaused)
+		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && 
+			!m_bxSkillBox && !m_bxItemBox && !m_bIsPaused && !m_bxMessageBox && !m_bxActionBox->IsMouseInBox())
 		{
 			// it's an open tile...
 
@@ -1353,9 +1366,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
 			HandleButton();
 	}
-	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT) && !m_bIsPaused)
+	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT) && !m_bIsPaused )
 	{
-		if (index > -1 && index < 4)		// see if we're clicking on a character (turtle)
+		if (index > -1 && index < 4 && !m_bHaveMoved)	// see if we're clicking on a character (turtle), and we haven't already moved
 		{
 			m_nCurrSkillCost	 = -1;
 			m_nCurrCharacter	 = index;
@@ -1414,6 +1427,16 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			{ m_bNotEnoughAP = true; return; }
 			else
 				PerformAttack();
+		}
+		else if (index > -1 && index < 4 && m_bHaveMoved)
+		{
+			string* message = new string[3];
+			message[0] = "CAN ONLY MOVE"; message[1] = "ONE TURTLE"; message[2] = "PER TURN";
+			m_bxMessageBox = new CBox(3, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
+			m_bxMessageBox->SetType(BOX_WITH_BACK); m_bxMessageBox->SetActive();
+			m_bxActionBox->SetActive(false);
+			m_bxMessageBox->IsMsgBox(true);
+			delete[] message;
 		}
 	}
 }
@@ -1501,6 +1524,8 @@ void CBattleMap::HandleButton()
 				m_bxSkillBox->SetActive(true);
 				m_bxSkillBox->SetType(BOX_WITH_BACK);
 				m_bxActionBox->SetActive(false);
+// 				m_bxCurrActiveBox = m_bxSkillBox;
+// 				m_bxCurrActiveBox->BoxType(BX_SKILL);
 			}
 		}
 		break;
@@ -1527,11 +1552,21 @@ void CBattleMap::HandleButton()
 				m_bxItemBox->SetActive(true);
 				m_bxItemBox->SetType(BOX_WITH_BACK);
 				m_bxActionBox->SetActive(false);
+// 				m_bxCurrActiveBox = m_bxItemBox;
+// 				m_bxCurrActiveBox->BoxType(BX_ITEM);
 			}
 		}
 		break;
 	case BTN_ENDTURN:
 		m_bIsPlayersTurn = false;
+		for (int i = 0; i < 4; ++i)
+		{
+			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
+			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_vCharacters[i].GetBaseAP());
+			if (m_nCurrCharacter > -1)
+				CalculateRanges();
+			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_pPlayer->GetTurtles()[i]->GetBaseAP());
+		}
 		break;
 	case BTN_BACK:
 		if (m_bxSkillBox)
@@ -1568,6 +1603,11 @@ void CBattleMap::HandleButton()
 			m_bxPauseBox = new CBox(4, text, 320, 300, 0.1f, true);
 			m_bxPauseBox->SetActive();
 			m_bxPauseBox->SetType(BOX_WITH_BACK);
+		}
+		if (m_bxMessageBox)
+		{
+			delete m_bxMessageBox; m_bxMessageBox = NULL;
+			m_bxActionBox->SetActive();
 		}
 	default:
 		break;
@@ -1625,7 +1665,8 @@ void CBattleMap::PerformAttack()
 		m_bExecuteSkill = true;
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(m_nCurrSkillCost);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
 	}
 	CalculateRanges();
 }
@@ -1778,6 +1819,8 @@ void CBattleMap::DrawBoxes()
 		m_bxLoadBox->Render();
 	if(m_bxSaveBox)
 		m_bxSaveBox->Render();
+	if(m_bxMessageBox)
+		m_bxMessageBox->Render();
 }
 void CBattleMap::cheat()
 {

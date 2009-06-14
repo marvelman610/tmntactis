@@ -26,6 +26,7 @@ class CBox
 {
 // 	// which image is currently being used for the BG
 	int m_nCurrImage;
+	int m_BoxType;
 
 	// size/position variables
 	int m_nLongestString;
@@ -57,9 +58,10 @@ class CBox
 
 	// mouse selection (buttons being hovered over/pressed)
 	int m_nCurrSelectedIndex;
+	bool m_bIsMsgBox;
 	bool m_bIsActive;
 	bool m_bIsMouseInBox;
-	int m_nType;
+	int m_nBackType;
 
 	CSGD_TextureManager*	m_pTM;
 	CBitmapFont*			m_pBM;
@@ -115,10 +117,14 @@ class CBox
 	void BoxWidth(int val) { m_nBoxWidth = val; }
 	bool IsActiveBox() const { return m_bIsActive; }
 	void SetActive(bool IsActive = true);
-	void SetType(int type) {m_nType = type;}
+	void SetType(int type) {m_nBackType = type;}
+	int BoxType() const { return m_BoxType; }
+	void BoxType(int val = -1) { m_BoxType = val; }
 	int BoxRight() {return m_nBoxRight;}
 	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return -1;}
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
+	bool IsMsgBox() const { return m_bIsMsgBox; }
+	void IsMsgBox(bool val) { m_bIsMsgBox = val; }
 	string* GetItems() {return m_sItems;}
 };
 

@@ -187,7 +187,16 @@ void CBattleMap::Reset()
 // 	{
 // 		delete m_bxCurrActiveBox;
 // 		m_bxCurrActiveBox = NULL;
-// 	}
+	// 	}
+	for (int i = 0; i < 4; ++i)
+	{
+		if ( !m_pPlayer->GetTurtles()[i]->GetAlive() )
+		{
+			m_pPlayer->GetTurtles()[i]->SetAlive(true);
+			m_pPlayer->GetTurtles()[i]->SetHealth(m_pPlayer->GetTurtles()[i]->GetMaxHealth());
+		}
+		
+	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
@@ -543,16 +552,12 @@ void CBattleMap::Update(float fElapsedTime)
 	if ( m_bExecuteSkill )
 	{
 		CSkill*  skill = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
-		skill->Update(fElapsedTime, skill);
+		skill->Update(fElapsedTime, skill, m_pParticleSystem);
 		if (skill->IsComplete())
 			m_bExecuteSkill = false;
 		return;
 	}
-	else if ( m_bExecuteSkill )
-	{
-		m_bExecuteSkill = false;
-		return;
-	}
+
 	// for keyboard movement
 	if (m_nMoveDirection != -1)
 	{

@@ -306,6 +306,11 @@ class CBattleMap
 	void CenterCam(float fElapsedTime);
 
 public:
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"DrawBoxes"
+	//
+	//	Purpose		:	Draws any non-null boxes
+	//////////////////////////////////////////////////////////////////////////
 	void DrawBoxes();
 
 	CBattleMap(void);
@@ -378,7 +383,7 @@ public:
 	bool GetPaused()	const		{return m_bIsPaused;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];else return NULL;}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
-	CBase* GetChars()				{return &m_vCharacters[m_nCurrCharacter];}
+	CBase* GetCurrChar()				{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
 
 	//////////////////////////////////////////////////////////////////////////

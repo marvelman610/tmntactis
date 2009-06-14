@@ -19,6 +19,8 @@ using std::string;
 
 class CBattleMap;
 class CPlayer;
+class CSkill;
+class CParticleSystem;
 
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
 enum eSkillIDs // IDs used to set the appropriate function pointers when info is loaded in
@@ -39,10 +41,9 @@ NUNCHUCK_SPIN			= 12,
 ROLL_AWAY				= 13,
 
 };
-class CSkill;
 // member function pointer typedefs
-typedef void (*rendPtr)( CSkill* );
-typedef void (*updPtr)(float, CSkill* );
+typedef void (*rendPtr)( CSkill*, CParticleSystem* );
+typedef void (*updPtr)(float, CSkill*, CParticleSystem* );
 
 class CSkill
 {
@@ -59,8 +60,8 @@ private:
 
 	 float m_fTimer;
 
-	 CPlayer*	m_pPlayer;
-	 CBattleMap* m_pBattleMap;
+	 CPlayer*			m_pPlayer;
+	 CBattleMap*		m_pBattleMap;
 
 	rendPtr m_pRenderPtr;			// the function pointer to the appropriate Render()
 	updPtr  m_pUpdatePtr;			// the function pointer to the appropriate Update()
@@ -69,15 +70,15 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Update
 	//
-	//	Purpose		:	Update the main menu
+	//	Purpose		:	Update the main menu, calls the render function as well
 	//////////////////////////////////////////////////////////////////////////
-	void Update(float fElapsedTime, CSkill* skill);
+	void Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Render
 	//
 	//	Purpose		:	Render the main menu
 	//////////////////////////////////////////////////////////////////////////
-	void Render(CSkill* skill);
+/*	void Render(CSkill* skill, CParticleSystem* ps);*/
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	SetFunctions
@@ -101,9 +102,6 @@ public:
 
 	bool IsComplete()				{return m_bComplete;}
 	void IsComplete(bool bComplete)	{m_bComplete = bComplete;}
-
-// 	void RenderSwordJab();
-// 	void UpdateSwordJab(float elapsedTime);
 
 	~CSkill();
 	CSkill();

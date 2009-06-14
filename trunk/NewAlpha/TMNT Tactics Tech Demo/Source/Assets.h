@@ -18,12 +18,15 @@
 
 class CSGD_FModManager;
 class CSGD_TextureManager;
+typedef int ASSET;
 
 class CAssets
 {
 private:
 	CSGD_TextureManager* m_pTM;
 	CSGD_FModManager*	 m_pFMOD;
+
+	bool m_bLoading;
 
 	CAssets(void);
 	~CAssets(void);
@@ -45,67 +48,69 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void LoadAssets();
 
-	CSGD_FModManager* GetFMOD() {return m_pFMOD;}
+	bool IsLoading()	const {return m_bLoading;}
 
 	// all assets are public...no need to write accessors/mutators for all of them
 
 	// Images common to multiple classes
-	int aMenuCursorImageID;
-	int aBitmapFontID;
-	int aBitmapFont2ID;
-	int aBitmapFont3ID;
-	int aMousePointerID;
-	int aMouseGrabID;
-	int aMouseAttackID;
-	int aMouseMagGlassID;
-	int aMouseMoveID;
+	ASSET aMenuCursorImageID;
+	ASSET aBitmapFontID;
+	ASSET aBitmapFont2ID;
+	ASSET aBitmapFont3ID;
+	ASSET aMousePointerID;
+	ASSET aMouseGrabID;
+	ASSET aMouseAttackID;
+	ASSET aMouseMagGlassID;
+	ASSET aMouseMoveID;
 
 	// box images
-	int aBpointerID;
+	ASSET aBpointerID;
 
 	// BattleMap IDs
-	int aBMbgID;
-	int aBMgroundTilesID, aBMtreeTilesID;
-	int aBMcursorID;
-	int aBMgreenSquareID;
-	int aBMcurrSelectedArrowID;
-	int aBMcurrTargetArrowID;
-	int aBMactionBoxID;
-	int aBMskillBoxID;
+	ASSET aBMbgID;
+	ASSET aBMgroundTilesID, aBMtreeTilesID;
+	ASSET aBMcursorID;
+	ASSET aBMgreenSquareID;
+	ASSET aBMcurrSelectedArrowID;
+	ASSET aBMcurrTargetArrowID;
+	ASSET aBMactionBoxID;
+	ASSET aBMskillBoxID;
+	ASSET aBMarcadeMusicID;
 
 	// Main Menu IDs
-	int aMMBGimageID;
-	int aMMmenuClickSnd;
+	ASSET aMMBGimageID;
+	ASSET aMMmenuClickSnd;
+	ASSET aMMmenuMoveSnd;
 
 	// Options Menu IDs
-	int aOMbgID;
-	int aTutorialID;
+	ASSET aOMbgID;
+	ASSET aTutorialID;
 
 	// How To Play Menu IDs
-	int aHTPMBGimageID;
+	ASSET aHTPMBGimageID;
 
 	//HUD Image ID's
-	int aHUDBoxID;
-	int aRedHealthBarID;
-	int aGreenHealthBarID;
-	int aBlueHealthBarID;
+	ASSET aHUDBoxID;
+	ASSET aRedHealthBarID;
+	ASSET aGreenHealthBarID;
+	ASSET aBlueHealthBarID;
 	//HUD Character Faces
-	int aMikeyHUDFaceID;
-	int aLeonardoHUDID;
-	int aDonatelloHUDID;
-	int aRaphaelHUDID;
+	ASSET aMikeyHUDFaceID;
+	ASSET aLeonardoHUDID;
+	ASSET aDonatelloHUDID;
+	ASSET aRaphaelHUDID;
 
 	//temp ninja
-	int aFootClanHUDID;
-	int aShredderHUDID;
+	ASSET aFootClanHUDID;
+	ASSET aShredderHUDID;
 
-	int aItemID;
+	ASSET aItemID;
 
 	//particles
-	int aFireParticle;
-	int aBloodParticle;
-	int aSmokeParticle;
-	int aGlowParticle;
+	ASSET aFireParticle;
+	ASSET aBloodParticle;
+	ASSET aSmokeParticle;
+	ASSET aGlowParticle;
 };
 
 #endif

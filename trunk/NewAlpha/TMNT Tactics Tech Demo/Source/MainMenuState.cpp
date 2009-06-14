@@ -10,6 +10,7 @@
 #include "MainMenuState.h"
 #include "CSGD_TextureManager.h"
 #include "CSGD_DirectInput.h"
+#include "CSGD_FModManager.h"
 #include "Game.h"
 #include "GamePlayState.h"
 #include "BitmapFont.h"
@@ -52,13 +53,27 @@ void CMainMenuState::Enter()
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
 	CBaseMenuState::Input(fElapsedTime, mousePt);
+
 	if (mousePt.y != m_nMouseY)
 	{
-		SetCurrMenuSelection( (mousePt.y - GetMenuY()) / GetMenuItemSpacing() );
-		if (GetCurrMenuSelection() < 0)
-			SetCurrMenuSelection(PLAY);
-		else if (GetCurrMenuSelection() > NULL_END-1)
-			SetCurrMenuSelection(NULL_END-1);
+		int oldSelection = GetCurrMenuSelection(); 
+		int newSelection = (mousePt.y - GetMenuY()) / GetMenuItemSpacing();
+		if ( oldSelection != newSelection )
+		{
+			SetCurrMenuSelection( newSelection );
+			if (GetCurrMenuSelection() < 0)
+				SetCurrMenuSelection(PLAY);
+			else if (GetCurrMenuSelection() > NULL_END-1)
+				SetCurrMenuSelection(NULL_END-1);
+			if (GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuMoveSnd))
+			{
+				GetFMOD()->StopSound(GetAssets()->aMMmenuMoveSnd);
+				GetFMOD()->ResetSound(GetAssets()->aMMmenuMoveSnd);
+			}
+			GetFMOD()->PlaySound(GetAssets()->aMMmenuMoveSnd);
+			if(!GetFMOD()->SetVolume(GetAssets()->aMMmenuMoveSnd, GetGame()->GetSFXVolume()*0.6f))
+				MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+		}
 	}
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
@@ -77,6 +92,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	}
 	else if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT))
 	{
+		GetFMOD()->PlaySound(GetAssets()->aMMmenuClickSnd);
+		GetFMOD()->SetVolume(GetAssets()->aMMmenuClickSnd, GetGame()->GetSFXVolume());
+		while (GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuClickSnd)) {}
+
 		switch(GetCurrMenuSelection())
 		{
 		case PLAY:

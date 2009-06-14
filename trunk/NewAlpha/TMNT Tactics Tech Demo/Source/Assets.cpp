@@ -10,6 +10,7 @@
 #include "CSGD_TextureManager.h"
 #include "CSGD_FModManager.h"
 #include "CSGD_Direct3D.h"
+#include "BitmapFont.h"
 #include "Game.h"
 
 CAssets* CAssets::GetInstance()
@@ -27,14 +28,20 @@ CAssets::CAssets()
 CAssets::~CAssets()
 {
 	if(m_pFMOD)
-	{
 		m_pFMOD = NULL;
-	}
-
 }
 
 void CAssets::LoadAssets()
 {
+	m_bLoading = true;
+	CSGD_Direct3D *d3d = CSGD_Direct3D::GetInstance();
+	//d3d->Clear(255,255,255);
+	d3d->DeviceBegin();
+	d3d->SpriteBegin();
+	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...", CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(255, 0, 0));
+	d3d->SpriteEnd();
+	d3d->DeviceEnd();
+	d3d->Present();
 	//////////////////////////////////////////////////////////////////////////
 	// globally used IDs
 	aBitmapFontID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont.png", D3DCOLOR_XRGB(0,0,0));
@@ -52,6 +59,7 @@ void CAssets::LoadAssets()
 	//	box IDs
 	aBpointerID			= m_pTM->LoadTexture("Resources/Images/VG_boxPointer.png", D3DCOLOR_XRGB(255,255,255));
 	//////////////////////////////////////////////////////////////////////////
+
 	//////////////////////////////////////////////////////////////////////////
 	// Battle Map IDs
 	//aBMbgID				= m_pTM->LoadTexture("Resources/Images/VG_battleMapBG.png");
@@ -61,17 +69,25 @@ void CAssets::LoadAssets()
 	aBMcurrTargetArrowID= m_pTM->LoadTexture("Resources/Images/VG_currTargetArrow.png", D3DCOLOR_XRGB(255,255,255));
 	aBMactionBoxID		= m_pTM->LoadTexture("Resources/Images/VG_actionBox.png", D3DCOLOR_XRGB(255,255,255));
 	aBMskillBoxID		= m_pTM->LoadTexture("Resources/Images/VG_skillBoxBG.png", D3DCOLOR_XRGB(255,255,255));
+
+	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Main Menu IDs
 	aMMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_MainMenuBG.png", D3DCOLOR_XRGB(255,255,255));
-	//aMMmenuClickSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuClick.mp3");
-	//m_pFMOD->PlaySound(aMMmenuClickSnd);
-	//if(bool b = m_pFMOD->SetVolume(aMMmenuClickSnd, 0.0f))
-		int i = 0;
 
+	aMMmenuClickSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuClick.mp3");
+	aMMmenuMoveSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_menuSelectMove.mp3");
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	// Options Menu IDs
 	aOMbgID			= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu1.png");
+	//////////////////////////////////////////////////////////////////////////
+
+	//////////////////////////////////////////////////////////////////////////
+	// Tutorial IDs
 	aTutorialID		= m_pTM->LoadTexture("Resources/Images/VG_BackgroundMenu.png");
 	//////////////////////////////////////////////////////////////////////////
 
@@ -92,11 +108,8 @@ void CAssets::LoadAssets()
 	aLeonardoHUDID		= m_pTM->LoadTexture("Resources/Images/VG_LeonardoHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aDonatelloHUDID		= m_pTM->LoadTexture("Resources/Images/VG_DonatelloHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aRaphaelHUDID		= m_pTM->LoadTexture("Resources/Images/VG_RaphaelHUD.png", D3DCOLOR_XRGB(255,255,255));
-
-	//////////////////////////////////////////////////////////////////////////
-	// temp ninja
 	aFootClanHUDID		= m_pTM->LoadTexture("Resources/Images/VG_FootClanHUD.png", D3DCOLOR_XRGB(255,255,255));
-	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD.png", D3DCOLOR_XRGB(255,255,255));	
+	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD.png", D3DCOLOR_XRGB(255,255,255));
 
 	///////////////////////////////////////////////////////////////////////
 	//Items and weapons
@@ -109,4 +122,5 @@ void CAssets::LoadAssets()
 	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
 	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
 
+	m_bLoading = false;
 }

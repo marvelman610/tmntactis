@@ -6,7 +6,6 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "BitmapFont.h"
-#include "FModSDK/inc/fmod.hpp"
 
 CBaseMenuState::CBaseMenuState()
 {
@@ -37,7 +36,7 @@ void CBaseMenuState::Enter()
 	m_pGame			= CGame::GetInstance();
 	m_pFMOD			= CSGD_FModManager::GetInstance();
 
-	//m_nMenuClick	= m_pAssets->aMMmenuClickSnd;
+	m_nMenuClick	= m_pAssets->aMMmenuClickSnd;
 	m_nMenuItemSpacing = 45;
 }
 
@@ -45,9 +44,14 @@ bool CBaseMenuState::Input(float elapsedTime, POINT mousePt)
 {
 	if (m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_UP))
 	{
-		/*if (m_pFMOD->IsSoundPlaying(m_nMenuClick))
+		if (m_pFMOD->IsSoundPlaying(m_nMenuClick))
+		{
 			m_pFMOD->StopSound(m_nMenuClick);
-		m_pFMOD->PlaySound(m_nMenuClick);*/
+			m_pFMOD->ResetSound(m_nMenuClick);
+		}
+		m_pFMOD->PlaySound(m_nMenuClick);
+		if(!m_pFMOD->SetVolume(m_nMenuClick, m_pGame->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 	}
 	return true;
 }

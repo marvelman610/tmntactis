@@ -26,6 +26,7 @@ class CTile;
 class CFreeTile;
 class CAnimation;
 class CParticleSystem;
+class CSGD_FModManager;
 class CCamera;
 class CHUD;
 class CPlayer;
@@ -44,11 +45,6 @@ class CBox;
 	 int x;
 	 int y;
  };
-//  struct MY_POINT_FLOAT
-//  {
-// 	 float x;
-// 	 float y;
-//  };
 class CBattleMap
 {
 	struct sTileset 
@@ -88,10 +84,14 @@ class CBattleMap
 	int   m_nCurrBtnSelected;
 	bool  m_bDisplaySpecialBox;
 	bool  m_bDisplayItemBox;
+
+	// input boxes
 	CBox* m_bxActionBox;
 	CBox* m_bxSkillBox;
 	CBox* m_bxItemBox;
 	CBox* m_bxPauseBox;
+	CBox* m_bxLoadBox;
+	CBox* m_bxSaveBox;
 
 	// Times
 	float m_fTimer;
@@ -109,13 +109,13 @@ class CBattleMap
 	int m_nTileHeight;
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
-	int m_nCurrMouseTileTarget;
+	int m_nCurrMouseTileTarget;	// the tile of the target that the mouse is over
 
 	// movement
 	bool  m_bMoving;			// is the character in the middle of moving?
 	bool  m_bPathDisplayed;		// has the user clicked to see the path they could move on?
 	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to
-	MY_POINT_FLOAT m_ptStartXY;			// keeps track of the starting position for each tile move
+	MY_POINT_FLOAT m_ptStartXY;	// keeps track of the starting position for each tile move
 	vector<POINT> m_vPath;		// the path to take
 
 	int m_nScrenWidth;
@@ -177,7 +177,7 @@ class CBattleMap
 	CCamera*			m_pCamera;
 	CBitmapFont*		m_pBitmapFont;
 	CHUD*				m_pHUD;
-	//FMOD::System*		m_pFMODsys;
+	CSGD_FModManager*	m_pFMOD;
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////
@@ -364,7 +364,7 @@ public:
 	int GetCurrTarget() const		{return m_nCurrTarget;}
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	bool GetPaused()	const		{return m_bIsPaused;}
-	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];}
+	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vCharacters.size())return &m_vCharacters[m_nCurrTarget];else return NULL;}
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetChars()				{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}

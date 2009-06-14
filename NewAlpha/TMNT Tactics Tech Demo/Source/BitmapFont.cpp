@@ -23,7 +23,7 @@ CBitmapFont::CBitmapFont(void)
 	m_cStartChar = 32;
 	m_nCharHeight = 32;
 	m_nCharWidth = 32;
-	m_nImageID = CAssets::GetInstance()->aBitmapFontID;
+	m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_BitmapFont.png", D3DCOLOR_XRGB(0,0,0));
 }
 
 CBitmapFont::~CBitmapFont(void)

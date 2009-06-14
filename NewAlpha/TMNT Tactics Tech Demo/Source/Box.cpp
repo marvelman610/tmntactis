@@ -8,9 +8,12 @@
 //////////////////////////////////////////////////////////////////////////
 #include "Box.h"
 #include "Assets.h"
+#include "Game.h"
 #include "BitmapFont.h"
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
+#include "CSGD_DirectInput.h"
+#include "CSGD_FModManager.h"
 
 #define DEFAULT_SIZE 256.0f
 
@@ -29,7 +32,7 @@ CBox::CBox(int numItems, string* sItems,
 	m_nPosY = posY;
 	m_fPosZ = posZ;
 
-	m_nLongestString = 8;
+	m_nLongestString = 8;	// 8 is the length of the BACK ESC button string, so that's default
 	for (int i = 0; i < numItems; ++i)
 	{
 		m_sItems[i] = sItems[i];
@@ -71,6 +74,8 @@ CBox::CBox(int numItems, string* sItems,
 	m_pD3D= CSGD_Direct3D::GetInstance();
 	m_pBM = CBitmapFont::GetInstance();
 	m_pAssets = CAssets::GetInstance();
+	m_pDI = CSGD_DirectInput::GetInstance();
+	m_pFMOD = CSGD_FModManager::GetInstance();
 }
 
 CBox::~CBox()
@@ -81,31 +86,35 @@ CBox::~CBox()
 
 void CBox::CheckMouse(POINT mousePt)
 {
-	if (m_nType != BOX_WITH_BACK)
-	{
 		// is the mouse in the box?
-		if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
-		{ m_nAlpha = 255; m_bIsMouseInBox = true;}
-		else
-		{ m_nAlpha = 100; m_bIsMouseInBox = false;}
-	}
-	else // it has a back button?
+	if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
 	{
+		m_nAlpha = 255; 
+		m_bIsMouseInBox = true;
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
+		{
+			m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+			if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+				MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+		}
+		// it has a back button?
 		if (mousePt.x >= (m_nBoxRight-(25+300.0f*m_fTextScale)) && mousePt.x <= m_nBoxRight && 
-				mousePt.y >= m_nBoxBottom - (40.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
+			mousePt.y >= m_nBoxBottom - (40.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
 		{
 			m_nCurrSelectedIndex = BTN_BACK;
 			return;
 		}
-	}
-	if (mousePt.x >= m_nPosX && mousePt.x <= m_nBoxRight && mousePt.y >= m_nPosY && mousePt.y <= m_nBoxBottom)
-	{
 		m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
+		if (m_nCurrSelectedIndex > m_nNumItems)
+			m_nCurrSelectedIndex = - 1;
 	}
 	else
+	{ 
+		if (m_nType != BOX_WITH_BACK)
+			m_nAlpha = 100; 
+		m_bIsMouseInBox = false;
 		m_nCurrSelectedIndex = -1;
-	if (m_nCurrSelectedIndex > m_nNumItems)
-		m_nCurrSelectedIndex = - 1;
+	}
 }
 
 void CBox::Render()

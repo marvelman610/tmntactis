@@ -9,6 +9,7 @@
 #define CBASEMENUSTATE_H
 #include "IGameState.h"
 #include "Player.h"
+#include "FModSDK/inc/fmod.hpp"
 
 class CBitmapFont;
 class CAssets;

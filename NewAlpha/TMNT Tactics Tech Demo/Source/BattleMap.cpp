@@ -13,10 +13,10 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_DirectInput.h"
 #include "CSGD_TextureManager.h"
+#include "CSGD_FModManager.h"
 #include "ObjectManager.h"
 #include "Factory.h"
 #include "Animation.h"
-//#include "fmod.hpp"
 #include "MainMenuState.h"
 #include "GamePlayState.h"
 #include "BitmapFont.h"
@@ -35,7 +35,6 @@
 
 CBattleMap::CBattleMap(void)
 {
-	srand((unsigned int)(time(0)));
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pAssets		= CAssets::GetInstance();
 	m_pTM			= CSGD_TextureManager::GetInstance();
@@ -43,9 +42,8 @@ CBattleMap::CBattleMap(void)
 	m_pDI			= CSGD_DirectInput::GetInstance();
 	m_pD3D			= CSGD_Direct3D::GetInstance();
 	m_pBitmapFont   = CBitmapFont::GetInstance();
-	//  Sm_pFMOD		= m_pGame->GetFMODSystem();
+	m_pFMOD 		= CSGD_FModManager::GetInstance();
 	m_pHUD			= CHUD::GetInstance();
-	
 
 	godbool = false;
 	godcheat = 0;
@@ -67,10 +65,10 @@ CBattleMap::~CBattleMap(void)
 		m_pHUD = NULL;
 	if (m_pPlayer)
 		m_pPlayer = NULL;
-	// 	if (m_pBitmapFont)
-	// 		m_pBitmapFont = NULL;
-	// 	if (m_pFMOD)
-	// 		m_pFMOD = NULL;
+ 	if (m_pBitmapFont)
+ 		m_pBitmapFont = NULL;
+ 	if (m_pFMOD)
+ 		m_pFMOD = NULL;
 }
 
 CBattleMap* CBattleMap::GetInstance()
@@ -136,10 +134,15 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	// the battle map's spawn points
 	CreateEnemies();
 	SetStartPositions();
+
+	m_pFMOD->PlaySound(m_pAssets->aBMarcadeMusicID);
+	m_pFMOD->SetVolume(m_pAssets->aBMarcadeMusicID, m_pGame->GetMusicVolume());
 }
 void CBattleMap::Exit()
 {
 	Reset();
+	m_pFMOD->StopSound(m_pAssets->aBMarcadeMusicID);
+	m_pFMOD->ResetSound(m_pAssets->aBMarcadeMusicID);
 }
 void CBattleMap::Reset()
 {
@@ -172,6 +175,8 @@ void CBattleMap::Reset()
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
+	m_bIsPaused = false;
+	CGamePlayState::GetInstance()->SetPaused(false);
 }
 void CBattleMap::Render()
 {
@@ -1246,10 +1251,19 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		}
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
-	{CGamePlayState::GetInstance()->SetPaused(true);return true;}
+	{
+		CGamePlayState::GetInstance()->SetPaused(true);
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+		return true;
+	}
 	else if (m_pDI->KeyPressed(DIK_ESCAPE) )
 	{
 		m_nCurrBtnSelected = BTN_BACK;
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 		HandleButton();
 	}
 	return true;
@@ -1265,7 +1279,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nHoverCharacter = -1;
 
 	// is the mouse over an action box button?
-	if (m_bIsPlayersTurn || m_bIsPaused)
+	if ((m_bIsPlayersTurn || m_bIsPaused) && m_nCurrCharacter > -1)
 	{
 		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
 		if (m_bxSkillBox)
@@ -1274,9 +1288,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
-		if (m_bxPauseBox)
-			m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
 	}
+	if (m_bxPauseBox)
+		m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
 
 	// when the left mouse button is clicked
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
@@ -1317,7 +1331,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
 			HandleButton();
 	}
-	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
+	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT) && !m_bIsPaused)
 	{
 		if (index > -1 && index < 4)		// see if we're clicking on a character (turtle)
 		{
@@ -1391,7 +1405,7 @@ void CBattleMap::HandleButton()
 		m_sCurrSkillDisplay = m_sCurrSkillName = skills[m_nCurrBtnSelected].GetSkillName();
 		m_nCurrSkillCost = skills[m_nCurrBtnSelected].GetSkillCost();
 		char temp[16];
-		sprintf_s(temp, " - %i", m_nCurrSkillCost);
+		sprintf_s(temp, ": %i", m_nCurrSkillCost);
 		string cost = temp;
 		m_sCurrSkillDisplay += cost;
 		delete m_bxSkillBox;
@@ -1427,7 +1441,7 @@ void CBattleMap::HandleButton()
 		}
 	}
 	// catches any random invalid input
-	else if ((m_bxItemBox || m_bxSkillBox) && m_nCurrBtnSelected != BTN_BACK)
+	else if ((m_bxItemBox || m_bxSkillBox || m_bxItemBox) && m_nCurrBtnSelected != BTN_BACK)
 		return;
 
 	switch (m_nCurrBtnSelected)
@@ -1446,7 +1460,7 @@ void CBattleMap::HandleButton()
 					vector<CSkill> skills = *(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkills());
 					skillNames[i] = skills[i].GetSkillName();
 					char temp[16];
-					sprintf_s(temp, " - %i", skills[i].GetSkillCost());
+					sprintf_s(temp, ": %i", skills[i].GetSkillCost());
 					string cost = temp;
 					skillNames[i] += cost;
 				}

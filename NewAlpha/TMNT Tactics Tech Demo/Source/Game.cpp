@@ -11,6 +11,7 @@
 #include "ObjectManager.h"
 #include "Battlemap.h"
 #include "CSGD_FModManager.h"
+#include "BitmapFont.h"
 #include <ctime>
 //#include "ParticleSystem.h"
 //#include "MessageSystem.h"
@@ -30,12 +31,11 @@ CGame::CGame()
 
 	// variables
 	m_bIsRunning = false;
-	m_nSFXVolume = 0;
-	m_nMusicVolume = 0;
+	m_fSFXVolume = 0.2f;
+	m_fMusicVolume = 0.2f;
 /*	m_PlayerInfo = 0;*/
 
 	srand((unsigned int)(time(0)));
-
 }
 
 CGame::~CGame()
@@ -55,6 +55,9 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pDI = CSGD_DirectInput::GetInstance();
 	m_pD3D = CSGD_Direct3D::GetInstance();
 	m_pMS = MessageSystem::GetInstance();
+	m_pFMOD = CSGD_FModManager::GetInstance();
+	m_nScreenWidth = nScreenWidth;
+	m_nScreenHeight = nScreenHeight;
 	
 	//m_pMessageSystem = MessageSysterm::GetInstance();
 	//m_pObjectFactory = Factory::GetInstance();
@@ -64,11 +67,14 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
 	m_pMS->InitMessageSystem(MessageProc);
-	CSGD_FModManager::GetInstance()->InitFModManager(hWnd);
 
-	// assets class requires texture manager to be initialized
+	m_pBitMapFont = CBitmapFont::GetInstance();
+	// NOTE::assets class requires texture manager, bitmapFont, and FMOD to be initialized properly
+	if(!m_pFMOD->InitFModManager(hWnd))
+		exit(0);
+	m_pFMOD->Update();
 	m_pAssets = CAssets::GetInstance();
-	m_pAssets->LoadAssets();
+
 	//////////////////////////////////////////////////////////////////////////
 
 	m_pDI->InitDirectInput(hWnd, hInstance, DI_KEYBOARD, 0);
@@ -77,14 +83,10 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 
 	SetIsRunning(true);
 
-	m_nScreenWidth = nScreenWidth;
-	m_nScreenHeight = nScreenHeight;
-
 	m_pPlayer = CPlayer::GetInstance();
 
 	ChangeState(CMainMenuState::GetInstance());
 }
-
 
 void CGame::Shutdown()
 {
@@ -106,6 +108,11 @@ void CGame::Shutdown()
 // 		m_pMessageSystem->Shutdown();
 // 		m_pMessageSystem = NULL;
 // 	}
+	if (m_pFMOD)
+	{
+		m_pFMOD->ShutdownFModManager();
+		m_pFMOD = NULL;
+	}
 	if(m_pDI)
 	{
 		m_pDI->ShutdownDirectInput();
@@ -121,51 +128,55 @@ void CGame::Shutdown()
 		m_pD3D->ShutdownDirect3D();
 		m_pD3D = NULL;
 	}
-	CSGD_FModManager::GetInstance()->ShutdownFModManager();
+	if (m_pBitMapFont)
+		m_pBitMapFont = NULL;
 }
 
 bool CGame::Main(POINT mouse)
 {
-	DWORD dwStartTime = GetTickCount();
-	static DWORD dwLastTime = GetTickCount();
-	m_fElapsedTime = (float)(dwStartTime - dwLastTime)/1000.0f;
-	dwLastTime = dwStartTime;
-
-	static float fSecondTick = 0.0f;
-	fSecondTick += m_fElapsedTime;
-	if(fSecondTick >= 1.0f) { fSecondTick = 0.0f; }
-	
-	// input, update, render
-	m_pDI->ReadDevices();
-	/*if ( ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_LMENU) ) || ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_RMENU) ) )
+	if (!m_pAssets->IsLoading())
 	{
-		m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, m_pD3D->GetPresentParams()->Windowed);
-		m_pDI->ReadDevices();
-	}*/
+		DWORD dwStartTime = GetTickCount();
+		static DWORD dwLastTime = GetTickCount();
+		m_fElapsedTime = (float)(dwStartTime - dwLastTime)/1000.0f;
+		dwLastTime = dwStartTime;
 	
-	if ((m_pDI->KeyDown(DIK_RMENU) && m_pDI->KeyDown(DIK_RETURN))  || (m_pDI->KeyDown(DIK_LMENU) && m_pDI->KeyDown(DIK_RETURN)) )
-	{
-		m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, !m_pD3D->GetPresentParams()->Windowed);
+		static float fSecondTick = 0.0f;
+		fSecondTick += m_fElapsedTime;
+		if(fSecondTick >= 1.0f) { fSecondTick = 0.0f; }
+		
+		// input, update, render
 		m_pDI->ReadDevices();
+		/*if ( ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_LMENU) ) || ( m_pDI->KeyDown(DIK_RETURN) && m_pDI->KeyDown(DIK_RMENU) ) )
+		{
+			m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, m_pD3D->GetPresentParams()->Windowed);
+			m_pDI->ReadDevices();
+		}*/
+		
+		if ((m_pDI->KeyDown(DIK_RMENU) && m_pDI->KeyDown(DIK_RETURN))  || (m_pDI->KeyDown(DIK_LMENU) && m_pDI->KeyDown(DIK_RETURN)) )
+		{
+			m_pD3D->ChangeDisplayParam(m_pD3D->GetPresentParams()->BackBufferWidth, m_pD3D->GetPresentParams()->BackBufferHeight, !m_pD3D->GetPresentParams()->Windowed);
+			m_pDI->ReadDevices();
+		}
+	
+		if(m_pCurrentState->Input(m_fElapsedTime, mouse) == false)
+			return false;
+	
+		m_pCurrentState->Update(m_fElapsedTime);
+		m_pFMOD->Update();
+	
+		m_pMS->ProcessMsgs();
+	
+		m_pD3D->Clear(255,255,255);
+	
+		m_pD3D->DeviceBegin();
+		m_pD3D->SpriteBegin();
+		m_pCurrentState->Render();
+		m_pD3D->SpriteEnd();
+		m_pD3D->DeviceEnd();
+	
+		m_pD3D->Present();
 	}
-
-	if(m_pCurrentState->Input(m_fElapsedTime, mouse) == false)
-		return false;
-
-	m_pCurrentState->Update(m_fElapsedTime);
-	CSGD_FModManager::GetInstance()->Update();
-
-	m_pMS->ProcessMsgs();
-
-	m_pD3D->Clear(255,255,255);
-
-	m_pD3D->DeviceBegin();
-	m_pD3D->SpriteBegin();
-	m_pCurrentState->Render();
-	m_pD3D->SpriteEnd();
-	m_pD3D->DeviceEnd();
-
-	m_pD3D->Present();
 
 	return true;
 }
@@ -177,14 +188,13 @@ void CGame::ChangeState(IGameState *pGameState)
 	m_pCurrentState = pGameState;
 
 	if(m_pCurrentState) { m_pCurrentState->Enter(); }
-	
 }
 
 void CGame::LoadSettings(void)
 {
 	// get settings
-	m_nSFXVolume = 0;
-	m_nMusicVolume = 0;
+	m_fSFXVolume = 0.2f;
+	m_fMusicVolume = 0.2f;
 //	m_PlayerInfo = 0;
 }
 
@@ -193,12 +203,12 @@ void CGame::LoadSettings(void)
 //	return &m_pFMODSystem;
 //}
 
-void CGame::SetMusicVolume(int _nMusicVolume)
+void CGame::SetMusicVolume(float _nMusicVolume)
 {
 
 }
 
-void CGame::SetSFXVolume(int _nSFXVolume)
+void CGame::SetSFXVolume(float _nSFXVolume)
 {
 
 }

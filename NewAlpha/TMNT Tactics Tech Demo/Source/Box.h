@@ -16,6 +16,8 @@ using std::string;
 class CBitmapFont;
 class CAssets;
 class CSGD_TextureManager;
+class CSGD_FModManager;
+class CSGD_DirectInput;
 class CSGD_Direct3D;
 enum {BOX_NO_BACK, BOX_WITH_BACK, };
 enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };
@@ -61,6 +63,8 @@ class CBox
 	CBitmapFont*			m_pBM;
  	CAssets*				m_pAssets;
  	CSGD_Direct3D*			m_pD3D;
+	CSGD_DirectInput*		m_pDI;
+	CSGD_FModManager*		m_pFMOD;
  
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"CheckMouse"

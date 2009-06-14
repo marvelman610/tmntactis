@@ -4,12 +4,13 @@
 #include "windows.h"
 #include "IGameState.h"
 
-//class CBitmapFont;
 //class ParticleSystem;
+class CBitmapFont;
 class CSGD_DirectInput;
 class CBattleMap;
 class CSGD_Direct3D;
 class CSGD_TextureManager;
+class CSGD_FModManager;
 class CAssets;
 class CPlayer;
 class MessageSystem;
@@ -27,14 +28,16 @@ private:
 	CAssets*			m_pAssets;
 	CPlayer*			m_pPlayer;
 	MessageSystem*		m_pMS;
+	CSGD_FModManager*	m_pFMOD;
+	CBitmapFont*		m_pBitMapFont;
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
 	//Factory* m_pObjectFactory;
 
 	// variables
 	bool	m_bIsRunning;
-	int		m_nSFXVolume;
-	int		m_nMusicVolume;
+	float	m_fSFXVolume;
+	float	m_fMusicVolume;
 	float	m_fElapsedTime;
 	int		m_nScreenWidth;
 	int		m_nScreenHeight;
@@ -102,16 +105,16 @@ public:
  	int  GetScreenWidth ()		{return m_nScreenWidth;}
  	int  GetScreenHeight ()		{return m_nScreenHeight;}
 	bool GetIsRunning()			{return m_bIsRunning;}
-	int  GetSFXVolume()			{return m_nSFXVolume;}
-	int  GetMusicVolume()		{return m_nMusicVolume;}
+	float  GetSFXVolume()		{return m_fSFXVolume;}
+	float  GetMusicVolume()		{return m_fMusicVolume;}
 	// 	bool GetIsPaused()			{return m_bIsPaused;}
 	// 	int  GetPanning()			{return m_nPanning;}
 
 	//////////////////////////////////////////////////////////////////////////
 	// Mutators
 	//////////////////////////////////////////////////////////////////////////
-	void SetSFXVolume	(int _nSFXVolume);
-	void SetMusicVolume	(int _nMusicVolume);
+	void SetSFXVolume	(float _nSFXVolume);
+	void SetMusicVolume	(float _nMusicVolume);
 	void SetIsRunning	(bool _bIsRunning)		{m_bIsRunning = _bIsRunning;}
 	//	void SetIsPaused	()					{m_bIsPaused = !m_bIsPaused;}
 	// 	void SetLastScore	(int _nLastScore)		{m_nLastScore = _nLastScore;}

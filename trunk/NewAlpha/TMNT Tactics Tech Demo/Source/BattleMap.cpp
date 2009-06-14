@@ -204,38 +204,6 @@ void CBattleMap::Render()
 	//////////////////////////////////////////////////////////////////////////
 	//TODO::this will be put in the hud eventually
 	//////////////////////////////////////////////////////////////////////////
-	if (m_bNotEnoughAP && m_fTimer < 3)
-	{
-		m_pD3D->DrawText("Not enough AP", 10, 520, 255, 0, 0);
-	}
-	else if (m_bOutOfRange && m_fTimer < 3)
-	{
-		m_pD3D->DrawText("Out of range", 10, 520, 255, 0, 0);
-	}
-	if (m_fTimer > 3)
-	{
-		m_bNotEnoughAP = m_bOutOfRange = false;
-		m_fTimer = 0.0f;
-	}
-
-	if (m_nCurrCharacter > -1)
-	{
-		char apText[64];
-		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
-		m_pD3D->DrawText(apText, 10, 480, 0,0,0);
-		if (m_nCurrTarget > -1)
-		{
-			char distText[64];
-			sprintf_s(distText, "Dist to Target: %i", m_nDistanceToTarget);
-			m_pD3D->DrawText(distText, 10, 500, 0,0,0);
-		}
-	}
-	if (m_nCurrTarget > -1)
-	{
-		char ninjaHealth[64];
-		sprintf_s(ninjaHealth, "Health: %i", m_vCharacters[m_nCurrTarget].GetHealth());
-		m_pD3D->DrawText(ninjaHealth, 10, 460, 0, 0, 0);
-	}
 
 	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
 		DrawHover();
@@ -390,6 +358,38 @@ void CBattleMap::Render()
 			string sCost = temp;
 			m_pBitmapFont->DrawString(sCost.c_str(), 5, 250, 0.05f, 0.5f);
 		}
+	}
+	if (m_bNotEnoughAP && m_fTimer < 3)
+	{
+		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScrenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+	}
+	else if (m_bOutOfRange && m_fTimer < 3)
+	{
+		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScrenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+	}
+	if (m_fTimer > 3 && (m_bNotEnoughAP || m_bOutOfRange))
+	{
+		m_bNotEnoughAP = m_bOutOfRange = false;
+		m_fTimer = 0.0f;
+	}
+
+	if (m_nCurrCharacter > -1)
+	{
+		char apText[64];
+		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
+		m_pD3D->DrawText(apText, 10, 480, 0,0,0);
+		if (m_nCurrTarget > -1)
+		{
+			char distText[64];
+			sprintf_s(distText, "Dist to Target: %i", m_nDistanceToTarget);
+			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScrenWidth, 730, 0.09f, 0.5f);
+		}
+	}
+	if (m_nCurrTarget > -1)
+	{
+		char ninjaHealth[64];
+		sprintf_s(ninjaHealth, "Health: %i", m_vCharacters[m_nCurrTarget].GetHealth());
+		m_pD3D->DrawText(ninjaHealth, 10, 460, 0, 0, 0);
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
@@ -1323,8 +1323,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	}
 	if (m_bxPauseBox)
 		m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
-	if (m_bxLoadBox)
+	else if (m_bxLoadBox)
 		m_nCurrBtnSelected = m_bxLoadBox->Input(m_ptMouseScreenCoord);
+	else if(m_bxSaveBox)
+		m_nCurrBtnSelected = m_bxSaveBox->Input(m_ptMouseScreenCoord);
 
 	// when the left mouse button is clicked...handling non-box input only
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
@@ -1485,17 +1487,23 @@ void CBattleMap::HandleButton()
 			m_bxLoadBox = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
 			m_bxLoadBox->SetType(BOX_WITH_BACK);
 			m_bxLoadBox->SetActive();
-			//m_bDisplayLoadBox = true;
 			delete[] sLoadGame;
 			return;
 		}
 		else if (m_nCurrBtnSelected == 1 /*Save*/)
 		{
-
+			delete m_bxPauseBox; m_bxPauseBox = NULL;
+			string* sSaveGame = new string[2];
+			sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
+			m_bxSaveBox = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
+			m_bxSaveBox->SetType(BOX_WITH_BACK);
+			m_bxSaveBox->SetActive();
+			delete[] sSaveGame;
+			return;
 		}
 	}
 	// catches any random invalid input
-	else if ((m_bxItemBox || m_bxSkillBox || m_bxItemBox) && m_nCurrBtnSelected != BTN_BACK)
+	else if ((m_bxItemBox || m_bxSkillBox || m_bxItemBox || m_bxSaveBox || m_bxLoadBox) && m_nCurrBtnSelected != BTN_BACK)
 		return;
 
 	switch (m_nCurrBtnSelected)
@@ -1593,7 +1601,10 @@ void CBattleMap::HandleButton()
 		{
 			delete m_bxSaveBox;
 			m_bxSaveBox = NULL;
+			string text[4]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "QUIT"; text[0] = "PAUSED";
+			m_bxPauseBox = new CBox(4, text, 320, 300, 0.1f, true);
 			m_bxPauseBox->SetActive();
+			m_bxPauseBox->SetType(BOX_WITH_BACK);
 		}
 		if (m_bxLoadBox)
 		{

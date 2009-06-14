@@ -92,6 +92,11 @@ public:
 
 	// How To Play Menu IDs
 	ASSET aHTPMBGimageID;
+	ASSET aHTPMSelectID;
+	ASSET aHTPMMoveID;
+	ASSET aHTPMAttackID;
+	ASSET aHTPMSpecialID;
+	ASSET aHTPMItemID;
 
 	//HUD Image ID's
 	ASSET aHUDBoxID;

@@ -37,6 +37,7 @@ void CCreditState::Enter()
 
 bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
 {
+	
 	if(GetDI()->KeyPressed(DIK_ESCAPE))
 	{
 		GetGame()->ChangeState(CMainMenuState::GetInstance());

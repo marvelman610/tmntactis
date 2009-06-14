@@ -99,6 +99,11 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 	// How To Player Menu IDs
 	//aHTPMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_HowToPlayMenuBG.png");
+	aHTPMAttackID	= m_pTM->LoadTexture("Resources/Images/VG_HowToAttack.png");
+	aHTPMItemID		= m_pTM->LoadTexture("Resources/Images/VG_HowToItem.png");
+	aHTPMMoveID		= m_pTM->LoadTexture("Resources/Images/VG_HowToMove.png");
+	aHTPMSelectID	= m_pTM->LoadTexture("Resources/Images/VG_HowToSelect.png");
+	aHTPMSpecialID	= m_pTM->LoadTexture("Resources/Images/VG_HowToSpecial.png");
 
 	//////////////////////////////////////////////////////////////////////////
 	// HUD Image ID's

@@ -111,12 +111,8 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
-	//m_pParticleSys = new CParticleSystem();
-	//m_pParticleSys->Load("Resources/ParticleInfo/VG_Test.dat");
-
 	//particle test
 	m_pParticleSystem = new CParticleSystem[4]();
-
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
 	m_pParticleSystem[GLOW].Load("Resources/ParticleInfo/VG_Test.dat");

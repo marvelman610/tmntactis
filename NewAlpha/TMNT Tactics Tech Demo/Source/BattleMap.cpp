@@ -254,11 +254,16 @@ void CBattleMap::Render()
 // 				m_pTilesL1[tileID].SetAlpha(150);
 // 			else
 // 				m_pTilesL1[tileID].SetAlpha(255);
-			if (m_pTilesL1[tileID].Alpha() != 255 && m_bIsPlayersTurn)
+			if (m_pTilesL1[tileID].Alpha() == 200 && m_bIsPlayersTurn)
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,0,255)/*D3DCOLOR_XRGB(60,60,255)*/);
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,0,255) );
 			} 
+			else if (m_pTilesL1[tileID].Alpha() == 199 && m_bIsPlayersTurn)
+			{
+				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,255,0) );
+			}
 			else
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
@@ -484,9 +489,10 @@ void CBattleMap::Update(float fElapsedTime)
 				m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
 			}
 		}
-		else
+		else // movement is done
 		{
 			CalculateRanges();
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 			m_bMoving = false;
 			m_bPathDisplayed = false;
 		}
@@ -575,12 +581,12 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		SetPaused(true);
 	else
 		SetPaused(false);
-	if (m_bMoving)
-		return true;
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
+	if (m_bMoving)
+		return true;
 
 	// Keyboard input
 	if (!HandleKeyBoardInput(fElapsedTime))
@@ -1286,9 +1292,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			for (int i = 0; i < m_nNumCharacters; ++i)
 				if (m_vCharacters[i].GetCurrTile() == tileID)
 				{bOccupied = true; break; }
-			// the user has clicked on the same location to move to again..moving now
+
+			// the user has clicked for the second time on the same location to move to..moving now
 			if (m_bPathDisplayed && !bOccupied && m_ptEndCoord.x == xID && m_ptEndCoord.y == yID)
-				m_bMoving = true;
+					m_bMoving = true;
 			// reset..a new path needs to be evaluated
 			else if (m_bPathDisplayed && !bOccupied && (m_ptEndCoord.x != xID || m_ptEndCoord.y != yID) )
 			{
@@ -1302,22 +1309,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 					}
 					CalculateRanges();
 			}
-
-			// now check if the character has enough Action Points
-			int dist = (abs(xID - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + abs(yID - m_vCharacters[m_nCurrCharacter].GetMapCoord().y)) * 2;
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() >= dist && !bOccupied)
-			{
-				m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
-				FindPathToTarget();
-				m_bPathDisplayed = true;
-// 				POINT mPoint; mPoint.x = xID, mPoint.y = yID;
-// 				m_vCharacters[m_nCurrCharacter].SetCurrTile(mPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-// 				m_nCurrCharacterTile = m_vCharacters[m_nCurrCharacter].GetCurrTile();
-// 				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(dist);
-// 				UpdatePositions();
-// 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-// 				CalculateRanges();
-			}
+			// the click was good, find the path
+			m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
+			FindPathToTarget();
+			m_bPathDisplayed = true;
 		}
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused)
 			HandleButton();
@@ -1602,6 +1597,8 @@ void CBattleMap::FindPathToTarget()
 			oldY = pathY[pathWeight-1];
 		}
 		++pathWeight;
+		if (pathWeight*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+			break;
 		if (ptTarget.x == ptCurr.x && ptTarget.y == ptCurr.y)
 			break;
 		if (pathWeight > m_nNumCols)
@@ -1649,7 +1646,7 @@ void CBattleMap::FindPathToTarget()
 		m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
 		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
 		for (unsigned int i = 0; i < m_vPath.size(); ++i)
-			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(255);
+			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);
 	}
 }
 

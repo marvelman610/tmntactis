@@ -18,7 +18,7 @@
 #define DEFAULT_SIZE 256.0f
 
 CBox::CBox(int numItems, string* sItems, 
-		   int posX, int posY, float posZ /* = 0.1f */,  
+		   int posX, int posY, float posZ /* = 0.1f */, bool bHasTitle /* = false */, 
 		   int spacing /* = 35 */, int startX/* = 35 */, int startY/* = 25 */, 
 		   int imageID /* = -1 */, float fTextScale /* = 1.0f */, 
 		   int red /* = 0 */, int green /* = 0 */, int blue /* = 0 */)
@@ -26,6 +26,9 @@ CBox::CBox(int numItems, string* sItems,
 	m_sItems = new string[numItems];
 	//////////////////////////////////////////////////////////////////////////
 	// box properties
+	m_bHasTitle = bHasTitle;
+	if (bHasTitle)
+		m_nTitleWidth = (int)(sItems[0].size()) * (34.0f * fTextScale);
 	m_bIsActive = false;
 	m_nType = BOX_NO_BACK;
 	m_nPosX = posX;
@@ -40,7 +43,7 @@ CBox::CBox(int numItems, string* sItems,
 			m_nLongestString = sItems[i].size();
 	}
 	m_nLongestString *= (int)(34.0f * fTextScale); 
-	m_fScaleX = (float)(m_nLongestString + (float)spacing * 2.5f) / DEFAULT_SIZE; 
+	m_fScaleX = (float)(m_nLongestString + (float)spacing * 2.9f) / DEFAULT_SIZE; 
 	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 2.5f) + startY) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
@@ -104,7 +107,15 @@ void CBox::CheckMouse(POINT mousePt)
 			m_nCurrSelectedIndex = BTN_BACK;
 			return;
 		}
-		m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
+		//if (!m_bHasTitle)
+			m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
+		if (m_bHasTitle)
+		{
+			//m_nCurrSelectedIndex = (mousePt.y - (m_nStartTextY + (int)((float)m_nSpacing*1.5f))) / (int)((float)m_nSpacing*1.5f);
+ 			if (m_nCurrSelectedIndex == 0)
+ 				m_nCurrSelectedIndex = -1;
+		}
+
 		if (m_nCurrSelectedIndex > m_nNumItems)
 			m_nCurrSelectedIndex = - 1;
 	}
@@ -124,11 +135,20 @@ void CBox::Render()
 	//m_pBM->ChangeBMFont(m_pAssets->aBitmapFont2ID, 16, 16, 18);
 	for (int i = 0; i < m_nNumItems; ++i)
 	{
-		if (i == m_nCurrSelectedIndex)
+		if (i == m_nCurrSelectedIndex)	// color the currently selected item
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		m_pBM->DrawString(m_sItems[i].c_str(), m_nStartTextX, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
+		if (!m_bHasTitle || i > 0)
+			m_pBM->DrawString(m_sItems[i].c_str(), m_nStartTextX, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
+		else // drawing the Title text, centered, and underlined
+		{
+			int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
+			int centerStr = (m_nTitleWidth >> 1);
+			m_pBM->DrawString(m_sItems[i].c_str(), centerBox-centerStr, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
+			m_pD3D->DrawLine(centerBox-centerStr+5, m_nStartTextY + (int)((float)m_nSpacing*1.2f), centerBox-centerStr + m_nTitleWidth, m_nStartTextY + (int)((float)m_nSpacing*1.2f),
+								0, 0, 0);
+		}
 	}
 	if (m_nType == BOX_WITH_BACK)
 	{
@@ -136,7 +156,7 @@ void CBox::Render()
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale, m_dwColor);
+		m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
 	}
 	//m_pBM->Reset();
 }

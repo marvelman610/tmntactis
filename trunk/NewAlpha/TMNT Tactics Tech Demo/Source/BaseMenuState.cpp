@@ -36,7 +36,7 @@ void CBaseMenuState::Enter()
 	m_pGame			= CGame::GetInstance();
 	m_pFMOD			= CSGD_FModManager::GetInstance();
 
-	m_nMenuClick	= m_pAssets->aMMmenuClickSnd;
+	m_nMenuClick	= m_pAssets->aMMmenuMoveSnd;
 	m_nMenuItemSpacing = 45;
 }
 

@@ -231,6 +231,14 @@ class CBattleMap
 	int IsMousePosValid(POINT mousePt);
 
 	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"UpdatePositions"
+	//
+	//	Purpose		:	Updates all characters' positions, used primarily for
+	//					camera movement
+	//////////////////////////////////////////////////////////////////////////
+	bool CheckTileOccupied(int tileID);
+
+	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"CalculateRanges"
 	//
 	//	Purpose		:	Determines the attack and move range of the current character

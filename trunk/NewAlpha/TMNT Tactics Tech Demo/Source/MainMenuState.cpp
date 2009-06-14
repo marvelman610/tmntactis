@@ -19,12 +19,13 @@
 #include "HowToPlayMenuState.h"
 #include "OptionsMenuState.h"
 #include "CreditState.h"
+#include "Box.h"
 
 enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
-
+	
 }
 
 CMainMenuState::~CMainMenuState()
@@ -39,6 +40,7 @@ CMainMenuState* CMainMenuState::GetInstance()
 }
 void CMainMenuState::Enter()
 {
+	m_bDisplayLoadBox = false;
 	CBaseMenuState::Enter();
 	SetBGImageID(GetAssets()->aMMBGimageID);
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aMMBGimageID));
@@ -84,6 +86,22 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	}
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
+	// loading "screen"
+	if (m_bDisplayLoadBox)
+	{
+		int input = m_bxLoadGame->Input(mousePt);
+		if (GetDI()->MouseButtonPressed(MOUSE_LEFT))
+		{
+			if (input == 1)
+			{
+				const char* file = m_bxLoadGame->GetItems()[1].c_str();
+				CPlayer::GetInstance()->LoadSavedGame(file);
+			}
+			else if (input == 100)
+			{ delete m_bxLoadGame; m_bxLoadGame = NULL; m_bDisplayLoadBox = false;}
+		}
+		return true;
+	}
 
 	if (GetDI()->KeyPressed(DIK_DOWN))
 	{
@@ -97,7 +115,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		if (GetCurrMenuSelection() < PLAY)
 			SetCurrMenuSelection(NULL_END-1);
 	}
-	else if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT))
+	else if ((GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT)))
 	{
 		GetFMOD()->PlaySound(GetAssets()->aMMmenuClickSnd);
 		GetFMOD()->SetVolume(GetAssets()->aMMmenuClickSnd, GetGame()->GetSFXVolume());
@@ -119,14 +137,20 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			CGame::GetInstance()->ChangeState(CCreditState::GetInstance());
 			break;
 		case LOAD:
-			// TODO:: call to LoadSavedGame would be in the Load Menu State
-			CPlayer::GetInstance()->LoadSavedGame("SavedGames/savedGame.dat");
-			//CGame::GetInstance()->ChangeState(CLoadMenuState::GetInstance());
-			break;
+			{
+				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
+				string* sLoadGame = new string[2];
+				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
+				m_bxLoadGame = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
+				m_bxLoadGame->SetType(BOX_WITH_BACK);
+				m_bxLoadGame->SetActive();
+				m_bDisplayLoadBox = true;
+				delete[] sLoadGame;
+				break;
+			}
 		case EXIT:
 			CGame::GetInstance()->SetIsRunning(false);
 			return false;
-			//break;
 		}
 	}
 	return true;
@@ -135,18 +159,23 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 void CMainMenuState::Render()
 {
 	CBaseMenuState::Render();
-	// Draw menu item text
+	GetTM()->Draw(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3);
 	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f);
 	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f);
-	GetBitmapFont()->DrawString("P L A Y",			GetMenuX(), GetMenuY(), 0.09f, 1.0f);
-	GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f);
-	GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f);
-	GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f);
-	GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f);
-	GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f);
-	// Draw menu cursor
-	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
-	GetTM()->Draw(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3);
+	if (m_bxLoadGame)
+		m_bxLoadGame->Render();
+	else
+	{
+		// Draw menu item text
+		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY(), 0.09f, 1.0f);
+		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f);
+		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f);
+		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f);
+		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f);
+		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f);
+		// Draw menu cursor
+		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
+	}
 }
 
 void CMainMenuState::Update(float fElapsedTime)
@@ -159,5 +188,11 @@ void CMainMenuState::Exit()
 {
 	GetFMOD()->StopSound(GetAssets()->aMMmusicID);
 	GetFMOD()->ResetSound(GetAssets()->aMMmusicID);
+	if (m_bxLoadGame)
+	{
+		delete m_bxLoadGame;
+		m_bxLoadGame = NULL;
+	}
+	m_bDisplayLoadBox = false;
 	CBaseMenuState::Exit();
 }

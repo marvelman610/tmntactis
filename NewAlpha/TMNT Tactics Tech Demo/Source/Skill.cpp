@@ -176,12 +176,17 @@ void UpdateSwordSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////

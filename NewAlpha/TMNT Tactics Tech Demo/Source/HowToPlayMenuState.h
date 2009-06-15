@@ -14,6 +14,7 @@
 class CHowToPlayMenuState : public CBaseMenuState
 {
 private:
+	bool m_bMouseOverEsc;
 
 	// proper singleton
 	CHowToPlayMenuState(void) {}

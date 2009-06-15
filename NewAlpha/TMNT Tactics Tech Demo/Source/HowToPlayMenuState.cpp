@@ -27,27 +27,27 @@ CHowToPlayMenuState* CHowToPlayMenuState::GetInstance()
 void CHowToPlayMenuState::Enter()
 {
 	CBaseMenuState::Enter();
+	m_bMouseOverEsc = false;
 	SetBGImageID(GetAssets()->aHTPMSelectID);
  	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aHTPMSelectID));
  	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aHTPMSelectID));
 	//CenterBGImage();
 
-	//m_fmsBGMusicID		= m_pAssets->m_fmsMMBGmusic;
-
 	SetCurrMenuSelection( BACK );
 	SetCursorX(350);
 	SetCursorY(335);
-	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 }
 
 void CHowToPlayMenuState::Exit()
 {
-
+	CBaseMenuState::Exit();
 }
 
 bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 {
-	if(GetDI()->KeyPressed(DIK_RETURN))
+	m_nMouseX = mousePT.x;
+	m_nMouseY = mousePT.y;
+	if(GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT))
 	{
 		if(GetBGImageID() == GetAssets()->aHTPMSelectID)
 		{
@@ -70,7 +70,11 @@ bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 			SetBGImageID(GetAssets()->aHTPMSelectID);
 		}
 	}
-	if (GetDI()->KeyPressed(DIK_ESCAPE))
+	if (mousePT.x > 500 && mousePT.x < 600 && mousePT.y > 720 && mousePT.y < 750)
+		m_bMouseOverEsc = true;
+	else
+		m_bMouseOverEsc = false;
+	if (GetDI()->KeyPressed(DIK_ESCAPE) || (m_bMouseOverEsc && GetDI()->MouseButtonPressed(MOUSE_LEFT)))
 	{
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	}
@@ -80,9 +84,13 @@ bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 void CHowToPlayMenuState::Render()
 {
 	CBaseMenuState::Render();
+	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
 
 	// TODO:: add the how to play info here
-	CBitmapFont::GetInstance()->DrawString("ESC", 512, 730);
+	if (m_bMouseOverEsc)
+		CBitmapFont::GetInstance()->DrawString("ESC", 512, 730, 0.05f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
+	else
+		CBitmapFont::GetInstance()->DrawString("ESC", 512, 730);
 }
 
 void CHowToPlayMenuState::Update(float fElapsedTime)

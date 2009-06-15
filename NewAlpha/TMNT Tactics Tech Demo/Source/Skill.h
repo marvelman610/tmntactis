@@ -49,17 +49,18 @@ typedef void (*updPtr)(float, CSkill*, CParticleSystem* );
 class CSkill
 {
 private:
-	 string m_strName;		// The name of the skill
-	 int m_nType;		// what type of skill: e.g. Damage, Healing, Creation
 	//int m_nSkillID;
-	 bool m_bComplete;
-	 int m_nDamage;
-	 int m_nRange;
-	 int m_nSkillCost;
+	 string m_strName;		// The name of the skill
+	 int	m_nType;		// what type of skill: e.g. Damage, Healing, Creation
+	 int	m_nDamage;
+	 int	m_nRange;
+	 int	m_nSkillCost;
 	 int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
-	 int m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	 int	m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	 bool	m_bComplete;				// is execution of the skill complete?
 
 	 float m_fTimer;
+	 float m_fDuration;
 
 	 CPlayer*			m_pPlayer;
 	 CBattleMap*		m_pBattleMap;
@@ -74,20 +75,6 @@ public:
 	//	Purpose		:	Update the main menu, calls the render function as well
 	//////////////////////////////////////////////////////////////////////////
 	void Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps);
-	//////////////////////////////////////////////////////////////////////////
-	//	Function	:	Render
-	//
-	//	Purpose		:	Render the main menu
-	//////////////////////////////////////////////////////////////////////////
-/*	void Render(CSkill* skill, CParticleSystem* ps);*/
-
-	//////////////////////////////////////////////////////////////////////////
-	//	Function	:	Attack
-	//
-	//	Purpose		:	Executes the attack code...damage and things that are only
-	//					done one time
-	//////////////////////////////////////////////////////////////////////////
-	CBase* Attack(CBase* target);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	SetFunctions
@@ -106,6 +93,8 @@ public:
 	int GetRange()			{return m_nRange;}
 	int GetCurrAmtSuccessful(){return m_nCurrAmountSuccessful;}
 	int GetMaxCombAmt()		{return m_nMaxCombinationAmount;}
+	float GetDur()			{return m_fDuration;}
+	float GetTimer()		{return m_fTimer;}
 	CPlayer* GetPlayer()		{return m_pPlayer;}
 	CBattleMap* GetBattleMap(){return m_pBattleMap;}
 
@@ -114,7 +103,7 @@ public:
 
 	~CSkill();
 	CSkill();
-	CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt);
+	CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt, float duration);
 };
 
 

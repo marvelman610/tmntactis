@@ -92,7 +92,7 @@ void CPlayer::LoadNewSkills(const char* filename)
 	if (!doc.LoadFile(filename))
 		{MessageBox(0, "Failed to load new skills.", "Error", MB_OK); return;}
 
-	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name;
+	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name; double duration;
 	vector<CSkill> inactiveSkills, activeSkill;
 
 	TiXmlElement* pRoot = doc.RootElement();
@@ -113,7 +113,8 @@ void CPlayer::LoadNewSkills(const char* filename)
 			pSkill->Attribute("Range", &range);
 			pSkill->Attribute("Cost", &cost);
 			pSkill->Attribute("CombAmt", & combAmt);
-			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt);
+			pSkill->Attribute("Duration", &duration);
+			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, duration);
 			if (i > 0)
 				inactiveSkills.push_back(*Skill);
 			else

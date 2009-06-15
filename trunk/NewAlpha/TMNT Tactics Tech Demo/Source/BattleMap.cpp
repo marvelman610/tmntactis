@@ -588,8 +588,8 @@ void CBattleMap::Update(float fElapsedTime)
 		}
 		int id = newPt.y * m_nNumCols + newPt.x;
 		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
-			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= (abs(newPt.x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) +
-				abs(newPt.y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2))
+			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= DistanceToTarget(newPt.x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x,
+				newPt.y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2)
 		{
 			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
@@ -1152,7 +1152,7 @@ void CBattleMap::CalculateRanges()
 			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
 				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 			{
-				int distance = ((abs(nx - ptGridLocation.x) + abs( ny - ptGridLocation.y) ) << 1);
+				int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
 				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
 				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
@@ -1164,8 +1164,8 @@ void CBattleMap::CalculateRanges()
 	}
 	if (m_nCurrTarget > -1)
 	{
-		m_nDistanceToTarget = (abs(m_vEnemies[m_nCurrTarget]->GetMapCoord().x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + 
-			abs(m_vEnemies[m_nCurrTarget]->GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y));
+		m_nDistanceToTarget = DistanceToTarget(m_vEnemies[m_nCurrTarget]->GetMapCoord().x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
+			m_vEnemies[m_nCurrTarget]->GetMapCoord().y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
 	}
 }
 
@@ -1475,8 +1475,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			m_bIsMouseAttack = true;
 			m_nCurrTarget = IsMousePosValid(mouse, false);
 			m_ncurrTargetTile = m_vEnemies[m_nCurrTarget]->GetCurrTile();
-			m_nDistanceToTarget = (abs(m_vEnemies[m_nCurrTarget]->GetMapCoord().x - m_vCharacters[m_nCurrCharacter].GetMapCoord().x) + 
-								   abs(m_vEnemies[m_nCurrTarget]->GetMapCoord().y - m_vCharacters[m_nCurrCharacter].GetMapCoord().y));
+			m_nDistanceToTarget = DistanceToTarget(m_vEnemies[m_nCurrTarget]->GetMapCoord().x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
+				m_vEnemies[m_nCurrTarget]->GetMapCoord().y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
+
 		}
 		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1)	// otherwise, attempting to attack
 		{
@@ -1993,4 +1994,10 @@ void CBattleMap::SetEnemyDead()
 	m_nCurrTarget = -1;
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
+}
+
+int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
+{
+	int distance = abs(destX - startX) + abs(destY - startY);
+	return distance;
 }

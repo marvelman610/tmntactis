@@ -248,16 +248,12 @@ void CBattleMap::Render()
 			mapPT = IsoTilePlot(mapPT, GetOffsetX(), GetOffsetY());
 
 			// Layer one
-// 			if (m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
-// 				m_pTilesL1[tileID].SetAlpha(150);
-// 			else
-// 				m_pTilesL1[tileID].SetAlpha(255);
-			if (m_pTilesL1[tileID].Alpha() == 200 && m_bIsPlayersTurn)
+			if (m_pTilesL1[tileID].Alpha() == 200 && m_bIsPlayersTurn)	// 200 = movement range
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,0,255) );
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(/*m_pTilesL1[tileID].Alpha()*/255,150,150,255) );
 			} 
-			else if (m_pTilesL1[tileID].Alpha() == 199 && m_bIsPlayersTurn)
+			else if (m_pTilesL1[tileID].Alpha() == 199 && m_bIsPlayersTurn)	// 199 = move path
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,255,0) );
@@ -1100,8 +1096,6 @@ int CBattleMap::IsMousePosValid(POINT mousePt, bool bFindTurtle)
 		else
 		{
 			currRect = m_vEnemies[i]->GetRect();
-			if (i < 4 && !m_pPlayer->GetTurtles()[i]->GetAlive())
-				continue;
 			if (mousePt.x >= currRect.left - (int)m_fScrollX &&
 				mousePt.x <= currRect.right - (int)m_fScrollX &&
 				mousePt.y >= currRect.top - (int)m_fScrollY &&
@@ -1535,6 +1529,7 @@ void CBattleMap::HandleButton()
 	else if (m_bxSkillBox && m_nCurrBtnSelected == m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetNumSkills())
 	{
 		m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; 
+		m_nCurrSkillCost = -1;
 		delete m_bxSkillBox; m_bxSkillBox = NULL;
 		m_bDisplaySpecialBox = false;
 		m_bxActionBox->SetActive();

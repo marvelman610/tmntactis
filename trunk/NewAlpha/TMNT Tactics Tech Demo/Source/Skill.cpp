@@ -202,11 +202,13 @@ void UpdateSwordJab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	if (skill->GetTimer() == 0.0f)
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -229,12 +231,17 @@ void UpdateFlipBackstab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 
 }
 
@@ -255,12 +262,17 @@ void UpdateCounterAttack( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 
 }
 
@@ -281,12 +293,17 @@ void UpdateKnockBack( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -306,12 +323,17 @@ void UpdateStaffSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -331,12 +353,17 @@ void UpdateStaffUppercut( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -356,12 +383,17 @@ void UpdateBackflipAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -381,12 +413,17 @@ void UpdateCreateBomb( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -406,12 +443,17 @@ void UpdateFlyingSaiStab( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -431,12 +473,17 @@ void UpdateSaiFury( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -456,12 +503,17 @@ void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill, CParticleSys
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -481,12 +533,17 @@ void UpdateNunchuckSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -506,12 +563,17 @@ void UpdateRollAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	// init particles...
 	if (skill->GetTimer() == 0.0f)
 	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 	}
 	if (skill->IsComplete())
 	{
 		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
 		target->SetHealth(target->GetHealth() - damage);
+		ps[BLOOD].m_bActive = false;
 	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////

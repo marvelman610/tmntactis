@@ -161,9 +161,9 @@ void CBox::Render()
 		else
 			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
 		if (!m_bIsMsgBox)
-			m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
+			m_pBM->DrawString("BACK-ESC", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.8f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.7f, m_dwColor);
 		else
-			m_pBM->DrawString("OK", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.5f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.5f, m_dwColor);
+			m_pBM->DrawString("OK", (m_nBoxRight-(25+(int)(300.0f*m_fTextScale*0.8f))), m_nBoxBottom-(int)(40.0f*m_fTextScale), m_fTextZ, m_fTextScale * 0.7f, m_dwColor);
 	}
 	//m_pBM->Reset();
 }

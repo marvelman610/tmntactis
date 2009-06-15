@@ -10,6 +10,7 @@
 #include "BattleMap.h"
 #include "Player.h"
 #include "ParticleSystem.h"
+#include "Assets.h"
 
 // prototypes for all types of skills' renders and updates
 #define Prototypes 1
@@ -48,7 +49,7 @@ void UpdateRollAway(float elapsedTime, CSkill* skill, CParticleSystem* ps);
 CSkill::~CSkill() {}
 CSkill::CSkill() {}
 
-CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt)
+CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt, float duration)
 {
 	m_strName = name;
 	m_nType = type;
@@ -61,6 +62,7 @@ CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost,
 	m_pBattleMap	= CBattleMap::GetInstance();
 	
 	m_fTimer = 0.0f;
+	m_fDuration = duration;
 	SetFunctions(skillID);
 }
 
@@ -130,30 +132,23 @@ void CSkill::SetFunctions(int skillID)
 
 void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 {
-	m_pUpdatePtr(fElapsedTime,skill, ps);
+	m_pUpdatePtr(fElapsedTime, skill, ps);
 	m_fTimer += fElapsedTime;
 	// TODO::add quick-time event code here
 
-	// if the attack is done, check if the enemy target is dead
-	// if so...remove and gain experience and skill
-	if (m_fTimer > 5.0f)
+	// if the attack is done, set stats and gain experience and skill
+	// if target is dead...remove 
+	if (m_fTimer > m_fDuration)
 	{
 		m_bComplete = true; 
+		m_pUpdatePtr(fElapsedTime, skill, ps);
 		m_fTimer = 0.0f;
 	}
+
+	// Renders the current skill's particles
 	m_pRenderPtr(skill, ps);
 }
 
-CBase* CSkill::Attack(CBase* target)
-{
-	CPlayer* pPlayer		= CPlayer::GetInstance();
-	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
-	CBase* character		= pBattleMap->GetCurrChar();
-
-	int damage = (int)((float)(character->GetStrength() - target->GetDefense() + GetDmg() + character->GetAccuracy()) * 1.5f);
-	target->SetHealth(target->GetHealth() - damage);
-	return target;
-}
 
 // void CSkill::Render(CSkill* skill, CParticleSystem* ps)
 // {
@@ -174,7 +169,19 @@ void RenderSwordSpin(CSkill* skill, CParticleSystem* ps)
 
 void UpdateSwordSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -187,6 +194,22 @@ void RenderSwordJab(CSkill* skill, CParticleSystem* ps)
 
 void UpdateSwordJab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
+	ps[BLOOD].UpdateParticle(elapsedTime);
+	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -199,6 +222,19 @@ void RenderFlipBackstab(CSkill* skill, CParticleSystem* ps)
 
 void UpdateFlipBackstab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 
 }
 
@@ -212,6 +248,19 @@ void RenderCounterAttack(CSkill* skill, CParticleSystem* ps)
 
 void UpdateCounterAttack( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 
 }
 
@@ -225,14 +274,19 @@ void RenderKnockBack(CSkill* skill, CParticleSystem* ps)
 
 void UpdateKnockBack( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-// 	CBase* target  = cs::GetBattleMap()->GetCurrEnemyTarget();
-// 	CPlayer* player= cs::GetPlayer();
-// 	CBattleMap* bm = cs::GetBattleMap();
-// 	CBase* character=&bm->GetChars()[bm->GetCurrActive()];
-// 
-// 	int damage = character->GetStrength() - target->GetDefense() + cs::GetDmg() + character->GetAccuracy();
-// 
-// 	target->SetHealth(target->GetHealth() - damage);
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -245,7 +299,19 @@ void RenderStaffSpin(CSkill* skill, CParticleSystem* ps)
 
 void UpdateStaffSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -258,7 +324,19 @@ void RenderStaffUppercut(CSkill* skill, CParticleSystem* ps)
 
 void UpdateStaffUppercut( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -271,7 +349,19 @@ void RenderBackflipAway(CSkill* skill, CParticleSystem* ps)
 
 void UpdateBackflipAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -284,7 +374,19 @@ void RenderCreateBomb(CSkill* skill, CParticleSystem* ps)
 
 void UpdateCreateBomb( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -297,7 +399,19 @@ void RenderFlyingSaiStab(CSkill* skill, CParticleSystem* ps)
 
 void UpdateFlyingSaiStab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -310,7 +424,19 @@ void RenderSaiFury(CSkill* skill, CParticleSystem* ps)
 
 void UpdateSaiFury( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -323,7 +449,19 @@ void RenderNunchuckSkullSplitter(CSkill* skill, CParticleSystem* ps)
 
 void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -336,7 +474,19 @@ void RenderNunchuckSpin(CSkill* skill, CParticleSystem* ps)
 
 void UpdateNunchuckSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -349,7 +499,19 @@ void RenderRollAway(CSkill* skill, CParticleSystem* ps)
 
 void UpdateRollAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+	CBase* target			= pBattleMap->GetCurrEnemyTarget();
+	// init particles...
+	if (skill->GetTimer() == 0.0f)
+	{
+	}
+	if (skill->IsComplete())
+	{
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		target->SetHealth(target->GetHealth() - damage);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

@@ -28,8 +28,8 @@ CNinja::CNinja(void)
 	SetHealthMax(100);
 	SetHealth(100);
 
-	/*SetVelX(100.0f);
-	SetVelY(50.0f);*/
+	SetVelX(100.0f);
+	SetVelY(50.0f);
 
 	SetLevel(1);
 	SetStrength(10);
@@ -1009,8 +1009,8 @@ void CNinja::Update(float fElapsedTime)
 				m_vPath.erase(first);
 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+// 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
+// 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
 				
  				DecrementCurrAP(2);
 				m_ptStartXY.x = GetPosX();

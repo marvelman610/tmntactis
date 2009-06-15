@@ -21,6 +21,7 @@ class CBattleMap;
 class CPlayer;
 class CSkill;
 class CParticleSystem;
+class CBase;
 
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
 enum eSkillIDs // IDs used to set the appropriate function pointers when info is loaded in
@@ -79,6 +80,14 @@ public:
 	//	Purpose		:	Render the main menu
 	//////////////////////////////////////////////////////////////////////////
 /*	void Render(CSkill* skill, CParticleSystem* ps);*/
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	Attack
+	//
+	//	Purpose		:	Executes the attack code...damage and things that are only
+	//					done one time
+	//////////////////////////////////////////////////////////////////////////
+	CBase* Attack(CBase* target);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	SetFunctions

@@ -32,6 +32,7 @@ class CHUD;
 class CPlayer;
 class CNinja;
 class CBox;
+class CSkill;
 
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
@@ -162,10 +163,12 @@ class CBattleMap
 	string m_sCurrSkillDisplay;
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
 	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
+	CSkill* m_pSkillToExecute;
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Turn variables
 	bool m_bIsPlayersTurn;
+	CNinja* m_pCurrMovingNinja;
 
 	// temp particles
 	CParticleSystem* m_pParticleSystem;
@@ -368,6 +371,14 @@ public:
 	bool CheckTileOccupied(int tileID);
 
 	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"NinjaMoveComplete"
+	//
+	//	Purpose		:	Acts as an event, when the AI has finished with the
+	//					currently moving enemy. Updates m_vCharacter vector..
+	//////////////////////////////////////////////////////////////////////////
+	void NinjaMoveComplete();
+
+	//////////////////////////////////////////////////////////////////////////
 	//	Accessors
 	//////////////////////////////////////////////////////////////////////////
 	int GetCurrSelectedTile() const {return m_nCurrSelectedTile;}
@@ -397,8 +408,10 @@ public:
 	void SetFTosY(const int osY)					{m_nfreeTileOSy = osY;}
 	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
 	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
+	void SetCurrTargetTile(int nTarget)				{m_ncurrTargetTile = nTarget;}
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
+	void SetEnemyDead();
 };
 
 #endif

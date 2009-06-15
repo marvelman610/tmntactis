@@ -118,7 +118,8 @@ public:
 	inline int		GetExperience(void)	{return m_nExperience;	}
 	inline int		GetSkillXP(void)	{return m_nSkillXP;}
 	//vector<CAnimation> GetAnims(void)   {return m_vAnimations;}
-	vector<CAnimation> GetAnimations() {return m_vAnimations;}
+	vector<CAnimation> GetAnimations()  {return m_vAnimations;}
+	CAnimation*		GetCurrAnim()		{return &(m_vAnimations[m_nCurrAnimation]);}
 	RECT			GetRect();
 
 	//////////////////////////////////////
@@ -126,6 +127,7 @@ public:
 	//
 	//	Purpose	:	To set the specified type
 	///////////////////////////////////////
+	void SetCurrAnim(int animID);	
 	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
 	inline void SetMapCoord(POINT mapCoord) {m_ptMapCoord = mapCoord;}

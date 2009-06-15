@@ -88,3 +88,12 @@ void CBase::Colorize(bool bColorize)
 	else
 		m_dwColor = D3DCOLOR_XRGB(255,255,255);
 }
+
+void CBase::SetCurrAnim(int animID)
+{
+	m_vAnimations[m_nCurrAnimation].Stop();
+	m_nCurrAnimation = animID;
+	if (animID == 0)
+		m_vAnimations[m_nCurrAnimation].Play();
+
+}

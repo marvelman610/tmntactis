@@ -112,7 +112,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
 	//particle test
-	m_pParticleSystem = new CParticleSystem[4]();
+	m_pParticleSystem = new CParticleSystem[4];
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
 	m_pParticleSystem[GLOW].Load("Resources/ParticleInfo/VG_Test.dat");
@@ -284,6 +284,9 @@ void CBattleMap::Render()
 					else if (m_bxSkillBox)
 						if (m_bxSkillBox->IsMouseInBox())
 							continue;
+					else if (m_bxPauseBox)
+						if (m_bxPauseBox->IsMouseInBox())
+							continue;
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
 				else if (m_nHoverCharacter > -1 && m_nHoverCharacter < 4 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
@@ -442,28 +445,6 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
-	// AI's turn
-	if(m_bIsPlayersTurn == false && m_vEnemies.size() != 0)
-	{
-		m_bHaveMoved = false;
-		int index = rand()%m_vEnemies.size();
-		CNinja* ninja = (CNinja*)m_vEnemies[index];
-		ninja->AI();
-
-		m_vCharacters.clear();
-		for (int i = 0; i < 4; ++i)
-			m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-		for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-			m_vCharacters.push_back(*m_vEnemies[i]);
-		m_nCurrCharacter = -1;
-		for(int nx = 2; nx < m_nNumCols; ++nx)
-			for(int ny = 2; ny < m_nNumRows; ++ny)
-			{
-				int id = ny*m_nNumCols+nx;
-				if (m_pTilesL1[id].Alpha() != 255)
-					m_pTilesL1[id].SetAlpha(255);
-			}
-	}
 	// a turtle has been moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
@@ -471,7 +452,6 @@ void CBattleMap::Update(float fElapsedTime)
 		{
 			// grab the next move and take it out of the vector..if the previous move is complete
 			POINT newPoint = m_vPath[0];
-			bool bMoveComplete = false;
 			// set up variables
 			POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
 			CTurtle* turtle= m_pPlayer->GetTurtles()[m_nCurrCharacter];
@@ -550,10 +530,33 @@ void CBattleMap::Update(float fElapsedTime)
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{
-		CSkill*  skill = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
-		skill->Update(fElapsedTime, skill, m_pParticleSystem);
-		if (skill->IsComplete())
-			m_bExecuteSkill = false;
+		m_pSkillToExecute->Update(fElapsedTime, m_pSkillToExecute, m_pParticleSystem);
+		if (m_pSkillToExecute->IsComplete())
+		{ 
+			int index = m_nCurrTarget - 4;
+			if (m_nCurrTarget > 0 && m_nNumEnemiesKilled > 0 && index > 0)
+				index -= m_nNumEnemiesKilled;
+			if (m_vEnemies[index]->GetHealth() <= 0)
+			{
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
+
+				vector<CBase*>::iterator iter = m_vEnemies.begin();
+				int count = 0;
+				while(iter != m_vEnemies.end())
+				{
+					if ((*iter) == m_vEnemies[index])
+					{
+						iter = m_vEnemies.erase(iter);
+						break;
+					}
+					++count;
+					++iter;
+				}
+				SetEnemyDead();
+			}
+			m_bExecuteSkill = false; 
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(0); 
+		}
 		return;
 	}
 
@@ -603,6 +606,26 @@ void CBattleMap::Update(float fElapsedTime)
 	}
 }
 
+void CBattleMap::NinjaMoveComplete()
+{
+	m_pCurrMovingNinja = NULL;
+	m_vCharacters.clear();
+	for (int i = 0; i < 4; ++i)
+	{
+		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+	}
+	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+		m_vCharacters.push_back(*m_vEnemies[i]);
+	m_nCurrCharacter = m_nCurrSelectedTile = -1;
+	for(int nx = 2; nx < m_nNumCols; ++nx)
+		for(int ny = 2; ny < m_nNumRows; ++ny)
+		{
+			int id = ny*m_nNumCols+nx;
+			if (m_pTilesL1[id].Alpha() != 255)
+				m_pTilesL1[id].SetAlpha(255);
+		}
+}
+
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
 	if(CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
@@ -617,10 +640,10 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		return true;
 
 	// Keyboard input
-	if (!HandleKeyBoardInput(fElapsedTime))
-		return false;
 	if (m_bExecuteSkill)
 		return true;
+	if (!HandleKeyBoardInput(fElapsedTime))
+		return false;
 	// Mouse movement (edge of screen to move camera)
 	if (m_bIsPlayersTurn || m_bIsPaused)
 	{
@@ -1269,16 +1292,20 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	}
 	if (m_pDI->KeyPressed(DIK_SPACE))
 	{
-		m_bIsPlayersTurn = !m_bIsPlayersTurn;
+		m_bIsPlayersTurn = false;
+		m_bHaveMoved = false;
+		m_ncurrTargetTile = -1;
+
+		// pick a random enemy to move
+		int index = rand()%m_vEnemies.size();
+		m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
+		m_pCurrMovingNinja->AI();
 		// reset APs
-		for (int i = 0; i < 4; ++i)
-		{
-			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
-			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_vCharacters[i].GetBaseAP());
-			if (m_nCurrCharacter > -1)
-				CalculateRanges();
-			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_pPlayer->GetTurtles()[i]->GetBaseAP());
-		}
+		m_vCharacters[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+		if (m_nCurrCharacter > -1)
+			CalculateRanges();
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
 	{
@@ -1566,14 +1593,24 @@ void CBattleMap::HandleButton()
 		}
 		break;
 	case BTN_ENDTURN:
-		m_bIsPlayersTurn = false;
-		for (int i = 0; i < 4; ++i)
 		{
-			m_vCharacters[i].SetCurrAP(m_vCharacters[i].GetBaseAP());
-			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_vCharacters[i].GetBaseAP());
+			m_bIsPlayersTurn = false;
+			m_bHaveMoved = false;
+			m_ncurrTargetTile = -1;
+
+			// pick a random enemy to move
+			int index = rand()%m_vEnemies.size();
+			m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
+			m_pCurrMovingNinja->AI();
+
 			if (m_nCurrCharacter > -1)
+			{
+				// reset ap
+ 				m_vCharacters[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
 				CalculateRanges();
-			m_pPlayer->GetTurtles()[i]->SetCurrAP(m_pPlayer->GetTurtles()[i]->GetBaseAP());
+			}
 		}
 		break;
 	case BTN_BACK:
@@ -1664,22 +1701,26 @@ void CBattleMap::PerformAttack()
 				++count;
 				++iter;
 			}
-			--m_nNumCharacters;
-			--m_nNumEnemiesLeft;
-			++m_nNumEnemiesKilled;
-			m_ncurrTargetTile = -1;
-			m_nCurrTarget = -1;
+			SetEnemyDead();
 		}
 	} 
 	// a skill has been selected, execute that skill
 	else
 	{
 		m_bExecuteSkill = true;
+		m_pSkillToExecute = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
+		m_pSkillToExecute->IsComplete(false);
+		int index = m_nCurrTarget - 4;
+		if (m_nCurrTarget > 0 && m_nNumEnemiesKilled > 0 && index > 0)
+			index -= m_nNumEnemiesKilled;
+		m_vEnemies[index] = m_pSkillToExecute->Attack(m_vEnemies[index]);
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(m_nCurrSkillCost);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(m_nCurrSkillCost);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(1);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetAnimations()[1].Play();
 	}
 	CalculateRanges();
 }
@@ -1908,4 +1949,13 @@ void CBattleMap::cheat()
 		APbool = !APbool;
 		APcheat = 0;
 	}
+}
+
+void CBattleMap::SetEnemyDead()
+{
+	--m_nNumCharacters;
+	--m_nNumEnemiesLeft;
+	++m_nNumEnemiesKilled;
+	m_ncurrTargetTile = -1;
+	m_nCurrTarget = -1;
 }

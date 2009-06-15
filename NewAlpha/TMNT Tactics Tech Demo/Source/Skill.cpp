@@ -133,9 +133,26 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	m_pUpdatePtr(fElapsedTime,skill, ps);
 	m_fTimer += fElapsedTime;
 	// TODO::add quick-time event code here
+
+	// if the attack is done, check if the enemy target is dead
+	// if so...remove and gain experience and skill
 	if (m_fTimer > 5.0f)
-		m_bComplete = true;
+	{
+		m_bComplete = true; 
+		m_fTimer = 0.0f;
+	}
 	m_pRenderPtr(skill, ps);
+}
+
+CBase* CSkill::Attack(CBase* target)
+{
+	CPlayer* pPlayer		= CPlayer::GetInstance();
+	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
+	CBase* character		= pBattleMap->GetCurrChar();
+
+	int damage = (int)((float)(character->GetStrength() - target->GetDefense() + GetDmg() + character->GetAccuracy()) * 1.5f);
+	target->SetHealth(target->GetHealth() - damage);
+	return target;
 }
 
 // void CSkill::Render(CSkill* skill, CParticleSystem* ps)
@@ -170,15 +187,6 @@ void RenderSwordJab(CSkill* skill, CParticleSystem* ps)
 
 void UpdateSwordJab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 {
-	CPlayer* pPlayer		= CPlayer::GetInstance();
-	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
-	CBase* character		= pBattleMap->GetCurrChar();
-	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-
-	int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f);
-	target->SetHealth(target->GetHealth() - damage);
-
-
 }
 
 //////////////////////////////////////////////////////////////////////////

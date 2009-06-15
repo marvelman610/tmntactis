@@ -168,8 +168,6 @@ void CNinja::AI()
 	}
 	POINT end;
 	
-	
-
 	//for(int i = 0; i < 4; i++)
 	//{
 
@@ -306,6 +304,9 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
 			//end turn
 			SetCurrAP(0);
+			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+			CBattleMap::GetInstance()->UpdatePositions();
+			CBattleMap::GetInstance()->NinjaMoveComplete();
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -317,6 +318,9 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4));
 			//end turn
 			SetCurrAP(0);
+			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+			CBattleMap::GetInstance()->UpdatePositions();
+			CBattleMap::GetInstance()->NinjaMoveComplete();
 			CBattleMap::GetInstance()->SetTurn(true);
 
 		}
@@ -420,8 +424,6 @@ void CNinja::AI()
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
 			//end turn
 			
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//four tiles, move in three tiles
@@ -483,9 +485,6 @@ void CNinja::AI()
 			//attack twice(8ap) = 14ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
-			
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//five tiles, move four
@@ -557,9 +556,6 @@ void CNinja::AI()
 			//attack twice(8ap) = 16ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
-
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//six tiles, move five
@@ -642,9 +638,6 @@ void CNinja::AI()
 			//attack one(4ap) = 14ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
-
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//7 tiles, move 6
@@ -738,9 +731,6 @@ void CNinja::AI()
 			//attack once(4ap) = 16ap
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
-
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//8 tiles, move 7
@@ -844,17 +834,16 @@ void CNinja::AI()
 
 			m_bMoving = true;
 
-			//end turn
-			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 	default:
 		{
 			//end turn
 			SetCurrAP(0);
+			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+			CBattleMap::GetInstance()->UpdatePositions();
+			CBattleMap::GetInstance()->NinjaMoveComplete();
 			CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 	}
@@ -973,7 +962,6 @@ void CNinja::FindPath(POINT begin, POINT end)
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
-
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
@@ -981,7 +969,6 @@ void CNinja::Update(float fElapsedTime)
 		{
 			// grab the next move and take it out of the vector..if the previous move is complete
 			POINT newPoint = m_vPath[0];
-			bool bMoveComplete = false;
 			// set up variables
 			POINT currPoint= GetMapCoord();
 			MY_POINT_FLOAT currPos; 
@@ -1034,8 +1021,12 @@ void CNinja::Update(float fElapsedTime)
 		{
 			SetCurrAP(GetCurrAP());
 			m_bMoving = false;
+
+			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+			CBattleMap::GetInstance()->UpdatePositions();
+			CBattleMap::GetInstance()->NinjaMoveComplete();
+			CBattleMap::GetInstance()->SetTurn(true);
 		}
-		CBattleMap::GetInstance()->UpdatePositions();
 	}
 
 
@@ -1045,8 +1036,6 @@ void CNinja::Update(float fElapsedTime)
 
 		if(type == 0)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 		//else if(type == 1)			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
-
-		
 		//MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
 		return;
 
@@ -1070,8 +1059,6 @@ void CNinja::Update(float fElapsedTime)
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
 	}
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
-
-	
 }
 void CNinja::Render()
 {

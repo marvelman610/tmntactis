@@ -43,8 +43,8 @@ CBox::CBox(int numItems, string* sItems,
 			m_nLongestString = sItems[i].size();
 	}
 	m_nLongestString *= (int)(34.0f * fTextScale); 
-	m_fScaleX = (float)(m_nLongestString + (float)spacing * 3.8f) / DEFAULT_SIZE; 
-	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 3.8f) + startY) / DEFAULT_SIZE;
+	m_fScaleX = (float)(m_nLongestString + 50.0f * fTextScale * 4.0f) / DEFAULT_SIZE; 
+	m_fScaleY = (float)((numItems * 34 * fTextScale) + ((float)spacing * 4.0f) + startY*2) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
 	m_nBoxHeight = (int)(DEFAULT_SIZE * m_fScaleY);
@@ -180,7 +180,10 @@ void CBox::SetActive(bool bIsActive)
 {
 	m_bIsActive = bIsActive;
 	if (!bIsActive)
+	{
 		m_nAlpha = 150;
+		m_bIsMouseInBox = false;
+	}
 	else
 		m_nAlpha = 255;
 }

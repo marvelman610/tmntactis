@@ -9,6 +9,7 @@
 #include "BattleMap.h"
 #include "Player.h"
 #include "Box.h"
+#include "Skill.h"
 #define SCROLL_SPEED 200.0f
 #define EXIT	100
 
@@ -33,8 +34,6 @@ CWorldMap::CWorldMap()
 	
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
 
-	m_bxTrainSkills = m_bxChooseTurtle = NULL;
-
 	string* text = new string[3];
 	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
 	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
@@ -44,6 +43,7 @@ CWorldMap::CWorldMap()
 	text[0] = "SKILLS"; text[1] = "SAVE"; text[2] = "LOAD"; text[3] = "EXIT";
 	m_bxMenu = new CBox(4, text, 830, 565, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxMenu->SetActive(); 
+	delete[] text;
 }
 
 CWorldMap::~CWorldMap()
@@ -67,8 +67,10 @@ CWorldMap* CWorldMap::GetInstance()
 
 void CWorldMap::Enter()
 {
-	m_nMapOSx = (m_nMapWidth >> 1) - (m_nScreenWidth >> 1) + 100;
+	m_bxTrainSkills = m_bxChooseTurtle = m_bxMsg = m_bxLoad = m_bxSave = NULL;
+	m_nMapOSx = (m_nMapWidth >> 1) - (m_nScreenWidth >> 1) + 150;
 	m_nMapOSy = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1) + 100;
+	m_fTimer = 0.0f;
 }
 
 void CWorldMap::Exit()
@@ -81,6 +83,8 @@ void CWorldMap::Exit()
 		delete m_bxLoad;
 	if (m_bxSave)
 		delete m_bxSave;
+	if (m_bxMsg)
+		delete m_bxMsg;
 }
 
 void CWorldMap::Render()
@@ -95,8 +99,9 @@ void CWorldMap::Render()
 		{
 			m_pBitmapFont->DrawStringAutoCenter(m_Locations[i].name.c_str(), m_nScreenWidth, 720);
 		}
-		m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
-			0.0f, 0.5f, m_Locations[i].color);
+		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg)
+			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
+				0.0f, 0.5f, m_Locations[i].color);
 	}
 	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouse.x-10, m_ptMouse.y-3, 0.0f);
 
@@ -120,6 +125,8 @@ void CWorldMap::Render()
 	{
 		m_bxSave->Render();
 	}
+	else if (m_bxMsg)
+		m_bxMsg->Render();
 }
 
 void CWorldMap::Update(float fElapsedTime)
@@ -157,13 +164,38 @@ void CWorldMap::Update(float fElapsedTime)
 			m_Locations[i].bHovering = false;
 		}
 	}
-
+	if (m_bTrained)
+		m_fTimer += fElapsedTime;
+	if (m_bTrained && m_fTimer >= 2.0f)
+	{
+		m_bTrained = false;
+		delete m_bxMsg; m_bxMsg = NULL;
+		string* turtles = new string[5]; turtles[0] = "CHOOSE A TURTLE";
+		char cost[16];
+		string temp;
+		for (int i = 0; i < 4; ++i)
+		{
+			temp = m_pPlayer->GetTurtles()[i]->GetName();
+			temp += " - SKILL PTS";
+			sprintf_s(cost, " %i", m_pPlayer->GetTurtles()[i]->GetSkillXP());
+			temp += cost;
+			turtles[i+1] = temp;
+		}
+		m_bxChooseTurtle = new CBox(5, turtles, 100, 250, 0.11f, true, 35, 35,15, -1, 0.75f);
+		m_bxChooseTurtle->SetType(BOX_WITH_BACK);
+		m_bxChooseTurtle->SetActive();
+		delete[] turtles;
+		m_fTimer = 0.0f;
+	}
 }
 
 bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 {
+	m_ptMouse = mouse;
+	if (m_bTrained)	// don't accept input while trained msg box is displaying
+		return true;
 	if (m_pDI->KeyPressed(DIK_ESCAPE))
-		m_nCurrBtn = EXIT;
+	{m_nCurrBtn = EXIT;HandleButtons();}
 
 	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
 	{
@@ -189,11 +221,12 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 		}
 	}
 
-	m_ptMouse = mouse;
 
 	// get boxes input (calls update)
 	m_bxHelp->Input(mouse);
 	m_nCurrBtn = m_bxMenu->Input(mouse);
+	if(m_nCurrBtn == 3)
+		m_nCurrBtn = MENU_BTN_EXIT;
 
 	if (m_bxChooseTurtle)
 		m_nCurrBtn = m_bxChooseTurtle->Input(mouse);
@@ -210,29 +243,52 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 
 bool CWorldMap::HandleButtons()
 {
-	if (m_bxMenu->IsMouseInBox() || m_nCurrBtn == EXIT)
+	if (m_bxMenu->IsMouseInBox() || m_nCurrBtn == MENU_BTN_EXIT)
 	{
-		if(m_nCurrBtn == 3)
-			m_nCurrBtn = EXIT;
 		switch (m_nCurrBtn)
 		{
 		case MENU_BTN_SKILL: // pop up the choose turtle box, then populate skill box with appropriate skills
 			{
 				m_bxMenu->SetActive(false);
 				string* turtles = new string[5]; turtles[0] = "CHOOSE A TURTLE";
-				turtles[LEONARDO+1] = "LEONARDO"; turtles[DONATELLO+1] = "DONATELLO"; 
-				turtles[RAPHAEL+1] = "RAPHAEL"; turtles[MIKEY+1] = "MIKEY";
-				m_bxChooseTurtle = new CBox(5, turtles, 350, 400, 0.11f, true, 35, 35, 25, -1, 0.6f);
+				char cost[16];
+				string temp;
+				for (int i = 0; i < 4; ++i)
+				{
+					temp = m_pPlayer->GetTurtles()[i]->GetName();
+					temp += " - SKILL PTS";
+					sprintf_s(cost, " %i", m_pPlayer->GetTurtles()[i]->GetSkillXP());
+					temp += cost;
+					turtles[i+1] = temp;
+				}
+				m_bxChooseTurtle = new CBox(5, turtles, 100, 250, 0.11f, true, 35, 35,15, -1, 0.75f);
 				m_bxChooseTurtle->SetType(BOX_WITH_BACK);
 				m_bxChooseTurtle->SetActive();
 				delete[] turtles;
 			}
 			break;
 		case MENU_BTN_SAVE:
-			m_bxMenu->SetActive(false);
+			{
+				m_bxMenu->SetActive(false);
+				string* sSaveGame = new string[2];
+				sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
+				m_bxSave = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
+				m_bxSave->SetType(BOX_WITH_BACK);
+				m_bxSave->SetActive();
+				delete[] sSaveGame;
+			}
 			break;
 		case MENU_BTN_LOAD:
-			m_bxMenu->SetActive(false);
+			{
+				m_bxMenu->SetActive(false);
+				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
+				string* sLoadGame = new string[2];
+				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
+				m_bxLoad = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
+				m_bxLoad->SetType(BOX_WITH_BACK);
+				m_bxLoad->SetActive();
+				delete[] sLoadGame;
+			}
 			break;
 		case MENU_BTN_EXIT:
 			{
@@ -265,9 +321,83 @@ bool CWorldMap::HandleButtons()
 	}
 	else if (m_bxChooseTurtle)
 	{
+		delete m_bxChooseTurtle; m_bxChooseTurtle = NULL;
+		int numTrainedSkills = m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetSkills()->size();
+		int numUntrainedSkills = m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetInactiveSkills()->size();
+		
+		// the index of the first untrained skill available
+		// NOTE: this index does not offset for the title index being [0]
+		m_nFirstTrainable = numTrainedSkills+1;	
+		string* skills = new string[numTrainedSkills+numUntrainedSkills+1]; 
+		skills[0] = "Train Skills";
+
+		char avail[16];
+		skills[0] += " - SP";
+		sprintf_s(avail, " %i", m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetSkillXP());
+		skills[0] += avail;
+
+		string temp;
+		char cost[16];
+		// trained skills
+		vector<CSkill> vskills = *(m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetSkills());
+		for (int i = 0; i < numTrainedSkills; ++i)
+		{
+			skills[i+1] = vskills[i].GetSkillName();
+			skills[i+1] += " - Trained";  
+		}
+		// untrained skills
+		vskills = *(m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetInactiveSkills());
+		for (int i = 0; i < numUntrainedSkills; ++i)
+		{
+			skills[numTrainedSkills+i+1] = vskills[i].GetSkillName();
+			sprintf_s(cost, " - Cost %i", vskills[i].GetSkillCost());
+			temp = cost;
+			skills[numTrainedSkills+i+1] += cost; 
+		}
+		m_bxTrainSkills = new CBox(numUntrainedSkills+numTrainedSkills+1, skills, 150, 270, 0.11f, true, 25, 35, 15, -1, 0.7f);
+		m_bxTrainSkills->SetType(BOX_WITH_BACK); m_bxTrainSkills->SetActive();
+		delete[] skills;
+		m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
 	}
 	else if (m_bxTrainSkills)
 	{
+		// only valid if it's an untrained skill
+		if (m_nFirstTrainable <= m_nCurrBtn)
+		{
+			CSkill chosenSkill = (*m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetInactiveSkills())[m_nCurrBtn-m_nFirstTrainable];
+			if (chosenSkill.GetSkillCost() <= m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetSkillXP())
+			{
+				// trained skills
+				vector<CSkill>* vskills = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetSkills();
+				vskills->push_back(chosenSkill);
+	
+				// untrained skills
+				vector<CSkill>* vskillsPtr = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetInactiveSkills();
+				vector<CSkill>::iterator iter = vskillsPtr->begin();
+				for (int i = 0; i < vskillsPtr->size(); ++i)
+				{
+					if (i == m_nCurrBtn-m_nFirstTrainable)
+					{
+						vskillsPtr->erase(iter);
+						break;
+					}
+					++iter;
+				}
+				delete m_bxTrainSkills; m_bxTrainSkills = NULL;
+				m_bTrained = true;
+				string* msg = new string[1]; msg[0] = "SKILL TRAINED!";
+				m_bxMsg = new CBox(1, msg, 250, 350, 0.11f, false, 35, 35, 55);
+				m_bxMsg->IsMsgBox(true);
+			}
+			else
+			{
+				delete m_bxTrainSkills; m_bxTrainSkills = NULL;
+				m_bTrained = true;
+				string* msg = new string[1]; msg[0] = "NOT ENOUGH SKILL PTS!";
+				m_bxMsg = new CBox(1, msg, 250, 350, 0.11f, false, 35, 35, 25, -1, 0.7f);
+				m_bxMsg->IsMsgBox(true);
+			}
+		}
 	}
 	else if (m_bxLoad)
 	{

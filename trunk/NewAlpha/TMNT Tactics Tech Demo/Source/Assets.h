@@ -79,6 +79,7 @@ public:
 
 	// WorldMap IDs
 	ASSET aWMmapID;
+	ASSET aWMtempleID;
 
 	// Main Menu IDs
 	ASSET aMMBGimageID;

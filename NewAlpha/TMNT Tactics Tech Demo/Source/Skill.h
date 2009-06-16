@@ -22,8 +22,12 @@ class CPlayer;
 class CSkill;
 class CParticleSystem;
 class CBase;
+class CSGD_DirectInput;
+class CSGD_Direct3D;
+class CSGD_TextureManager;
 
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
+enum {LEFT, RIGHT, UP, DOWN, INCORRECT = -1};
 enum eSkillIDs // IDs used to set the appropriate function pointers when info is loaded in
 {
 SWORD_SPIN				= 0,
@@ -57,6 +61,7 @@ private:
 	 int	m_nSkillCost;
 	 int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
 	 int	m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	 int*	m_pCombination;				// the combination of random directions
 	 bool	m_bComplete;				// is execution of the skill complete?
 
 	 float m_fTimer;
@@ -64,6 +69,9 @@ private:
 
 	 CPlayer*			m_pPlayer;
 	 CBattleMap*		m_pBattleMap;
+	 CSGD_DirectInput*  m_pDI;
+	 CSGD_Direct3D*		m_pD3D;
+	 CSGD_TextureManager* m_pTM;
 
 	rendPtr m_pRenderPtr;			// the function pointer to the appropriate Render()
 	updPtr  m_pUpdatePtr;			// the function pointer to the appropriate Update()
@@ -87,16 +95,20 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////
-	string GetSkillName()	{return m_strName;}
-	int GetSkillCost()		{return m_nSkillCost;}
-	int GetDmg()				{return m_nDamage;}
-	int GetRange()			{return m_nRange;}
-	int GetCurrAmtSuccessful(){return m_nCurrAmountSuccessful;}
-	int GetMaxCombAmt()		{return m_nMaxCombinationAmount;}
-	float GetDur()			{return m_fDuration;}
-	float GetTimer()		{return m_fTimer;}
-	CPlayer* GetPlayer()		{return m_pPlayer;}
-	CBattleMap* GetBattleMap(){return m_pBattleMap;}
+	string GetSkillName()			{return m_strName;}
+	int GetSkillCost()				{return m_nSkillCost;}
+	int GetDmg()					{return m_nDamage;}
+	int GetRange()					{return m_nRange;}
+	int GetCurrAmtSuccessful()		{return m_nCurrAmountSuccessful;}
+	void SetCurrAmtSuccessful(int amt){m_nCurrAmountSuccessful = amt;}
+	int GetMaxCombAmt()				{return m_nMaxCombinationAmount;}
+	void SetComb(int num);
+	int* GetComb()					{return m_pCombination;}
+	void ClearComb()				{if (m_pCombination) delete[] m_pCombination; m_pCombination = NULL;}
+	float GetDur()					{return m_fDuration;}
+	float GetTimer()				{return m_fTimer;}
+	CPlayer* GetPlayer()			{return m_pPlayer;}
+	CBattleMap* GetBattleMap()		{return m_pBattleMap;}
 
 	bool IsComplete()				{return m_bComplete;}
 	void IsComplete(bool bComplete)	{m_bComplete = bComplete;}

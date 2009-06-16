@@ -105,7 +105,7 @@ class CBox
 	//////////////////////////////////////////////////////////////////////////
 	int CurrImage() const { return m_nCurrImage; }
 	void CurrImage(int val) { m_nCurrImage = val; }
-	void SetAlpha(float alpha) {m_nAlpha = alpha;}
+	void SetAlpha(int alpha) {m_nAlpha = alpha;}
 	float PosZ() const { return m_fPosZ; }
 	void PosZ(float val) { m_fPosZ = val; }
 	int PosY() const { return m_nPosY; }
@@ -122,7 +122,7 @@ class CBox
 	int BoxType() const { return m_BoxType; }
 	void BoxType(int val = -1) { m_BoxType = val; }
 	int BoxRight() {return m_nBoxRight;}
-	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return -1;}
+	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return 0;}
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
 	bool IsMsgBox() const { return m_bIsMsgBox; }
 	void IsMsgBox(bool val) { m_bIsMsgBox = val; }

@@ -438,7 +438,7 @@ bool CWorldMap::HandleButtons()
 				// untrained skills
 				vector<CSkill>* vskillsPtr = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetInactiveSkills();
 				vector<CSkill>::iterator iter = vskillsPtr->begin();
-				for (int i = 0; i < vskillsPtr->size(); ++i)
+				for (unsigned int i = 0; i < vskillsPtr->size(); ++i)
 				{
 					if (i == m_nCurrBtn-m_nFirstTrainable)
 					{

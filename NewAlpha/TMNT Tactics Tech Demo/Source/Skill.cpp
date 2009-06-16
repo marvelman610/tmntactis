@@ -11,6 +11,10 @@
 #include "Player.h"
 #include "ParticleSystem.h"
 #include "Assets.h"
+#include "CSGD_DirectInput.h"
+#include "CSGD_Direct3D.h"
+#include "CSGD_TextureManager.h"
+#include "Assets.h"
 
 // prototypes for all types of skills' renders and updates
 #define Prototypes 1
@@ -46,7 +50,19 @@ void RenderRollAway(CSkill* skill, CParticleSystem* ps);
 void UpdateRollAway(float elapsedTime, CSkill* skill, CParticleSystem* ps);
 #endif
 
-CSkill::~CSkill() {}
+CSkill::~CSkill() 
+{
+	m_pPlayer		= NULL;
+	m_pBattleMap	= NULL;
+	m_pDI			= NULL;
+	m_pD3D			= NULL;
+	m_pTM			= NULL;
+	if (m_pCombination)
+	{
+		delete[] m_pCombination;
+		m_pCombination = NULL;
+	}
+}
 CSkill::CSkill() {}
 
 CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt, float duration)
@@ -60,6 +76,9 @@ CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost,
 	m_nMaxCombinationAmount = combAmt;
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pBattleMap	= CBattleMap::GetInstance();
+	m_pDI			= CSGD_DirectInput::GetInstance();
+	m_pD3D			= CSGD_Direct3D::GetInstance();
+	m_pTM			= CSGD_TextureManager::GetInstance();
 	
 	m_fTimer = 0.0f;
 	m_fDuration = duration;
@@ -129,12 +148,71 @@ void CSkill::SetFunctions(int skillID)
 	}
 }
 
-
 void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 {
 	m_pUpdatePtr(fElapsedTime, skill, ps);
 	m_fTimer += fElapsedTime;
+	
 	// TODO::add quick-time event code here
+	// there is still time to input a direction
+	if (m_fTimer < m_fDuration)
+	{
+		//m_pD3D->Clear(255, 255, 255);
+		m_pD3D->DeviceBegin();
+		m_pD3D->SpriteBegin();
+
+
+		switch (skill->GetComb()[skill->GetCurrAmtSuccessful()])
+		{
+		case UP:
+			{
+				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteUpID, 550, 300, 0.0f);
+				if (m_pDI->KeyPressed(DIK_UP))
+				{
+					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+				}
+				else
+					m_bComplete = true;
+			}
+			break;
+		case DOWN:
+			{
+				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteDownID, 550, 300, 0.0f);
+				if (m_pDI->KeyPressed(DIK_DOWN))
+				{
+					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+				}
+				else
+					m_bComplete = true;
+			}
+			break;
+		case LEFT:
+			{
+				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteLeftID, 550, 300, 0.0f);
+				if (m_pDI->KeyPressed(DIK_LEFT))
+				{
+					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+				}
+				else
+					m_bComplete = true;
+			}
+			break;
+		case RIGHT:
+			{
+				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteRightID, 550, 300, 0.0f);
+				if (m_pDI->KeyPressed(DIK_RIGHT))
+				{
+					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+				}
+				else
+					m_bComplete = true;
+			}
+			break;
+		}
+		m_pD3D->SpriteEnd();
+		m_pD3D->DeviceEnd();
+		m_pD3D->Present();
+	}
 
 	// if the attack is done, set stats and gain experience and skill
 	// if target is dead...remove 
@@ -149,11 +227,12 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	m_pRenderPtr(skill, ps);
 }
 
-
-// void CSkill::Render(CSkill* skill, CParticleSystem* ps)
-// {
-// 	m_pRenderPtr(skill, ps);
-// }
+void CSkill::SetComb(int num)
+{
+	m_pCombination = new int[num];
+	for (int i = 0; i < num; ++i)
+		m_pCombination[i] = rand() % 4;	// set to a random direction ( one of four)
+}
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////
@@ -178,12 +257,18 @@ void UpdateSwordSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
+		// str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
 		target->SetHealth(target->GetHealth() - damage);
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);

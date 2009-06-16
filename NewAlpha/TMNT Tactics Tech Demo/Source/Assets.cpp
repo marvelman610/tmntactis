@@ -71,6 +71,10 @@ void CAssets::LoadAssets()
 	aBMcurrTargetArrowID= m_pTM->LoadTexture("Resources/Images/VG_currTargetArrow.png", D3DCOLOR_XRGB(255,255,255));
 	aBMactionBoxID		= m_pTM->LoadTexture("Resources/Images/VG_actionBox.png", D3DCOLOR_XRGB(255,255,255));
 	aBMskillBoxID		= m_pTM->LoadTexture("Resources/Images/VG_skillBoxBG.png", D3DCOLOR_XRGB(255,255,255));
+	aBMqteLeftID		= m_pTM->LoadTexture("Resources/Images/VG_qteLEFT.bmp");
+	aBMqteRightID		= m_pTM->LoadTexture("Resources/Images/VG_qteRIGHT.bmp");
+	aBMqteDownID		= m_pTM->LoadTexture("Resources/Images/VG_qteDOWN.bmp");
+	aBMqteUpID			= m_pTM->LoadTexture("Resources/Images/VG_qteUP.bmp");
 
 	//////////////////////////////////////////////////////////////////////////
 

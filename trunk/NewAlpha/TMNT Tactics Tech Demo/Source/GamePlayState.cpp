@@ -15,12 +15,12 @@
 #include "Game.h"
 #include "Player.h"
 #include "Turtle.h"
-//#include "Animation.h"
 #include "HUD.h"
-//#include "WorldMap.h"
-#include"ObjectManager.h"
-#include"BitmapFont.h"
+#include "WorldMap.h"
+#include "ObjectManager.h"
+#include "BitmapFont.h"
 #include <fstream>
+//#include "Animation.h"
 
 // Constructor
 CGamePlayState::CGamePlayState(void)
@@ -29,7 +29,7 @@ CGamePlayState::CGamePlayState(void)
 	m_pBattleMap = NULL;
 	m_pPlayer = NULL;
 	m_pHUD = NULL;
-	//m_pWorldMap  = NULL;
+	m_pWorldMap  = NULL;
 
 	m_nCurrentMap = 0;
 }
@@ -44,14 +44,15 @@ void CGamePlayState::Enter(void)
 {
 	//m_pCurrentMenuState = BaseMenuState::GetInstance();
 	m_pHUD = CHUD::GetInstance();
-	//m_pWorldMap = WorldMap::GetInstance();
+	m_pWorldMap = CWorldMap::GetInstance();
 	m_pPlayer = CPlayer::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
 
 	// TODO:: will enter battle map once player goes into a battle
 	//			from the world map
+	m_pWorldMap->Enter();
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
-	m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
+	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
 
 	m_nCurrentMap = MAP_BATTLE;
 }
@@ -65,11 +66,11 @@ void CGamePlayState::Exit(void)
 	}
 	if (m_pPlayer)
 		m_pPlayer = NULL;
-// 	if(m_pWorldMap)
-// 	{
-// 		m_pWorldMap->Release();
-// 		m_pWorldMap = NULL;
-// 	}
+	if(m_pWorldMap)
+	{
+		m_pWorldMap->Exit();
+		//m_pWorldMap = NULL;
+	}
  	if(m_pHUD)
  	{
  		//m_pHUD->Release();
@@ -101,6 +102,18 @@ CGamePlayState* CGamePlayState::GetInstance(void)
 
 
 // Input
+
+// get mouse x y coord = grenadeTargetTileId
+// if (bItemBOOL == true)
+// {
+// 	calcRanges on grenadeTargetTileId..
+// 		use range of the item
+// 	once right-click
+// 	do dmg to all alphad tile with alpha == 201
+// 		if that tile == any characters tileID
+// 	once attack is complete realpha to 255
+// }
+
 bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 {
 	CSGD_DirectInput* pDI = CSGD_DirectInput::GetInstance();
@@ -115,6 +128,9 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 		m_bIsPaused = !m_bIsPaused;
 	}
 
+	if (true)
+	{
+	}
 	if (!m_pBattleMap->Input(fElapsedTime, mousePt))
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	

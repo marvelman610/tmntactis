@@ -78,6 +78,7 @@ class CBattleMap
 		}
 	};
 	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
+	POINT m_ptMouseMapCoord;
 	int m_nCurrMousePtr;		// which image is currently being used as the mouse pointer
 	DEPTH depth;				// struct that holds all the z-depth draw values
 	string m_strCurrVersion;
@@ -123,7 +124,7 @@ class CBattleMap
 	MY_POINT_FLOAT m_ptStartXY;	// keeps track of the starting position for each tile move
 	vector<POINT> m_vPath;		// the path to take
 
-	int m_nScrenWidth;
+	int m_nScreenWidth;
 	int m_nScreenHeight;
 	int m_nIsoCenterLeftY;
 	int m_nIsoCenterTopX; 
@@ -308,6 +309,10 @@ class CBattleMap
 	void MoveCamUp(float fElapsedTime);
 	void CenterCam(float fElapsedTime);
 
+	CBattleMap(void);
+	~CBattleMap(void);
+	CBattleMap(const CBattleMap&);
+	CBattleMap& operator= (const CBattleMap&);
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"DrawBoxes"
@@ -316,8 +321,6 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	void DrawBoxes();
 
-	CBattleMap(void);
-	~CBattleMap(void);
 	static CBattleMap* GetInstance();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"UpdatePositions"

@@ -295,6 +295,12 @@ class CBattleMap
 	//	Purpose		:	Determines how to get to the target
 	//////////////////////////////////////////////////////////////////////////
 	void FindPathToTarget();
+	//////////////////////////////////////////////////////////////////////////
+	//  Function	:	CheckPath
+	//
+	//	Purpose		:	See if the currently evaluated point is already on the path
+	//////////////////////////////////////////////////////////////////////////
+	bool Checkpath(int x, int y, vector<POINT> path);
 
 	void MoveCamLeft(float fElapsedTime);
 	void MoveCamRight(float fElapsedTime);

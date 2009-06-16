@@ -1758,6 +1758,16 @@ void CBattleMap::PerformAttack()
 	}
 	CalculateRanges();
 }
+bool CBattleMap::Checkpath(int x, int y, vector<POINT> path)
+{
+	for (int i = 0; i < path.size(); ++i)
+	{
+		POINT pt; pt.x = x; pt.y = y;
+		if(path[i].x == pt.x && path[i].y == pt.y)
+			return true;
+	}
+	return false;
+}
 void CBattleMap::FindPathToTarget()
 {
 	m_vPath.clear();
@@ -1772,6 +1782,8 @@ void CBattleMap::FindPathToTarget()
 
 	while (true)
 	{
+		if (pathX.size() > 0 && ptCurr.x == pathX[pathX.size()-1] && ptCurr.y == pathY[pathX.size()-1])
+		{ pathWeight = 10000; break; }
 		if (pathWeight-4 > -1)
 		{
 			if ( (ptCurr.x == pathX[pathWeight-4]) && (ptCurr.y == pathY[pathWeight-4]) )
@@ -1793,22 +1805,44 @@ void CBattleMap::FindPathToTarget()
 		if (pathWeight > m_nNumCols)
 		{pathWeight = 10000; break;}
 
-		if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
-			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
-			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
-		{ ++ptCurr.x; continue; }
-		if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
-			m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
-			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
-		{ --ptCurr.x; continue; }
-		if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
-			m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-			!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
-		{ ++ptCurr.y; continue; }
-		if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
-			m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-			!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
-		{ --ptCurr.y; continue; }
+		if (pathX.size() > 1)
+		{
+			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && !Checkpath(ptCurr.x+1, ptCurr.y, m_vPath) &&
+				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
+			{ ++ptCurr.x; continue; }
+			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && !Checkpath(ptCurr.x-1, ptCurr.y, m_vPath) &&
+				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
+			{ --ptCurr.x; continue; }
+			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && !Checkpath(ptCurr.x, ptCurr.y+1, m_vPath) &&
+				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+			{ ++ptCurr.y; continue; }
+			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && !Checkpath(ptCurr.x, ptCurr.y-1, m_vPath) &&
+				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+			{ --ptCurr.y; continue; }
+		}
+		else
+		{
+			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
+				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
+			{ ++ptCurr.x; continue; }
+			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
+				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
+			{ --ptCurr.x; continue; }
+			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
+				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+			{ ++ptCurr.y; continue; }
+			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
+				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+			{ --ptCurr.y; continue; }
+		}
 
 		if (ptCurr.x == ptTarget.x)
 		{

@@ -14,6 +14,8 @@
 #include"Turtle.h"
 #include"BattleItem.h" 
 #include"BattleMap.h"
+#include"Assets.h"
+
 
 #define TOTAL_NUM_WEAPONS 12
 
@@ -67,17 +69,17 @@ bool Factory::LoadItems(const char* fileName)
 			pItem = pItem->NextSiblingElement("Item");
 		}
 
-		blackeggs.SetName(name[0]);
+		blackeggs.SetName("Black Eggs");
 		blackeggs.SetDamage(dmg[0]);
 		blackeggs.SetRange(range[0]);
 		blackeggs.SetRadius(radius[0]);
 
-		grenado.SetName(name[1]);
+		grenado.SetName("Grenado");
 		grenado.SetDamage(dmg[1]);
 		grenado.SetRange(range[1]);
 		grenado.SetRadius(radius[1]);
 
-		pizza.SetName(name[2]);
+		pizza.SetName("Pizza");
 		pizza.SetDamage(dmg[2]);
 		pizza.SetRange(range[2]);
 		pizza.SetRadius(radius[2]);
@@ -85,16 +87,19 @@ bool Factory::LoadItems(const char* fileName)
 	TiXmlElement* pWeapon = pBattleItem->NextSiblingElement("Weapon");
 	if(pWeapon)
 	{
-		char* Name[12];
+		string Name[12];
+		char* temp;
 		int atk[12], def[12];
 		TiXmlElement* pItem = pWeapon->FirstChildElement("Item");
 		for(int i = 0; i < 12; i++)
 		{
-			Name[i] = (char*)pItem->Attribute("name");
+			temp = (char*)pItem->Attribute("name");
+			//Name[i]
+			//temp = Name[i].c_str();
 			pItem->Attribute("atk", &atk[i]);
 			pItem->Attribute("def", &def[i]);
 
-			weapons[i]->SetName(Name[i]);
+			weapons[i]->SetName(temp);
 			weapons[i]->SetStrength(atk[i]);
 			weapons[i]->SetDefense(def[i]);
 
@@ -144,15 +149,22 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 		item->SetName("Black Eggs");
 		item->SetRange(blackeggs.GetRange());
 		item->SetDamage(blackeggs.GetDamage());
+		item->SetImageID(CAssets::GetInstance()->aEggID);
+
 		break;
 	case GRENADO:
 		item->SetName("Grenado");
 		item->SetRange(grenado.GetRange());
 		item->SetDamage(grenado.GetDamage());
+		item->SetImageID(CAssets::GetInstance()->aGrenadoID);
+
 		break;
 	case PIZZA:
 		item->SetName("Pizza");
 		item->SetHeal(pizza.GetDamage());
+		item->SetImageID(CAssets::GetInstance()->aPizzaID);
+
+
 		break;
 	}
 	CBattleMap* pBM =  CBattleMap::GetInstance();
@@ -164,45 +176,82 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 CBase* Factory::CreateWeapon(int type, POINT mapPoint)
 {
 	CBase* weapon = new CBase();
+
+	CBase* temp;
+	
 	switch(type)
 	{
 	case BOKKEN:
-		weapon = weapons[BOKKEN];
+		temp = weapons[BOKKEN];
+		temp->SetName("Bokken");
+		temp->SetImageID(CAssets::GetInstance()->aSwordID);
 		break;
 	case TACHI:
-		weapon = weapons[TACHI];
+		temp = weapons[TACHI];
+		temp->SetName("Tachi");
+		temp->SetImageID(CAssets::GetInstance()->aSwordID);
 		break;
 	case KATANA:
-		weapon = weapons[KATANA];
+		temp = weapons[KATANA];
+		temp->SetName("Katana");
+		temp->SetImageID(CAssets::GetInstance()->aSwordID);
 		break;
 	case NINJATO:
-		weapon = weapons[NINJATO];
+		temp = weapons[NINJATO];
+		temp->SetName("Ninjato");
+		temp->SetImageID(CAssets::GetInstance()->aSwordID);
 		break;
 	case WOODNUN:
-		weapon = weapons[WOODNUN];
+		temp = weapons[WOODNUN];
+		temp->SetName("Wooden Nunchaku");
+		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
 		break;
 	case GLASSNUN:
-		weapon = weapons[GLASSNUN];
+		temp = weapons[GLASSNUN];
+		temp->SetName("Glass Nunchaku");
+		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
 		break;
 	case STEELNUN:
-		weapon = weapons[STEELNUN];
+		temp = weapons[STEELNUN];
+		temp->SetName("Steel Nunchaku");
+		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
 		break;
 	case OAKSTAFF:
-		weapon = weapons[OAKSTAFF];
+		temp = weapons[OAKSTAFF];
+		temp->SetName("Oak Bo Staff");
+		temp->SetImageID(CAssets::GetInstance()->aStaffID);
 		break;
 	case BAMBOOSTAFF:
-		weapon = weapons[BAMBOOSTAFF];
+		temp = weapons[BAMBOOSTAFF];
+		temp->SetName("Bamboo Staff");
+		temp->SetImageID(CAssets::GetInstance()->aStaffID);
 		break;
 	case STEELSTAFF:
-		weapon = weapons[STEELSTAFF];
+		temp = weapons[STEELSTAFF];
+		temp->SetName("Steel Staff");
+		temp->SetImageID(CAssets::GetInstance()->aStaffID);
 		break;
 	case RUSTYSAI:
-		weapon = weapons[RUSTYSAI];
+		temp = weapons[RUSTYSAI];
+		temp->SetName("Rusty Sais");
+		temp->SetImageID(CAssets::GetInstance()->aSaiID);
 		break;
 	case POLISHEDSAI:
-		weapon = weapons[POLISHEDSAI];
+		temp = weapons[POLISHEDSAI];
+		temp->SetName("Polished Sais");
+		temp->SetImageID(CAssets::GetInstance()->aSaiID);
 		break;
 	}
+	weapon->SetWeapon(temp->GetName(),temp->GetStrength(), temp->GetDefense(), temp->GetImageID());
+
+	weapon->SetType(OBJECT_WEAPON);
+	weapon->SetWidth(32);
+	weapon->SetHeight(32);
+
+	CBattleMap* pBM =  CBattleMap::GetInstance();
+	weapon->SetCurrTile(mapPoint, pBM->GetOffsetX(),pBM->GetOffsetY(),pBM->GetTileWidth(), pBM->GetTileHeight(),pBM->GetNumCols(),false);
+
+	ObjectManager::GetInstance()->Add(weapon);
 
 	return weapon;
 }

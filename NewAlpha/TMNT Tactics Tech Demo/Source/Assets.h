@@ -123,7 +123,14 @@ public:
 	ASSET aFootClanHUDID;
 	ASSET aShredderHUDID;
 
-	ASSET aItemID;
+	ASSET aEggID;
+	ASSET aGrenadoID;
+	ASSET aPizzaID;
+
+	ASSET aSwordID;
+	ASSET aSaiID;
+	ASSET aNunchakuID;
+	ASSET aStaffID;
 
 	//particles
 	ASSET aFireParticle;

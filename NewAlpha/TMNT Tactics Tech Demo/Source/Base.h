@@ -200,6 +200,8 @@ public:
 	//
 	////////////////////////////////////////////////////////////////////
 	void Colorize(bool bColorize = true);
+	
+	void SetWeapon(char* name, int attack, int defense, int imageID);
 
 };
 

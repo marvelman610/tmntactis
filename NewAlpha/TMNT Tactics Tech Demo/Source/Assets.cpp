@@ -129,8 +129,16 @@ void CAssets::LoadAssets()
 
 	///////////////////////////////////////////////////////////////////////
 	//Items and weapons
-	//temp item
-	aItemID = m_pTM->LoadTexture("Resources/Images/VG_tempItem.png");
+	aEggID = m_pTM->LoadTexture("Resources/Images/VG_blackEgg.png");
+	aGrenadoID = m_pTM->LoadTexture("Resources/Images/VG_grenado.png");
+	aPizzaID = m_pTM->LoadTexture("Resources/Images/VG_fullPizza.png");
+
+	//atempID = m_pTM->LoadTexture("Resources/Images/VG_tempweapon.png");
+	aSwordID = m_pTM->LoadTexture("Resources/Images/VG_Katana.png");
+	aSaiID= m_pTM->LoadTexture("Resources/Images/VG_Sais.png");
+	aNunchakuID= m_pTM->LoadTexture("Resources/Images/VG_nunchaku.png");
+	aStaffID= m_pTM->LoadTexture("Resources/Images/VG_staff.png");
+	
 
 	////////////////////////////////////////////////////////////////////////
 	//Particles

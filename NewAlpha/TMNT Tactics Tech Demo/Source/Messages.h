@@ -15,6 +15,7 @@ enum eMsgTypes { MSG_NULL = 0, MSG_CREATE_ITEM, MSG_DESTROY_ITEM, MSG_CREATE_WEA
 
 class CNinja;
 class CBattleItem;
+class CBase;
 
 class CBaseMessage
 {
@@ -103,16 +104,19 @@ public:
 };
 class CDestroyWeapon : public CBaseMessage
 {
+	CBase* m_pWeapon;
 public:
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CDestroyWeapon(Constructor)"
 	///////////////////////////////////////////////////////////////////
-	CDestroyWeapon():CBaseMessage(MSG_DESTROY_WEAPON){}
+	CDestroyWeapon(CBase* weapon):CBaseMessage(MSG_DESTROY_WEAPON){m_pWeapon = weapon;}
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"~CDestroyWeapon(Destructor)"
 	///////////////////////////////////////////////////////////////////
 	~CDestroyWeapon(){}
+
+	inline CBase* GetWeapon() {return m_pWeapon;}
 
 };
 #endif

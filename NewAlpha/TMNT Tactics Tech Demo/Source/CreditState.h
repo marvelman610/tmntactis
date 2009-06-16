@@ -58,7 +58,7 @@ public:
 	//
 	// Purpose : To update the Credit State
 	///////////////////////////////////////////////////////////////////
-	void Update(float fElapsedTime);
+	void Update(float fElapsedTime){}
 };
 
 #endif

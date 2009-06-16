@@ -383,7 +383,7 @@ bool CWorldMap::HandleButtons()
 
 		}
 	}
-	else if (m_bxChooseTurtle)
+	else if (m_bxChooseTurtle && m_nCurrBtn > -1)
 	{
 		delete m_bxChooseTurtle; m_bxChooseTurtle = NULL;
 		int numTrainedSkills = m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetSkills()->size();
@@ -423,7 +423,7 @@ bool CWorldMap::HandleButtons()
 		delete[] skills;
 		m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
 	}
-	else if (m_bxTrainSkills)
+	else if (m_bxTrainSkills && m_nCurrBtn > -1)
 	{
 		// only valid if it's an untrained skill
 		if (m_nFirstTrainable <= m_nCurrBtn)
@@ -463,10 +463,10 @@ bool CWorldMap::HandleButtons()
 			}
 		}
 	}
-	else if (m_bxLoad)
+	else if (m_bxLoad && m_nCurrBtn > -1)
 	{
 	}
-	else if (m_bxSave)
+	else if (m_bxSave && m_nCurrBtn > -1)
 	{
 	}
 

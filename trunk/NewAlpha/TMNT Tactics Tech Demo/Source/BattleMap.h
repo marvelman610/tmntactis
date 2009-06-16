@@ -409,6 +409,7 @@ public:
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetCurrChar()			{return &m_vCharacters[m_nCurrCharacter];}
 	CTile* GetTiles()	const		{return m_pTilesL1;}
+	CNinja* GetCurrMovingNinja()	{return m_pCurrMovingNinja; }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators

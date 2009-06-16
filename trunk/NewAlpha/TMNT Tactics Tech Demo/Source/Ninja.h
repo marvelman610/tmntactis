@@ -84,5 +84,7 @@ public:
 	inline void SetXDifference(int set)	{ m_nXChange = set;		}
 	inline int GetYDifference(void)		{ return m_nYChange;	}
 	inline void SetYDifference(int set)	{ m_nYChange = set;		}
+	inline int GetTurtle(void)			{ return m_nTurtle;		}
+
 };
 #endif

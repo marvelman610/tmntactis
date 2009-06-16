@@ -145,10 +145,12 @@ void CBattleMap::Reset()
 {
 	m_nNumEnemiesLeft = m_nNumEnemiesKilled = m_nNumCharacters = 0;
 	m_nCurrCharacterTile = -1;
+
 	delete[] m_pTilesL1;
 	delete[] m_pTilesL2;
 	delete[] m_pFreeTiles;
 	delete[] m_pParticleSystem;
+
 	if(m_bxItemBox)
 	{
 		delete m_bxItemBox;

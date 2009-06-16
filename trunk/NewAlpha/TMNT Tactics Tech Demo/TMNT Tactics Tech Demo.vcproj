@@ -262,6 +262,10 @@
 				RelativePath=".\Source\WinMain.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Source\WorldMap.cpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -386,6 +390,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\Turtle.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\WorldMap.h"
 				>
 			</File>
 		</Filter>

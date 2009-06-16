@@ -1885,7 +1885,7 @@ void CBattleMap::PerformAttack()
 }
 bool CBattleMap::Checkpath(int x, int y, vector<POINT> path)
 {
-	for (int i = 0; i < path.size(); ++i)
+	for (unsigned int i = 0; i < path.size(); ++i)
 	{
 		POINT pt; pt.x = x; pt.y = y;
 		if(path[i].x == pt.x && path[i].y == pt.y)

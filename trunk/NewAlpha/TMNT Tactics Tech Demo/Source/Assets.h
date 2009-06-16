@@ -76,6 +76,10 @@ public:
 	ASSET aBMactionBoxID;
 	ASSET aBMskillBoxID;
 	ASSET aBMarcadeMusicID;
+	ASSET aBMqteLeftID;
+	ASSET aBMqteRightID;
+	ASSET aBMqteDownID;
+	ASSET aBMqteUpID;
 
 	// WorldMap IDs
 	ASSET aWMmapID;

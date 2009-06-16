@@ -11,6 +11,7 @@
 #include "Box.h"
 #include "Skill.h"
 #define SCROLL_SPEED 200.0f
+#define SCROLL_EDGE_DIST 35
 #define EXIT	100
 
 CWorldMap::CWorldMap()
@@ -38,6 +39,7 @@ CWorldMap::CWorldMap()
 	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
 	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
 	m_bxHelp->IsMsgBox(true);
+	m_bxHelp->SetAlpha(200);
 	delete[] text;
 	text = new string[4];
 	text[0] = "SKILLS"; text[1] = "SAVE"; text[2] = "LOAD"; text[3] = "EXIT";
@@ -97,7 +99,8 @@ void CWorldMap::Render()
 			0.9f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, m_Locations[i].color);
 		if (m_Locations[i].bSelected)	// selected, display on bottom of screen
 		{
-			m_pBitmapFont->DrawStringAutoCenter(m_Locations[i].name.c_str(), m_nScreenWidth, 720);
+			string name = "CURRENT LOCATION - " + m_Locations[i].name;
+			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5);
 		}
 		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg)
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
@@ -131,13 +134,13 @@ void CWorldMap::Render()
 
 void CWorldMap::Update(float fElapsedTime)
 {
-	if (m_ptMouse.x < 20)
+	if (m_ptMouse.x < SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_A))
 		m_nMapOSx -= (int)( SCROLL_SPEED * fElapsedTime);
-	if (m_ptMouse.x > m_nScreenWidth-20)
+	if (m_ptMouse.x > m_nScreenWidth-SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_D))
 		m_nMapOSx += (int)( SCROLL_SPEED * fElapsedTime);
-	if (m_ptMouse.y < 20)
+	if (m_ptMouse.y < SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_W))
 		m_nMapOSy -= (int)( SCROLL_SPEED * fElapsedTime);
-	if (m_ptMouse.y > m_nScreenHeight-20)
+	if (m_ptMouse.y > m_nScreenHeight-SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_S))
 		m_nMapOSy += (int)( SCROLL_SPEED * fElapsedTime);
 
 	if (m_nMapOSy < 0)
@@ -386,7 +389,7 @@ bool CWorldMap::HandleButtons()
 				delete m_bxTrainSkills; m_bxTrainSkills = NULL;
 				m_bTrained = true;
 				string* msg = new string[1]; msg[0] = "SKILL TRAINED!";
-				m_bxMsg = new CBox(1, msg, 250, 350, 0.11f, false, 35, 35, 55);
+				m_bxMsg = new CBox(1, msg, 250, 300, 0.11f, false, 25, 35, 25, -1, 0.7f);
 				m_bxMsg->IsMsgBox(true);
 			}
 			else
@@ -394,7 +397,7 @@ bool CWorldMap::HandleButtons()
 				delete m_bxTrainSkills; m_bxTrainSkills = NULL;
 				m_bTrained = true;
 				string* msg = new string[1]; msg[0] = "NOT ENOUGH SKILL PTS!";
-				m_bxMsg = new CBox(1, msg, 250, 350, 0.11f, false, 35, 35, 25, -1, 0.7f);
+				m_bxMsg = new CBox(1, msg, 250, 300, 0.11f, false, 25, 35, 25, -1, 0.7f);
 				m_bxMsg->IsMsgBox(true);
 			}
 		}

@@ -26,6 +26,9 @@ private:
 	bool m_bIsAlive;
 	bool m_bIsActive; // bool to check for hud 
 
+	vector<CBase> m_vWeapons;
+	int m_nCurrWeapon;
+
 public:
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CTurtle(Constructor)"
@@ -84,6 +87,12 @@ public:
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
 	inline bool GetAlive(void) { return m_bIsAlive; }
 	inline void SetAlive(bool set) { m_bIsAlive = set; }
+
+	inline int GetCurrWeaponIndex() {return m_nCurrWeapon;}
+	inline void SetCurrWeaponIndex(int i) {m_nCurrWeapon = i;}
+
+	vector<CBase>* GetWeapons()			{ return &m_vWeapons;		}
+	void AddWeapon(CBase a)				{ m_vWeapons.push_back(a);	}
 };
 
 #endif

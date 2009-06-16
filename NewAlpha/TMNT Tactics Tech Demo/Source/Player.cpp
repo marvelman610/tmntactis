@@ -26,6 +26,19 @@ CPlayer::CPlayer(void)
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
 
+	CBase weapon;
+	weapon.SetWeapon("Bokken",6,0,-1,0);
+	m_pTurtles[LEONARDO]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Oak Bo Staff",5,1,-1,7);
+	m_pTurtles[DONATELLO]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Rusty Sais",6,0,-1,10);
+	m_pTurtles[RAPHAEL]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Wooden Nunchaku",3,0,-1,4);
+	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
+
 	LoadAnimations();
 }
 

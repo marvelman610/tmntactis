@@ -26,7 +26,6 @@ private:
 
 	//int m_pItemsArr[50];
 	vector<CBattleItem> m_nInventory;
-	vector<CBase> m_vWeapons;
 	int m_nCurrStage;
 
 	///////////////////////////////////////////////////////////////////
@@ -97,11 +96,11 @@ public:
 	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
 	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
-	void AddWeapon(CBase a)				{ m_vWeapons.push_back(a);	}
+
 	inline int GetNumItems()			{ return m_nInventory.size();}
 	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
-	vector<CBase>* GetWeapons()			{ return &m_vWeapons;		}
 
+	
 	bool RemoveItem(int index);
 
 

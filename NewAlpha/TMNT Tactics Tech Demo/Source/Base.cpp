@@ -102,10 +102,11 @@ void CBase::SetCurrAnim(int animID)
 
 }
 
-void CBase::SetWeapon(char* name, int attack, int defense, int imageID)
+void CBase::SetWeapon(char* name, int attack, int defense, int imageID, int numType)
 {
 	SetName(name);
 	SetStrength(attack);
 	SetDefense(defense);
 	SetImageID(imageID);
+	SetNumType(numType);
 }

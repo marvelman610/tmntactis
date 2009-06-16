@@ -48,6 +48,12 @@ class CWorldMap
 	CBox* m_bxHelp;
 	CBox* m_bxSave;
 	CBox* m_bxLoad;
+	CBox* m_bxMsg;
+	int   m_nTurtleSkillTrainIndex;
+	int   m_nFirstTrainable;
+
+	float m_fTimer;
+	bool  m_bTrained;
 
 	struct MAP_POINT
 	{

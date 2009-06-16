@@ -16,7 +16,7 @@
 #include "Player.h"
 #include "Turtle.h"
 #include "HUD.h"
-#include "WorldMap.h"
+//#include "WorldMap.h"
 #include "ObjectManager.h"
 #include "BitmapFont.h"
 #include <fstream>
@@ -44,7 +44,7 @@ void CGamePlayState::Enter(void)
 {
 	//m_pCurrentMenuState = BaseMenuState::GetInstance();
 	m_pHUD = CHUD::GetInstance();
-	m_pWorldMap = CWorldMap::GetInstance();
+//	m_pWorldMap = CWorldMap::GetInstance();
 	m_pPlayer = CPlayer::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
 
@@ -67,9 +67,9 @@ void CGamePlayState::Exit(void)
 	}
 	if (m_pPlayer)
 		m_pPlayer = NULL;
-	if(m_pWorldMap)
+	//if(m_pWorldMap)
 	{
-		m_pWorldMap->Exit();
+		//m_pWorldMap->Exit();
 		//m_pWorldMap = NULL;
 	}
  	if(m_pHUD)

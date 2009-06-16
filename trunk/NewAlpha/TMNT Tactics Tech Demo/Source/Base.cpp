@@ -9,6 +9,7 @@
 
 #include "Base.h"
 #include "CSGD_Direct3D.h"
+#include "CSGD_TextureManager.h"
 
 CBase::CBase(void)
 {
@@ -38,6 +39,9 @@ void CBase::Update(float fElapsedTime)
 }
 void CBase::Render()
 {
+	if(GetType() == OBJECT_WEAPON)
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(GetImageID(), (int)GetPosX(), (int)GetPosY(), GetPosZ());
+
 
 }
 
@@ -96,4 +100,12 @@ void CBase::SetCurrAnim(int animID)
 	if (animID == 0)
 		m_vAnimations[m_nCurrAnimation].Play();
 
+}
+
+void CBase::SetWeapon(char* name, int attack, int defense, int imageID)
+{
+	SetName(name);
+	SetStrength(attack);
+	SetDefense(defense);
+	SetImageID(imageID);
 }

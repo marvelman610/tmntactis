@@ -157,8 +157,8 @@ void ObjectManager::CheckCollisions(void)
 	{
 		for(unsigned int j = 0; j < m_vObjects.size(); j++)
 		{
-			if((m_vObjects[i]->GetType()== OBJECT_TURTLE && m_vObjects[j]->GetType()==OBJECT_BATTLEITEM)
-				|| (m_vObjects[j]->GetType()== OBJECT_TURTLE && m_vObjects[i]->GetType()==OBJECT_BATTLEITEM))
+			if((m_vObjects[i]->GetType()== OBJECT_TURTLE && (m_vObjects[j]->GetType()==OBJECT_BATTLEITEM || m_vObjects[j]->GetType()==OBJECT_WEAPON))
+				|| (m_vObjects[j]->GetType()== OBJECT_TURTLE && (m_vObjects[i]->GetType()==OBJECT_BATTLEITEM || m_vObjects[i]->GetType()==OBJECT_WEAPON)))
 			{
 				RECT rCollision;
 				RECT rCollisionRect1 = {(LONG)m_vObjects[i]->GetPosX(), (LONG)m_vObjects[i]->GetPosY(),
@@ -168,7 +168,7 @@ void ObjectManager::CheckCollisions(void)
 
 				if (IntersectRect(&rCollision, &rCollisionRect1, &rCollisionRect2))
 				{
-					if(m_vObjects[j]->GetType()==OBJECT_BATTLEITEM)
+					if(m_vObjects[j]->GetType()== OBJECT_BATTLEITEM)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[j]));
 						return;
@@ -176,6 +176,16 @@ void ObjectManager::CheckCollisions(void)
 					else if(m_vObjects[i]->GetType() == OBJECT_BATTLEITEM)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[i]));
+						return;
+					}
+					else if(m_vObjects[j]->GetType() == OBJECT_WEAPON)
+					{
+						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[j]));
+						return;
+					}
+					else if(m_vObjects[i]->GetType() == OBJECT_WEAPON)
+					{
+						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[i]));
 						return;
 					}
 				}

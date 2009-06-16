@@ -1083,11 +1083,11 @@ void CNinja::Update(float fElapsedTime)
 
 	if(GetHealth() <= 0)
 	{
-		int type = rand()% 2;
+		int type = rand()% 4;
 
-		if(type == 0)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
-		//else if(type == 1)			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
-		//MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
+		if(type < 3)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
+		else			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
+
 		return;
 
 	}

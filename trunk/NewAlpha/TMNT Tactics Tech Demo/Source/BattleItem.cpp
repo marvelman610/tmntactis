@@ -35,5 +35,5 @@ void CBattleItem::Update(float fElapsedTime)
 }
 void CBattleItem::Render()
 {
-	CSGD_TextureManager::GetInstance()->DrawWithZSort(CAssets::GetInstance()->aItemID, (int)GetPosX(), (int)GetPosY(), GetPosZ(),2,2);
+	CSGD_TextureManager::GetInstance()->DrawWithZSort(GetImageID(), (int)GetPosX(), (int)GetPosY(), GetPosZ());
 }

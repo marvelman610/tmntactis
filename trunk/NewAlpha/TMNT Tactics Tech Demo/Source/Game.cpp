@@ -220,14 +220,14 @@ void MessageProc(CBaseMessage* pMsg)
 		{
 			int type = rand()% 3;
 			CCreateItem * pCP = (CCreateItem*)pMsg;
-			CBattleItem* item = Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
+			Factory::GetInstance()->CreateBattleItem(type,pCP->GetNinja()->GetMapCoord() );
 			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
 		}
 		break;
 	case MSG_DESTROY_ITEM:
 		{
 			CDestroyItem * pDP = (CDestroyItem*)pMsg;
-			CBase p = *(pDP->GetItem());
+			CBattleItem p = *(pDP->GetItem());
 			CPlayer::GetInstance()->AddItem(p);
 			//CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].SetCurrAP(CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].GetCurrAP()+30);
 			ObjectManager::GetInstance()->Remove(pDP->GetItem());
@@ -240,6 +240,15 @@ void MessageProc(CBaseMessage* pMsg)
 			Factory::GetInstance()->CreateWeapon(type,pCP->GetNinja()->GetMapCoord() );
 			ObjectManager::GetInstance()->Remove(pCP->GetNinja());
 			
+		}
+		break;
+	case MSG_DESTROY_WEAPON:
+		{
+			CDestroyWeapon * pDW = (CDestroyWeapon*)pMsg;
+			CBase p = *(pDW->GetWeapon());
+			CPlayer::GetInstance()->AddWeapon(p);
+			ObjectManager::GetInstance()->Remove(pDW->GetWeapon());
+
 		}
 		break;
 	}

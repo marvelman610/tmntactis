@@ -14,6 +14,7 @@ enum { LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
 enum { WORLD_MAP, BATTLE_MAP, };
 #include "Turtle.h"
 #include "Base.h"
+#include "BattleItem.h"
 
 #include <vector>
 using std::vector;
@@ -24,7 +25,8 @@ private:
 	CTurtle*  m_pTurtles[4];
 
 	//int m_pItemsArr[50];
-	vector<CBase> m_nInventory;
+	vector<CBattleItem> m_nInventory;
+	vector<CBase> m_vWeapons;
 	int m_nCurrStage;
 
 	///////////////////////////////////////////////////////////////////
@@ -92,11 +94,16 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////
-	inline int GetCurrStage(void)		{ return m_nCurrStage;	}
-	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;	}
-	void AddItem(CBase a)				{ m_nInventory.push_back(a);}
-	inline int GetNumItems()			{return m_nInventory.size();}
-	vector<CBase>* GetItems()			{return &m_nInventory;}
+	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
+	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
+	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
+	void AddWeapon(CBase a)				{ m_vWeapons.push_back(a);	}
+	inline int GetNumItems()			{ return m_nInventory.size();}
+	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
+	vector<CBase>* GetWeapons()			{ return &m_vWeapons;		}
+
+	bool RemoveItem(int index);
+
 
 };
 #endif

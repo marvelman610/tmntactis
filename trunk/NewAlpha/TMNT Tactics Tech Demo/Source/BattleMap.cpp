@@ -126,6 +126,9 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_szMapName  = szMapName;
 	m_bIsPlayersTurn = (bool)(rand() % 2);
 
+	m_bItemBool = false;
+	m_bEggBool = false;
+
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
 	// the battle map's spawn points
@@ -140,6 +143,7 @@ void CBattleMap::Exit()
 	Reset();
 	m_pFMOD->StopSound(m_pAssets->aBMarcadeMusicID);
 	m_pFMOD->ResetSound(m_pAssets->aBMarcadeMusicID);
+	m_pPlayer->GetInstance()->GetItems()->clear();
 }
 void CBattleMap::Reset()
 {
@@ -260,6 +264,11 @@ void CBattleMap::Render()
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,255,0) );
 			}
+			else if (m_pTilesL1[tileID].Alpha() == 201)
+			{
+				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(/*m_pTilesL1[tileID].Alpha()*/255,255,0,0) );				
+			}
 			else
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
@@ -373,6 +382,9 @@ void CBattleMap::Render()
 	{
 		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
 	}
+	else if(m_bItemBool)
+		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+
 	if (m_fTimer > 3 && (m_bNotEnoughAP || m_bOutOfRange))
 	{
 		m_bNotEnoughAP = m_bOutOfRange = false;
@@ -445,6 +457,8 @@ void CBattleMap::SetPaused(bool IsPaused)
 void CBattleMap::Update(float fElapsedTime)
 {
 	// a turtle has been moved...execute the animation and position change over time
+	if (m_bItemBool)
+		CalculateRanges();
 	if (m_bMoving)
 	{
 		if (m_vPath.size() > 0)
@@ -509,11 +523,15 @@ void CBattleMap::Update(float fElapsedTime)
 		}
 	}
 	cheat();
-	if(godbool)
-		m_vCharacters[m_nCurrCharacter].SetHealth(100);
-	if(APbool)
+	if(godbool && m_nCurrCharacter > -1)
 	{
-		m_vCharacters[m_nCurrCharacter].SetCurrAP(20);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetHealth(100);
+		//m_vCharacters[m_nCurrCharacter].SetHealth(100);
+	}
+	if(APbool && m_nCurrCharacter > -1)
+	{
+		m_vCharacters[m_nCurrCharacter].SetCurrAP(60);
+		CalculateRanges();
 		APcheat = !APcheat;
 		APbool = false;
 	}
@@ -605,6 +623,7 @@ void CBattleMap::Update(float fElapsedTime)
 	{
 		m_fTimer += fElapsedTime;
 	}
+	
 }
 
 void CBattleMap::NinjaMoveComplete()
@@ -1134,8 +1153,20 @@ bool CBattleMap::CheckTileOccupied(int tileID)
 }
 void CBattleMap::CalculateRanges()
 {
+	
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
-	int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+	int ap	  = m_vCharacters[m_nCurrCharacter].GetCurrAP();
+	int alpha = 200;
+
+	if(m_bItemBool && !m_bEggBool)
+	{
+		//grenades
+		//if((*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetName()== "Grenado")
+		ptGridLocation = m_ptMouseMapCoord;
+		range = (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRadius();
+		alpha = 201;
+	}
 
 	// reset alphas
 	for(int nx = 2; nx < m_nNumCols; ++nx)
@@ -1147,20 +1178,39 @@ void CBattleMap::CalculateRanges()
 		}
 	// mark tiles to be drawn with range color
 	// scan the neighbors
-	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
-	for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
+	
+	if(!m_bItemBool)
 	{
-		for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
+		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
 		{
-			//make sure the neighbor is on the map
-			if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
-				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
+			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
 			{
-				int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
-				int id		 = ny*m_nNumCols+nx;
-				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
+				//make sure the neighbor is on the map
+				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
+					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 				{
-					m_pTilesL1[id].SetAlpha(200);
+					int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
+					int id		 = ny*m_nNumCols+nx;
+					if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
+					{
+						m_pTilesL1[id].SetAlpha(alpha);
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
+		{
+			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
+			{
+				//make sure the neighbor is on the map
+				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows)
+				{
+					int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
+					int id		 = ny*m_nNumCols+nx;
+					m_pTilesL1[id].SetAlpha(alpha);
 				}
 			}
 		}
@@ -1217,9 +1267,9 @@ void CBattleMap::DrawHover()
 			}
 			else if (m_nHoverCharacter != 4 && m_nNumEnemiesLeft > 0)
 			{
-				m_vEnemies[m_nHoverCharacter-(4+m_nNumEnemiesKilled)]->Colorize();
+				m_vEnemies[m_nHoverCharacter-(4)]->Colorize();
 				for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-					if (m_nHoverCharacter-(4+m_nNumEnemiesKilled) != i)
+					if (m_nHoverCharacter-(4) != i)
 						m_vEnemies[i]->Colorize(false);
 			}
 		}
@@ -1363,6 +1413,48 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nHoverCharacter = index;
 	else
 		m_nHoverCharacter = -1;
+	if (m_bItemBool && m_pDI->MouseButtonPressed(MOUSE_RIGHT))
+	{
+		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
+		{
+			for (int x = 2; x < m_nNumCols; ++x)
+			{
+				for (int y = 2; y < m_nNumRows; ++y)
+				{
+					int tileID = y*m_nNumCols+x;
+					if (m_pTilesL1[tileID].Alpha() == 201)
+					{
+						for (int i = 0; i < 4; ++i)
+						{
+							if(m_pPlayer->GetTurtles()[i]->GetCurrTile() == tileID)
+								m_pPlayer->GetTurtles()[i]->SetHealth(m_pPlayer->GetTurtles()[i]->GetHealth() - (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetDamage());
+						}
+						for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+						{
+							if(m_vEnemies[i]->GetCurrTile() == tileID)
+								m_vEnemies[i]->SetHealth(m_vEnemies[i]->GetHealth() - (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetDamage());
+						}
+
+					}
+				}
+			}
+			m_bItemBool = false;
+			
+			m_pPlayer->GetInstance()->RemoveItem(m_nItemIndex);
+			m_nItemIndex = -1;
+			m_bIsMouseAttack = false;
+
+			for(int nx = 2; nx < m_nNumCols; ++nx)
+				for(int ny = 2; ny < m_nNumRows; ++ny)
+				{
+					int id = ny*m_nNumCols+nx;
+					if (m_pTilesL1[id].Alpha() != 255)
+						m_pTilesL1[id].SetAlpha(255);
+				}
+
+		}
+		return;
+	}
 
 	// is the mouse over a box button?
 	if ((m_bIsPlayersTurn || m_bIsPaused) && m_nCurrCharacter > -1)
@@ -1396,7 +1488,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_bxMessageBox->IsMsgBox(true);
 		delete[] message;
 	}
-	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
+	if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && !m_bItemBool)
 	{
 		// for movement, see if the tile is open
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && 
@@ -1437,7 +1529,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	}
 	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT) && !m_bIsPaused )
 	{
-		if (index > -1 && index < 4 && !m_bHaveMoved)	// see if we're clicking on a character (turtle), and we haven't already moved
+		if (index > -1 && index < 4 && !m_bHaveMoved && !m_bItemBool)	// see if we're clicking on a character (turtle), and we haven't already moved
 		{
 			m_nCurrSkillCost	 = -1;
 			m_nCurrCharacter	 = index;
@@ -1473,13 +1565,31 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			}
 			CalculateRanges();
 		}
-		else if (index > 3 && (!m_bIsMouseAttack || m_nHoverCharacter != m_nCurrTarget+4) && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
+		else if (index > 3 && (!m_bIsMouseAttack || m_nHoverCharacter != m_nCurrTarget+4 || m_bEggBool) && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
 		{
+					
 			m_bIsMouseAttack = true;
 			m_nCurrTarget = IsMousePosValid(mouse, false);
 			m_ncurrTargetTile = m_vEnemies[m_nCurrTarget]->GetCurrTile();
 			m_nDistanceToTarget = DistanceToTarget(m_vEnemies[m_nCurrTarget]->GetMapCoord().x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
 				m_vEnemies[m_nCurrTarget]->GetMapCoord().y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
+
+			//////////////////////////////////
+			//******************************
+			//check distance for eggs
+			if(m_bEggBool)
+			{
+				if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange())
+				{
+					m_vEnemies[m_nCurrTarget]->SetHealth(m_vEnemies[m_nCurrTarget]->GetHealth() - (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetDamage());
+					m_pPlayer->GetInstance()->RemoveItem(m_nItemIndex);
+					m_bEggBool = false;
+					m_nItemIndex = -1;
+					m_bIsMouseAttack = false;
+				}
+			}
+
+
 
 		}
 		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1)	// otherwise, attempting to attack
@@ -1536,6 +1646,15 @@ void CBattleMap::HandleButton()
 		m_nCurrSkillCost = -1;
 		delete m_bxSkillBox; m_bxSkillBox = NULL;
 		m_bDisplaySpecialBox = false;
+		m_bxActionBox->SetActive();
+		return;
+	}
+	else if(m_bxItemBox && m_nCurrBtnSelected > -1&& m_nCurrBtnSelected != 100)
+	{
+		UseItem();
+		delete m_bxItemBox;
+		m_bxItemBox = NULL;
+		m_bDisplayItemBox = false;
 		m_bxActionBox->SetActive();
 		return;
 	}
@@ -1615,7 +1734,7 @@ void CBattleMap::HandleButton()
 					delete m_bxItemBox;
 
 				int numItems = m_pPlayer->GetInstance()->GetNumItems();
-				vector<CBase>* temp = m_pPlayer->GetInstance()->GetItems();
+				vector<CBattleItem>* temp = m_pPlayer->GetInstance()->GetItems();
 				
 				string* item = new string[temp->size()];
 
@@ -1624,7 +1743,7 @@ void CBattleMap::HandleButton()
 					item[i] = (*temp)[i].GetName();
 				}
 
-				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f);
+				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f,false,35,35,25,-1,0.75f);
 				delete[] item;
 				m_bxItemBox->SetActive(true);
 				m_bxItemBox->SetType(BOX_WITH_BACK);
@@ -2015,7 +2134,7 @@ void CBattleMap::cheat()
 			APcheat = 0;
 		break;
 	}
-	if( APcheat == 3)
+	if( APcheat == 6)
 	{
 		APbool = !APbool;
 		APcheat = 0;
@@ -2037,4 +2156,41 @@ int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
 {
 	int distance = abs(destX - startX) + abs(destY - startY);
 	return distance;
+}
+void CBattleMap::UseItem( )
+{
+	if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Pizza")
+	{
+		m_vCharacters[m_nCurrCharacter].SetHealth(m_vCharacters[m_nCurrCharacter].GetHealth()+(*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetHeal());
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetHealth(m_vCharacters[m_nCurrCharacter].GetHealth()+(*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetHeal());
+		if(m_vCharacters[m_nCurrCharacter].GetHealth() > m_vCharacters[m_nCurrCharacter].GetMaxHealth() 
+			|| m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetHealth()> m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetMaxHealth())
+		{
+			m_vCharacters[m_nCurrCharacter].SetHealth(m_vCharacters[m_nCurrCharacter].GetMaxHealth());
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetHealth(m_vCharacters[m_nCurrCharacter].GetMaxHealth());
+		}
+
+		m_pPlayer->GetInstance()->RemoveItem(m_nCurrBtnSelected);
+
+	}
+	else if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Grenado")
+	{
+		/*int d = DistanceToTarget(m_vCharacters[m_nCurrCharacter].GetPosX(), m_vCharacters[m_nCurrCharacter].GetPosY(),
+			m_vEnemies[m_nCurrTarget]->GetPosX(), m_vEnemies[m_nCurrTarget]->GetPosY());
+		if(d >  (*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetRange())
+			return;*/
+		m_bItemBool = true;
+		m_nItemIndex = m_nCurrBtnSelected;
+		m_bIsMouseAttack = true;
+
+	}
+	else if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Black Eggs" )
+	{
+		//m_bItemBool = true;
+		m_bEggBool = true;
+		m_nItemIndex = m_nCurrBtnSelected;
+		m_bIsMouseAttack = true;
+	}
+	//m_pPlayer->GetInstance()->RemoveItem(m_nCurrBtnSelected);
+
 }

@@ -171,6 +171,11 @@ class CBattleMap
 	bool m_bIsPlayersTurn;
 	CNinja* m_pCurrMovingNinja;
 
+	//Item variables
+	bool m_bItemBool;
+	int m_nItemIndex;
+	bool m_bEggBool;
+
 	// temp particles
 	CParticleSystem* m_pParticleSystem;
 	// temp ninja
@@ -425,6 +430,8 @@ public:
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();
+
+	void UseItem();
 };
 
 #endif

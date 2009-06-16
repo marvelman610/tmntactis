@@ -227,3 +227,19 @@ void CPlayer::LoadAnimations()
 	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 }
+bool CPlayer::RemoveItem(int index)
+{
+	vector<CBattleItem>::iterator iter = m_nInventory.begin();
+	int count = 0;
+	while(count < m_nInventory.size())
+	{
+		if (count == index)
+		{
+			iter = m_nInventory.erase(iter);
+			return true;
+		}
+		++count;
+		++iter;
+	}
+	return false;
+}

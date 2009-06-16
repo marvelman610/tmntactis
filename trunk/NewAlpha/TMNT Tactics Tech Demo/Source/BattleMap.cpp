@@ -1329,38 +1329,38 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	if (m_bIsPlayersTurn)
 	{
 		// camera movement
-		if (m_pDI->KeyDown(DIK_A))
+		if (m_pDI->KeyDown(DIK_A) || m_pDI->JoystickGetRStickXNormalized() < 0)
 		{
 			MoveCamLeft(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_D))
+		if (m_pDI->KeyDown(DIK_D) || m_pDI->JoystickGetRStickXNormalized() > 0)
 		{
 			MoveCamRight(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_S))
+		if (m_pDI->KeyDown(DIK_S) || m_pDI->JoystickGetRStickYNormalized() > 0)
 		{
 			MoveCamDown(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_W))
+		if (m_pDI->KeyDown(DIK_W) || m_pDI->JoystickGetRStickYNormalized() < 0)
 		{
 			MoveCamUp(fElapsedTime);
 		}
 		// character movement
 		if (m_nCurrCharacter != -1)
 		{
-			if (m_pDI->KeyPressed(DIK_NUMPAD7))
+			if (m_pDI->KeyPressed(DIK_NUMPAD7) || m_pDI->JoystickDPadPressed(0,0))
 			{
 				m_nMoveDirection = MOVE_MINUS_X;
 			}
-			else if (m_pDI->KeyPressed(DIK_NUMPAD3))
+			else if (m_pDI->KeyPressed(DIK_NUMPAD3) || m_pDI->JoystickDPadPressed(1,0))
 			{
 				m_nMoveDirection = MOVE_ADD_X;
 			}
-			else if (m_pDI->KeyPressed(DIK_NUMPAD9))
+			else if (m_pDI->KeyPressed(DIK_NUMPAD9) || m_pDI->JoystickDPadPressed(2,0))
 			{
 				m_nMoveDirection = MOVE_MINUS_Y;	
 			}
-			else if (m_pDI->KeyPressed(DIK_NUMPAD1))
+			else if (m_pDI->KeyPressed(DIK_NUMPAD1) || m_pDI->JoystickDPadPressed(3,0))
 			{
 				m_nMoveDirection = MOVE_ADD_Y;
 			}
@@ -1408,12 +1408,13 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 }
 void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID)
 {
+
 	int index = IsMousePosValid(mouse);
 	if (index != -1)
 		m_nHoverCharacter = index;
 	else
 		m_nHoverCharacter = -1;
-	if (m_bItemBool && m_pDI->MouseButtonPressed(MOUSE_RIGHT))
+	if (m_bItemBool && (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0)))
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
@@ -1477,7 +1478,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
 
 	// when the left mouse button is clicked...handling non-box input only
-	if((m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
+	if((m_pDI->JoystickButtonPressed(2,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
 		(index > 3 || index == -1) && m_nCurrCharacter == -1 && !m_bxMessageBox)
 	{
 		string* message = new string[3];
@@ -1488,7 +1489,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_bxMessageBox->IsMsgBox(true);
 		delete[] message;
 	}
-	if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && !m_bItemBool)
+	if ( (m_pDI->JoystickButtonPressed(0,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT)) && !m_bItemBool )
 	{
 		// for movement, see if the tile is open
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 && 
@@ -1527,7 +1528,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused || m_bxMessageBox)
 			HandleButton();
 	}
-	else if (m_pDI->MouseButtonPressed(MOUSE_RIGHT) && !m_bIsPaused )
+	else if ( (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0) ) && !m_bIsPaused )
 	{
 		if (index > -1 && index < 4 && !m_bHaveMoved && !m_bItemBool)	// see if we're clicking on a character (turtle), and we haven't already moved
 		{

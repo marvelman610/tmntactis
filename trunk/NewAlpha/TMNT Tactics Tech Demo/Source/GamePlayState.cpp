@@ -51,10 +51,11 @@ void CGamePlayState::Enter(void)
 	// TODO:: will enter battle map once player goes into a battle
 	//			from the world map
 	m_pWorldMap->Enter();
+	m_nCurrentMap = MAP_WORLD;
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
 
-	m_nCurrentMap = MAP_BATTLE;
+	//m_nCurrentMap = MAP_BATTLE;
 }
 
 // Exit
@@ -128,11 +129,17 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 		m_bIsPaused = !m_bIsPaused;
 	}
 
-	if (true)
+	switch (m_nCurrentMap)
 	{
+	case WORLD_MAP:
+		if (!m_pWorldMap->Input(fElapsedTime, mousePt))
+			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+		break;
+	case BATTLE_MAP:
+		if (!m_pBattleMap->Input(fElapsedTime, mousePt))
+			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+		break;
 	}
-	if (!m_pBattleMap->Input(fElapsedTime, mousePt))
-		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	
 
 	return true;
@@ -142,9 +149,17 @@ void CGamePlayState::Update(float fElapsedTime)
 {
 	if(!m_bIsPaused)
 	{
-		m_pBattleMap->Update(fElapsedTime);
-		ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
-		ObjectManager::GetInstance()->CheckCollisions();
+		switch (m_nCurrentMap)
+		{
+		case WORLD_MAP:
+			m_pWorldMap->Update(fElapsedTime);
+			break;
+		case BATTLE_MAP:
+			m_pBattleMap->Update(fElapsedTime);
+			ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
+			ObjectManager::GetInstance()->CheckCollisions();
+			break;
+		}
 	}
 }
 // Render
@@ -153,8 +168,16 @@ void CGamePlayState::Render(void)
 // 	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance();
 // 	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
 
-	ObjectManager::GetInstance()->RenderObjects();
-	m_pBattleMap->Render();
+	switch (m_nCurrentMap)
+	{
+	case WORLD_MAP:
+		m_pWorldMap->Render();
+		break;
+	case BATTLE_MAP:
+		m_pBattleMap->Render();
+		ObjectManager::GetInstance()->RenderObjects();
+		break;
+	}
 }
 
 void CGamePlayState::LoadGame(char* fileName)

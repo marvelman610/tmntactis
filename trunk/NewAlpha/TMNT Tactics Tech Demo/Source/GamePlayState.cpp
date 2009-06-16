@@ -59,12 +59,10 @@ void CGamePlayState::Enter(void)
 // Exit
 void CGamePlayState::Exit(void)
 {
-	if(m_pBattleMap)
+	if(m_pBattleMap && m_nCurrentMap == MAP_BATTLE)
 	{
 		m_pBattleMap->Exit();
 	}
-	if (m_pPlayer)
-		m_pPlayer = NULL;
 	if(m_pWorldMap)
 	{
 		m_pWorldMap->Exit();
@@ -74,7 +72,9 @@ void CGamePlayState::Exit(void)
  	{
  		//m_pHUD->Release();
  		m_pHUD = NULL;
- 	}
+	}
+	if (m_pPlayer)
+		m_pPlayer = NULL;
 	if(m_pCurrentMenuState)
 	{
 		m_pCurrentMenuState->Exit();

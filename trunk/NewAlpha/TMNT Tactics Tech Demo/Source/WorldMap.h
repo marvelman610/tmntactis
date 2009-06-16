@@ -22,6 +22,7 @@ class CBox;
 class CPlayer;
 
 enum {LOC_SIMUSA, LOC_SINARO, LOC_YAMATO, LOC_IWAMI, NUM_LOCATIONS, };
+enum {MENU_BTN_SKILL, MENU_BTN_LOAD, MENU_BTN_SAVE, MENU_BTN_EXIT=100, };
 
 class CWorldMap
 {
@@ -33,6 +34,7 @@ class CWorldMap
 	int m_nScreenHeight;
 	int m_nMapWidth;
 	int m_nMapHeight;
+	int m_nCurrBtn;
 	float m_fPosX;		// positions of the player's icon
 	float m_fPosY;
 	POINT m_ptMouse;
@@ -44,6 +46,8 @@ class CWorldMap
 	CBox* m_bxChooseTurtle;
 	CBox* m_bxTrainSkills;
 	CBox* m_bxHelp;
+	CBox* m_bxSave;
+	CBox* m_bxLoad;
 
 	struct MAP_POINT
 	{
@@ -105,6 +109,8 @@ public:
 	void Update(float fElapsedTime);
 
 	bool Input(float, POINT);
+
+	bool HandleButtons();
 };
 
 

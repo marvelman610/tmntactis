@@ -1335,19 +1335,19 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	if (m_bIsPlayersTurn)
 	{
 		// camera movement
-		if (m_pDI->KeyDown(DIK_A) || m_pDI->JoystickGetRStickXNormalized() < 0)
+		if (m_pDI->KeyDown(DIK_A) || m_pDI->JoystickGetRStickXNormalized() < -.5f)
 		{
 			MoveCamLeft(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_D) || m_pDI->JoystickGetRStickXNormalized() > 0)
+		if (m_pDI->KeyDown(DIK_D) || m_pDI->JoystickGetRStickXNormalized() > .5f)
 		{
 			MoveCamRight(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_S) || m_pDI->JoystickGetRStickYNormalized() > 0)
+		if (m_pDI->KeyDown(DIK_S) || m_pDI->JoystickGetRStickYNormalized() > .5f)
 		{
 			MoveCamDown(fElapsedTime);
 		}
-		if (m_pDI->KeyDown(DIK_W) || m_pDI->JoystickGetRStickYNormalized() < 0)
+		if (m_pDI->KeyDown(DIK_W) || m_pDI->JoystickGetRStickYNormalized() < -.5f)
 		{
 			MoveCamUp(fElapsedTime);
 		}

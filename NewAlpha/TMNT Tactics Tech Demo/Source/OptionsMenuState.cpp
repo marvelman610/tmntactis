@@ -77,7 +77,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			if (m_nMusicVolume > 0)
 			{
 				m_nMusicVolume--;
-				GetGame()->SetMusicVolume(m_nMusicVolume);
+				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -85,7 +85,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			if (m_nSFXVolume > 0)
 			{
 				m_nSFXVolume--;
-				GetGame()->SetSFXVolume(m_nSFXVolume);
+				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -99,7 +99,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			if (m_nMusicVolume < 100)
 			{
 				m_nMusicVolume++;
-				GetGame()->SetMusicVolume(m_nMusicVolume);
+				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -107,7 +107,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			if (m_nSFXVolume < 100)
 			{
 				m_nSFXVolume++;
-				GetGame()->SetSFXVolume(m_nSFXVolume);
+				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
 				m_bHasASettingChanged = true;
 			}
 		}
@@ -139,10 +139,13 @@ void COptionsMenuState::Render()
 
 void COptionsMenuState::SaveSettings()
 {
- 	/*ofstream ofs("SoundSettings.dat", ios_base::out | ios_base::binary);
+ 	ofstream ofs("Resources/SavedGames/SoundSettings.txt", ios_base::trunc);
  
- 	ofs.write(reinterpret_cast<char*>(m_nSFXVolume), 4); 
- 	ofs.write(reinterpret_cast<char*>(m_nMusicVolume), 4);*/
+	float x = GetGame()->GetSFXVolume();
+	float xx = GetGame()->GetMusicVolume();
+	ofs << GetGame()->GetMusicVolume() << '\n';
+	ofs << GetGame()->GetSFXVolume() << '\n';
+	ofs.close();
 }
 
 void COptionsMenuState::Exit()

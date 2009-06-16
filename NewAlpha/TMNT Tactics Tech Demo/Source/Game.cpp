@@ -206,12 +206,12 @@ void CGame::LoadSettings(void)
 
 void CGame::SetMusicVolume(float _nMusicVolume)
 {
-
+	m_fMusicVolume = _nMusicVolume;
 }
 
 void CGame::SetSFXVolume(float _nSFXVolume)
 {
-
+	m_fSFXVolume = _nSFXVolume;
 }
 void MessageProc(CBaseMessage* pMsg)
 {

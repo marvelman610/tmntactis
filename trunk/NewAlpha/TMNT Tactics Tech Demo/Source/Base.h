@@ -65,6 +65,9 @@ private:
 
 	int m_nExperience;
 	int m_nSkillXP;
+
+	int m_nNumType;
+
 	//////////////////////////////////////////////////////////////////////////
 	//CTile m_pTileArray;
 	CBase* m_pOwner;
@@ -117,7 +120,7 @@ public:
 	inline int		GetCurrAP(void)		{return m_nCurrPoints;	}
 	inline int		GetExperience(void)	{return m_nExperience;	}
 	inline int		GetSkillXP(void)	{return m_nSkillXP;}
-	//vector<CAnimation> GetAnims(void)   {return m_vAnimations;}
+	inline int		GetNumType()		{return m_nNumType;}
 	vector<CAnimation> GetAnimations()  {return m_vAnimations;}
 	CAnimation*		GetCurrAnim()		{return &(m_vAnimations[m_nCurrAnimation]);}
 	RECT			GetRect();
@@ -127,6 +130,7 @@ public:
 	//
 	//	Purpose	:	To set the specified type
 	///////////////////////////////////////
+	void SetCurrAnimFacing(bool IsLeft)     {m_vAnimations[m_nCurrAnimation].SetFacingLeft(IsLeft);}
 	void SetCurrAnim(int animID);	
 	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
@@ -155,6 +159,7 @@ public:
 	inline void SetType(int type)			{m_nType = type;}
 	inline void SetExperience(int nExperience){m_nExperience = nExperience;}
 	inline void SetSkillXP(int nSkillXp)	{m_nSkillXP = nSkillXp;}
+	inline void SetNumType(int type)		{m_nNumType = type;}
 
 	void SetCurrTile(POINT mapPt, int offSetX, int offSetY, int tileWidth, int tileHeight, int numCols, bool anchor = true);	// auto-sets position
 
@@ -201,7 +206,7 @@ public:
 	////////////////////////////////////////////////////////////////////
 	void Colorize(bool bColorize = true);
 	
-	void SetWeapon(char* name, int attack, int defense, int imageID);
+	void SetWeapon(char* name, int attack, int defense, int imageID, int numType);
 
 };
 

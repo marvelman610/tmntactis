@@ -247,7 +247,16 @@ void MessageProc(CBaseMessage* pMsg)
 		{
 			CDestroyWeapon * pDW = (CDestroyWeapon*)pMsg;
 			CBase p = *(pDW->GetWeapon());
-			CPlayer::GetInstance()->AddWeapon(p);
+
+			if(p.GetNumType() <= 3)//leo
+				CPlayer::GetInstance()->GetTurtles()[0]->AddWeapon(p);
+			if(p.GetNumType() >3 && p.GetNumType() <= 6) //mikey
+				CPlayer::GetInstance()->GetTurtles()[3]->AddWeapon(p);
+			if(p.GetNumType() >6 && p.GetNumType() <= 9) //don
+				CPlayer::GetInstance()->GetTurtles()[1]->AddWeapon(p);
+			if(p.GetNumType() >9 && p.GetNumType() <= 11) //raph
+				CPlayer::GetInstance()->GetTurtles()[2]->AddWeapon(p);
+
 			ObjectManager::GetInstance()->Remove(pDW->GetWeapon());
 
 		}

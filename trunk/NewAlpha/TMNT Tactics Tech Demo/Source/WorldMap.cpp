@@ -41,9 +41,9 @@ CWorldMap::CWorldMap()
 	m_bxHelp->IsMsgBox(true);
 	m_bxHelp->SetAlpha(200);
 	delete[] text;
-	text = new string[4];
-	text[0] = "SKILLS"; text[1] = "SAVE"; text[2] = "LOAD"; text[3] = "EXIT";
-	m_bxMenu = new CBox(4, text, 830, 565, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+	text = new string[5];
+	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; text[3] = "LOAD"; text[4] = "EXIT";
+	m_bxMenu = new CBox(5, text, 830, 505, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxMenu->SetActive(); 
 	delete[] text;
 }
@@ -69,10 +69,11 @@ CWorldMap* CWorldMap::GetInstance()
 
 void CWorldMap::Enter()
 {
-	m_bxTrainSkills = m_bxChooseTurtle = m_bxMsg = m_bxLoad = m_bxSave = NULL;
+	m_bxTrainSkills = m_bxChooseTurtle = m_bxMsg = m_bxLoad = m_bxSave = m_bxWeapon = NULL;
 	m_nMapOSx = (m_nMapWidth >> 1) - (m_nScreenWidth >> 1) + 150;
 	m_nMapOSy = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1) + 100;
 	m_fTimer = 0.0f;
+	m_bWeaponBool = false;
 }
 
 void CWorldMap::Exit()
@@ -87,6 +88,13 @@ void CWorldMap::Exit()
 		delete m_bxSave;
 	if (m_bxMsg)
 		delete m_bxMsg;
+	if(m_bxWeapon)
+		delete m_bxWeapon;
+	if(m_bxWeaponSelect)
+		delete m_bxWeaponSelect;
+
+	m_pPlayer->GetInstance()->GetItems()->clear();
+
 }
 
 void CWorldMap::Render()
@@ -102,7 +110,7 @@ void CWorldMap::Render()
 			string name = "CURRENT LOCATION - " + m_Locations[i].name;
 			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5);
 		}
-		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg)
+		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect)
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
 				0.0f, 0.5f, m_Locations[i].color);
 	}
@@ -130,6 +138,10 @@ void CWorldMap::Render()
 	}
 	else if (m_bxMsg)
 		m_bxMsg->Render();
+	else if(m_bxWeapon)
+		m_bxWeapon->Render();
+	else if(m_bxWeaponSelect)
+		m_bxWeaponSelect->Render();
 }
 
 void CWorldMap::Update(float fElapsedTime)
@@ -289,7 +301,7 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 
 	m_bxHelp->Input(m_ptMouse);
 	m_nCurrBtn = m_bxMenu->Input(m_ptMouse);
-	if(m_nCurrBtn == 3)
+	if(m_nCurrBtn == 4)
 		m_nCurrBtn = MENU_BTN_EXIT;
 
 	if (m_bxChooseTurtle)
@@ -300,6 +312,10 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 		m_nCurrBtn = m_bxLoad->Input(m_ptMouse);
 	else if (m_bxSave)
 		m_nCurrBtn = m_bxSave->Input(m_ptMouse);
+	else if(m_bxWeapon)
+		m_nCurrBtn = m_bxWeapon->Input(mouse);
+	else if(m_bxWeaponSelect)
+		m_nCurrBtn = m_bxWeaponSelect->Input(mouse);
 
 	return true;
 }
@@ -331,6 +347,7 @@ bool CWorldMap::HandleButtons()
 				delete[] turtles;
 			}
 			break;
+		
 		case MENU_BTN_SAVE:
 			{
 				m_bxMenu->SetActive(false);
@@ -352,6 +369,21 @@ bool CWorldMap::HandleButtons()
 				m_bxLoad->SetType(BOX_WITH_BACK);
 				m_bxLoad->SetActive();
 				delete[] sLoadGame;
+			}
+			break;
+		case MENU_BTN_WEAPON:
+			{
+				m_bxMenu->SetActive(false);
+				string* turtles = new string[5]; turtles[0] = "CHOOSE A TURTLE";
+				for (int i = 1; i < 5; ++i)
+					turtles[i] = m_pPlayer->GetTurtles()[i-1]->GetName();
+				
+				m_bxChooseTurtle = new CBox(5, turtles, 100, 250, 0.11f, true, 35, 35,15, -1, 0.75f);
+				m_bxChooseTurtle->SetType(BOX_WITH_BACK);
+				m_bxChooseTurtle->SetActive();
+				delete[] turtles;
+				m_bWeaponBool = true;
+
 			}
 			break;
 		case MENU_BTN_EXIT:
@@ -376,6 +408,16 @@ bool CWorldMap::HandleButtons()
 					m_bxMenu->SetActive();
 					delete m_bxSave; m_bxSave = NULL;
 				}
+				else if(m_bxWeapon)
+				{
+					m_bxMenu->SetActive();
+					delete m_bxWeapon; m_bxWeapon = NULL;
+				}
+				else if(m_bxWeaponSelect)
+				{
+					m_bxMenu->SetActive();
+					delete m_bxWeaponSelect; m_bxWeaponSelect = NULL;
+				}
 				else
 					CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 				break;
@@ -383,7 +425,40 @@ bool CWorldMap::HandleButtons()
 
 		}
 	}
-	else if (m_bxChooseTurtle && m_nCurrBtn > -1)
+	else if(m_bxWeaponSelect && m_nCurrBtn > -1)
+	{
+		m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->SetCurrWeaponIndex(m_nCurrBtn-1);
+		delete m_bxWeaponSelect; m_bxWeaponSelect = NULL;
+		m_bxMenu->SetActive();
+	}
+	else if(m_bWeaponBool && m_nCurrBtn >-1)
+	{
+		m_bWeaponBool = false;
+		delete m_bxChooseTurtle; m_bxChooseTurtle = NULL;
+	
+		int size = m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetWeapons()->size();
+
+
+		string* weapons = new string[size+1];
+		weapons[0] = "Select A Weapon";
+
+		for (int i = 1; i <	size+1; ++i)
+		{
+			weapons[i] = (*m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetWeapons())[i-1].GetName();
+			if(m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetCurrWeaponIndex() == (i-1))
+				weapons[i] += " -X";
+		}
+
+		
+		//m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
+
+		m_bxWeaponSelect = new CBox(size+1,weapons,150, 270, 0.11f, true, 25, 35, 15, -1, 0.7f);
+		m_bxWeaponSelect->SetType(BOX_WITH_BACK); m_bxWeaponSelect->SetActive();
+		delete[] weapons;
+		m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
+		
+	}
+	else if (m_bxChooseTurtle && m_nCurrBtn >-1)
 	{
 		delete m_bxChooseTurtle; m_bxChooseTurtle = NULL;
 		int numTrainedSkills = m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetSkills()->size();

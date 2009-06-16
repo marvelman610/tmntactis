@@ -49,6 +49,8 @@ private:
 	bool m_bIsPlaying;
 	bool m_bIsLooping;
 
+	bool bFacingLeft;
+
 	float m_fSpeed;
 
 	///////////////////////////////////////////////////////////////////
@@ -95,7 +97,7 @@ public:
 	//
 	// Purpose: Draws the animation frames to the screen at the specified location.
 	////////////////////////////////////////////////////////////////////
-	void Render(int posx, int posy, float posZ, float scale = 1.0f, bool bFacingleft = false, DWORD dwColor = NULL);
+	void Render(int posx, int posy, float posZ, float scale = 1.0f, DWORD dwColor = NULL);
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “Play”
@@ -129,6 +131,8 @@ public:
 	//	Accessors
 	//////////////////////////////////////////////////////////////////////////
 	sFrame* GetFrames() const {return m_pFrames;}
+
+	void SetFacingLeft(bool IsLeft) {bFacingLeft = IsLeft;}
 
 };
 

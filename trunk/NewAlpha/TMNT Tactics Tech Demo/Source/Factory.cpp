@@ -157,14 +157,11 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 		item->SetRange(grenado.GetRange());
 		item->SetDamage(grenado.GetDamage());
 		item->SetImageID(CAssets::GetInstance()->aGrenadoID);
-
 		break;
 	case PIZZA:
 		item->SetName("Pizza");
 		item->SetHeal(pizza.GetDamage());
 		item->SetImageID(CAssets::GetInstance()->aPizzaID);
-
-
 		break;
 	}
 	CBattleMap* pBM =  CBattleMap::GetInstance();
@@ -185,64 +182,87 @@ CBase* Factory::CreateWeapon(int type, POINT mapPoint)
 		temp = weapons[BOKKEN];
 		temp->SetName("Bokken");
 		temp->SetImageID(CAssets::GetInstance()->aSwordID);
+		temp->SetNumType(0);
 		break;
 	case TACHI:
 		temp = weapons[TACHI];
 		temp->SetName("Tachi");
 		temp->SetImageID(CAssets::GetInstance()->aSwordID);
+		temp->SetNumType(1);
+
 		break;
 	case KATANA:
 		temp = weapons[KATANA];
 		temp->SetName("Katana");
 		temp->SetImageID(CAssets::GetInstance()->aSwordID);
+		temp->SetNumType(2);
+
 		break;
 	case NINJATO:
 		temp = weapons[NINJATO];
 		temp->SetName("Ninjato");
 		temp->SetImageID(CAssets::GetInstance()->aSwordID);
+		temp->SetNumType(3);
+
 		break;
 	case WOODNUN:
 		temp = weapons[WOODNUN];
 		temp->SetName("Wooden Nunchaku");
 		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
+		temp->SetNumType(4);
+
 		break;
 	case GLASSNUN:
 		temp = weapons[GLASSNUN];
 		temp->SetName("Glass Nunchaku");
 		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
+		temp->SetNumType(5);
+
 		break;
 	case STEELNUN:
 		temp = weapons[STEELNUN];
 		temp->SetName("Steel Nunchaku");
 		temp->SetImageID(CAssets::GetInstance()->aNunchakuID);
+		temp->SetNumType(6);
+
 		break;
 	case OAKSTAFF:
 		temp = weapons[OAKSTAFF];
 		temp->SetName("Oak Bo Staff");
 		temp->SetImageID(CAssets::GetInstance()->aStaffID);
+		temp->SetNumType(7);
+
 		break;
 	case BAMBOOSTAFF:
 		temp = weapons[BAMBOOSTAFF];
 		temp->SetName("Bamboo Staff");
 		temp->SetImageID(CAssets::GetInstance()->aStaffID);
+		temp->SetNumType(8);
+
 		break;
 	case STEELSTAFF:
 		temp = weapons[STEELSTAFF];
 		temp->SetName("Steel Staff");
 		temp->SetImageID(CAssets::GetInstance()->aStaffID);
+		temp->SetNumType(9);
+
 		break;
 	case RUSTYSAI:
 		temp = weapons[RUSTYSAI];
 		temp->SetName("Rusty Sais");
 		temp->SetImageID(CAssets::GetInstance()->aSaiID);
+		temp->SetNumType(10);
+
 		break;
 	case POLISHEDSAI:
 		temp = weapons[POLISHEDSAI];
 		temp->SetName("Polished Sais");
 		temp->SetImageID(CAssets::GetInstance()->aSaiID);
+		temp->SetNumType(11);
+
 		break;
 	}
-	weapon->SetWeapon(temp->GetName(),temp->GetStrength(), temp->GetDefense(), temp->GetImageID());
+	weapon->SetWeapon(temp->GetName(),temp->GetStrength(), temp->GetDefense(), temp->GetImageID(), temp->GetNumType());
 
 	weapon->SetType(OBJECT_WEAPON);
 	weapon->SetWidth(32);

@@ -19,6 +19,7 @@ CTurtle::CTurtle(void)
 	SetVelY(50.0f);
 	SetWidth(64);
 	SetHeight(64);
+	m_nCurrWeapon = 0;
 }
 
 CTurtle::~CTurtle(void)
@@ -52,9 +53,7 @@ void CTurtle::Update(float fElapsedTime)
 void CTurtle::Render()
 {
 	if (m_bIsAlive)
-	{
-		m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(),(int)GetPosY(), GetPosZ(), 1.0f, false, m_dwColor);
-	}
+		m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(),(int)GetPosY(), GetPosZ(), 1.0f, m_dwColor);
 }									
 
 void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)

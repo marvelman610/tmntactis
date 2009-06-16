@@ -27,6 +27,7 @@ CAnimation::CAnimation(void)
 
 	m_bIsPlaying = false;
 	m_bIsLooping = true;
+	bFacingLeft = false;
 
 	m_fSpeed = 0.25f;
 
@@ -186,7 +187,7 @@ void CAnimation::Update(float fElapsedtime)
 
 	}
 }
-void CAnimation::Render(int posx, int posy, float posZ, float scale, bool bFacingLeft, DWORD dwColor)
+void CAnimation::Render(int posx, int posy, float posZ, float scale, DWORD dwColor)
 {
 	if(m_nImageID !=-1)
 	{

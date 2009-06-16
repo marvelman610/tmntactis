@@ -22,7 +22,7 @@ class CBox;
 class CPlayer;
 
 enum {LOC_SIMUSA, LOC_SINARO, LOC_YAMATO, LOC_IWAMI, NUM_LOCATIONS, };
-enum {MENU_BTN_SKILL, MENU_BTN_LOAD, MENU_BTN_SAVE, MENU_BTN_EXIT=100, };
+enum {MENU_BTN_SKILL, MENU_BTN_WEAPON, MENU_BTN_SAVE,MENU_BTN_LOAD, MENU_BTN_EXIT=100, };
 
 class CWorldMap
 {
@@ -49,11 +49,14 @@ class CWorldMap
 	CBox* m_bxSave;
 	CBox* m_bxLoad;
 	CBox* m_bxMsg;
+	CBox* m_bxWeapon;
+	CBox* m_bxWeaponSelect;
 	int   m_nTurtleSkillTrainIndex;
 	int   m_nFirstTrainable;
 
 	float m_fTimer;
 	bool  m_bTrained;
+	bool m_bWeaponBool;
 
 	struct MAP_POINT
 	{

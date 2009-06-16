@@ -21,6 +21,7 @@
 #include "BitmapFont.h"
 #include <fstream>
 //#include "Animation.h"
+#include "WorldMap.h"
 
 // Constructor
 CGamePlayState::CGamePlayState(void)
@@ -54,6 +55,7 @@ void CGamePlayState::Enter(void)
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
 	//m_nCurrentMap = MAP_BATTLE;
+	
 }
 
 // Exit

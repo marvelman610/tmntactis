@@ -110,7 +110,7 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 // 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 // 		return true;
 // 	}
-	if(pDI->KeyPressed(DIK_P))
+	if(pDI->KeyPressed(DIK_P) || pDI->JoystickButtonPressed(7,0))
 	{
 		m_bIsPaused = !m_bIsPaused;
 	}

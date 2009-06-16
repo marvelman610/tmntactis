@@ -47,7 +47,7 @@ bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 {
 	m_nMouseX = mousePT.x;
 	m_nMouseY = mousePT.y;
-	if(GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT))
+	if(GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT) || GetDI()->JoystickButtonPressed(0,0))
 	{
 		if(GetBGImageID() == GetAssets()->aHTPMSelectID)
 		{
@@ -74,7 +74,7 @@ bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 		m_bMouseOverEsc = true;
 	else
 		m_bMouseOverEsc = false;
-	if (GetDI()->KeyPressed(DIK_ESCAPE) || (m_bMouseOverEsc && GetDI()->MouseButtonPressed(MOUSE_LEFT)))
+	if (GetDI()->KeyPressed(DIK_ESCAPE) || (m_bMouseOverEsc && GetDI()->MouseButtonPressed(MOUSE_LEFT)) || GetDI()->JoystickButtonPressed(1,0))
 	{
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	}

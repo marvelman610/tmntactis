@@ -1366,7 +1366,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			}
 		}
 	}
-	if (m_pDI->KeyPressed(DIK_SPACE))
+	if (m_pDI->KeyPressed(DIK_SPACE) || m_pDI->JoystickButtonPressed(6,0))
 	{
 		m_bIsPlayersTurn = false;
 		m_bHaveMoved = false;

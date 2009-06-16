@@ -30,6 +30,7 @@ private:
 	CHUD*			m_pHUD;
 	CWorldMap*		m_pWorldMap;
 
+
 	bool m_bIsPaused;
 
 	int m_nCurrentMap;
@@ -52,6 +53,14 @@ public:
   
 	inline bool GetPaused(){return m_bIsPaused;}
 	inline void SetPaused(bool p){m_bIsPaused = p;}
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Function: ChangeMap
+	//
+	//	Purpose : to change from one map to another...e.g., going into a battle
+	//				from the world map
+	//////////////////////////////////////////////////////////////////////////
+	void ChangeMap(bool bWorldMap = true, int mapID = 0 /*LOC_SIMUSA*/);
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	Enter

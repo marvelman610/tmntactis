@@ -48,13 +48,11 @@ void CGamePlayState::Enter(void)
 	m_pPlayer = CPlayer::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
 
-	// TODO:: will enter battle map once player goes into a battle
-	//			from the world map
 	m_pWorldMap->Enter();
 	m_nCurrentMap = MAP_WORLD;
+
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
-
 	//m_nCurrentMap = MAP_BATTLE;
 }
 
@@ -79,7 +77,7 @@ void CGamePlayState::Exit(void)
  	}
 	if(m_pCurrentMenuState)
 	{
-	//	m_pCurrentMenuState->Release();
+		m_pCurrentMenuState->Exit();
 		m_pCurrentMenuState = NULL;
 	}
 }
@@ -103,18 +101,6 @@ CGamePlayState* CGamePlayState::GetInstance(void)
 
 
 // Input
-
-// get mouse x y coord = grenadeTargetTileId
-// if (bItemBOOL == true)
-// {
-// 	calcRanges on grenadeTargetTileId..
-// 		use range of the item
-// 	once right-click
-// 	do dmg to all alphad tile with alpha == 201
-// 		if that tile == any characters tileID
-// 	once attack is complete realpha to 255
-// }
-
 bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 {
 	CSGD_DirectInput* pDI = CSGD_DirectInput::GetInstance();
@@ -141,7 +127,6 @@ bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 		break;
 	}
 	
-
 	return true;
 }
 // Update
@@ -165,9 +150,6 @@ void CGamePlayState::Update(float fElapsedTime)
 // Render
 void CGamePlayState::Render(void)
 {
-// 	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance();
-// 	CSGD_Direct3D* pD3D = CSGD_Direct3D::GetInstance();
-
 	switch (m_nCurrentMap)
 	{
 	case WORLD_MAP:
@@ -210,5 +192,38 @@ void CGamePlayState::SaveGame(char* fileName)
 	}
 	else
 		ofs.close();
+}
 
+
+void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sent, goes to LOC_SIMUSA and WORLD_MAP by default
+{
+	if(bWorldMap)
+		m_nCurrentMap = MAP_WORLD;
+	else
+		m_nCurrentMap = MAP_BATTLE;
+
+	switch (m_nCurrentMap) // battle map OR world map?
+	{
+	case WORLD_MAP:
+		m_pWorldMap->Enter();
+		break;
+	case BATTLE_MAP:
+		m_pWorldMap->Exit();
+		switch (mapID)		// which battle map file to load?
+		{
+		case LOC_SIMUSA:
+			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 4);
+			break;
+		case LOC_IWAMI:
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
+			break;
+		case LOC_SINARO:
+			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 6);
+			break;
+		case LOC_YAMATO:
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 5);
+			break;
+		}
+		break;
+	}
 }

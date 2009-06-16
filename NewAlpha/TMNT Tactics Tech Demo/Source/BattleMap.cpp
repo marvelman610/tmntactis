@@ -1720,8 +1720,6 @@ void CBattleMap::HandleButton()
 				m_bxSkillBox->SetActive(true);
 				m_bxSkillBox->SetType(BOX_WITH_BACK);
 				m_bxActionBox->SetActive(false);
-// 				m_bxCurrActiveBox = m_bxSkillBox;
-// 				m_bxCurrActiveBox->BoxType(BX_SKILL);
 			}
 		}
 		break;
@@ -1748,8 +1746,6 @@ void CBattleMap::HandleButton()
 				m_bxItemBox->SetActive(true);
 				m_bxItemBox->SetType(BOX_WITH_BACK);
 				m_bxActionBox->SetActive(false);
-// 				m_bxCurrActiveBox = m_bxItemBox;
-// 				m_bxCurrActiveBox->BoxType(BX_ITEM);
 			}
 		}
 		break;

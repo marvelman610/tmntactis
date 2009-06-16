@@ -14,6 +14,7 @@
 #include "CSGD_Direct3D.h"
 #include "Turtle.h"
 #include "Assets.h"
+#include "Ninja.h"
 #include "Battlemap.h"
 
 CHUD::CHUD(void)
@@ -162,6 +163,45 @@ void CHUD::Render()
 		//get current target 
 		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
 		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+	}
+
+	if(CBattleMap::GetInstance()->GetCurrMovingNinja() != NULL)
+	{
+		m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540, 0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(150,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f, 1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+
+		switch(CBattleMap::GetInstance()->GetCurrMovingNinja()->GetTurtle())
+		{
+		case LEONARDO:
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aLeonardoHUDID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f, 0.0f, D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 170, 80, 1.0f,1.0f,&m_rLeoHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 170, 140, 1.0f, 1.0f,&m_rLeoAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+			}
+			break;
+		case DONATELLO:
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aDonatelloHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 175, 72, 1.0f,1.0f,&m_rDonHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 175,118,1.0f,1.0f,&m_rDonAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+			}
+			break;
+		case RAPHAEL:
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aRaphaelHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 156, 40, 1.0f, 1.0f,&m_rRaphHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 156,83,1.0f,1.0f,&m_rRaphAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+			}
+			break;
+		case MIKEY:
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 144,49,1.0f,1.0f,&m_rMikeyHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 144, 98, 1.0f,1.0f,&m_rMikeyAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+			}
+			break;
+		}
 	}
 	
 }

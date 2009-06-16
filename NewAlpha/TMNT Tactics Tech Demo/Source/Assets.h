@@ -88,10 +88,16 @@ public:
 
 	// Options Menu IDs
 	ASSET aOMbgID;
-	ASSET aTutorialID;
+	
 
 	// Credits Menu IDs
 	ASSET aCMmusicID;
+	ASSET aCMbgID;
+	ASSET aCMbgID2;
+	ASSET aCMbgID3;
+	ASSET aCMbgID4;
+	ASSET aCMbgID5;
+	ASSET aCMbgID6;
 
 	// How To Play Menu IDs
 	ASSET aHTPMBGimageID;

@@ -362,12 +362,13 @@ void CNinja::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
+			FindPath(begin, end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				nNumCols, true);*/
 
 			//attack 3 times (4ap * 3 = 12)
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
 			//end turn
 			
 			CBattleMap::GetInstance()->SetTurn(true);
@@ -419,9 +420,10 @@ void CNinja::AI()
 				nNumCols, true);*/
 
 			m_bMoving = true;
+			FindPath(begin, end);
 
 			//attack three times(12ap)= 16ap
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
 			//end turn
 			
 		}
@@ -481,9 +483,10 @@ void CNinja::AI()
 				nNumCols, true);*/
 			
 			m_bMoving = true;
+			FindPath(begin, end);
 
 			//attack twice(8ap) = 14ap
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
 		}
 		break;
@@ -552,9 +555,10 @@ void CNinja::AI()
 				nNumCols, true);*/
 
 			m_bMoving = true;
+			FindPath(begin, end);
 
 			//attack twice(8ap) = 16ap
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 			//end turn
 		}
 		break;
@@ -634,9 +638,10 @@ void CNinja::AI()
 				nNumCols, true);*/
 			
 			m_bMoving = true;
+			FindPath(begin, end);
 
 			//attack one(4ap) = 14ap
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
 		}
 		break;
@@ -727,9 +732,10 @@ void CNinja::AI()
 				nNumCols, true);*/
 
 			m_bMoving = true;
+			FindPath(begin, end);
 
 			//attack once(4ap) = 16ap
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
 			//end turn
 		}
 		break;
@@ -833,6 +839,8 @@ void CNinja::AI()
 				nNumCols, true);*/
 
 			m_bMoving = true;
+			
+			FindPath(begin, end);
 
 		}
 		break;
@@ -846,10 +854,6 @@ void CNinja::AI()
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
-	}
-	if(m_bMoving == true)
-	{
-		FindPath(begin, end);
 	}
 	
 }
@@ -1044,6 +1048,31 @@ void CNinja::Update(float fElapsedTime)
 			SetCurrAP(GetCurrAP());
 			m_bMoving = false;
 
+			if(m_nInRange == 1)
+			{
+				switch(GetCurrAP())
+				{
+				case 4:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
+					}
+					break;
+				case 8:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+					}
+					break;
+				case 12:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+					}
+					break;
+				default:
+					{
+					}
+					break;
+				}
+			}
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();

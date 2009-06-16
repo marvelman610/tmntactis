@@ -118,6 +118,8 @@ public:
 	int GetBGImageID()				{return m_nBGImageID; }
 	int GetMenuX() const			{return m_nMenuX; }
 	int GetMenuY() const			{return m_nMenuY; }
+	int GetBGImageHeight()			{return m_nImageHeight; }
+	int GetBGImageWidth()			{return m_nImageWidth; }
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators

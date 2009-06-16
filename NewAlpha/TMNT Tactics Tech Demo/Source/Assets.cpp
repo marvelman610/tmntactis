@@ -93,16 +93,17 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
-	// Tutorial IDs
-	aTutorialID		= m_pTM->LoadTexture("Resources/Images/VG_TutorialMenuBG.png");
-	//////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////
 	// Credits IDs
 	//////////////////////////////////////////////////////////////////////////
+	aCMbgID		= m_pTM->LoadTexture("Resources/Images/VG_TutorialMenuBG.png");
+	aCMbgID2	= m_pTM->LoadTexture("Resources/Images/VG_Game1.png");
+	aCMbgID3	= m_pTM->LoadTexture("Resources/Images/VG_Game2.png");
+	aCMbgID4	= m_pTM->LoadTexture("Resources/Images/VG_Game3.png");
+	aCMbgID5	= m_pTM->LoadTexture("Resources/Images/VG_Game4.png");
+	aCMbgID6	= m_pTM->LoadTexture("Resources/Images/VG_Game5.png");
 
 	//////////////////////////////////////////////////////////////////////////
-	// How To Player Menu IDs
+	// How To Play Menu IDs
 	//aHTPMBGimageID		= m_pTM->LoadTexture("Resources/Images/VG_HowToPlayMenuBG.png");
 	aHTPMAttackID	= m_pTM->LoadTexture("Resources/Images/VG_HowToAttack.png");
 	aHTPMItemID		= m_pTM->LoadTexture("Resources/Images/VG_HowToItem.png");

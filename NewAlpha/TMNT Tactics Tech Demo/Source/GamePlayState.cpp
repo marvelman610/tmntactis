@@ -140,9 +140,9 @@ void CGamePlayState::Update(float fElapsedTime)
 			m_pWorldMap->Update(fElapsedTime);
 			break;
 		case BATTLE_MAP:
-			m_pBattleMap->Update(fElapsedTime);
 			ObjectManager::GetInstance()->UpdateObjects(fElapsedTime);
 			ObjectManager::GetInstance()->CheckCollisions();
+			m_pBattleMap->Update(fElapsedTime);
 			break;
 		}
 	}
@@ -156,8 +156,8 @@ void CGamePlayState::Render(void)
 		m_pWorldMap->Render();
 		break;
 	case BATTLE_MAP:
-		m_pBattleMap->Render();
 		ObjectManager::GetInstance()->RenderObjects();
+		m_pBattleMap->Render();
 		break;
 	}
 }

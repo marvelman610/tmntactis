@@ -1414,7 +1414,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nHoverCharacter = index;
 	else
 		m_nHoverCharacter = -1;
-	if (m_bItemBool && (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0)))
+	if (m_bItemBool && (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0)) )
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
@@ -1593,7 +1593,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 
 
 		}
-		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1)	// otherwise, attempting to attack
+		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1 && index > 3)	// otherwise, attempting to attack
 		{
 			// check if in range
 			if (m_nDistanceToTarget > m_vCharacters[m_nCurrCharacter].GetRange() && m_sCurrSkillName == "NONE")

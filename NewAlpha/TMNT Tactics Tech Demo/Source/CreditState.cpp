@@ -45,8 +45,15 @@ void CCreditState::Enter()
 
 bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
 {
-	
-	if(GetDI()->KeyPressed(DIK_ESCAPE))
+	if(GetDI()->JoystickDPadPressed(2,0))//up
+	{
+		//move text slower
+	}
+	else if(GetDI()->JoystickDPadPressed(3,0))//down
+	{
+		//move text faster
+	}
+	if(GetDI()->KeyPressed(DIK_ESCAPE) || GetDI()->JoystickButtonPressed(1,0))
 	{
 		GetGame()->ChangeState(CMainMenuState::GetInstance());
 	}

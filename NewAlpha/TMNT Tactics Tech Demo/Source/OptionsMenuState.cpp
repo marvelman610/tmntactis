@@ -57,19 +57,19 @@ void COptionsMenuState::Enter()
 
 bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 {
-	if (GetDI()->KeyPressed(DIK_DOWN))
+	if (GetDI()->KeyPressed(DIK_DOWN) || GetDI()->JoystickDPadPressed(3,0))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection()+1);
 		if (GetCurrMenuSelection() == NULL_END)
 			SetCurrMenuSelection(MUSIC_VOLUME);
 	}
-	else if (GetDI()->KeyPressed(DIK_UP))
+	else if (GetDI()->KeyPressed(DIK_UP)|| GetDI()->JoystickDPadPressed(2,0))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection()-1);;
 		if (GetCurrMenuSelection() < MUSIC_VOLUME)
 			SetCurrMenuSelection(NULL_END-1);
 	}
-	else if (GetDI()->KeyDown(DIK_LEFT))
+	else if (GetDI()->KeyDown(DIK_LEFT)|| GetDI()->JoystickDPadPressed(0,0))
 	{
 		switch(GetCurrMenuSelection())
 		{
@@ -87,12 +87,11 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_nSFXVolume--;
 				GetGame()->SetSFXVolume(m_nSFXVolume);
 				m_bHasASettingChanged = true;
-				//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsSFX, false, FMOD_CHANNEL_REUSE);
 			}
 			break;
 		}
 	}
-	else if (GetDI()->KeyDown(DIK_RIGHT))
+	else if (GetDI()->KeyDown(DIK_RIGHT)|| GetDI()->JoystickDPadPressed(1,0))
 	{
 		switch(GetCurrMenuSelection())
 		{
@@ -110,11 +109,10 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_nSFXVolume++;
 				GetGame()->SetSFXVolume(m_nSFXVolume);
 				m_bHasASettingChanged = true;
-				//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsSFX, false, FMOD_CHANNEL_REUSE);
 			}
 		}
 	}
-	else if (GetDI()->KeyPressed(DIK_RETURN))
+	else if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->JoystickButtonPressed(0,0))
 	{
 		switch(GetCurrMenuSelection())
 		{
@@ -141,10 +139,10 @@ void COptionsMenuState::Render()
 
 void COptionsMenuState::SaveSettings()
 {
-// 	ofstream ofs("SoundSettings.dat", ios_base::out | ios_base::binary);
-// 
-// 	ofs.write(reinterpret_cast<char*>(m_nSFXVolume), 4); 
-// 	ofs.write(reinterpret_cast<char*>(m_nMusicVolume), 4);
+ 	/*ofstream ofs("SoundSettings.dat", ios_base::out | ios_base::binary);
+ 
+ 	ofs.write(reinterpret_cast<char*>(m_nSFXVolume), 4); 
+ 	ofs.write(reinterpret_cast<char*>(m_nMusicVolume), 4);*/
 }
 
 void COptionsMenuState::Exit()

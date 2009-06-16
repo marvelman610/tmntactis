@@ -79,6 +79,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 
 	m_pDI->InitDirectInput(hWnd, hInstance, DI_KEYBOARD, 0);
 	m_pDI->InitDirectInput(hWnd, hInstance, DI_MOUSE, 0);
+	m_pDI->InitDirectInput(hWnd, hInstance, DI_JOYSTICKS, 0);
 	m_pDI->AcquireAll();
 
 	SetIsRunning(true);

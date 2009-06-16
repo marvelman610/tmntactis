@@ -103,6 +103,24 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		return true;
 	}
 
+	if(GetDI()->JoystickDPadPressed(2, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
+	{
+		SetCurrMenuSelection(GetCurrMenuSelection() -1);
+		if (GetCurrMenuSelection() < PLAY)
+			SetCurrMenuSelection(NULL_END-1);
+	}
+	else if(GetDI()->JoystickDPadPressed(3, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
+	{
+		SetCurrMenuSelection(GetCurrMenuSelection() +1);
+		if (GetCurrMenuSelection() == NULL_END)
+			SetCurrMenuSelection(PLAY);
+	}
+	// a = 0, b = 1, x = 2, y = 3, lb = 4, rb = 5, select = 6, start = 7, lstick button = 8
+	// rstick button = 9,  triggers??
+	/*if(GetDI()->JoystickButtonPressed(0,0) )
+	{
+	}*/
+
 	if (GetDI()->KeyPressed(DIK_DOWN))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
@@ -115,7 +133,8 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		if (GetCurrMenuSelection() < PLAY)
 			SetCurrMenuSelection(NULL_END-1);
 	}
-	else if ((GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT)))
+	else if ((GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT) 
+		|| GetDI()->JoystickButtonPressed(0,0) || GetDI()->JoystickButtonPressed(7,0)))
 	{
 		GetFMOD()->PlaySound(GetAssets()->aMMmenuClickSnd);
 		GetFMOD()->SetVolume(GetAssets()->aMMmenuClickSnd, GetGame()->GetSFXVolume());

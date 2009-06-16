@@ -194,13 +194,17 @@ void CWorldMap::Update(float fElapsedTime)
 
 bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 {
-	m_ptMouse = mouse;
-	if (m_bTrained)	// don't accept input while trained msg box is displaying
+	if(m_pDI->JoystickIsUnplugged() == true)
+	{
+		m_ptMouse = mouse;
+	}
+
+	if (m_bTrained)	//don't accept input while trained msg box is displaying
 		return true;
-	if (m_pDI->KeyPressed(DIK_ESCAPE))
+	if (m_pDI->KeyPressed(DIK_ESCAPE) || m_pDI->JoystickButtonPressed(1,0) )
 	{m_nCurrBtn = EXIT;HandleButtons();}
 
-	if (m_pDI->MouseButtonPressed(MOUSE_LEFT))
+	if (m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->JoystickButtonPressed(0,0) )
 	{
 		if(HandleButtons()) // don't check any world map input if we're handling a button
 			return true;
@@ -224,21 +228,78 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 		}
 	}
 
+	if( m_pDI->JoystickGetLStickXAmount() || m_pDI->JoystickGetLStickYAmount() )	//m_pDI->JoystickGetLStickXNormalized())
+	{
+		m_ptMouse.x = m_ptMouse.x + (m_pDI->JoystickGetLStickXAmount()/1000);		//m_pDI->JoystickGetLStickXNormalized();
+		m_ptMouse.y = m_ptMouse.y + (m_pDI->JoystickGetLStickYAmount()/1000);		//m_pDI->JoystickGetLStickYNormalized();
+	}
+
+	//if(m_pDI->JoystickDPadPressed(0,0))//left
+	//{
+	//	for( int i = 0; i < 4; i++)
+	//	{
+	//		if(m_Locations[i].bHovering == false)
+	//		{
+	//			m_ptMouse.x = m_Locations[LOC_SIMUSA].mapXY.x - m_nMapOSx;
+	//			m_ptMouse.y = m_Locations[LOC_SIMUSA].mapXY.y - m_nMapOSy;
+	//		}
+	//		else
+	//		{
+	//			if(i > 0)
+	//			{
+	//				i--;
+	//				m_ptMouse.x = m_Locations[i].mapXY.x- m_nMapOSx;
+	//				m_ptMouse.y = m_Locations[i].mapXY.y- m_nMapOSy;
+	//			}
+	//			else
+	//			{
+	//				m_ptMouse.x = m_Locations[3].mapXY.x- m_nMapOSx;
+	//				m_ptMouse.y = m_Locations[3].mapXY.y- m_nMapOSy;
+	//			}
+	//		}
+	//	}
+	//}
+	//if(m_pDI->JoystickDPadPressed(1,0))//right
+	//{
+	//	for( int i = 0; i < 4; i++)
+	//	{
+	//		if(m_Locations[i].bHovering == false)
+	//		{
+	//			m_ptMouse.x = m_Locations[LOC_SIMUSA].mapXY.x- m_nMapOSx;
+	//			m_ptMouse.y = m_Locations[LOC_SIMUSA].mapXY.y- m_nMapOSy;
+	//		}
+	//		else
+	//		{
+	//			if(i < 3)
+	//			{
+	//				i++;
+	//				m_ptMouse.x = m_Locations[i].mapXY.x- m_nMapOSx;
+	//				m_ptMouse.y = m_Locations[i].mapXY.y- m_nMapOSy;
+	//			}
+	//			else
+	//			{
+	//				m_ptMouse.x = m_Locations[0].mapXY.x- m_nMapOSx;
+	//				m_ptMouse.y = m_Locations[0].mapXY.y- m_nMapOSy;
+	//			}
+	//		}
+	//	}
+	//}
 
 	// get boxes input (calls update)
-	m_bxHelp->Input(mouse);
-	m_nCurrBtn = m_bxMenu->Input(mouse);
+
+	m_bxHelp->Input(m_ptMouse);
+	m_nCurrBtn = m_bxMenu->Input(m_ptMouse);
 	if(m_nCurrBtn == 3)
 		m_nCurrBtn = MENU_BTN_EXIT;
 
 	if (m_bxChooseTurtle)
-		m_nCurrBtn = m_bxChooseTurtle->Input(mouse);
+		m_nCurrBtn = m_bxChooseTurtle->Input(m_ptMouse);
 	else if (m_bxTrainSkills)
-		m_nCurrBtn = m_bxTrainSkills->Input(mouse);
+		m_nCurrBtn = m_bxTrainSkills->Input(m_ptMouse);
 	else if (m_bxLoad)
-		m_nCurrBtn = m_bxLoad->Input(mouse);
+		m_nCurrBtn = m_bxLoad->Input(m_ptMouse);
 	else if (m_bxSave)
-		m_nCurrBtn = m_bxSave->Input(mouse);
+		m_nCurrBtn = m_bxSave->Input(m_ptMouse);
 
 	return true;
 }

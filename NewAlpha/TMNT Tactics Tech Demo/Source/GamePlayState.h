@@ -19,7 +19,7 @@ class CBaseMenuState;
 class CAnimation;
 class CPlayer;
 class CHUD;
-//class WorldMap;
+class CWorldMap;
 
 class CGamePlayState : public IGameState
 {
@@ -27,8 +27,8 @@ private:
 	CBaseMenuState* m_pCurrentMenuState;
 	CBattleMap*		m_pBattleMap;
 	CPlayer*		m_pPlayer;
-	CHUD* m_pHUD;
-	//WorldMap* m_pWorldMap;
+	CHUD*			m_pHUD;
+	CWorldMap*		m_pWorldMap;
 
 	bool m_bIsPaused;
 

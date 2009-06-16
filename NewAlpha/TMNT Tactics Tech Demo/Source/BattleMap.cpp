@@ -106,7 +106,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 	m_nMapHeight = 0; m_nMapWidth = 0;
 	m_nFreeTileCount = 0;
 	m_fScrollX = 0.0f; m_fScrollY = 0.0f;
-	m_nScrenWidth = m_pGame->GetScreenWidth();
+	m_nScreenWidth = m_pGame->GetScreenWidth();
 	m_nScreenHeight = m_pGame->GetScreenHeight();
 	m_nOffsetX = m_nOffsetY = 0;
 
@@ -348,9 +348,9 @@ void CBattleMap::Render()
 		m_bxPauseBox->Render();
 	m_pHUD->Render();
 	if (m_bIsPlayersTurn)
-		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScrenWidth, 10, 0.09f, 0.6f);
+		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
 	else
-		m_pBitmapFont->DrawStringAutoCenter("COMPUTER'S TURN", m_nScrenWidth, 10, 0.09f, 0.6f);
+		m_pBitmapFont->DrawStringAutoCenter("COMPUTER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
 	if (m_bIsPlayersTurn && m_nCurrCharacter > -1)
 	{
 		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 0.5f);
@@ -365,11 +365,11 @@ void CBattleMap::Render()
 	}
 	if (m_bNotEnoughAP && m_fTimer < 3)
 	{
-		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScrenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 	else if (m_bOutOfRange && m_fTimer < 3)
 	{
-		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScrenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 	if (m_fTimer > 3 && (m_bNotEnoughAP || m_bOutOfRange))
 	{
@@ -386,7 +386,7 @@ void CBattleMap::Render()
 		{
 			char distText[64];
 			sprintf_s(distText, "Dist to Target: %i", m_nDistanceToTarget);
-			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScrenWidth, 730, 0.09f, 0.5f);
+			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScreenWidth, 730, 0.09f, 0.5f);
 		}
 	}
 	if (m_nCurrTarget > -1)
@@ -519,10 +519,10 @@ void CBattleMap::Update(float fElapsedTime)
 	CHUD::GetInstance()->Update(fElapsedTime);
 
 	//update the particle system
-	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+// 	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+// 	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+// 	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+// 	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
@@ -654,7 +654,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		{	
 			if (m_ptMouseScreenCoord.x < CAM_EDGE_DIST_TO_MOVE)
 				MoveCamLeft(fElapsedTime);
-			if (m_ptMouseScreenCoord.x > m_nScrenWidth-CAM_EDGE_DIST_TO_MOVE)
+			if (m_ptMouseScreenCoord.x > m_nScreenWidth-CAM_EDGE_DIST_TO_MOVE)
 				MoveCamRight(fElapsedTime);
 			if (m_ptMouseScreenCoord.y < CAM_EDGE_DIST_TO_MOVE)
 				MoveCamUp(fElapsedTime);
@@ -694,6 +694,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 			yID = m_nNumRows-1;
 
 		m_nCurrSelectedTile = yID * m_nNumCols + xID;	// get the tile ID
+		m_ptMouseMapCoord.x = xID; m_ptMouseMapCoord.y = yID;
 
 		if (m_bIsPlayersTurn || m_bIsPaused)
 			HandleMouseInput(fElapsedTime, mouse, xID, yID);
@@ -774,7 +775,7 @@ void CBattleMap::LoadMapInfo()
 			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
 			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
+			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
 			SetFTosY((int)m_fScrollY - m_nTileHeight);
 		}
 		else // didn't have the correct version number...
@@ -1132,6 +1133,7 @@ bool CBattleMap::CheckTileOccupied(int tileID)
 void CBattleMap::CalculateRanges()
 {
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
+	int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 
 	// reset alphas
 	for(int nx = 2; nx < m_nNumCols; ++nx)
@@ -1153,7 +1155,6 @@ void CBattleMap::CalculateRanges()
 				&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
 			{
 				int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
-				int ap		 = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 				int id		 = ny*m_nNumCols+nx;
 				if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
 				{
@@ -1910,7 +1911,7 @@ void CBattleMap::MoveCamLeft(float fElapsedTime)
 	m_fScrollX += SCROLLSPEED * fElapsedTime;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
@@ -1920,7 +1921,7 @@ void CBattleMap::MoveCamRight(float fElapsedTime)
 	m_fScrollX -= SCROLLSPEED * fElapsedTime;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScrenWidth >> 1)) - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();

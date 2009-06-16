@@ -77,6 +77,9 @@ public:
 	ASSET aBMskillBoxID;
 	ASSET aBMarcadeMusicID;
 
+	// WorldMap IDs
+	ASSET aWMmapID;
+
 	// Main Menu IDs
 	ASSET aMMBGimageID;
 	ASSET aMMmenuClickSnd;

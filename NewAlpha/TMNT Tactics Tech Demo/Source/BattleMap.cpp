@@ -431,8 +431,8 @@ void CBattleMap::SetPaused(bool IsPaused)
 	{
 		if (m_bxPauseBox)
 			delete m_bxPauseBox;
-		string text[4]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "QUIT"; text[0] = "PAUSED";
-		m_bxPauseBox = new CBox(4, text, 320, 300, 0.1f, true);
+		string text[5]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "RETREAT"; text[4] = "QUIT"; text[0] = "PAUSED";
+		m_bxPauseBox = new CBox(5, text, 320, 300, 0.1f, true);
 		m_bxPauseBox->SetActive();
 		m_bxPauseBox->SetType(BOX_WITH_BACK);
 		m_bxActionBox->SetActive(false);
@@ -1660,7 +1660,13 @@ void CBattleMap::HandleButton()
 	}
 	else if (m_bxPauseBox)
 	{
-		if (m_nCurrBtnSelected == 3 /*Quit*/)
+		if (m_nCurrBtnSelected == 3 /*Retreat*/)
+		{
+			delete m_bxPauseBox; m_bxPauseBox = NULL;
+			CGamePlayState::GetInstance()->ChangeMap();
+			return;
+		}
+		if (m_nCurrBtnSelected == 4 /*Quit*/)
 		{
 			delete m_bxPauseBox; m_bxPauseBox = NULL;
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());

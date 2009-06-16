@@ -205,6 +205,7 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 	switch (m_nCurrentMap) // battle map OR world map?
 	{
 	case WORLD_MAP:
+		m_pBattleMap->Exit();
 		m_pWorldMap->Enter();
 		break;
 	case BATTLE_MAP:

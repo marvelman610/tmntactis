@@ -105,6 +105,7 @@ class CBox
 	//////////////////////////////////////////////////////////////////////////
 	int CurrImage() const { return m_nCurrImage; }
 	void CurrImage(int val) { m_nCurrImage = val; }
+	void SetAlpha(float alpha) {m_nAlpha = alpha;}
 	float PosZ() const { return m_fPosZ; }
 	void PosZ(float val) { m_fPosZ = val; }
 	int PosY() const { return m_nPosY; }

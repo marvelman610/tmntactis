@@ -135,8 +135,8 @@ public:
 	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
 	inline void SetMapCoord(POINT mapCoord) {m_ptMapCoord = mapCoord;}
-	inline void SetPosX(float fPosX)		{m_fPosX = fPosX-m_vAnimations[0].GetFrames()[0].nAnchorX;}
-	inline void SetPosY(float fPosY)		{m_fPosY = fPosY-m_vAnimations[0].GetFrames()[0].nAnchorY;}
+	inline void SetPosX(float fPosX)		{m_fPosX = fPosX-m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nAnchorX;}
+	inline void SetPosY(float fPosY)		{m_fPosY = fPosY-m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nAnchorY;}
 	inline void SetPosPt(POINT pos)			{m_fPosX = (float)pos.x; m_fPosY = (float)pos.y;}
 	inline void SetPosPtF(MY_POINT_FLOAT pos){m_fPosX = pos.x; m_fPosY = pos.y;}
 	inline void SetPosZ(float fPosZ)		{m_fPosZ = fPosZ;}

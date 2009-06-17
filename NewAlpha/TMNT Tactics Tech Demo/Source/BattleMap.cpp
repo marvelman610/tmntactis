@@ -1220,6 +1220,8 @@ void CBattleMap::CalculateRanges()
 				}
 			}
 		}
+		m_nDistanceToTarget = DistanceToTarget(ptGridLocation.x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
+			ptGridLocation.y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
 	}
 	if (m_nCurrTarget > -1)
 	{
@@ -1934,7 +1936,7 @@ void CBattleMap::PerformAttack()
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(1);
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetAnimations()[1].Play();
+		//m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetAnimations()[1].Play();
 	}
 	CalculateRanges();
 }

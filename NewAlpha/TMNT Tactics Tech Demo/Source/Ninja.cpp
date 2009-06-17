@@ -44,9 +44,21 @@ CNinja::CNinja(void)
 	m_pTile = CBattleMap::GetInstance()->GetTiles();
 
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 1);
 	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 2);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 3);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 4);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 5);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 6);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 7);
+	AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 8);
 	AddAnim(anim);
 	m_vAnimations[m_nCurrAnimation].Play();
 }
@@ -299,6 +311,8 @@ void CNinja::AI()
 		//next to turtle
 	case 0:
 		{
+			SetCurrAnim(4);
+
 			//16 ap always
 			// attack four times (4ap * 4 = 16)
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
@@ -307,13 +321,16 @@ void CNinja::AI()
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);
+			
+			//CBattleMap::GetInstance()->SetTurn(true);
 
 		}
 		break;
 		//one tile away from  turtle
 	case 1:
 		{
+ 			SetCurrAnim(4);
+
 			//attack four times(4ap * 4 = 16)
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4));
 			//end turn
@@ -321,7 +338,10 @@ void CNinja::AI()
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);
+			
+			//SetCurrAnim(0);
+
+			//CBattleMap::GetInstance()->SetTurn(true);
 
 		}
 		break;
@@ -864,6 +884,8 @@ void CNinja::AI()
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::FindPath(POINT begin, POINT end)
 {
+	SetCurrAnim(0);
+
 	m_vPath.clear();
 	POINT ptCurr = begin; // begin point
 	POINT ptTarget = end;	// end point
@@ -988,9 +1010,14 @@ void CNinja::FindPath(POINT begin, POINT end)
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
+	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
+		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 &&  GetCurrAnim()->GetCurrAnimFrame() != 2)
+			GetCurrAnim()->Stop();
+
 		if (m_vPath.size() > 0)
 		{
 			// grab the next move and take it out of the vector..if the previous move is complete
@@ -1003,6 +1030,10 @@ void CNinja::Update(float fElapsedTime)
 			// NORTHWEST
 			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				if(!GetCurrAnim()->IsAnimationPlaying())
+					SetCurrAnim(2);
+				SetCurrAnimFacing(false);
+
 				currPos.x -= GetVelX() * fElapsedTime;
 				currPos.y -= GetVelY() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -1010,6 +1041,9 @@ void CNinja::Update(float fElapsedTime)
 			// SOUTHEAST
 			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				if(!GetCurrAnim()->IsAnimationPlaying())
+					SetCurrAnim(1);
+				SetCurrAnimFacing(true);
 				currPos.x += GetVelX() * fElapsedTime;
 				currPos.y += GetVelY() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -1017,6 +1051,10 @@ void CNinja::Update(float fElapsedTime)
 			// NORTHEAST
 			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				if(!GetCurrAnim()->IsAnimationPlaying())
+					SetCurrAnim(2);
+				SetCurrAnimFacing(true);
+
 				currPos.y -= GetVelY() * fElapsedTime;
 				currPos.x += GetVelX() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -1024,6 +1062,10 @@ void CNinja::Update(float fElapsedTime)
 			// SOUTHWEST
 			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				if(!GetCurrAnim()->IsAnimationPlaying())
+					SetCurrAnim(1);
+				SetCurrAnimFacing(false);
+
 				currPos.y += GetVelY() * fElapsedTime;
 				currPos.x -= GetVelX() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -1045,16 +1087,30 @@ void CNinja::Update(float fElapsedTime)
 		}
 		else // movement is done
 		{
+			if(GetCurrAnim()->GetCurrAnimFrame() == GetCurrAnim()->GetTotalFrames())
+			{
+				SetCurrAnim(0);
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+				
+			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
+				SetCurrAnim(0);
+			
+
 			SetCurrAP(GetCurrAP());
 			m_bMoving = false;
 
 			if(m_nInRange == 1)
 			{
+				SetCurrAnim(4);
+
 				switch(GetCurrAP())
 				{
 				case 4:
 					{
+
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
+
 					}
 					break;
 				case 8:
@@ -1072,10 +1128,13 @@ void CNinja::Update(float fElapsedTime)
 					}
 					break;
 				}
+				
+
 			}
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
+			//SetCurrAnim(0);
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 	}
@@ -1109,9 +1168,9 @@ void CNinja::Update(float fElapsedTime)
 		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
 	}
-	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+	
 }
 void CNinja::Render()
 {
-	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1.2f, m_dwColor);
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX(), (int)GetPosY(), GetPosZ(), 1, m_dwColor);
 }

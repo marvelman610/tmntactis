@@ -35,10 +35,9 @@ CBase::CBase(void)
 
 void CBase::Update(float fElapsedTime)
 {
-	if(m_vAnimations[m_nCurrAnimation].IsAnimationPlaying() == false)
-	{
+	if(m_vAnimations[m_nCurrAnimation].IsAnimationPlaying() == false && GetType() != OBJECT_WEAPON)
 		m_vAnimations[m_nCurrAnimation].Play();
-	}
+
 }
 void CBase::Render()
 {

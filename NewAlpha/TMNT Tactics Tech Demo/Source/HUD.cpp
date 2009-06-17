@@ -136,9 +136,9 @@ void CHUD::Render()
 		char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetLevel());
 		//CSGD_Direct3D::GetInstance()->DrawText(szLVL, 32,135);
 		CBitmapFont::GetInstance()->DrawString(szLVL, 32,135,0.05f,0.5f);
-		char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetExperience());
+		char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetExperience());
 		//CSGD_Direct3D::GetInstance()->DrawText(szEXP, 118,135);
-		CBitmapFont::GetInstance()->DrawString(szLVL, 118,135,0.05f,0.5f);
+		CBitmapFont::GetInstance()->DrawString(szEXP, 118,135,0.05f,0.5f);
 	}
 	else if(m_pPlayer->GetTurtles()[LEONARDO] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == LEONARDO))
 	{
@@ -148,7 +148,7 @@ void CHUD::Render()
 		char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetLevel());
 		//CSGD_Direct3D::GetInstance()->DrawText(szLVL, 37,165);
 		CBitmapFont::GetInstance()->DrawString(szLVL, 37,165,0.05f,0.5f);
-		char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
+		char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetExperience());
 		//CSGD_Direct3D::GetInstance()->DrawText(szEXP, 142,165);
 		CBitmapFont::GetInstance()->DrawString(szEXP, 142,165,0.05f,0.5f);
 	}
@@ -160,8 +160,8 @@ void CHUD::Render()
 		char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetLevel());
 		//CSGD_Direct3D::GetInstance()->DrawText(szLVL, 46,142);
 		CBitmapFont::GetInstance()->DrawString(szLVL, 46,142,0.05f,0.5f);
-		char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
-		CBitmapFont::GetInstance()->DrawString(szLVL, 144,142,0.05f,0.5f);
+		char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
+		CBitmapFont::GetInstance()->DrawString(szEXP, 144,142,0.05f,0.5f);
 	}
 	else if(m_pPlayer->GetTurtles()[RAPHAEL] != NULL && (CBattleMap::GetInstance()->GetCurrActive() == RAPHAEL))
 	{
@@ -171,9 +171,9 @@ void CHUD::Render()
 		char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetLevel());
 		//CSGD_Direct3D::GetInstance()->DrawText(szLVL, 35,101);
 		CBitmapFont::GetInstance()->DrawString(szLVL, 35,101,0.05f,0.5f);
-		char szEXP[3]; sprintf_s(szEXP, "%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetExperience());
+		char szEXP[8]; sprintf_s(szEXP, "%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetExperience());
 		//CSGD_Direct3D::GetInstance()->DrawText(szEXP, 122,101);
-		CBitmapFont::GetInstance()->DrawString(szLVL, 122,101,0.05f,0.5f);
+		CBitmapFont::GetInstance()->DrawString(szEXP, 122,101,0.05f,0.5f);
 	}
 
 	//draw hud menu if player turn active

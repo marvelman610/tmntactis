@@ -211,7 +211,7 @@ void CBattleMap::Reset()
 void CBattleMap::Render()
 {
 	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
-	if (m_nHoverCharacter != -1 && m_bIsPlayersTurn)
+	if ((m_nHoverCharacter > -1 || (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft)) && m_bIsPlayersTurn)
 		DrawHover();
 
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter == -1)
@@ -233,7 +233,7 @@ void CBattleMap::Render()
 		m_pPlayer->GetTurtles()[DONATELLO]->Colorize(false);
 		m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
 		m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
-		if (m_nHoverCharacter == -1)
+		if (m_nHoverEnemy == -1)
 		{
 			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 				m_vEnemies[i]->Colorize(false);
@@ -296,11 +296,11 @@ void CBattleMap::Render()
 							continue;
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				else if (m_nHoverCharacter > -1 && m_nHoverCharacter < 4 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				else if (m_nHoverCharacter > -1 /*&& m_nHoverCharacter < 4*/ && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				else if (m_nHoverCharacter > 3 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				else if (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft && m_vEnemies[m_nHoverEnemy]->GetCurrTile() == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
@@ -1102,7 +1102,7 @@ int CBattleMap::IsMousePosValid(POINT mousePt, bool bFindTurtle)
 	int size;
 	RECT currRect;
 	if (bFindTurtle)
-		size = m_vCharacters.size();
+		size = 4;
 	else
 		size = m_vEnemies.size();
 
@@ -1262,27 +1262,17 @@ void CBattleMap::DrawHover()
 			break;
 		}
 
-		if (m_nHoverCharacter > 3)
+		if (m_nHoverEnemy > -1)
 		{
-			if (m_nHoverCharacter == 4 && m_nNumEnemiesLeft > 0)
-			{
-				m_vEnemies[m_nHoverCharacter-(4)]->Colorize();
-				for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-					if (m_nHoverCharacter-(4) != i)
-						m_vEnemies[i]->Colorize(false);
-			}
-			else if (m_nHoverCharacter != 4 && m_nNumEnemiesLeft > 0)
-			{
-				m_vEnemies[m_nHoverCharacter-(4)]->Colorize();
-				for (int i = 0; i < m_nNumEnemiesLeft; ++i)
-					if (m_nHoverCharacter-(4) != i)
-						m_vEnemies[i]->Colorize(false);
-			}
+			m_vEnemies[m_nHoverEnemy]->Colorize();
+			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+				if (m_nHoverEnemy != i)
+					m_vEnemies[i]->Colorize(false);
 		}
 	
-		if (m_nHoverCharacter == (m_nCurrTarget+4) && m_bIsMouseAttack)
+		if (m_nHoverEnemy == m_nCurrTarget && m_bIsMouseAttack)
 			SetMousePtr(m_pAssets->aMouseAttackID);
-		else if (m_nHoverCharacter > 3)
+		else if (m_nHoverEnemy > -1)
 			SetMousePtr(m_pAssets->aMouseMagGlassID);
 		else
 			SetMousePtr(m_pAssets->aMousePointerID);
@@ -1423,11 +1413,18 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID)
 {
 
-	int index = IsMousePosValid(mouse);
+	int index = IsMousePosValid(mouse);	// find turtle indexes
 	if (index != -1)
 		m_nHoverCharacter = index;
 	else
 		m_nHoverCharacter = -1;
+
+	int enemyIndex = IsMousePosValid(mouse, false); // find enemy indexes
+	if (enemyIndex > -1)
+		m_nHoverEnemy = enemyIndex;
+	else
+		m_nHoverEnemy = -1;
+
 	if (m_bItemBool && (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0)) )
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
@@ -1489,6 +1486,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				}
 
 		}
+		else	// out of range
+		{
+
+		}
 		return;
 	}
 
@@ -1514,7 +1515,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 
 	// when the left mouse button is clicked...handling non-box input only
 	if((m_pDI->JoystickButtonPressed(2,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
-		(index > 3 || index == -1) && m_nCurrCharacter == -1 && !m_bxMessageBox)
+		(index == -1 && m_nCurrCharacter == -1 && !m_bxMessageBox) )
 	{
 		string* message = new string[3];
 		message[0] = "SELECT A TURTLE"; message[1] = "TO BEGIN"; message[2] = "YOUR TURN";
@@ -1565,7 +1566,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	}
 	else if ( (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0) ) && !m_bIsPaused )
 	{
-		if (index > -1 && index < 4 && !m_bHaveMoved && !m_bItemBool)	// see if we're clicking on a character (turtle), and we haven't already moved
+		if (index > -1 && !m_bHaveMoved && !m_bItemBool)	// see if we're clicking on a character (turtle), and we haven't already moved
 		{
 			m_nCurrSkillCost	 = -1;
 			m_nCurrCharacter	 = index;
@@ -1601,7 +1602,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			}
 			CalculateRanges();
 		}
-		else if (index > 3 && (!m_bIsMouseAttack || m_nHoverCharacter != m_nCurrTarget+4 || m_bEggBool) && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
+		else if (m_nHoverEnemy > -1 && (!m_bIsMouseAttack || m_nHoverEnemy != m_nCurrTarget/*m_nCurrTarget+4*/ || m_bEggBool) && m_nCurrCharacter > -1) // or if we're clicking on an enemy to view their stats
 		{
 					
 			m_bIsMouseAttack = true;
@@ -1642,7 +1643,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 
 
 		}
-		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1 && index > 3)	// otherwise, attempting to attack
+		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1 && m_nHoverEnemy > -1)	// otherwise, attempting to attack
 		{
 			// check if in range
 			if (m_nDistanceToTarget > m_vCharacters[m_nCurrCharacter].GetRange() && m_sCurrSkillName == "NONE")
@@ -1658,7 +1659,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			else
 				PerformAttack();
 		}
-		else if (index > -1 && index < 4 && m_bHaveMoved && index != m_nCurrCharacter)
+		else if (index > -1 && m_bHaveMoved && index != m_nCurrCharacter)
 		{
 			string* message = new string[3];
 			message[0] = "CAN ONLY MOVE"; message[1] = "ONE TURTLE"; message[2] = "PER TURN";
@@ -1914,6 +1915,11 @@ void CBattleMap::PerformAttack()
 				++iter;
 			}
 			SetEnemyDead();
+			m_vCharacters.clear();
+			for (int i = 0; i < 4; ++i)
+				m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+				m_vCharacters.push_back(*m_vEnemies[i]);
 		}
 	} 
 	// a skill has been selected, execute that skill

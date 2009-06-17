@@ -60,6 +60,8 @@ void CPlayer::NewGame()
 {
 	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+	POINT pt; pt.x = 15; pt.y = 18;
+	Factory::GetInstance()->CreateBattleItem(GRENADO, pt);
 }
 
 void CPlayer::LoadSavedGame(const char* fileName)

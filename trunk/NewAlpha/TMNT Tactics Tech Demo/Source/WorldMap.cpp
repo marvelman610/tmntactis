@@ -1,3 +1,11 @@
+//////////////////////////////////////////////////////////////////////////
+//	Filename	:	CWorldMap.cpp
+//
+//	Author		:	Ramon Johannessen (RJ)
+//
+//	Purpose		:	To execute the individual battles that take place,
+//					drawing the isometric tile map, updating, getting input, etc...
+//////////////////////////////////////////////////////////////////////////
 #include "WorldMap.h"
 #include "Assets.h"
 #include "BitmapFont.h"
@@ -11,6 +19,7 @@
 #include "Player.h"
 #include "Box.h"
 #include "Skill.h"
+#include "Achievements.h"
 #define SCROLL_SPEED 200.0f
 #define SCROLL_EDGE_DIST 35
 #define EXIT	100
@@ -70,6 +79,8 @@ CWorldMap* CWorldMap::GetInstance()
 
 void CWorldMap::Enter()
 {
+	if (m_pPlayer->GetAch()->GetLocked(ACH_NEWGAME) == false)
+		m_pPlayer->GetAch()->Unlock(ACH_NEWGAME);
 	m_bxTrainSkills = m_bxChooseTurtle = m_bxMsg = m_bxLoad = m_bxSave = m_bxWeapon = NULL;
 	m_nMapOSx = (m_nMapWidth >> 1) - (m_nScreenWidth >> 1) + 150;
 	m_nMapOSy = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1) + 100;
@@ -101,7 +112,7 @@ void CWorldMap::Exit()
 }
 
 void CWorldMap::Render()
-{
+{	
 	m_pTM->DrawWithZSort(m_nMapImageID, -m_nMapOSx, -m_nMapOSy, 1.0f, 1.0f, 1.0f);
 	m_pBitmapFont->DrawStringAutoCenter("World Map", m_nScreenWidth, 20);
 	for (int i = 0; i < NUM_LOCATIONS; ++i)
@@ -113,7 +124,7 @@ void CWorldMap::Render()
 			string name = "CURRENT LOCATION - " + m_Locations[i].name;
 			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5);
 		}
-		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect)
+		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect && !m_pPlayer->GetAch()->Render())
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
 				0.0f, 0.5f, m_Locations[i].color);
 	}
@@ -149,6 +160,7 @@ void CWorldMap::Render()
 
 void CWorldMap::Update(float fElapsedTime)
 {
+	m_pPlayer->GetAch()->Update(fElapsedTime);
 	if (m_ptMouse.x < SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_A))
 		m_nMapOSx -= (int)( SCROLL_SPEED * fElapsedTime);
 	if (m_ptMouse.x > m_nScreenWidth-SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_D))
@@ -166,7 +178,6 @@ void CWorldMap::Update(float fElapsedTime)
 		m_nMapOSx = 0;
 	if (m_nMapOSx > m_nMapWidth-m_nScreenWidth)
 		m_nMapOSx = m_nMapWidth-m_nScreenWidth;
-
 
 	for (int i = 0; i < NUM_LOCATIONS; ++i)
 	{

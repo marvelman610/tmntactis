@@ -157,6 +157,7 @@ public:
 	ASSET aGlowParticle;
 
 	//achievementes
+		// images
 	ASSET aAvenged;
 	ASSET aBreakGame;
 	ASSET aCowabunga;
@@ -167,6 +168,10 @@ public:
 	ASSET aQuickFingers;
 	ASSET aStrikeHard;
 	ASSET aTrueNinja;
+		// sounds
+	ASSET aStrikeHardSnd;
+	ASSET aLessonInPainSnd;
+
 };
 
 #endif

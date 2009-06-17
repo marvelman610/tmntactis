@@ -13,7 +13,7 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
-#define LOAD_MUSIC 1
+#define LOAD_MUSIC 0
 
 CAssets* CAssets::GetInstance()
 {
@@ -79,7 +79,7 @@ void CAssets::LoadAssets()
 	aBMpainSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_painScream.mp3");
 	aBMdeathSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_dying.mp3");
 	aBMpunchSnd1		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch.mp3");
-	aBMpunchSnd2		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch2.mp3");
+	aBMpunchSnd2		= m_pFMOD->LoadSound("Resources/Sounds/VG_punchKick.mp3");
 	aBMgrenadeSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_grenadeExplosion.mp3");
 	aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
 	aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
@@ -171,6 +171,10 @@ void CAssets::LoadAssets()
 	aQuickFingers = m_pTM->LoadTexture("Resources/Images/VG_QuickFingers.png", D3DCOLOR_XRGB(255,0,0));
 	aStrikeHard = m_pTM->LoadTexture("Resources/Images/VG_StrikeHard.png", D3DCOLOR_XRGB(255,0,0));
 	aTrueNinja = m_pTM->LoadTexture("Resources/Images/VG_TrueNinja.png", D3DCOLOR_XRGB(255,0,0));
+
+	aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
+	aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
+	//////////////////////////////////////////////////////////////////////////
 	
 
 #if LOAD_MUSIC

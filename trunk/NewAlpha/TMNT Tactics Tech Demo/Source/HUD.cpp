@@ -216,7 +216,7 @@ void CHUD::Render()
 				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetLevel());
 				CBitmapFont::GetInstance()->DrawString(szLVL, 46,142,0.05f,0.5f);
 				char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
-				CBitmapFont::GetInstance()->DrawString(szLVL, 144,142,0.05f,0.5f);
+				CBitmapFont::GetInstance()->DrawString(szEXP, 144,142,0.05f,0.5f);
 			}
 			break;
 		case RAPHAEL:
@@ -227,7 +227,7 @@ void CHUD::Render()
 				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetLevel());
 				CBitmapFont::GetInstance()->DrawString(szLVL, 35,101,0.05f,0.5f);
 				char szEXP[3]; sprintf_s(szEXP, "%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetExperience());
-				CBitmapFont::GetInstance()->DrawString(szLVL, 122,101,0.05f,0.5f);
+				CBitmapFont::GetInstance()->DrawString(szEXP, 122,101,0.05f,0.5f);
 			}
 			break;
 		case MIKEY:
@@ -238,7 +238,7 @@ void CHUD::Render()
 				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetLevel());
 				CBitmapFont::GetInstance()->DrawString(szLVL, 32,135,0.05f,0.5f);
 				char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetExperience());
-				CBitmapFont::GetInstance()->DrawString(szLVL, 118,135,0.05f,0.5f);
+				CBitmapFont::GetInstance()->DrawString(szEXP, 118,135,0.05f,0.5f);
 			}
 			break;
 		}

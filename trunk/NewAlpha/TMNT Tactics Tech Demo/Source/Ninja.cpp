@@ -867,11 +867,136 @@ void CNinja::AI()
 	default:
 		{
 			//end turn
-			SetCurrAP(0);
+
+			/*if(rand()%2 > 1)
+			{
+				mapPt.x  = GetMapCoord().x + 2;
+				mapPt.y = GetMapCoord().y + 2;
+			}
+			else 
+			{
+				mapPt.x = GetMapCoord().x - 2;
+				mapPt.y = GetMapCoord().y - 2;
+			}*/
+
+			switch(abs(m_nXChange))
+			{
+			case 0: 
+				mapPt.x = GetMapCoord().x;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 8;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 8;
+				}
+				break;
+			case 1: 
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 7;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 7;
+				}
+				break;
+			case 2: 
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 6;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 6;
+				}
+				break;
+			case 3:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 5;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 5;
+				}
+				break;
+			case 4:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 4;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 4;
+				}
+				break;
+			case 5:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 3;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 3;
+				}
+				break;
+			case 6:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 2;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 2;
+				}
+				break;
+			case 7:
+				mapPt.x = GetMapCoord().x + m_nXChange;
+				if(m_nYChange > 0)
+				{
+					mapPt.y = GetMapCoord().y + 1;
+				}
+				else
+				{
+					mapPt.y = GetMapCoord().y - 1;
+				}
+				break;
+			case 8:
+				mapPt.y = GetMapCoord().y;
+				if(m_nXChange > 0)
+				{
+					mapPt.x = GetMapCoord().x + 8;
+				}
+				else
+				{
+					mapPt.x = GetMapCoord().x - 8;
+				}
+				break;
+			}
+			if(mapPt.x > -1 && mapPt.y > -1)
+			{
+				end = mapPt;
+				m_bMoving = true;
+				FindPath(begin, end);
+			}
+			else
+			{
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+
+			
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			CBattleMap::GetInstance()->UpdatePositions();
+			/*CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);
+			CBattleMap::GetInstance()->SetTurn(true);*/
 		}
 		break;
 	}

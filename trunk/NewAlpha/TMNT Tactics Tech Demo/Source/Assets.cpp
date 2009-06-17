@@ -150,6 +150,20 @@ void CAssets::LoadAssets()
 	aGlowParticle = aFireParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
 	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
 	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
+	
+	////////////////////////////////////////////////////////////////////////
+	// Achievements
+	aAvenged = m_pTM->LoadTexture("Resources/Images/VG_Avenged.png", D3DCOLOR_XRGB(255,0,0));
+	aBreakGame = m_pTM->LoadTexture("Resources/Images/VG_BreakGame.png", D3DCOLOR_XRGB(255,0,0));
+	aCowabunga = m_pTM->LoadTexture("Resources/Images/VG_Cowabunga.png", D3DCOLOR_XRGB(255,0,0));
+	aFlipNow = m_pTM->LoadTexture("Resources/Images/VG_FlipsNow.png", D3DCOLOR_XRGB(255,0,0));
+	aLessonInPain = m_pTM->LoadTexture("Resources/Images/VG_LessonInPain.png", D3DCOLOR_XRGB(255,0,0));
+	aMegaKill = m_pTM->LoadTexture("Resources/Images/VG_MegaKill.png", D3DCOLOR_XRGB(255,0,0));
+	aPartyTime = m_pTM->LoadTexture("Resources/Images/VG_PartyTime.png", D3DCOLOR_XRGB(255,0,0));
+	aQuickFingers = m_pTM->LoadTexture("Resources/Images/VG_QuickFingers.png", D3DCOLOR_XRGB(255,0,0));
+	aStrikeHard = m_pTM->LoadTexture("Resources/Images/VG_StrikeHard.png", D3DCOLOR_XRGB(255,0,0));
+	aTrueNinja = m_pTM->LoadTexture("Resources/Images/VG_TrueNinja.png", D3DCOLOR_XRGB(255,0,0));
+	
 
 #if LOAD_MUSIC
 	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);

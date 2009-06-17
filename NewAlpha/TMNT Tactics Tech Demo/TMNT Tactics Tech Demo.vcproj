@@ -223,6 +223,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\IGameState.h"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\MainMenuState.cpp"
 				>
 			</File>
@@ -342,10 +346,6 @@
 			</File>
 			<File
 				RelativePath=".\Source\IBaseInterface.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Source\IGameState.h"
 				>
 			</File>
 			<File

@@ -117,9 +117,13 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	//particle test
 	m_pParticleSystem = new CParticleSystem[4];
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
+	m_pParticleSystem[FIRE].m_bLoop = false;
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
+	m_pParticleSystem[SMOKE].m_bLoop = false;
 	m_pParticleSystem[GLOW].Load("Resources/ParticleInfo/VG_Test.dat");
+	m_pParticleSystem[GLOW].m_bLoop = false;
 	m_pParticleSystem[BLOOD].Load("Resources/ParticleInfo/VG_Blood.dat");
+	m_pParticleSystem[BLOOD].m_bLoop = false;
 
 	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
@@ -489,9 +493,14 @@ void CBattleMap::Update(float fElapsedTime)
 	if (m_bDrawTimedParticles)
 	{
 		m_fTimer += fElapsedTime;
+		m_pParticleSystem[FIRE].DrawParticle(m_pAssets->aFireParticle);
 		m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle);
 		if (m_fTimer >= 2.0f)
-		{m_bDrawTimedParticles = false;m_fTimer = 0.0f;m_pParticleSystem[SMOKE].m_bActive = false;}
+		{
+			m_bDrawTimedParticles = false;m_fTimer = 0.0f;
+			m_pParticleSystem[FIRE].m_bActive  = false;
+			m_pParticleSystem[SMOKE].m_bActive = false;
+		}
 	}
 	if (m_bMoving)
 	{
@@ -1488,6 +1497,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
 			PlaySFX(m_pAssets->aBMgrenadeSnd);
+			m_pParticleSystem[FIRE].Emit((float)mouse.x, (float)mouse.y);
+			m_pParticleSystem[FIRE].m_bActive = true;
 			m_pParticleSystem[SMOKE].Emit((float)mouse.x, (float)mouse.y);
 			m_pParticleSystem[SMOKE].m_bActive = true;
 			m_bDrawTimedParticles = true;

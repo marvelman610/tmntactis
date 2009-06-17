@@ -118,10 +118,10 @@ void CAnimation::Load(const char* FileName, int numFrame)
 				ZeroMemory(filebuff,128);
 				ifs.read(filebuff,size);
 
-				if(strcmp(filebuff,bIsLooping))
+				//if(strcmp(filebuff,bIsLooping))
 					m_bIsLooping = true;
-				else
-					m_bIsLooping = false;
+				//else
+				//	m_bIsLooping = false;
 
 				ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
 				m_fDuration = nDuration / 1000.0f;
@@ -163,6 +163,7 @@ void CAnimation::Load(const char* FileName, int numFrame)
 }
 void CAnimation::Update(float fElapsedtime)
 {
+	m_fDuration = 0.1f;
 	if(!m_bIsPlaying)
 		return;
 

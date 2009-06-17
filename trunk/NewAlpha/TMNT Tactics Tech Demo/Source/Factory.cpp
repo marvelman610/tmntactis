@@ -150,17 +150,20 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 		item->SetRange(blackeggs.GetRange());
 		item->SetDamage(blackeggs.GetDamage());
 		item->SetImageID(CAssets::GetInstance()->aEggID);
+		item->SetNumType(0);
 
 		break;
 	case GRENADO:
 		item->SetName("Grenado");
 		item->SetRange(grenado.GetRange());
 		item->SetDamage(grenado.GetDamage());
+		item->SetNumType(1);
 		item->SetImageID(CAssets::GetInstance()->aGrenadoID);
 		break;
 	case PIZZA:
 		item->SetName("Pizza");
 		item->SetHeal(pizza.GetDamage());
+		item->SetNumType(2);
 		item->SetImageID(CAssets::GetInstance()->aPizzaID);
 		break;
 	}

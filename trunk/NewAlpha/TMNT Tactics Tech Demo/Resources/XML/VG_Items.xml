@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Items>
        <BattleItem>
-                 <Item name ="Black Eggs" Dmg ="16" range="2" radius="1"/>
-                 <Item name ="Grenado" Dmg ="25" range ="3" radius="2"/>
-                 <Item name ="Pizza" Dmg ="20" range ="0" radius="1"/>
+                 <Item name ="Black Eggs" Dmg ="26" range="2" radius="1"/>
+                 <Item name ="Grenado" Dmg ="51" range ="3" radius="2"/>
+                 <Item name ="Pizza" Dmg ="30" range ="0" radius="1"/>
        </BattleItem>
        <Weapon>
                <Item name ="Bokken" atk ="6" def ="0"/>
@@ -20,6 +20,7 @@
                <Item name ="Polished Sais" atk ="8" def="1"/>
        </Weapon>
 </Items>
+
 
 
 

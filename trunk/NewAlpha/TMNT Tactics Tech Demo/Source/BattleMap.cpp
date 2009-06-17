@@ -26,6 +26,7 @@
 #include "Turtle.h"
 #include "Ninja.h"
 #include "Box.h"
+#include "Boss.h"
 #include <fstream>
 #include <exception>
 
@@ -748,6 +749,12 @@ void CBattleMap::CreateEnemies()
 		m_vCharacters.push_back((CBase)*ninja);
 		m_vEnemies.push_back((CBase*)ninja);
 	}
+	/*CBoss* boss = Factory::GetInstance()->CreateBoss();
+	POINT mapPt;
+	mapPt.x = 5;
+	mapPt.y = 5;
+	boss->SetCurrTile(mapPt, GetOffsetX(), GetOffsetY(), GetTileWidth(), GetTileHeight(), GetNumCols());*/
+	
 }
 
 void CBattleMap::LoadMapInfo()

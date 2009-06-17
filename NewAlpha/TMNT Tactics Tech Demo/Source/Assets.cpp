@@ -13,7 +13,7 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
-#define LOAD_MUSIC 0
+#define LOAD_MUSIC 1
 
 CAssets* CAssets::GetInstance()
 {
@@ -176,6 +176,9 @@ void CAssets::LoadAssets()
 	aStrikeHard = m_pTM->LoadTexture("Resources/Images/VG_StrikeHard.png", D3DCOLOR_XRGB(255,0,0));
 	aTrueNinja = m_pTM->LoadTexture("Resources/Images/VG_TrueNinja.png", D3DCOLOR_XRGB(255,0,0));
 
+	//bg
+	aAchievementBGID = m_pTM->LoadTexture("Resources/Images/VG_AchievementBG.png");
+
 	aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
 	aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
 	//////////////////////////////////////////////////////////////////////////
@@ -186,6 +189,7 @@ void CAssets::LoadAssets()
 	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
 	aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
 	aCMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
+	aMinimalKesoID		= m_pFMOD->LoadSound("Resources/Sounds/VG_MinimalKesoZotzbalam.mp3", FMOD_LOOP_NORMAL);
 #endif
 
 	m_bLoading = false;

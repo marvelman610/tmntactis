@@ -86,8 +86,6 @@ void CAssets::LoadAssets()
 	aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
 	aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
 	aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
-	aBMninjarap			= m_pFMOD->LoadSound("Resources/Sounds/VG_NINJARAP.mp3");
-	aHTPsound			= m_pFMOD->LoadSound("Resources/Sounds/VG_ZombieOutbreak.mp3");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -189,7 +187,9 @@ void CAssets::LoadAssets()
 	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
 	aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
 	aCMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
-	aMinimalKesoID		= m_pFMOD->LoadSound("Resources/Sounds/VG_MinimalKesoZotzbalam.mp3", FMOD_LOOP_NORMAL);
+	aBMninjarap			= m_pFMOD->LoadSound("Resources/Sounds/VG_NINJARAP.mp3", FMOD_LOOP_NORMAL);
+	aHTPsound			= m_pFMOD->LoadSound("Resources/Sounds/VG_ZombieOutbreak.mp3", FMOD_LOOP_NORMAL);
+	aMinimalKesoID		= m_pFMOD->LoadSound("Resources/Sounds/VG_Minimal.mp3", FMOD_LOOP_NORMAL);
 #endif
 
 	m_bLoading = false;

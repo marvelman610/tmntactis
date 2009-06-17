@@ -18,11 +18,11 @@ class CBox;
 class CMainMenuState : public CBaseMenuState
 {
 private:
-	CBox*	m_bxLoadGame;
 	CBox*	m_bxProfile;
+	CBox*	m_bxMsg;
 	bool	m_bDisplayLoadBox;
 	int		m_nNumProfiles;
-	string  m_sProfiles[4];
+	string m_sProfiles[4];
 
 	CMainMenuState();
 	~CMainMenuState();

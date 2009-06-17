@@ -99,12 +99,15 @@ public:
 	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
 	inline CAchievements* GetAch()		{ return m_pAcheivements;}
+	inline string GetProfName()			{ return m_sProfileName;}
+	inline string GetFileName()			{ return m_sFileName;}
 	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
 
 	inline int GetNumItems()			{ return m_nInventory.size();}
 	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
 
 	void SetProfileName(string name)	{ m_sProfileName = name;}
+	void SetFileName(string name)		{ m_sFileName = name;}
 
 	
 	bool RemoveItem(int index);

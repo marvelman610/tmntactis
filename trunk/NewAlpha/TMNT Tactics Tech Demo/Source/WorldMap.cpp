@@ -51,9 +51,9 @@ CWorldMap::CWorldMap()
 	m_bxHelp->IsMsgBox(true);
 	m_bxHelp->SetAlpha(200);
 	delete[] text;
-	text = new string[5];
-	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; text[3] = "LOAD"; text[4] = "EXIT";
-	m_bxMenu = new CBox(5, text, 830, 505, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+	text = new string[4];
+	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
+	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxMenu->SetActive(); 
 	delete[] text;
 }
@@ -339,6 +339,8 @@ bool CWorldMap::HandleButtons()
 {
 	if (m_bxMenu->IsMouseInBox() || m_nCurrBtn == MENU_BTN_EXIT)
 	{
+		if (m_nCurrBtn == 3)
+			m_nCurrBtn = MENU_BTN_EXIT;
 		switch (m_nCurrBtn)
 		{
 		case MENU_BTN_SKILL: // pop up the choose turtle box, then populate skill box with appropriate skills
@@ -364,27 +366,29 @@ bool CWorldMap::HandleButtons()
 		
 		case MENU_BTN_SAVE:
 			{
-				m_bxMenu->SetActive(false);
-				string* sSaveGame = new string[2];
-				sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
-				m_bxSave = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
-				m_bxSave->SetType(BOX_WITH_BACK);
-				m_bxSave->SetActive();
-				delete[] sSaveGame;
+// 				m_bxMenu->SetActive(false);
+// 				string* sSaveGame = new string[2];
+// 				sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = m_pPlayer->GetProfName();
+// 				m_bxSave = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
+// 				m_bxSave->SetType(BOX_WITH_BACK);
+// 				m_bxSave->SetActive();
+// 				delete[] sSaveGame;
+				string fileName = m_pPlayer->GetProfName() + ".dat";
+				CGamePlayState::GetInstance()->SaveGame(fileName.c_str());
 			}
 			break;
-		case MENU_BTN_LOAD:
-			{
-				m_bxMenu->SetActive(false);
-				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
-				string* sLoadGame = new string[2];
-				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
-				m_bxLoad = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
-				m_bxLoad->SetType(BOX_WITH_BACK);
-				m_bxLoad->SetActive();
-				delete[] sLoadGame;
-			}
-			break;
+// 		case MENU_BTN_LOAD:
+// 			{
+// 				m_bxMenu->SetActive(false);
+// 				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
+// 				string* sLoadGame = new string[2];
+// 				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
+// 				m_bxLoad = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
+// 				m_bxLoad->SetType(BOX_WITH_BACK);
+// 				m_bxLoad->SetActive();
+// 				delete[] sLoadGame;
+// 			}
+// 			break;
 		case MENU_BTN_WEAPON:
 			{
 				m_bxMenu->SetActive(false);
@@ -397,7 +401,6 @@ bool CWorldMap::HandleButtons()
 				m_bxChooseTurtle->SetActive();
 				delete[] turtles;
 				m_bWeaponBool = true;
-
 			}
 			break;
 		case MENU_BTN_EXIT:
@@ -411,11 +414,6 @@ bool CWorldMap::HandleButtons()
 				{
 					m_bxMenu->SetActive();
 					delete m_bxTrainSkills; m_bxTrainSkills = NULL;
-				}
-				else if (m_bxLoad)
-				{
-					m_bxMenu->SetActive();
-					delete m_bxLoad; m_bxLoad = NULL;
 				}
 				else if (m_bxSave)
 				{

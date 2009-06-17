@@ -156,7 +156,6 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	m_pUpdatePtr(fElapsedTime, skill, ps);
 	m_fTimer += fElapsedTime;
 	
-	// TODO::add quick-time event code here
 	// there is still time to input a direction
 	if (m_fTimer <= (float)m_nMaxCombinationAmount)
 	{

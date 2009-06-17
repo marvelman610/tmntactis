@@ -28,14 +28,16 @@ enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_
 
 CMainMenuState::CMainMenuState()
 {
-	for (int i =0; i < 4; ++i)
+	m_nNumProfiles = 0;
+	m_sProfiles[0] = "NONE";
+	for (int i =1; i < 5; ++i)
 	{
-		m_sProfiles[i] = "CREATE NEW";
+		m_sProfiles[i] = "Create New";
 	}
 	ifstream ifs("SavedFiles.dat", ios_base::binary);
 	if (ifs.is_open())
 	{
-		for (int i = 0; i < 4; ++i)
+		for (int i = 1; i < 5; ++i)
 		{
 			if (!ifs.eof())
 				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
@@ -48,7 +50,10 @@ CMainMenuState::CMainMenuState()
 
 CMainMenuState::~CMainMenuState()
 {
-
+	if (m_bxMsg)
+	{delete m_bxMsg; m_bxMsg = NULL;}
+	if (m_bxProfile)
+	{delete m_bxProfile; m_bxProfile = NULL;}
 }
 
 CMainMenuState* CMainMenuState::GetInstance()
@@ -58,6 +63,7 @@ CMainMenuState* CMainMenuState::GetInstance()
 }
 void CMainMenuState::Enter()
 {
+	m_bxMsg = NULL; m_bxProfile = NULL;
 	m_bDisplayLoadBox = false;
 	CBaseMenuState::Enter();
 	SetBGImageID(GetAssets()->aMMBGimageID);
@@ -77,7 +83,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
 	CBaseMenuState::Input(fElapsedTime, mousePt);
 
-	if (mousePt.y != m_nMouseY)
+	if (mousePt.y != m_nMouseY && !m_bxProfile && !m_bxMsg)
 	{
 		int oldSelection = GetCurrMenuSelection(); 
 		int newSelection = (mousePt.y - GetMenuY()) / GetMenuItemSpacing();
@@ -104,34 +110,49 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	}
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
-	// loading "screen"
-	if (m_bDisplayLoadBox)
+
+	if (m_bxMsg)
 	{
-		int input = m_bxLoadGame->Input(mousePt);
+		int input = m_bxMsg->Input(mousePt);
 		if (GetDI()->MouseButtonPressed(MOUSE_LEFT))
-		{
-			if (input == 1)
-			{
-				const char* file = m_bxLoadGame->GetItems()[1].c_str();
-				CPlayer::GetInstance()->LoadSavedGame(file);
-			}
-			else if (input == 100)
-			{ delete m_bxLoadGame; m_bxLoadGame = NULL; m_bDisplayLoadBox = false;}
-		}
-		return true;
+			if (input == BTN_BACK)
+			{delete m_bxMsg; m_bxMsg = NULL;}
+			//return true;
 	}
+
 	// entering a profile name
-	else if (m_bxProfile)
+	if (m_bxProfile)
 	{
 		int input = m_bxProfile->Input(mousePt);
-		if (input == 0)
+		if (GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN) && m_bxProfile->GetItems()[m_bxProfile->GetInputIndex()].size() > 0))
 		{
-			// set the profile name
-			CPlayer::GetInstance()->SetProfileName(m_bxProfile->GetItems()[0]);
-			delete m_bxProfile; m_bxProfile = NULL;
+			int index = m_bxProfile->GetInputIndex();
+			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "Create New"
+				&& m_bxProfile->GetItems()[index].size() > 0)
+			{
+				// set the profile name
+				CPlayer::GetInstance()->SetProfileName(m_bxProfile->GetItems()[index]);
+				m_sProfiles[index] = m_bxProfile->GetItems()[index];
+				delete m_bxProfile;
+				m_bxProfile = NULL;
+				++m_nNumProfiles;
+				// TODO:: load the profile's saved game...if one exists, load that into the player
+				ifstream ifs("SavedFiles.dat", ios_base::binary);
+				if (ifs.is_open())
+				{
+					ifs.close();
+					// load the save game..it exists already
+				}
+					// no saved game yet...
+
+			}
+			else if (input == BTN_BACK) // save nothing
+			{
+				delete m_bxProfile; 
+				m_bxProfile = NULL;
+			}
 		}
-		else if (input == 100)
-		{delete m_bxProfile; m_bxProfile = NULL;}
+		return true;
 	}
 
 	if(GetDI()->JoystickDPadPressed(2, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
@@ -175,12 +196,23 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		{
 		case SIGNIN:
 			{
-				m_bxProfile = new CBox(4, m_sProfiles, 250, 300, 0.0f, false, 35, 35, 25, -1, 0.75f);
+				m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
 				m_bxProfile->SetActive();
+				m_bxProfile->SetType(BOX_WITH_BACK);
 				m_bxProfile->AcceptInput();
 			}
 			break;
 		case PLAY:
+			if (CPlayer::GetInstance()->GetProfName() == "NONE")
+			{
+				string* message = new string[2];
+				message[0] = "You must sign"; message[1] = "in first";
+				m_bxMsg = new CBox(2, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
+				m_bxMsg->SetType(BOX_WITH_BACK); m_bxMsg->SetActive();
+				m_bxMsg->IsMsgBox(true);
+				delete[] message;
+				break;
+			}
 			CPlayer::GetInstance()->NewGame();
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 			break;
@@ -195,14 +227,21 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			break;
 		case LOAD:
 			{
-				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
-				string* sLoadGame = new string[2];
-				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
-				m_bxLoadGame = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
-				m_bxLoadGame->SetType(BOX_WITH_BACK);
-				m_bxLoadGame->SetActive();
-				m_bDisplayLoadBox = true;
-				delete[] sLoadGame;
+					// no saved
+				if (CPlayer::GetInstance()->GetProfName() == "NONE")
+				{
+					string* message = new string[2];
+					message[0] = "You must sign"; message[1] = "in first";
+					m_bxMsg = new CBox(2, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
+					m_bxMsg->SetType(BOX_WITH_BACK); m_bxMsg->SetActive();
+					m_bxMsg->IsMsgBox(true);
+					delete[] message;
+				}
+				else
+				{
+					string name = CPlayer::GetInstance()->GetProfName() + ".dat";
+					CGamePlayState::GetInstance()->LoadGame(name.c_str());
+				}
 				break;
 			}
 		case ACHIEVEMENTS:
@@ -225,10 +264,10 @@ void CMainMenuState::Render()
 	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
 	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f, color);
 	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f, color);
-	if (m_bxLoadGame)
-		m_bxLoadGame->Render();
-	else if (m_bxProfile)
+	if (m_bxProfile)
 		m_bxProfile->Render();
+	else if (m_bxMsg)
+		m_bxMsg->Render();
 	else
 	{
 		// Draw menu item text
@@ -256,16 +295,19 @@ void CMainMenuState::Exit()
 	GetFMOD()->StopSound(GetAssets()->aMMmusicID);
 	GetFMOD()->ResetSound(GetAssets()->aMMmusicID);
 
-	for (int i= 0; i < m_nNumProfiles; ++i)
+	// saving any profile info -- the actual saved game file will be the profile name + .dat
+	if (m_nNumProfiles > 0)
 	{
 		fstream ofs("SavedFiles.dat", ios_base::binary);
-		ofs.write((char*)(&m_sProfiles[i]), sizeof(string));
+		for (int i= 1; i < m_nNumProfiles+1; ++i)
+		{
+			ofs.write((char*)(&m_sProfiles[i]), sizeof(string));
+		}
 	}
-
-	if (m_bxLoadGame)
+	if (m_bxMsg)
 	{
-		delete m_bxLoadGame;
-		m_bxLoadGame = NULL;
+		delete m_bxMsg;
+		m_bxMsg = NULL;
 	}
 	if (m_bxProfile)
 	{

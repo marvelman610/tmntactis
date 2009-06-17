@@ -158,7 +158,7 @@ void CGamePlayState::Render(void)
 	}
 }
 
-void CGamePlayState::LoadGame(char* fileName)
+void CGamePlayState::LoadGame(const char* fileName)
 {
 	ifstream ifs;
 	ifs.open(fileName, ios_base::binary | ios_base::in);
@@ -173,7 +173,7 @@ void CGamePlayState::LoadGame(char* fileName)
 		ifs.close();
 }
 
-void CGamePlayState::SaveGame(char* fileName)
+void CGamePlayState::SaveGame(const char* fileName)
 {
 	ofstream ofs;
 	ofs.open(fileName, ios_base::binary | ios_base::out);

@@ -88,7 +88,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 
 	string text[3];
 	text[0] = "SPECIAL"; text[1] = "ITEM"; text[2] = "END TURN";
-	m_bxActionBox = new CBox(3, text, 20, 575, depth.MENUS, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+	m_bxActionBox = new CBox(3, text, 0, 575, depth.MENUS, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = m_bxItemBox = m_bxPauseBox = m_bxLoadBox = m_bxSaveBox = m_bxMessageBox = NULL;
 	//m_bxCurrActiveBox = m_bxActionBox; m_bxCurrActiveBox->BoxType(BX_ACTION);
@@ -416,21 +416,15 @@ void CBattleMap::Render()
 
 	if (m_nCurrCharacter > -1)
 	{
-		char apText[64];
-		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
-		m_pD3D->DrawText(apText, 10, 480, 0,0,0);
+// 		char apText[64];
+// 		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
+// 		m_pD3D->DrawText(apText, 10, 480, 0,0,0);
 		if (m_nCurrTarget > -1)
 		{
 			char distText[64];
 			sprintf_s(distText, "Dist to Target: %i", m_nDistanceToTarget);
 			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScreenWidth, 730, 0.09f, 0.5f);
 		}
-	}
-	if (m_nCurrTarget > -1)
-	{
-		char ninjaHealth[64];
-		sprintf_s(ninjaHealth, "Health: %i", m_vEnemies[m_nCurrTarget]->GetHealth());
-		m_pD3D->DrawText(ninjaHealth, 10, 460, 0, 0, 0);
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
@@ -454,8 +448,8 @@ void CBattleMap::SetPaused(bool IsPaused)
 	{
 		if (m_bxPauseBox)
 			delete m_bxPauseBox;
-		string text[5]; text[1] = "SAVE GAME"; text[2] = "LOAD GAME"; text[3] = "RETREAT"; text[4] = "QUIT"; text[0] = "PAUSED";
-		m_bxPauseBox = new CBox(5, text, 320, 300, 0.1f, true);
+		string text[3]; text[1] = "RETREAT"; text[2] = "QUIT"; text[0] = "PAUSED";
+		m_bxPauseBox = new CBox(3, text, 320, 300, 0.1f, true);
 		m_bxPauseBox->SetActive();
 		m_bxPauseBox->SetType(BOX_WITH_BACK);
 		m_bxActionBox->SetActive(false);
@@ -1803,41 +1797,46 @@ void CBattleMap::HandleButton()
 	}
 	else if (m_bxPauseBox)
 	{
-		if (m_nCurrBtnSelected == 3 /*Retreat*/)
+		if (m_nCurrBtnSelected == 1 /*Retreat*/)
 		{
 			delete m_bxPauseBox; m_bxPauseBox = NULL;
 			CGamePlayState::GetInstance()->ChangeMap();
 			return;
 		}
-		if (m_nCurrBtnSelected == 4 /*Quit*/)
+		if (m_nCurrBtnSelected == 2 /*Quit*/)
 		{
 			delete m_bxPauseBox; m_bxPauseBox = NULL;
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 			return;
 		}
-		else if (m_nCurrBtnSelected == 2 /*Load*/)
-		{
-			// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
-			delete m_bxPauseBox; m_bxPauseBox = NULL;
-			string* sLoadGame = new string[2];
-			sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
-			m_bxLoadBox = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
-			m_bxLoadBox->SetType(BOX_WITH_BACK);
-			m_bxLoadBox->SetActive();
-			delete[] sLoadGame;
-			return;
-		}
-		else if (m_nCurrBtnSelected == 1 /*Save*/)
-		{
-			delete m_bxPauseBox; m_bxPauseBox = NULL;
-			string* sSaveGame = new string[2];
-			sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
-			m_bxSaveBox = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
-			m_bxSaveBox->SetType(BOX_WITH_BACK);
-			m_bxSaveBox->SetActive();
-			delete[] sSaveGame;
-			return;
-		}
+// 		else if (m_nCurrBtnSelected == 2 /*Load*/)
+// 		{
+// 			// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
+// 			delete m_bxPauseBox; m_bxPauseBox = NULL;
+// 			string* sLoadGame = new string[2];
+// 			sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
+// 			m_bxLoadBox = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
+// 			m_bxLoadBox->SetType(BOX_WITH_BACK);
+// 			m_bxLoadBox->SetActive();
+// 			delete[] sLoadGame;
+// 			return;
+// 		}
+// 		else if (m_nCurrBtnSelected == 1 /*Save*/)
+// 		{
+// 			delete m_bxPauseBox; m_bxPauseBox = NULL;
+// 			string* sSaveGame = new string[2];
+// 			sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
+// 			m_bxSaveBox = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
+// 			m_bxSaveBox->SetType(BOX_WITH_BACK);
+// 			m_bxSaveBox->SetActive();
+// 			delete[] sSaveGame;
+// 
+// 			// TODO::notify them when the game has saved
+// 			string fileName = m_pPlayer->GetProfName() + ".dat";
+// 			CGamePlayState::GetInstance()->SaveGame(fileName.c_str());
+// 
+// 			return;
+// 		}
 	}
 	// catches any random invalid input
 	else if ((m_bxItemBox || m_bxSkillBox || m_bxItemBox || m_bxSaveBox || m_bxLoadBox) && m_nCurrBtnSelected != BTN_BACK)

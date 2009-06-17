@@ -6,7 +6,6 @@
 //   Purpose	:	To provide a game object to be used as the player
 //					being controlled by user during the game.
 ////////////////////////////////////////////////////////
-
 #include "Player.h"
 #include "Factory.h"
 #include "tinyxml/tinyxml.h"
@@ -43,6 +42,7 @@ CPlayer::CPlayer(void)
 	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
 
 	LoadAnimations();
+	m_sProfileName = "NONE"; m_sFileName = "NONE";
 
 	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
 	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
@@ -58,6 +58,7 @@ CPlayer::~CPlayer(void)
 		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();
 	}
+	delete m_pAcheivements;
 }
 CPlayer* CPlayer::GetInstance()
 {

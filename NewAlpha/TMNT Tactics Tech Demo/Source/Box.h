@@ -20,7 +20,7 @@ class CSGD_FModManager;
 class CSGD_DirectInput;
 class CSGD_Direct3D;
 enum {BOX_NO_BACK, BOX_WITH_BACK, };	// boxType
-enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };	// buttons
+enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_ENTER = 99, BTN_BACK = 100, };	// buttons
 
 class CBox
 {
@@ -54,12 +54,14 @@ class CBox
 	bool m_bEnterText;
 	int  m_nTitleWidth;
 	string* m_sItems;
+	string m_sOriginal[5];	// when accepting input
 	float m_fTextScale;
 	int m_nNumItems;
 	DWORD m_dwColor;
 
 	// mouse selection (buttons being hovered over/pressed)
 	int m_nCurrSelectedIndex;
+	int m_nCurrInputIndex;
 	bool m_bIsMsgBox;
 	bool m_bIsActive;
 	bool m_bIsMouseInBox;
@@ -120,6 +122,7 @@ class CBox
 	void CurrImage(int val) { m_nCurrImage = val; }
 	bool AcceptInput() const { return m_bAcceptInput; }
 	void AcceptInput(bool val = true) { m_bAcceptInput = val; }
+	int GetInputIndex()	const {return m_nCurrInputIndex;}
 	void SetAlpha(int alpha) {m_nAlpha = alpha;}
 	float PosZ() const { return m_fPosZ; }
 	void PosZ(float val) { m_fPosZ = val; }

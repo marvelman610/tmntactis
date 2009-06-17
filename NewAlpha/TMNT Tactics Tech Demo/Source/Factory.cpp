@@ -123,9 +123,21 @@ CNinja* Factory::CreateNinja()
 	CNinja* ninja = new CNinja();
 
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_whiteninja.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 1,0.15f);
 	ninja->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_whiteninja.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 2,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 3,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 4,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 5,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 6,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 7,0.15f);
+	ninja->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 8,0.15f);
 	ninja->AddAnim(anim);
 
 	ObjectManager::GetInstance()->Add(ninja);

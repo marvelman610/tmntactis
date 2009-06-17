@@ -222,24 +222,24 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 void CPlayer::LoadAnimations()
 {
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1,0.15f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2,0.15f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 1,0.15f);
 	m_pTurtles[MIKEY]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo1.dat", 2,0.15f);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 }
 bool CPlayer::RemoveItem(int index)

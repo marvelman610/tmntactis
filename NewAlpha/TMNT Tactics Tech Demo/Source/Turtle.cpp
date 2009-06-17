@@ -31,10 +31,7 @@ CTurtle::~CTurtle(void)
 }
 void CTurtle::Update(float fElapsedTime)
 {
-	if(m_vAnimations[m_nCurrAnimation].IsAnimationPlaying() == false)
-	{
-		m_vAnimations[m_nCurrAnimation].Play();
-	}
+	CBase::Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if(GetExperience() >= (100 * GetLevel()))
 	{

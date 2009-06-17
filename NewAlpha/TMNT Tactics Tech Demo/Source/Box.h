@@ -51,6 +51,7 @@ class CBox
 
 	// menu items (buttons)
 	bool m_bHasTitle;
+	bool m_bEnterText;
 	int  m_nTitleWidth;
 	string* m_sItems;
 	float m_fTextScale;

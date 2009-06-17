@@ -82,6 +82,7 @@ class CBattleMap
 	int m_nCurrMousePtr;		// which image is currently being used as the mouse pointer
 	DEPTH depth;				// struct that holds all the z-depth draw values
 	string m_strCurrVersion;
+	bool m_bHasBoss;
 
 	// button selection
 	int   m_nCurrBtnSelected;
@@ -434,6 +435,8 @@ public:
 	bool GetPaused()	const		{return m_bIsPaused;}
 	bool GetPlayerTurn()const		{return m_bIsPlayersTurn; }
 	int GetNumChar()	const		{return m_nNumCharacters;}
+	bool GetHasBoss()   const		{return m_bHasBoss;}
+	CBase* GetBoss()	const		{if(m_vEnemies[m_nNumEnemiesLeft]->GetType() == OBJECT_BOSS) return m_vEnemies[m_nNumEnemiesLeft];}
 	CNinja* GetMovingNinja() const	{return m_pCurrMovingNinja;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vEnemies.size())return m_vEnemies[m_nCurrTarget];else return NULL;}
 

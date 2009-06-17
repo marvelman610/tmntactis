@@ -82,6 +82,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 {
 	SetMousePtr(m_pAssets->aMousePointerID);
 	m_bIsMouseAttack = m_bOutOfRange = false;
+	m_bHasBoss = bBoss;
 
 	m_fTimer = 0.0f;
 

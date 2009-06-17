@@ -140,7 +140,6 @@ CBoss* Factory::CreateBoss()
 	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 7,0.15f);
 	boss->AddAnim(anim);
 	
-
 	ObjectManager::GetInstance()->Add(boss);
 	return boss;
 }

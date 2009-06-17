@@ -117,6 +117,7 @@ CBoss* Factory::CreateBoss()
 
 	boss->SetAccuracy(10);
 	boss->SetBaseAP(16);
+	boss->SetCurrAP(16);
 	boss->SetDefense(10);
 	boss->SetHealthMax(250);
 	boss->SetHealth(250);

@@ -10,6 +10,9 @@
 #include "Boss.h"
 #include <math.h>
 #include <ctime>
+#include "Player.h"
+#include "BattleMap.h"
+#include "Tile.h"
 
 int Random(int min, int max)
 {
@@ -25,8 +28,8 @@ CBoss::CBoss(void)
 	m_nXChange = 0;
 	m_nYChange = 0;
 	m_bMoving = false;
-	m_pPlayer = NULL;
-	m_pTile = NULL;
+	m_pPlayer = CPlayer::GetInstance();
+	m_pTile = CBattleMap::GetInstance()->GetTiles();
 	m_nType = OBJECT_BOSS;
 	//m_vPath = 0;
 	//m_ptStartXY =0;

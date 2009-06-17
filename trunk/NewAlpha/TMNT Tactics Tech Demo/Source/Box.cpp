@@ -15,7 +15,8 @@
 #include "CSGD_DirectInput.h"
 #include "CSGD_FModManager.h"
 
-#define DEFAULT_SIZE 256.0f
+#define DEFAULT_SIZE	256.0f
+#define MAX_INPUT_SIZE	15
 
 CBox::CBox(int numItems, string* sItems, 
 		   int posX, int posY, float posZ /* = 0.1f */, bool bHasTitle /* = false */, 
@@ -29,7 +30,7 @@ CBox::CBox(int numItems, string* sItems,
 	m_bHasTitle = bHasTitle;
 	if (bHasTitle)
 		m_nTitleWidth = (int)(sItems[0].size() * (34.0f * fTextScale));
-	m_bIsActive = m_bIsMsgBox = false;
+	m_bIsActive = m_bIsMsgBox = m_bAcceptInput = false;
 	m_nBackType = BOX_NO_BACK;
 	m_nPosX = posX;
 	m_nPosY = posY;
@@ -137,22 +138,33 @@ void CBox::Render()
 	m_pTM->DrawWithZSort(CurrImage(), PosX(), PosY(), PosZ(), m_fScaleX, m_fScaleY, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_nAlpha, 255, 255, 255));
 
 	//m_pBM->ChangeBMFont(m_pAssets->aBitmapFont2ID, 16, 16, 18);
-	for (int i = 0; i < m_nNumItems; ++i)
+	if (!m_bAcceptInput)
 	{
-		if (i == m_nCurrSelectedIndex)	// color the currently selected item
-			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
-		else
-			m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
-		if (!m_bHasTitle || i > 0)
-			m_pBM->DrawString(m_sItems[i].c_str(), m_nStartTextX, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
-		else // drawing the Title text, centered, and underlined
+		for (int i = 0; i < m_nNumItems; ++i)
 		{
-			int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
-			int centerStr = (m_nTitleWidth >> 1);
-			m_pBM->DrawString(m_sItems[i].c_str(), centerBox-centerStr, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
-			m_pD3D->DrawLine(centerBox-centerStr+5, m_nStartTextY + (int)((float)m_nSpacing*1.2f), centerBox-centerStr + m_nTitleWidth, m_nStartTextY + (int)((float)m_nSpacing*1.2f),
-								0, 0, 0);
+			if (i == m_nCurrSelectedIndex)	// color the currently selected item
+				m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
+			else
+				m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,255,255/*r, g, b*/);
+			if (!m_bHasTitle || i > 0)
+				m_pBM->DrawString(m_sItems[i].c_str(), m_nStartTextX, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
+			else // drawing the Title text, centered, and underlined
+			{
+				int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
+				int centerStr = (m_nTitleWidth >> 1);
+				m_pBM->DrawString(m_sItems[i].c_str(), centerBox-centerStr, m_nStartTextY+(int)((float)i*((float)m_nSpacing*1.5f)), m_fTextZ, m_fTextScale, m_dwColor);
+				m_pD3D->DrawLine(centerBox-centerStr+5, m_nStartTextY + (int)((float)m_nSpacing*1.2f), centerBox-centerStr + m_nTitleWidth, m_nStartTextY + (int)((float)m_nSpacing*1.2f),
+									0, 0, 0);
+			}
 		}
+	} 
+	else
+	{
+		m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
+		int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
+		int centerStr = (m_nTitleWidth >> 1);
+		m_pBM->DrawString(m_sInput.c_str(), centerBox-centerStr, m_nStartTextY, m_fTextZ, m_fTextScale, m_dwColor);
+
 	}
 	if (m_nBackType == BOX_WITH_BACK)
 	{
@@ -172,6 +184,8 @@ int CBox::Input(POINT mousePt)
 {
 	if (m_bIsActive)
 		CheckMouse(mousePt);
+	if (m_bIsActive && m_bAcceptInput)
+		CheckKeys();
 
 	return m_nCurrSelectedIndex;
 }
@@ -186,4 +200,17 @@ void CBox::SetActive(bool bIsActive)
 	}
 	else
 		m_nAlpha = 255;
+}
+
+void CBox::CheckKeys()
+{
+	if (m_pDI->CheckBufferedKeysEx())
+	{
+		if (m_pDI->KeyPressed(DIK_BACKSPACE) && m_sInput.size() > 0)
+		{
+			m_sInput.erase(m_sInput.size()-1, 1);
+		}
+		else if (m_sInput.size() < MAX_INPUT_SIZE)
+			m_sInput += m_pDI->CheckKeys();
+	}
 }

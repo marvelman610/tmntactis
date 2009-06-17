@@ -69,40 +69,40 @@ void CPlayer::NewGame()
 
 void CPlayer::LoadSavedGame(const char* fileName)
 {
-	ifstream ifs;
-	ifs.open(fileName, ios_base::in | ios_base::binary);
-
-	if (!ifs.good())
-		{MessageBox(0, "Failed to load saved game.", "Error", MB_OK); return;}
-	for (int i = 0; i < 4; ++i)
-	{
-		if (m_pTurtles[i])
-		{
-			char* name = m_pTurtles[i]->GetName();
-			ObjectManager::GetInstance()->Remove(m_pTurtles[i]);
-			delete m_pTurtles[i];
-			//Factory::GetInstance()->CreateTurtle(name);
-		}
-		//ifs.read(reinterpret_cast<char*>(m_pTurtles[i]), sizeof(CTurtle));
-	}
-	ifs.read(reinterpret_cast<char*>, sizeof(CPlayer));
+// 	ifstream ifs;
+// 	ifs.open(fileName, ios_base::in | ios_base::binary);
+// 
+// 	if (!ifs.good())
+// 		{MessageBox(0, "Failed to load saved game.", "Error", MB_OK); return;}
+// 	for (int i = 0; i < 4; ++i)
+// 	{
+// 		if (m_pTurtles[i])
+// 		{
+// 			char* name = m_pTurtles[i]->GetName();
+// 			ObjectManager::GetInstance()->Remove(m_pTurtles[i]);
+// 			delete m_pTurtles[i];
+// 			//Factory::GetInstance()->CreateTurtle(name);
+// 		}
+// 		//ifs.read(reinterpret_cast<char*>(m_pTurtles[i]), sizeof(CTurtle));
+// 	}
+// 	ifs.read(reinterpret_cast<char*>this, sizeof( CPlayer ) );
 }
 void CPlayer::SaveGame(const char* fileName)
 {
-	ofstream ofs;
-	ofs.open(fileName, ios_base::binary | ios_base::out);
-	CTurtle** turtles = CPlayer::GetInstance()->GetTurtles();
-
-	if (ofs.is_open())
-	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
-// 		}
-		ofs.write((char*)this, sizeof(CPlayer));
-	}
-	else
-		ofs.close();
+// 	ofstream ofs;
+// 	ofs.open(fileName, ios_base::binary | ios_base::out);
+// 	CTurtle** turtles = CPlayer::GetInstance()->GetTurtles();
+// 
+// 	if (ofs.is_open())
+// 	{
+// // 		for (int i = 0; i < 4; ++i)
+// // 		{
+// // 			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+// // 		}
+// 		ofs.write((char*)this, sizeof(CPlayer));
+// 	}
+// 	else
+// 		ofs.close();
 }
 
 void CPlayer::LoadNewSkills(const char* filename)

@@ -39,6 +39,7 @@ void CTurtle::Update(float fElapsedTime)
 		SetExperience(GetExperience()-(100* GetLevel()));
 		SetLevel(GetLevel() + 1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));
+		SetHealth((int)((float)GetMaxHealth()));
 		SetBaseAP(GetBaseAP()+2);
 		SetStrength( (int)( (float)GetStrength() * 1.2f ) );
 		SetDefense( (int) ( (float)GetDefense() * 1.2f ) );

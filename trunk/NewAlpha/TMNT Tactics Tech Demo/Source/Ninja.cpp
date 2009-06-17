@@ -290,7 +290,8 @@ void CNinja::AI()
 	//}
 
 	//map point to set
-	POINT mapPt;
+	POINT mapPt; 
+	mapPt.x = -1; mapPt.y = -1;
 	switch(m_nInRange)
 	{
 		//next to turtle
@@ -1131,6 +1132,7 @@ void CNinja::Update(float fElapsedTime)
 			{
 				m_fTimer = 0;
 				SetCurrAnim(0);
+				m_bAttackBool = false;
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
 		}
@@ -1220,24 +1222,26 @@ void CNinja::Update(float fElapsedTime)
 
 			if(m_nInRange == 1)
 			{
-				SetCurrAnim(4);
+				
 
 				switch(GetCurrAP())
 				{
 				case 4:
 					{
-
+						SetCurrAnim(4);
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
 
 					}
 					break;
 				case 8:
 					{
+						SetCurrAnim(4);
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
 					}
 					break;
 				case 12:
 					{
+						SetCurrAnim(4);
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
 					}
 					break;

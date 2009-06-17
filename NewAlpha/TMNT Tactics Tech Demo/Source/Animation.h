@@ -78,7 +78,7 @@ public:
 	//
 	// Purpose: Sets all data needed for the animation.
 	////////////////////////////////////////////////////////////////////
-	void Load(const char* FileName, int animationNum, float duration);
+	void Load(const char* FileName, int animationNum, float duration, bool Looping = true);
 
 	///////////////////////////////////////////////////////////////////
 	// Function: “UnLoad”

@@ -131,8 +131,9 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
 	m_szMapName  = szMapName;
-	m_bIsPlayersTurn = (bool)(rand() % 2);
+	m_bIsPlayersTurn = (rand() % 2) ? true : false; //(bool)(rand() % 2);
 
+	
 	m_bItemBool = false;
 	m_bEggBool = false;
 	m_bWin = false;
@@ -478,6 +479,8 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	if( m_nCurrCharacter > -1 && !m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->GetCurrAnim()->IsAnimationPlaying() )
+		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(2);
 	if(m_nNumTurtles <= 0)
 		m_bLose = true;
 	if(m_bWin || m_bLose)
@@ -1982,6 +1985,7 @@ void CBattleMap::PerformAttack()
 		int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vEnemies[m_nCurrTarget]->GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
 		damage += rand() % (5 - (-4)) -5;
 
+		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(3);
 			int sound = rand() % 2;
 			if (sound == 0)
 				PlaySFX(m_pAssets->aBMpunchSnd1);

@@ -49,7 +49,7 @@ void CAnimation::Play()
 
 	//////////////////////////////////////////////////////////////////////////
 	// TEMP
-	m_bIsLooping = true;
+	//m_bIsLooping = true;
 }
 void CAnimation::Stop() 
 { 
@@ -63,7 +63,7 @@ void CAnimation::Reset()
 {
 	m_nCurrFrame = 0;
 }
-void CAnimation::Load(const char* FileName, int numFrame, float duration)
+void CAnimation::Load(const char* FileName, int numFrame, float duration, bool Looping)
 {
 	int nDuration;
 	char bIsLooping[128] = "true ";
@@ -146,7 +146,7 @@ void CAnimation::Load(const char* FileName, int numFrame, float duration)
 					m_pFrames = NULL;
 				}
 			if(i == numFrame)
-				m_fDuration = duration;
+				m_fDuration = duration; m_bIsLooping = Looping;
 			}
 			
 		}

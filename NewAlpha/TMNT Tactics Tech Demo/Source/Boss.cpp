@@ -33,6 +33,7 @@ CBoss::CBoss(void)
 	m_nType = OBJECT_BOSS;
 	//m_vPath = 0;
 	//m_ptStartXY =0;
+	
 }
 
 CBoss::~CBoss(void)
@@ -283,6 +284,7 @@ void CBoss::AI()
 			CBattleMap::GetInstance()->SetTurn(true);*/
 			switch(GetCurrAP())
 				{
+					SetCurrAnim(2);
 				case 4:
 					{
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
@@ -294,6 +296,9 @@ void CBoss::AI()
 						//do 40+ damage 
 						int damage = Random(30, 50);//damage
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+
+						
+
 					}
 					break;
 				case 8:
@@ -859,7 +864,7 @@ void CBoss::AI()
 			////TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			//CBattleMap::GetInstance()->UpdatePositions();
 			//CBattleMap::GetInstance()->NinjaMoveComplete();
-			//CBattleMap::GetInstance()->SetTurn(true);
+			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 		}
@@ -869,6 +874,8 @@ void CBoss::AI()
 void CBoss::Update(float fElapsedTime)
 {
 	//CBase::Update(fElapsedTime);
+	if(!GetCurrAnim()->IsAnimationPlaying())
+		SetCurrAnim(1);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving == true)
@@ -885,6 +892,8 @@ void CBoss::Update(float fElapsedTime)
 			// NORTHWEST
 			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				SetCurrAnimFacing(true);
+
 				currPos.x -= GetVelX() * fElapsedTime;
 				currPos.y -= GetVelY() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -892,6 +901,8 @@ void CBoss::Update(float fElapsedTime)
 			// SOUTHEAST
 			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				SetCurrAnimFacing(false);
+
 				currPos.x += GetVelX() * fElapsedTime;
 				currPos.y += GetVelY() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -899,6 +910,8 @@ void CBoss::Update(float fElapsedTime)
 			// NORTHEAST
 			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				SetCurrAnimFacing(false);
+
 				currPos.y -= GetVelY() * fElapsedTime;
 				currPos.x += GetVelX() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -906,6 +919,8 @@ void CBoss::Update(float fElapsedTime)
 			// SOUTHWEST
 			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 			{
+				SetCurrAnimFacing(true);
+
 				currPos.y += GetVelY() * fElapsedTime;
 				currPos.x -= GetVelX() * fElapsedTime;
 				SetPosPtF(currPos);
@@ -929,6 +944,7 @@ void CBoss::Update(float fElapsedTime)
 		{
 			SetCurrAP(GetCurrAP());
 			m_bMoving = false;
+			//SetCurrAnim(3);
 
 			if(m_nInRange == 1)
 			{

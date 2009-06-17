@@ -167,11 +167,15 @@ class CBattleMap
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
 	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
 	CSkill* m_pSkillToExecute;
+	int m_nNumTurtles;
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Turn variables
 	bool m_bIsPlayersTurn;
 	CNinja* m_pCurrMovingNinja;
+
+	bool m_bWin;
+	bool m_bLose;
 
 	//Item variables
 	bool m_bItemBool;
@@ -429,6 +433,7 @@ public:
 	int GetMousePtr()   const		{return m_nCurrMousePtr;}
 	bool GetPaused()	const		{return m_bIsPaused;}
 	bool GetPlayerTurn()const		{return m_bIsPlayersTurn; }
+	int GetNumChar()	const		{return m_nNumCharacters;}
 	CNinja* GetMovingNinja() const	{return m_pCurrMovingNinja;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vEnemies.size())return m_vEnemies[m_nCurrTarget];else return NULL;}
 
@@ -448,9 +453,12 @@ public:
 	void SetMousePtr(const int mouseID)				{m_nCurrMousePtr = mouseID;}
 	void SetTurn(bool IsPlayersTurn)				{m_bIsPlayersTurn = IsPlayersTurn;}
 	void SetCurrTargetTile(int nTarget)				{m_ncurrTargetTile = nTarget;}
+	void DecrementNumChars()						{m_nNumCharacters--;}
+	void DecrementNumTurtles()						{m_nNumTurtles--;}
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();
+
 
 	void UseItem();
 };

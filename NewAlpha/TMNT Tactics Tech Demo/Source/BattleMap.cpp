@@ -143,7 +143,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
 	// the battle map's spawn points
-	CreateEnemies();
+	CreateEnemies(bBoss);
 	SetStartPositions();
 
 	m_pFMOD->PlaySound(m_pAssets->aBMarcadeMusicID);
@@ -799,11 +799,6 @@ void CBattleMap::CreateEnemies(bool bBoss)
 		m_vCharacters.push_back((CBoss)*boss);
 		m_vEnemies.push_back((CBoss*)boss);
 	}
-	/*CBoss* boss = Factory::GetInstance()->CreateBoss();
-	POINT mapPt;
-	mapPt.x = 5;
-	mapPt.y = 5;
-	boss->SetCurrTile(mapPt, GetOffsetX(), GetOffsetY(), GetTileWidth(), GetTileHeight(), GetNumCols());*/
 	
 }
 
@@ -1455,8 +1450,16 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			if (m_vEnemies.size() > 0)
 			{
 				int index = rand()%m_vEnemies.size();
-				m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-				m_pCurrMovingNinja->AI();
+				if(m_vEnemies[index]->GetType() == OBJECT_BOSS)
+				{
+					((CBoss*)m_vEnemies[index])->AI();
+				}
+				else
+				{
+					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
+					
+					m_pCurrMovingNinja->AI();
+				}
 			}
 		}
 	}
@@ -1908,8 +1911,16 @@ void CBattleMap::HandleButton()
 			if (m_vEnemies.size() > 0)
 			{
 				int index = rand()%m_vEnemies.size();
-				m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-				m_pCurrMovingNinja->AI();
+				if(m_vEnemies[index]->GetType() == OBJECT_BOSS)
+				{
+					((CBoss*)m_vEnemies[index])->AI();
+				}
+				else
+				{
+					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
+					
+					m_pCurrMovingNinja->AI();
+				}
 			}
 
 		}
@@ -2025,7 +2036,7 @@ void CBattleMap::PerformAttack()
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(1);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(4);
 		//m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetAnimations()[1].Play();
 	}
 	CalculateRanges();
@@ -2301,10 +2312,8 @@ void CBattleMap::SetEnemyDead()
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
-	/*if(m_nNumEnemiesLeft <= 0)
-	{
+	if(m_nNumEnemiesLeft <= 0)
 		m_bWin = true;
-	}*/
 }
 
 int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
@@ -2332,10 +2341,6 @@ void CBattleMap::UseItem( )
 	}
 	else if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Grenado")
 	{
-		/*int d = DistanceToTarget(m_vCharacters[m_nCurrCharacter].GetPosX(), m_vCharacters[m_nCurrCharacter].GetPosY(),
-			m_vEnemies[m_nCurrTarget]->GetPosX(), m_vEnemies[m_nCurrTarget]->GetPosY());
-		if(d >  (*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetRange())
-			return;*/
 		m_bItemBool = true;
 		m_bEggBool = false;
 
@@ -2350,7 +2355,6 @@ void CBattleMap::UseItem( )
 		m_nItemIndex = m_nCurrBtnSelected;
 		m_bIsMouseAttack = true;
 	}
-	//m_pPlayer->GetInstance()->RemoveItem(m_nCurrBtnSelected);
 
 }
 

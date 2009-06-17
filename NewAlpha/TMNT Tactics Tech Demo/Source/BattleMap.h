@@ -436,7 +436,7 @@ public:
 	bool GetPlayerTurn()const		{return m_bIsPlayersTurn; }
 	int GetNumChar()	const		{return m_nNumCharacters;}
 	bool GetHasBoss()   const		{return m_bHasBoss;}
-	CBase* GetBoss()	const		{if(m_vEnemies[m_nNumEnemiesLeft]->GetType() == OBJECT_BOSS) return m_vEnemies[m_nNumEnemiesLeft];}
+	CBase* GetBoss()	const		{if(m_vEnemies.size() > 0 && m_vEnemies[m_nNumEnemiesLeft-1]->GetType() == OBJECT_BOSS) return m_vEnemies[m_nNumEnemiesLeft-1];}
 	CNinja* GetMovingNinja() const	{return m_pCurrMovingNinja;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vEnemies.size())return m_vEnemies[m_nCurrTarget];else return NULL;}
 

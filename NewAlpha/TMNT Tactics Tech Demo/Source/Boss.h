@@ -11,9 +11,9 @@
 #define BOSS_H
 
 #include "Base.h"
-#include "Player.h"
-#include "Tile.h"
-#include "BattleMap.h"
+
+class CTile;
+class CPlayer;
 
 class CBoss : public CBase
 {

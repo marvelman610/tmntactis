@@ -227,9 +227,31 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 void CPlayer::LoadAnimations()
 {
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 1,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo.dat", 2,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 2,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 3,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 4,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 5,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 6,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 7,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 8,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 9,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 10,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 11,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 12,0.15f);
+	m_pTurtles[LEONARDO]->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 13,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1,0.15f);
@@ -250,7 +272,7 @@ void CPlayer::LoadAnimations()
 bool CPlayer::RemoveItem(int index)
 {
 	vector<CBattleItem>::iterator iter = m_nInventory.begin();
-	int count = 0;
+	unsigned int count = 0;
 	while(count < m_nInventory.size())
 	{
 		if (count == index)

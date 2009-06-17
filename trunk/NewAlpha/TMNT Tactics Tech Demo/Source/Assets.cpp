@@ -13,7 +13,7 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
-#define LOAD_MUSIC 1
+#define LOAD_MUSIC 0
 
 CAssets* CAssets::GetInstance()
 {

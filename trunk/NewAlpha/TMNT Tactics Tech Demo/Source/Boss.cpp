@@ -13,6 +13,8 @@
 #include "Player.h"
 #include "BattleMap.h"
 #include "Tile.h"
+#include "ObjectManager.h"
+#include "Achievements.h"
 
 int Random(int min, int max)
 {
@@ -32,8 +34,7 @@ CBoss::CBoss(void)
 	m_pTile = CBattleMap::GetInstance()->GetTiles();
 	m_nType = OBJECT_BOSS;
 	//m_vPath = 0;
-	//m_ptStartXY =0;
-	
+	//m_ptStartXY =0;	
 }
 
 CBoss::~CBoss(void)
@@ -1015,6 +1016,11 @@ void CBoss::Update(float fElapsedTime)
 		SetDefense( (int) ( (float)GetDefense() * 1.2f ) );
 		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
 		SetSpeed( (int) ( (float)GetSpeed() * 1.2f ) );
+	}
+	if (GetHealth() <= 0)
+	{
+		CPlayer::GetInstance()->GetAch()->Unlock(ACH_KILL_SHREDDER);
+		ObjectManager::GetInstance()->Remove(this);
 	}
 }
 void CBoss::Render()

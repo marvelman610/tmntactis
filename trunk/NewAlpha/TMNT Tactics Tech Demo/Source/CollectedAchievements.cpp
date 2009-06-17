@@ -61,7 +61,7 @@ void CCollectedAchievements::Render()
 {
 	//draw each of the achievements 
 	//write description next to each
-	GetTM()->DrawWithZSort(GetAssets()->aAchievementBGID, 0,0,0.1f, 0.8f,0.8f);
+	GetTM()->DrawWithZSort(GetAssets()->aAchievementBGID, 0,0,0.1f, 0.8f,0.8f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(125,125,125));
 	GetTM()->Draw(GetAssets()->aAvenged, 10,0, 0.8f,0.8f, &m_rRect, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(m_nAlpha[7], 255,255,255));
 	CBitmapFont::GetInstance()->DrawString("KILLED THE SHREDDER", 390, 10,0.05f, 0.6f,D3DCOLOR_ARGB(255,255,255,0));
 	GetTM()->Draw(GetAssets()->aBreakGame, 10,70, 0.8f,0.8f, &m_rRect, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(m_nAlpha[3], 255,255,255));

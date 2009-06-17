@@ -120,7 +120,8 @@ CBoss* Factory::CreateBoss()
 	boss->SetCurrAP(16);
 	boss->SetDefense(10);
 	boss->SetHealthMax(250);
-	boss->SetHealth(250);
+	boss->SetHealth(50);
+	//boss->SetHealth(250);
 	boss->SetImageID(CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Ninja.png"));
 	boss->SetSpeed(10);
 	boss->SetStrength(20);

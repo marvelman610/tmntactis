@@ -97,6 +97,7 @@ class CBattleMap
 	CBox* m_bxLoadBox;
 	CBox* m_bxSaveBox;
 	CBox* m_bxMessageBox;
+	CBox* m_bxQTE;
 	CBox* m_bxCurrActiveBox;	// pointer used to handle the currently active box's functionality
 
 	// Times

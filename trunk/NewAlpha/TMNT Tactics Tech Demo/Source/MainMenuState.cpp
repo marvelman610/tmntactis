@@ -29,7 +29,7 @@ enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_
 CMainMenuState::CMainMenuState()
 {
 	m_nNumProfiles = 0;
-	m_sProfiles[0] = "NONE";
+	m_sProfiles[0] = "LOG IN";
 	for (int i =1; i < 5; ++i)
 	{
 		m_sProfiles[i] = "Create New";
@@ -63,6 +63,18 @@ CMainMenuState* CMainMenuState::GetInstance()
 }
 void CMainMenuState::Enter()
 {
+	ifstream ifs("SavedFiles.dat", ios_base::binary);
+	if (ifs.is_open())
+	{
+		for (int i = 1; i < 5; ++i)
+		{
+			if (!ifs.eof())
+				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
+			else
+				break;
+			++m_nNumProfiles;
+		}
+	}
 	m_bxMsg = NULL; m_bxProfile = NULL;
 	m_bDisplayLoadBox = false;
 	CBaseMenuState::Enter();
@@ -111,15 +123,6 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	m_nMouseX = mousePt.x;
 	m_nMouseY = mousePt.y;
 
-	if (m_bxMsg)
-	{
-		int input = m_bxMsg->Input(mousePt);
-		if (GetDI()->MouseButtonPressed(MOUSE_LEFT))
-			if (input == BTN_BACK)
-			{delete m_bxMsg; m_bxMsg = NULL;}
-			//return true;
-	}
-
 	// entering a profile name
 	if (m_bxProfile)
 	{
@@ -142,6 +145,8 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				{
 					ifs.close();
 					// load the save game..it exists already
+					string fileName = CPlayer::GetInstance()->GetProfName() + ".dat";
+					CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
 				}
 					// no saved game yet...
 
@@ -205,12 +210,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		case PLAY:
 			if (CPlayer::GetInstance()->GetProfName() == "NONE")
 			{
-				string* message = new string[2];
-				message[0] = "You must sign"; message[1] = "in first";
-				m_bxMsg = new CBox(2, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
-				m_bxMsg->SetType(BOX_WITH_BACK); m_bxMsg->SetActive();
-				m_bxMsg->IsMsgBox(true);
-				delete[] message;
+				m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+				m_bxProfile->SetActive();
+				m_bxProfile->SetType(BOX_WITH_BACK);
+				m_bxProfile->AcceptInput();
 				break;
 			}
 			CPlayer::GetInstance()->NewGame();
@@ -230,12 +233,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					// no saved
 				if (CPlayer::GetInstance()->GetProfName() == "NONE")
 				{
-					string* message = new string[2];
-					message[0] = "You must sign"; message[1] = "in first";
-					m_bxMsg = new CBox(2, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
-					m_bxMsg->SetType(BOX_WITH_BACK); m_bxMsg->SetActive();
-					m_bxMsg->IsMsgBox(true);
-					delete[] message;
+					m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+					m_bxProfile->SetActive();
+					m_bxProfile->SetType(BOX_WITH_BACK);
+					m_bxProfile->AcceptInput();
 				}
 				else
 				{
@@ -301,8 +302,9 @@ void CMainMenuState::Exit()
 		fstream ofs("SavedFiles.dat", ios_base::binary);
 		for (int i= 1; i < m_nNumProfiles+1; ++i)
 		{
-			ofs.write((char*)(&m_sProfiles[i]), sizeof(string));
+			ofs.write((char*)(&m_sProfiles[i]), sizeof(m_sProfiles[i]));
 		}
+		ofs.close();
 	}
 	if (m_bxMsg)
 	{

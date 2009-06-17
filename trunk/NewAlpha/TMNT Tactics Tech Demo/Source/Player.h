@@ -108,6 +108,8 @@ public:
 
 	void SetProfileName(string name)	{ m_sProfileName = name;}
 	void SetFileName(string name)		{ m_sFileName = name;}
+	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
+	void SetStage(int stage)			{ m_nCurrStage = stage;}
 
 	
 	bool RemoveItem(int index);

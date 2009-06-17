@@ -13,6 +13,7 @@
 #include "Base.h"
 #include "CodeProfiler.h"
 #include "MessageSystem.h"
+#include "Assets.h"
 
 #include <queue>
 using namespace std;
@@ -171,21 +172,33 @@ void ObjectManager::CheckCollisions(void)
 					if(m_vObjects[j]->GetType()== OBJECT_BATTLEITEM)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[j]));
+						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
+						if (m_vObjects[j]->GetName()== "Pizza")
+						{
+							CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaPizzaSnd);
+						}
 						return;
 					}
 					else if(m_vObjects[i]->GetType() == OBJECT_BATTLEITEM)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyItem((CBattleItem*)m_vObjects[i]));
+						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
+						if (m_vObjects[j]->GetName()== "Pizza")
+						{
+							CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaPizzaSnd);
+						}
 						return;
 					}
 					else if(m_vObjects[j]->GetType() == OBJECT_WEAPON)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[j]));
+						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 						return;
 					}
 					else if(m_vObjects[i]->GetType() == OBJECT_WEAPON)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[i]));
+						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 						return;
 					}
 				}

@@ -28,7 +28,7 @@ CBox::CBox(int numItems, string* sItems,
 	// box properties
 	m_bHasTitle = bHasTitle;
 	if (bHasTitle)
-		m_nTitleWidth = (int)(sItems[0].size()) * (34.0f * fTextScale);
+		m_nTitleWidth = (int)(sItems[0].size() * (34.0f * fTextScale));
 	m_bIsActive = m_bIsMsgBox = false;
 	m_nBackType = BOX_NO_BACK;
 	m_nPosX = posX;

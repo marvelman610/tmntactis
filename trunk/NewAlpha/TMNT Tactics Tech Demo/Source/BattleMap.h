@@ -152,6 +152,7 @@ class CBattleMap
 	int m_nNumEnemiesKilled;
 	int m_nNumCharacters;
 	int m_nHoverCharacter;
+	int m_nHoverEnemy;
 	int m_nOldHoverChar;
 	int m_nCurrCharacter;
 	int m_nCurrCharacterTile;

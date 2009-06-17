@@ -108,6 +108,10 @@ public:
 
 	// Options Menu IDs
 	ASSET aOMbgID;
+
+	//achievement menu id
+	ASSET aAchievementBGID;
+	ASSET aMinimalKesoID;
 	
 
 	// Credits Menu IDs

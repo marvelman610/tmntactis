@@ -334,6 +334,8 @@ void UpdateFlipBackstab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
@@ -345,11 +347,11 @@ void UpdateFlipBackstab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 			target->SetHealth(target->GetHealth() - damage);
 		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
-	skill->ClearComb();
-	skill->SetCurrAmtSuccessful(0);
 
 }
 
@@ -372,12 +374,21 @@ void UpdateCounterAttack( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -403,12 +414,21 @@ void UpdateKnockBack( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -433,12 +453,21 @@ void UpdateStaffSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -463,12 +492,21 @@ void UpdateStaffUppercut( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -493,12 +531,21 @@ void UpdateBackflipAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -523,12 +570,21 @@ void UpdateCreateBomb( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -553,12 +609,21 @@ void UpdateFlyingSaiStab( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -583,12 +648,21 @@ void UpdateSaiFury( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -613,12 +687,21 @@ void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill, CParticleSys
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -643,12 +726,21 @@ void UpdateNunchuckSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -673,12 +765,21 @@ void UpdateRollAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	{
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
+		skill->SetComb(skill->GetMaxCombAmt());
+
 	}
 	if (skill->IsComplete())
 	{
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4);
-		target->SetHealth(target->GetHealth() - damage);
+		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
+		if (skill->GetCurrAmtSuccessful() > 0)
+		{
+			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
+				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
+			target->SetHealth(target->GetHealth() - damage);
+		}
 		ps[BLOOD].m_bActive = false;
+		skill->ClearComb();
+		skill->SetCurrAmtSuccessful(0);
 	}
 	ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);

@@ -997,8 +997,6 @@ void CNinja::AI()
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::FindPath(POINT begin, POINT end)
 {
-	
-
 	SetCurrAnim(0);
 
 	m_vPath.clear();
@@ -1255,7 +1253,7 @@ void CNinja::Update(float fElapsedTime)
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
-			//SetCurrAnim(0);
+			SetCurrAnim(0);
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		

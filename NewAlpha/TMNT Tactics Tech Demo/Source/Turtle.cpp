@@ -47,7 +47,14 @@ void CTurtle::Update(float fElapsedTime)
 	}
 	if( GetHealth() <= 0)
 	{
+		if(GetAlive() == true)
+		{
+			CBattleMap::GetInstance()->DecrementNumChars();
+			CBattleMap::GetInstance()->DecrementNumTurtles();
+		}
 		SetAlive(false);
+		
+
 	}
 }
 void CTurtle::Render()

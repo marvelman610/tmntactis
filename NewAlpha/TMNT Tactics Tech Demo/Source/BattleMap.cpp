@@ -129,6 +129,10 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
 
 	m_bItemBool = false;
 	m_bEggBool = false;
+	m_bWin = false;
+	m_bLose = false;
+
+	m_nNumTurtles = 4;
 
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
@@ -211,6 +215,17 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
+	if(m_bWin)
+	{
+		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
+		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+	}
+	else if(m_bLose)
+	{
+		CBitmapFont::GetInstance()->DrawString("YOU LOSE", 100, 200, 0.05f, 3.0f);
+		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+	}
+
 	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
 	if ((m_nHoverCharacter > -1 || (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft)) && m_bIsPlayersTurn)
 		DrawHover();
@@ -456,11 +471,15 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	if(m_nNumTurtles <= 0)
+		m_bLose = true;
+	if(m_bWin || m_bLose)
+		return;
 	// a turtle has been moved...execute the animation and position change over time
-	if(m_nNumEnemiesLeft <= 0)
+	/*if(m_nNumEnemiesLeft <= 0)
 	{
 		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
-	}
+	}*/
 	if (m_bItemBool)
 		CalculateRanges();
 	if (m_bDrawTimedParticles)
@@ -670,6 +689,12 @@ void CBattleMap::NinjaMoveComplete()
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
+	if(m_bWin || m_bLose)
+	{
+		if(m_pDI->KeyPressed(DIK_ESCAPE))
+			CGamePlayState::GetInstance()->ChangeMap();
+		return true;
+	}
 	if(CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
 		SetPaused(true);
 	else if (!CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
@@ -753,11 +778,6 @@ void CBattleMap::CreateEnemies()
 		m_vCharacters.push_back((CBase)*ninja);
 		m_vEnemies.push_back((CBase*)ninja);
 	}
-	/*CBoss* boss = Factory::GetInstance()->CreateBoss();
-	POINT mapPt;
-	mapPt.x = 5;
-	mapPt.y = 5;
-	boss->SetCurrTile(mapPt, GetOffsetX(), GetOffsetY(), GetTileWidth(), GetTileHeight(), GetNumCols());*/
 	
 }
 
@@ -1329,6 +1349,8 @@ void CBattleMap::SetStartPositions()
 		m_vEnemies[i]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 		m_vCharacters.push_back(*m_vEnemies[i]);
 	}
+
+	
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
@@ -1487,6 +1509,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 										++iter;
 									}
 									SetEnemyDead();
+									m_vCharacters.clear();
+									for (int i = 0; i < 4; ++i)
+										m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+									for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+										m_vCharacters.push_back(*m_vEnemies[i]);
+
 								}
 							}
 
@@ -1660,6 +1688,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 							++iter;
 						}
 						SetEnemyDead();
+						m_vCharacters.clear();
+						for (int i = 0; i < 4; ++i)
+							m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+						for (int i = 0; i < m_nNumEnemiesLeft; ++i)
+							m_vCharacters.push_back(*m_vEnemies[i]);
+
 					}
 				}
 			}
@@ -2244,7 +2278,7 @@ void CBattleMap::SetEnemyDead()
 	PlaySFX(m_pAssets->aBMdeathSnd);
 	/*if(m_nNumEnemiesLeft <= 0)
 	{
-		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
+		m_bWin = true;
 	}*/
 }
 

@@ -19,11 +19,12 @@
 #include "HowToPlayMenuState.h"
 #include "OptionsMenuState.h"
 #include "CreditState.h"
+#include "CollectedAchievements.h"
 #include "Box.h"
 #include <fstream>
 using std::fstream;
 
-enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
+enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
@@ -204,6 +205,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				delete[] sLoadGame;
 				break;
 			}
+		case ACHIEVEMENTS:
+			{
+				CGame::GetInstance()->ChangeState(CCollectedAchievements::GetInstance());
+			}
+			break;
 		case EXIT:
 			CGame::GetInstance()->SetIsRunning(false);
 			return false;
@@ -232,7 +238,8 @@ void CMainMenuState::Render()
 		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, 1.0f, color);
 		// Draw menu cursor
 		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
 	}

@@ -37,6 +37,9 @@ private:
 	RECT m_rEnemyHP;	//HP bar rect
 	RECT m_rEnemyAP;	//AP bar rect
 
+	RECT m_rShredderHP;	//HP bar rect
+	RECT m_rShredderAP;	//AP bar rect
+
 	CPlayer* m_pPlayer;
 	CBitmapFont* m_pBitmapFont;
 	CSGD_TextureManager* m_pTM;

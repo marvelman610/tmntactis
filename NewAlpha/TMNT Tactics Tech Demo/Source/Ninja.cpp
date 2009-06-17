@@ -1123,7 +1123,6 @@ void CNinja::FindPath(POINT begin, POINT end)
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
-	CBase::Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if (m_bAttackBool)
 		{

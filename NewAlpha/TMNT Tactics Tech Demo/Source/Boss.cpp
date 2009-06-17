@@ -815,7 +815,7 @@ void CBoss::AI()
 }
 void CBoss::Update(float fElapsedTime)
 {
-	CBase::Update(fElapsedTime);
+	//CBase::Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving)

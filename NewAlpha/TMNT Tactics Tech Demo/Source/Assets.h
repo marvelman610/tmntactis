@@ -142,6 +142,18 @@ public:
 	ASSET aBloodParticle;
 	ASSET aSmokeParticle;
 	ASSET aGlowParticle;
+
+	//achievementes
+	ASSET aAvenged;
+	ASSET aBreakGame;
+	ASSET aCowabunga;
+	ASSET aFlipNow;
+	ASSET aLessonInPain;
+	ASSET aMegaKill;
+	ASSET aPartyTime;
+	ASSET aQuickFingers;
+	ASSET aStrikeHard;
+	ASSET aTrueNinja;
 };
 
 #endif

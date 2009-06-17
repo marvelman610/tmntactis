@@ -27,6 +27,7 @@
 #include "Ninja.h"
 #include "Box.h"
 #include "Boss.h"
+#include "Achievements.h"
 #include <fstream>
 #include <exception>
 
@@ -77,7 +78,7 @@ CBattleMap* CBattleMap::GetInstance()
 	static CBattleMap instance;
 	return &instance;
 }
-void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies)
+void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool bBoss)
 {
 	SetMousePtr(m_pAssets->aMousePointerID);
 	m_bIsMouseAttack = m_bOutOfRange = false;
@@ -215,6 +216,7 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
+	m_pPlayer->GetAch()->Render();
 	if(m_bWin)
 	{
 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
@@ -482,6 +484,8 @@ void CBattleMap::Update(float fElapsedTime)
 	}*/
 	if (m_bItemBool)
 		CalculateRanges();
+	m_pPlayer->GetAch()->Update(fElapsedTime);
+
 	if (m_bDrawTimedParticles)
 	{
 		m_fTimer += fElapsedTime;
@@ -770,7 +774,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	return true;
 }
 
-void CBattleMap::CreateEnemies()
+void CBattleMap::CreateEnemies(bool bBoss)
 {
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 	{
@@ -778,6 +782,18 @@ void CBattleMap::CreateEnemies()
 		m_vCharacters.push_back((CBase)*ninja);
 		m_vEnemies.push_back((CBase*)ninja);
 	}
+	if (bBoss)
+	{
+		++m_nNumEnemiesLeft; ++m_nNumCharacters;
+		CBoss* boss = Factory::GetInstance()->CreateBoss();
+		m_vCharacters.push_back((CBoss)*boss);
+		m_vEnemies.push_back((CBoss*)boss);
+	}
+	/*CBoss* boss = Factory::GetInstance()->CreateBoss();
+	POINT mapPt;
+	mapPt.x = 5;
+	mapPt.y = 5;
+	boss->SetCurrTile(mapPt, GetOffsetX(), GetOffsetY(), GetTileWidth(), GetTileHeight(), GetNumCols());*/
 	
 }
 
@@ -1943,14 +1959,11 @@ void CBattleMap::PerformAttack()
 		int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vEnemies[m_nCurrTarget]->GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
 		damage += rand() % (5 - (-4)) -5;
 
-		for (int i = 0; i < 2; ++i)
-		{
 			int sound = rand() % 2;
 			if (sound == 0)
-				PlaySFX(m_pAssets->aBMpunchSnd1, true);
+				PlaySFX(m_pAssets->aBMpunchSnd1);
 			else
-				PlaySFX(m_pAssets->aBMpunchSnd2, true);
-		}
+				PlaySFX(m_pAssets->aBMpunchSnd2);
 
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(4);

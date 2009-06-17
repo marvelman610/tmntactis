@@ -10,6 +10,8 @@
 #define CMAINMENU_H
 
 #include "BaseMenuState.h"
+#include <string>
+using std::string;
 
 class CBox;
 
@@ -17,7 +19,10 @@ class CMainMenuState : public CBaseMenuState
 {
 private:
 	CBox*	m_bxLoadGame;
+	CBox*	m_bxProfile;
 	bool	m_bDisplayLoadBox;
+	int		m_nNumProfiles;
+	string  m_sProfiles[4];
 
 	CMainMenuState();
 	~CMainMenuState();

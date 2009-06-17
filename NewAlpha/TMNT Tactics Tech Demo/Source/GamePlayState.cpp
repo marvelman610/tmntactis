@@ -20,7 +20,6 @@
 #include "ObjectManager.h"
 #include "BitmapFont.h"
 #include <fstream>
-//#include "Animation.h"
 #include "WorldMap.h"
 
 // Constructor
@@ -51,10 +50,6 @@ void CGamePlayState::Enter(void)
 
 	m_pWorldMap->Enter();
 	m_nCurrentMap = MAP_WORLD;
-
-	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
-	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
-	//m_nCurrentMap = MAP_BATTLE;	
 }
 
 // Exit
@@ -169,10 +164,10 @@ void CGamePlayState::LoadGame(char* fileName)
 	ifs.open(fileName, ios_base::binary | ios_base::in);
 	if (ifs.is_open())
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			//ifs.read(reinterpret_cast<char*>(), );
-		}
+// 		for (int i = 0; i < 4; ++i)
+// 		{
+			ifs.read(reinterpret_cast<char*>(&m_pPlayer), sizeof(CPlayer));
+/*		}*/
 	}
 	else
 		ifs.close();
@@ -186,10 +181,11 @@ void CGamePlayState::SaveGame(char* fileName)
 
 	if (ofs.is_open())
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
-		}
+// 		for (int i = 0; i < 4; ++i)
+// 		{
+// 			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+// 		}
+		ofs.write((char*)(&m_pPlayer), sizeof(CPlayer));
 	}
 	else
 		ofs.close();

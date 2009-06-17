@@ -20,12 +20,29 @@
 #include "OptionsMenuState.h"
 #include "CreditState.h"
 #include "Box.h"
+#include <fstream>
+using std::fstream;
 
-enum {PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
+enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
-	
+	for (int i =0; i < 4; ++i)
+	{
+		m_sProfiles[i] = "";
+	}
+	ifstream ifs("SavedFiles.dat", ios_base::binary);
+	if (ifs.is_open())
+	{
+		for (int i = 0; i < 4; ++i)
+		{
+			if (!ifs.eof())
+				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
+			else
+				break;
+			++m_nNumProfiles;
+		}
+	}
 }
 
 CMainMenuState::~CMainMenuState()
@@ -102,6 +119,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		}
 		return true;
 	}
+	// entering a profile name
+	else if (m_bxProfile)
+	{
+		m_bxProfile->Input(mousePt);
+	}
 
 	if(GetDI()->JoystickDPadPressed(2, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
 	{
@@ -125,12 +147,12 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
 		if (GetCurrMenuSelection() == NULL_END)
-			SetCurrMenuSelection(PLAY);
+			SetCurrMenuSelection(SIGNIN);
 	}
 	else if (GetDI()->KeyPressed(DIK_UP))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() -1);
-		if (GetCurrMenuSelection() < PLAY)
+		if (GetCurrMenuSelection() < SIGNIN)
 			SetCurrMenuSelection(NULL_END-1);
 	}
 	else if ((GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT) 
@@ -142,6 +164,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 
 		switch(GetCurrMenuSelection())
 		{
+		case SIGNIN:
+			m_bxProfile = new CBox(m_nNumProfiles, m_sProfiles, 250, 300, 0.0f, false, 35, 35, 25, -1, 0.75f);
+			m_bxProfile->SetActive();
+			m_bxProfile->AcceptInput();
+			break;
 		case PLAY:
 			CPlayer::GetInstance()->NewGame();
 			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
@@ -187,13 +214,13 @@ void CMainMenuState::Render()
 	else
 	{
 		// Draw menu item text
-		GetBitmapFont()->DrawString("")
-		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("S I G N  I N",		GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, color);
 		// Draw menu cursor
 		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
 	}
@@ -209,10 +236,22 @@ void CMainMenuState::Exit()
 {
 	GetFMOD()->StopSound(GetAssets()->aMMmusicID);
 	GetFMOD()->ResetSound(GetAssets()->aMMmusicID);
+
+	for (int i= 0; i < m_nNumProfiles; ++i)
+	{
+		fstream ofs("SavedFiles.dat", ios_base::binary);
+		ofs.write((char*)(&m_sProfiles[i]), sizeof(string));
+	}
+
 	if (m_bxLoadGame)
 	{
 		delete m_bxLoadGame;
 		m_bxLoadGame = NULL;
+	}
+	if (m_bxProfile)
+	{
+		delete m_bxProfile;
+		m_bxProfile = NULL;
 	}
 	m_bDisplayLoadBox = false;
 	CBaseMenuState::Exit();

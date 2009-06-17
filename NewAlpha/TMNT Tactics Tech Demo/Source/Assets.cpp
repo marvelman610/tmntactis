@@ -40,7 +40,9 @@ void CAssets::LoadAssets()
 	d3d->Clear(0,0,0);
 	d3d->DeviceBegin();
 	d3d->SpriteBegin();
-	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...", CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawStringAutoCenter("TMNT",		CGame::GetInstance()->GetScreenWidth(), 20, 0.09f, 1.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawStringAutoCenter("TACTICS",		CGame::GetInstance()->GetScreenWidth(), 100, 0.09f, 1.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawStringAutoCenter("LOADING...",  CGame::GetInstance()->GetScreenWidth(), 650, 0.0f, 1.5f, D3DCOLOR_XRGB(0, 255, 0));
 	d3d->SpriteEnd();
 	d3d->DeviceEnd();
 	d3d->Present();

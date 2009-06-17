@@ -19,14 +19,15 @@ class CSGD_TextureManager;
 class CSGD_FModManager;
 class CSGD_DirectInput;
 class CSGD_Direct3D;
-enum {BOX_NO_BACK, BOX_WITH_BACK, };
-enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };
+enum {BOX_NO_BACK, BOX_WITH_BACK, };	// boxType
+enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_BACK = 100, };	// buttons
 
 class CBox
 {
 // 	// which image is currently being used for the BG
 	int m_nCurrImage;
 	int m_BoxType;
+	bool m_bAcceptInput;
 
 	// size/position variables
 	int m_nLongestString;
@@ -63,6 +64,10 @@ class CBox
 	bool m_bIsMouseInBox;
 	int m_nBackType;
 
+	// input (keys)
+	string m_sInput;
+
+
 	CSGD_TextureManager*	m_pTM;
 	CBitmapFont*			m_pBM;
  	CAssets*				m_pAssets;
@@ -77,6 +82,13 @@ class CBox
 	//					index (button) is it over?
 	//////////////////////////////////////////////////////////////////////////
 	void CheckMouse(POINT mousePt);
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"CheckMouse"
+	//
+	//	Purpose		:	Determine if the mouse is over the box, if so, which
+	//					index (button) is it over?
+	//////////////////////////////////////////////////////////////////////////
+	void CheckKeys();
 
  public:
 	CBox(int numItems, string* sItems, 
@@ -105,6 +117,8 @@ class CBox
 	//////////////////////////////////////////////////////////////////////////
 	int CurrImage() const { return m_nCurrImage; }
 	void CurrImage(int val) { m_nCurrImage = val; }
+	bool AcceptInput() const { return m_bAcceptInput; }
+	void AcceptInput(bool val = true) { m_bAcceptInput = val; }
 	void SetAlpha(int alpha) {m_nAlpha = alpha;}
 	float PosZ() const { return m_fPosZ; }
 	void PosZ(float val) { m_fPosZ = val; }

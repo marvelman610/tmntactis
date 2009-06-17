@@ -35,7 +35,7 @@ void CTurtle::Update(float fElapsedTime)
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if(GetExperience() >= (100 * GetLevel()))
 	{
-		CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMactionBoxID);
+		CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMcowabungaSnd);
 		SetExperience(GetExperience()-(100* GetLevel()));
 		SetLevel(GetLevel() + 1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));

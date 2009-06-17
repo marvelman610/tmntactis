@@ -25,6 +25,7 @@ enum {
 #include "Assets.h"
 #include "CSGD_Direct3D.h"
 #include "BattleMap.h"
+#include "CSGD_FModManager.h"
 
 class CAchievements
 {
@@ -96,6 +97,8 @@ public:
 	{
 		m_pAcheivements[id].bUnlocked = true;
 		m_nCurrUnlocked = id;
+		if (id == ACH_FIRSTMAPCOMPLETE)
+			CBattleMap::GetInstance()->PlaySFX(m_pAssets->aStrikeHardSnd);
 		++m_nUnlockCount;
 		if (m_nUnlockCount == 10)
 			m_pAcheivements[ACH_ALLUNLOCKED].bUnlocked = true;

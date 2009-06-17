@@ -25,6 +25,7 @@ class CBase;
 class CSGD_DirectInput;
 class CSGD_Direct3D;
 class CSGD_TextureManager;
+class CBox;
 
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
 enum {LEFT, RIGHT, UP, DOWN, INCORRECT = -1};
@@ -66,6 +67,7 @@ private:
 
 	 float m_fTimer;
 	 float m_fDuration;
+
 
 	 CPlayer*			m_pPlayer;
 	 CBattleMap*		m_pBattleMap;

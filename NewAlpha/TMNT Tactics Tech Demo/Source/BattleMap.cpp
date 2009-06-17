@@ -222,6 +222,13 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
+	if (m_bExecuteSkill)
+	{
+		if (m_fTimer < 3.0f)
+		{
+			m_bxQTE->Render();
+		}
+	}
 	m_pPlayer->GetAch()->Render();
 	if(m_bWin)
 	{
@@ -595,6 +602,13 @@ void CBattleMap::Update(float fElapsedTime)
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{
+		if (m_fTimer < 3.0f)
+		{
+			m_fTimer += fElapsedTime;
+			return;
+		}
+		else
+		{delete m_bxQTE; m_bxQTE = NULL;}
 		m_pSkillToExecute->Update(fElapsedTime, m_pSkillToExecute, m_pParticleSystem);
 		if (m_pSkillToExecute->IsComplete())
 		{ 
@@ -789,7 +803,7 @@ void CBattleMap::CreateEnemies(bool bBoss)
 		m_vCharacters.push_back((CBase)*ninja);
 		m_vEnemies.push_back((CBase*)ninja);
 	}
-	if (bBoss)
+	if (bBoss && !m_pPlayer->GetAch()->GetLocked(ACH_KILL_SHREDDER))
 	{
 		++m_nNumEnemiesLeft; ++m_nNumCharacters;
 		CBoss* boss = Factory::GetInstance()->CreateBoss();
@@ -2031,6 +2045,11 @@ void CBattleMap::PerformAttack()
 	// a skill has been selected, execute that skill
 	else
 	{
+		string* text = new string[3];
+		text[0] = "Press the correct"; text[1] = "arrow key to" ;text[2] = "to do more damage";
+		m_bxQTE = new CBox(3, text, 300, 200, 0.05f, false, 30, 30, 25, -1, 0.65f);
+		m_bxQTE->SetType(BOX_NO_BACK);
+		m_bxQTE->SetActive(true);
 		m_bExecuteSkill = true;
 		m_pSkillToExecute = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
 		m_pSkillToExecute->IsComplete(false);
@@ -2316,7 +2335,11 @@ void CBattleMap::SetEnemyDead()
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
 	if(m_nNumEnemiesLeft <= 0)
+	{
 		m_bWin = true;
+		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
+			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
+	}
 }
 
 int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
@@ -2326,6 +2349,8 @@ int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
 }
 void CBattleMap::UseItem( )
 {
+	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0)
+		return;
 	if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Pizza")
 	{
 		m_bItemBool = false;

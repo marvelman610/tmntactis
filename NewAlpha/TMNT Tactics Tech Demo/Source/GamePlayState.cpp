@@ -19,6 +19,7 @@
 #include "WorldMap.h"
 #include "ObjectManager.h"
 #include "BitmapFont.h"
+#include "Achievements.h"
 #include <fstream>
 #include "WorldMap.h"
 
@@ -164,35 +165,44 @@ void CGamePlayState::LoadGame(const char* fileName)
 	ifs.open(fileName, ios_base::binary | ios_base::in);
 	if (ifs.is_open())
 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-			ifs.read(reinterpret_cast<char*>(&m_pPlayer), sizeof(CPlayer));
-/*		}*/
-	}
-	else
+		CPlayer* player = CPlayer::GetInstance();
+		CTurtle** turtles = player->GetTurtles();
+		CAchievements* ach = player->GetAch();
+		int currState;
+		for (int i = 0; i < 4; ++i)
+		{
+			ifs.read(reinterpret_cast<char*>(&turtles[i]), sizeof(CTurtle));
+		}
+		ifs.read(reinterpret_cast<char*>(ach), sizeof(CAchievements));
+		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
+		player->SetStage(currState);
 		ifs.close();
+	}
 }
 
 void CGamePlayState::SaveGame(const char* fileName)
 {
 	ofstream ofs;
 	ofs.open(fileName, ios_base::binary | ios_base::out);
-	CTurtle** turtles = CPlayer::GetInstance()->GetTurtles();
+
+	CPlayer* player = CPlayer::GetInstance();
+	CTurtle** turtles = player->GetTurtles();
+	int currStage = player->GetCurrStage();
 
 	if (ofs.is_open())
 	{
-// 		for (int i = 0; i < 4; ++i)
-// 		{
-// 			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
-// 		}
-		ofs.write((char*)(&m_pPlayer), sizeof(CPlayer));
-	}
-	else
+		for (int i = 0; i < 4; ++i)
+		{
+			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+		}
+		ofs.write((char*)(player->GetAch()), sizeof(CAchievements));
+		ofs.write((char*)(&currStage), sizeof(int));
 		ofs.close();
+	}
 }
 
 
-void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sent, goes to LOC_SIMUSA and WORLD_MAP by default
+void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sent, goes to WORLD_MAP by default
 {
 	if(bWorldMap)
 		m_nCurrentMap = MAP_WORLD;

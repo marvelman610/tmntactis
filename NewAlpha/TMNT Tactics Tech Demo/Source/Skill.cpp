@@ -15,6 +15,7 @@
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
 #include "Assets.h"
+#include "Box.h"
 
 // prototypes for all types of skills' renders and updates
 #define Prototypes 1
@@ -210,6 +211,7 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 			}
 			break;
 		}
+
 		m_pD3D->SpriteEnd();
 		m_pD3D->DeviceEnd();
 		m_pD3D->Present();

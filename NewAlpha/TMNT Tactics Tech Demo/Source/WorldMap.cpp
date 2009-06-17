@@ -552,9 +552,13 @@ bool CWorldMap::HandleButtons()
 	}
 	else if (m_bxLoad && m_nCurrBtn > -1)
 	{
+		string name = CPlayer::GetInstance()->GetProfName() + ".dat";
+		CGamePlayState::GetInstance()->LoadGame(name.c_str());
 	}
 	else if (m_bxSave && m_nCurrBtn > -1)
 	{
+		string name = CPlayer::GetInstance()->GetProfName() + ".dat";
+		CGamePlayState::GetInstance()->SaveGame(name.c_str());
 	}
 
 	return false;

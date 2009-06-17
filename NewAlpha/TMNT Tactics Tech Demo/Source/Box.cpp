@@ -125,7 +125,7 @@ void CBox::CheckMouse(POINT mousePt)
 			m_nCurrSelectedIndex = BTN_ENTER;
 			return;
 		}
-		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput)
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput && m_nCurrSelectedIndex > 0)
 		{
 			m_sItems[m_nCurrSelectedIndex].clear();
 			m_nCurrInputIndex = m_nCurrSelectedIndex;

@@ -90,6 +90,8 @@ public:
 	ASSET aBMpickupSnd;
 	ASSET aBMninjaPizzaSnd;
 	ASSET aBMcowabungaSnd;
+	ASSET aBMninjarap;
+	ASSET aHTPsound;
 
 	//////////////////////////////////////////////////////////////////////////
 

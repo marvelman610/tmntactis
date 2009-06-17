@@ -2242,10 +2242,10 @@ void CBattleMap::SetEnemyDead()
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
-	if(m_nNumEnemiesLeft <= 0)
+	/*if(m_nNumEnemiesLeft <= 0)
 	{
 		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
-	}
+	}*/
 }
 
 int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)

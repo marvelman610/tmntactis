@@ -84,6 +84,8 @@ void CAssets::LoadAssets()
 	aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
 	aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
 	aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
+	aBMninjarap			= m_pFMOD->LoadSound("Resources/Sounds/VG_NINJARAP.mp3");
+	aHTPsound			= m_pFMOD->LoadSound("Resources/Sounds/VG_ZombieOutbreak.mp3");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

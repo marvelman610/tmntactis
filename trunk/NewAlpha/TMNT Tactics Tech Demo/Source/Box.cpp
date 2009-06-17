@@ -115,6 +115,11 @@ void CBox::CheckMouse(POINT mousePt)
 		}
 		if (!m_bIsMsgBox)
 			m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput)
+		{
+			m_sItems[m_nCurrSelectedIndex].clear();
+			m_bEnterText = true;
+		}
 		if (m_bHasTitle)
 		{
  			if (m_nCurrSelectedIndex == 0)
@@ -138,7 +143,7 @@ void CBox::Render()
 	m_pTM->DrawWithZSort(CurrImage(), PosX(), PosY(), PosZ(), m_fScaleX, m_fScaleY, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_nAlpha, 255, 255, 255));
 
 	//m_pBM->ChangeBMFont(m_pAssets->aBitmapFont2ID, 16, 16, 18);
-	if (!m_bAcceptInput)
+	if (true/*!m_bAcceptInput*/)
 	{
 		for (int i = 0; i < m_nNumItems; ++i)
 		{
@@ -158,14 +163,14 @@ void CBox::Render()
 			}
 		}
 	} 
-	else
-	{
-		m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
-		int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
-		int centerStr = (m_nTitleWidth >> 1);
-		m_pBM->DrawString(m_sInput.c_str(), centerBox-centerStr, m_nStartTextY, m_fTextZ, m_fTextScale, m_dwColor);
-
-	}
+// 	else
+// 	{
+// 		m_dwColor = D3DCOLOR_ARGB(m_nAlpha, 255,50,50/*r, g, b*/);
+// 		int centerBox = m_nBoxRight - (m_nBoxWidth >> 1);
+// 		int centerStr = (m_nTitleWidth >> 1);
+// 		m_pBM->DrawString(m_sInput.c_str(), centerBox-centerStr, m_nStartTextY, m_fTextZ, m_fTextScale, m_dwColor);
+// 
+// 	}
 	if (m_nBackType == BOX_WITH_BACK)
 	{
 		if (m_nCurrSelectedIndex == BTN_BACK)
@@ -206,11 +211,15 @@ void CBox::CheckKeys()
 {
 	if (m_pDI->CheckBufferedKeysEx())
 	{
-		if (m_pDI->KeyPressed(DIK_BACKSPACE) && m_sInput.size() > 0)
+		if (m_pDI->KeyPressed(DIK_BACKSPACE) && m_sItems[m_nCurrSelectedIndex].size() > 0)
 		{
-			m_sInput.erase(m_sInput.size()-1, 1);
+			m_sItems[m_nCurrSelectedIndex].erase(m_sItems[m_nCurrSelectedIndex].size()-1, 1);
 		}
-		else if (m_sInput.size() < MAX_INPUT_SIZE)
-			m_sInput += m_pDI->CheckKeys();
+		else if (m_sItems[m_nCurrSelectedIndex].size() < MAX_INPUT_SIZE && !m_pDI->KeyPressed(DIK_ESCAPE))
+			m_sItems[m_nCurrSelectedIndex] += m_pDI->CheckKeys();
+	}
+	if (m_pDI->KeyPressed(DIK_ESCAPE) && m_bAcceptInput)
+	{
+		m_nCurrSelectedIndex = -1;
 	}
 }

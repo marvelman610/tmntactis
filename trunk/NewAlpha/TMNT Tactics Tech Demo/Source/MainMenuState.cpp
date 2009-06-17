@@ -29,7 +29,7 @@ CMainMenuState::CMainMenuState()
 {
 	for (int i =0; i < 4; ++i)
 	{
-		m_sProfiles[i] = "";
+		m_sProfiles[i] = "CREATE NEW";
 	}
 	ifstream ifs("SavedFiles.dat", ios_base::binary);
 	if (ifs.is_open())
@@ -122,7 +122,15 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	// entering a profile name
 	else if (m_bxProfile)
 	{
-		m_bxProfile->Input(mousePt);
+		int input = m_bxProfile->Input(mousePt);
+		if (input == 0)
+		{
+			// set the profile name
+			CPlayer::GetInstance()->SetProfileName(m_bxProfile->GetItems()[0]);
+			delete m_bxProfile; m_bxProfile = NULL;
+		}
+		else if (input == 100)
+		{delete m_bxProfile; m_bxProfile = NULL;}
 	}
 
 	if(GetDI()->JoystickDPadPressed(2, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
@@ -165,9 +173,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		switch(GetCurrMenuSelection())
 		{
 		case SIGNIN:
-			m_bxProfile = new CBox(m_nNumProfiles, m_sProfiles, 250, 300, 0.0f, false, 35, 35, 25, -1, 0.75f);
-			m_bxProfile->SetActive();
-			m_bxProfile->AcceptInput();
+			{
+				m_bxProfile = new CBox(4, m_sProfiles, 250, 300, 0.0f, false, 35, 35, 25, -1, 0.75f);
+				m_bxProfile->SetActive();
+				m_bxProfile->AcceptInput();
+			}
 			break;
 		case PLAY:
 			CPlayer::GetInstance()->NewGame();
@@ -211,6 +221,8 @@ void CMainMenuState::Render()
 	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f, color);
 	if (m_bxLoadGame)
 		m_bxLoadGame->Render();
+	else if (m_bxProfile)
+		m_bxProfile->Render();
 	else
 	{
 		// Draw menu item text

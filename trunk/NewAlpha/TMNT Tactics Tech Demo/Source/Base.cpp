@@ -19,7 +19,6 @@ CBase::CBase(void)
 	m_nHealthMax = 100;
 	m_nHealth = 0;
 
-
 	m_nLevel = 1;
 	m_nStrength = 0;
 	m_nDefense = 0;

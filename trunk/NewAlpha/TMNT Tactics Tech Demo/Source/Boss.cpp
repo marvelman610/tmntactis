@@ -27,6 +27,7 @@ CBoss::CBoss(void)
 	m_bMoving = false;
 	m_pPlayer = NULL;
 	m_pTile = NULL;
+	m_nType = OBJECT_BOSS;
 	//m_vPath = 0;
 	//m_ptStartXY =0;
 }

@@ -104,6 +104,8 @@ public:
 	inline int GetNumItems()			{ return m_nInventory.size();}
 	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
 
+	void SetProfileName(string name)	{ m_sProfileName = name;}
+
 	
 	bool RemoveItem(int index);
 

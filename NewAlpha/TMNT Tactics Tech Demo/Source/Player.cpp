@@ -13,6 +13,7 @@
 #include "CSGD_TextureManager.h"
 #include "ObjectManager.h"
 #include "Skill.h"
+#include "Achievements.h"
 #include <string>
 #include <fstream>
 using namespace std;
@@ -25,6 +26,8 @@ CPlayer::CPlayer(void)
 	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
+
+	m_pAcheivements = new CAchievements();
 
 	CBase weapon;
 	weapon.SetWeapon("Bokken",6,0,-1,0);
@@ -78,10 +81,11 @@ void CPlayer::LoadSavedGame(const char* fileName)
 			char* name = m_pTurtles[i]->GetName();
 			ObjectManager::GetInstance()->Remove(m_pTurtles[i]);
 			delete m_pTurtles[i];
-			Factory::GetInstance()->CreateTurtle(name);
+			//Factory::GetInstance()->CreateTurtle(name);
 		}
-		ifs.read(reinterpret_cast<char*>(m_pTurtles[i]), sizeof(CTurtle));
+		//ifs.read(reinterpret_cast<char*>(m_pTurtles[i]), sizeof(CTurtle));
 	}
+	ifs.read(reinterpret_cast<char*>, sizeof(CPlayer));
 }
 void CPlayer::SaveGame(const char* fileName)
 {
@@ -91,10 +95,11 @@ void CPlayer::SaveGame(const char* fileName)
 
 	if (ofs.is_open())
 	{
-		for (int i = 0; i < 4; ++i)
-		{
-			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
-		}
+// 		for (int i = 0; i < 4; ++i)
+// 		{
+// 			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+// 		}
+		ofs.write((char*)this, sizeof(CPlayer));
 	}
 	else
 		ofs.close();
@@ -129,7 +134,7 @@ void CPlayer::LoadNewSkills(const char* filename)
 			pSkill->Attribute("Cost", &cost);
 			pSkill->Attribute("CombAmt", & combAmt);
 			pSkill->Attribute("Duration", &duration);
-			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, duration);
+			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, (float)duration);
 			if (i > 0)
 				inactiveSkills.push_back(*Skill);
 			else

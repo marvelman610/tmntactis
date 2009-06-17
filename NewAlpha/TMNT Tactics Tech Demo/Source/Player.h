@@ -15,10 +15,10 @@ enum { WORLD_MAP, BATTLE_MAP, };
 #include "Turtle.h"
 #include "Base.h"
 #include "BattleItem.h"
-#include "Achievements.h"
-
 #include <vector>
 using std::vector;
+
+class CAchievements;
 
 class CPlayer
 {
@@ -26,10 +26,10 @@ private:
 	CTurtle*  m_pTurtles[4];
 	CAchievements* m_pAcheivements;
 
-	//int m_pItemsArr[50];
 	vector<CBattleItem> m_nInventory;
-	int m_nCurrStage;
-	string m_sProfileName;
+	int		m_nCurrStage;
+	string  m_sProfileName;
+	string  m_sFileName;
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CPlayer(Constructor)"
@@ -98,6 +98,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
+	inline CAchievements* GetAch()		{ return m_pAcheivements;}
 	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
 
 	inline int GetNumItems()			{ return m_nInventory.size();}

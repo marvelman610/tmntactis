@@ -217,7 +217,7 @@ class CBattleMap
 	//	Purpose		:	Make and place the m_nNumEnemiesLeft amount of enemies
 	//					to the battle map
 	//////////////////////////////////////////////////////////////////////////
-	void CreateEnemies();
+	void CreateEnemies(bool bBoss = false);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	LoadMapInfo
 	//
@@ -352,7 +352,7 @@ public:
 	//
 	//	Purpose		:	Set up the new battle map, load file, set numEnemies...
 	//////////////////////////////////////////////////////////////////////////
-	void Enter(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0);
+	void Enter(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0, bool bBoss = false);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Exit
 	//

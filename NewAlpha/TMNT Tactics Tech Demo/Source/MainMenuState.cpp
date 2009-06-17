@@ -187,6 +187,7 @@ void CMainMenuState::Render()
 	else
 	{
 		// Draw menu item text
+		GetBitmapFont()->DrawString("")
 		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);

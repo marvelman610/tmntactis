@@ -123,6 +123,16 @@ void CHUD::Update(float fElapsedTime)
 			m_rEnemyHP.right = (LONG)hpWidth;
 			m_rEnemyAP.right = (LONG)apWidth;
 		}
+		if(CBattleMap::GetInstance()->GetHasBoss() == true)
+		{
+			if(CBattleMap::GetInstance()->GetBoss() != NULL)
+			{
+				float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetBoss()->GetHealth() / (float)CBattleMap::GetInstance()->GetBoss()->GetMaxHealth() );
+				float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetBoss()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetBoss()->GetBaseAP());
+				m_rEnemyHP.right = (LONG)hpWidth;
+				m_rEnemyAP.right = (LONG)apWidth;
+			}
+		}
 
 }
 void CHUD::Render()
@@ -206,6 +216,25 @@ void CHUD::Render()
 			char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP());
 			CBitmapFont::GetInstance()->DrawString(szAP, 782, 125, 0.05f, 0.5f);
 
+		}
+		if(CBattleMap::GetInstance()->GetHasBoss() == true)
+		{
+			if(CBattleMap::GetInstance()->GetBoss() != NULL)
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aShredderHUDID, 512, 0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(150, 255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 882, 90, -1.0f, 1.0f, &m_rEnemyHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 882, 164, -1.0f, 1.0f, &m_rEnemyAP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				//910 , 201 lvl - 982, 201 exp - 	758, 114hp	- 758, 185 ap
+				char szLVL[3]; sprintf_s(szLVL, "%i", CBattleMap::GetInstance()->GetBoss()->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 910,201,0.05f, 0.5f);
+				char szEXP[8]; sprintf_s(szEXP, "%i", CBattleMap::GetInstance()->GetBoss()->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szEXP, 982,201,0.05f, 0.5f);
+				char szHP[8]; sprintf_s(szHP, "%i", CBattleMap::GetInstance()->GetBoss()->GetHealth());
+				CBitmapFont::GetInstance()->DrawString(szHP, 758,114,0.05f, 0.5f);
+				char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetBoss()->GetCurrAP());
+				CBitmapFont::GetInstance()->DrawString(szAP, 758,185,0.05f, 0.5f);
+
+			}
 		}
 	}
 

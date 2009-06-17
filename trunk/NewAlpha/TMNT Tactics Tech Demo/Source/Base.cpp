@@ -37,6 +37,7 @@ void CBase::Update(float fElapsedTime)
 {
 
 }
+
 void CBase::Render()
 {
 	if(GetType() == OBJECT_WEAPON)

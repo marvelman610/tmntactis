@@ -37,14 +37,15 @@ CCreditState* CCreditState::GetInstance()
 void CCreditState::Enter()
 {
 	CBaseMenuState::Enter();
-	GetFMOD()->PlaySound(GetAssets()->aCMmusicID);
-	GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
+	
 	m_dwTimer = GetTickCount();
 	SetBGImageID(GetAssets()->aCMbgID);
 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aCMbgID));
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aCMbgID));
 	CenterBGImage();
 	m_nAlpha = 150;
+	GetFMOD()->PlaySound(GetAssets()->aBMninjarap);
+	GetFMOD()->SetVolume(GetAssets()->aBMninjarap, GetGame()->GetMusicVolume());
 }
 
 bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
@@ -135,8 +136,8 @@ void CCreditState::Render()
 
 void CCreditState::Exit()
 {
-	GetFMOD()->StopSound(GetAssets()->aCMmusicID);
-	GetFMOD()->ResetSound(GetAssets()->aCMmusicID);
+	GetFMOD()->StopSound(GetAssets()->aBMninjarap);
+	GetFMOD()->ResetSound(GetAssets()->aBMninjarap);
 	CBaseMenuState::Exit();
 }
 

@@ -14,6 +14,7 @@
 #include "BitmapFont.h"
 #include "Assets.h"
 #include "Game.h"
+#include "CSGD_FModManager.h"
 
 // if we have any menu options in this menu, 
 //	add to this enum
@@ -36,10 +37,15 @@ void CHowToPlayMenuState::Enter()
 	SetCurrMenuSelection( BACK );
 	SetCursorX(350);
 	SetCursorY(335);
+
+	GetFMOD()->PlaySound(GetAssets()->aHTPsound);
+	GetFMOD()->SetVolume(GetAssets()->aHTPsound, GetGame()->GetMusicVolume());
 }
 
 void CHowToPlayMenuState::Exit()
 {
+	GetFMOD()->StopSound(GetAssets()->aHTPsound);
+	GetFMOD()->ResetSound(GetAssets()->aHTPsound);
 	CBaseMenuState::Exit();
 }
 

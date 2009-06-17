@@ -10,6 +10,7 @@
 #include "MainMenuState.h"
 #include "CSGD_TextureManager.h"
 #include "CSGD_DirectInput.h"
+#include "CSGD_FModManager.h"
 #include "Game.h"
 #include "GamePlayState.h"
 #include "BitmapFont.h"
@@ -52,6 +53,9 @@ void COptionsMenuState::Enter()
 	m_nSFXVolume	= (int)GetGame()->GetSFXVolume();
 	m_nMusicVolume	= (int)GetGame()->GetMusicVolume();
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
+	
+	GetFMOD()->PlaySound(GetAssets()->aCMmusicID);
+	GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 }
 
 
@@ -78,6 +82,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nMusicVolume--;
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
+				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -86,6 +91,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nSFXVolume--;
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
+				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -100,6 +106,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nMusicVolume++;
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
+				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -108,6 +115,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nSFXVolume++;
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
+				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 		}
@@ -150,6 +158,8 @@ void COptionsMenuState::SaveSettings()
 
 void COptionsMenuState::Exit()
 {
+	GetFMOD()->StopSound(GetAssets()->aCMmusicID);
+	GetFMOD()->ResetSound(GetAssets()->aCMmusicID);
 	if (m_bHasASettingChanged)
 		SaveSettings();
 	CBaseMenuState::Exit();

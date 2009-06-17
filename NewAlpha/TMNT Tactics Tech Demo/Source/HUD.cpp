@@ -186,6 +186,7 @@ void CHUD::Render()
 		//get current target 
 		m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
 		m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+
 	}
 
 	if(CBattleMap::GetInstance()->GetCurrMovingNinja() != NULL)
@@ -201,6 +202,10 @@ void CHUD::Render()
 				m_pTM->Draw(CAssets::GetInstance()->aLeonardoHUDID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f, 0.0f, D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 170, 80, 1.0f,1.0f,&m_rLeoHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 170, 140, 1.0f, 1.0f,&m_rLeoAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 37,165,0.05f,0.5f);
+				char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szEXP, 142,165,0.05f,0.5f);
 			}
 			break;
 		case DONATELLO:
@@ -208,6 +213,10 @@ void CHUD::Render()
 				m_pTM->Draw(CAssets::GetInstance()->aDonatelloHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 175, 72, 1.0f,1.0f,&m_rDonHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 175,118,1.0f,1.0f,&m_rDonAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 46,142,0.05f,0.5f);
+				char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 144,142,0.05f,0.5f);
 			}
 			break;
 		case RAPHAEL:
@@ -215,6 +224,10 @@ void CHUD::Render()
 				m_pTM->Draw(CAssets::GetInstance()->aRaphaelHUDID, 0,0,1.0f,1.0f,NULL,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 156, 40, 1.0f, 1.0f,&m_rRaphHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 156,83,1.0f,1.0f,&m_rRaphAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 35,101,0.05f,0.5f);
+				char szEXP[3]; sprintf_s(szEXP, "%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 122,101,0.05f,0.5f);
 			}
 			break;
 		case MIKEY:
@@ -222,6 +235,10 @@ void CHUD::Render()
 				m_pTM->Draw(CAssets::GetInstance()->aMikeyHUDFaceID, 0,0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 144,49,1.0f,1.0f,&m_rMikeyHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 144, 98, 1.0f,1.0f,&m_rMikeyAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
+				char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 32,135,0.05f,0.5f);
+				char szEXP[3]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 118,135,0.05f,0.5f);
 			}
 			break;
 		}

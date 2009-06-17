@@ -185,10 +185,7 @@ public:
 	// Purpose: Decrements the count varible. If the variable reaches zero,
 	//			the pointer is no longer needed and is deleted.
 	////////////////////////////////////////////////////////////////////
-	void Release()
-	{
-
-	}
+	void Release(){}
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Pathfind”

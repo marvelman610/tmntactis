@@ -43,24 +43,9 @@ CNinja::CNinja(void)
 	m_pPlayer = CPlayer::GetInstance();
 	m_pTile = CBattleMap::GetInstance()->GetTiles();
 
-	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 1);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 2);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 3);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 4);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 5);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 6);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 7);
-	AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 8);
-	AddAnim(anim);
-	m_vAnimations[m_nCurrAnimation].Play();
+	m_bAttackBool = false;
+	m_fTimer = 0;
+
 }
 
 CNinja::~CNinja(void)
@@ -323,6 +308,7 @@ void CNinja::AI()
 			CBattleMap::GetInstance()->NinjaMoveComplete();
 			
 			//CBattleMap::GetInstance()->SetTurn(true);
+			m_bAttackBool = true;
 
 		}
 		break;
@@ -340,6 +326,8 @@ void CNinja::AI()
 			CBattleMap::GetInstance()->NinjaMoveComplete();
 			
 			//SetCurrAnim(0);
+			m_bAttackBool = true;
+
 
 			//CBattleMap::GetInstance()->SetTurn(true);
 
@@ -1009,6 +997,8 @@ void CNinja::AI()
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::FindPath(POINT begin, POINT end)
 {
+	
+
 	SetCurrAnim(0);
 
 	m_vPath.clear();
@@ -1135,7 +1125,18 @@ void CNinja::FindPath(POINT begin, POINT end)
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
+	CBase::Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+	if (m_bAttackBool)
+		{
+			m_fTimer += fElapsedTime;
+			if(m_fTimer >= 1.6f)
+			{
+				m_fTimer = 0;
+				SetCurrAnim(0);
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+		}
 
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving)
@@ -1211,12 +1212,7 @@ void CNinja::Update(float fElapsedTime)
 			}
 		}
 		else // movement is done
-		{
-			if(GetCurrAnim()->GetCurrAnimFrame() == GetCurrAnim()->GetTotalFrames())
-			{
-				SetCurrAnim(0);
-				CBattleMap::GetInstance()->SetTurn(true);
-			}
+		{			
 				
 			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
 				SetCurrAnim(0);
@@ -1262,6 +1258,7 @@ void CNinja::Update(float fElapsedTime)
 			//SetCurrAnim(0);
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
+		
 	}
 
 

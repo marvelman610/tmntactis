@@ -35,6 +35,9 @@ private:
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	bool m_bMoving;
 
+	bool m_bAttackBool;
+	float m_fTimer;
+
 
 public:
 	///////////////////////////////////////////////////////////////////

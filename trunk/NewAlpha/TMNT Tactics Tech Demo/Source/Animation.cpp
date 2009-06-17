@@ -63,7 +63,7 @@ void CAnimation::Reset()
 {
 	m_nCurrFrame = 0;
 }
-void CAnimation::Load(const char* FileName, int numFrame)
+void CAnimation::Load(const char* FileName, int numFrame, float duration)
 {
 	int nDuration;
 	char bIsLooping[128] = "true ";
@@ -116,6 +116,7 @@ void CAnimation::Load(const char* FileName, int numFrame)
 
 				ifs.read(reinterpret_cast<char *>(&size),1);
 				ZeroMemory(filebuff,128);
+
 				ifs.read(filebuff,size);
 
 				//if(strcmp(filebuff,bIsLooping))
@@ -144,7 +145,10 @@ void CAnimation::Load(const char* FileName, int numFrame)
 					delete[] m_pFrames;
 					m_pFrames = NULL;
 				}
+			if(i == numFrame)
+				m_fDuration = duration;
 			}
+			
 		}
 		else
 		{

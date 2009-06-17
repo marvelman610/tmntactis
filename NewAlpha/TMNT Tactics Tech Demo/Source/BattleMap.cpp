@@ -457,6 +457,10 @@ void CBattleMap::SetPaused(bool IsPaused)
 void CBattleMap::Update(float fElapsedTime)
 {
 	// a turtle has been moved...execute the animation and position change over time
+	if(m_nNumEnemiesLeft <= 0)
+	{
+		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
+	}
 	if (m_bItemBool)
 		CalculateRanges();
 	if (m_bDrawTimedParticles)
@@ -2238,6 +2242,10 @@ void CBattleMap::SetEnemyDead()
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
+	if(m_nNumEnemiesLeft <= 0)
+	{
+		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
+	}
 }
 
 int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)

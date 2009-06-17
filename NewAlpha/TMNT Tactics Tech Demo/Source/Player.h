@@ -15,6 +15,7 @@ enum { WORLD_MAP, BATTLE_MAP, };
 #include "Turtle.h"
 #include "Base.h"
 #include "BattleItem.h"
+#include "Achievements.h"
 
 #include <vector>
 using std::vector;
@@ -23,10 +24,12 @@ class CPlayer
 {
 private:
 	CTurtle*  m_pTurtles[4];
+	CAchievements* m_pAcheivements;
 
 	//int m_pItemsArr[50];
 	vector<CBattleItem> m_nInventory;
 	int m_nCurrStage;
+	string m_sProfileName;
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CPlayer(Constructor)"

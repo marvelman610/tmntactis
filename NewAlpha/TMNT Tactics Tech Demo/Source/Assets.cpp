@@ -13,7 +13,7 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
-#define LOAD_MUSIC 0
+#define LOAD_MUSIC 1
 
 CAssets* CAssets::GetInstance()
 {
@@ -76,6 +76,14 @@ void CAssets::LoadAssets()
 	aBMqteDownID		= m_pTM->LoadTexture("Resources/Images/VG_qteDOWN.bmp");
 	aBMqteUpID			= m_pTM->LoadTexture("Resources/Images/VG_qteUP.bmp");
 
+	aBMpainSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_painScream.mp3");
+	aBMdeathSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_dying.mp3");
+	aBMpunchSnd1		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch.mp3");
+	aBMpunchSnd2		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch2.mp3");
+	aBMgrenadeSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_grenadeExplosion.mp3");
+	aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
+	aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
+	aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
@@ -168,6 +176,7 @@ void CAssets::LoadAssets()
 #if LOAD_MUSIC
 	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
 	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
+	aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
 	aCMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
 #endif
 

@@ -30,10 +30,14 @@ private:
 	CHUD*			m_pHUD;
 	CWorldMap*		m_pWorldMap;
 
+	bool m_bChangingMap;
+	float m_fTimer;
 
 	bool m_bIsPaused;
 
 	int m_nCurrentMap;
+	int m_nMapID;	
+	bool m_bIsOnWorldMap;
 
 	// Constructor
 	CGamePlayState(void);

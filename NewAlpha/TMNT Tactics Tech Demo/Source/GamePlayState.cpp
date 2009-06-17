@@ -54,8 +54,7 @@ void CGamePlayState::Enter(void)
 
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 2);
 	//m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2);
-	//m_nCurrentMap = MAP_BATTLE;
-	
+	//m_nCurrentMap = MAP_BATTLE;	
 }
 
 // Exit

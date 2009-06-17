@@ -66,6 +66,7 @@ public:
 	// box images
 	ASSET aBpointerID;
 
+	//////////////////////////////////////////////////////////////////////////
 	// BattleMap IDs
 	ASSET aBMbgID;
 	ASSET aBMgroundTilesID, aBMtreeTilesID;
@@ -80,10 +81,22 @@ public:
 	ASSET aBMqteRightID;
 	ASSET aBMqteDownID;
 	ASSET aBMqteUpID;
+		// sounds
+	ASSET aBMdeathSnd;
+	ASSET aBMpunchSnd1;
+	ASSET aBMpunchSnd2;
+	ASSET aBMpainSnd;
+	ASSET aBMgrenadeSnd;
+	ASSET aBMpickupSnd;
+	ASSET aBMninjaPizzaSnd;
+	ASSET aBMcowabungaSnd;
+
+	//////////////////////////////////////////////////////////////////////////
 
 	// WorldMap IDs
 	ASSET aWMmapID;
 	ASSET aWMtempleID;
+	ASSET aWMworldMapMusicID;
 
 	// Main Menu IDs
 	ASSET aMMBGimageID;

@@ -458,6 +458,13 @@ void CBattleMap::Update(float fElapsedTime)
 	// a turtle has been moved...execute the animation and position change over time
 	if (m_bItemBool)
 		CalculateRanges();
+	if (m_bDrawTimedParticles)
+	{
+		m_fTimer += fElapsedTime;
+		m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle);
+		if (m_fTimer >= 2.0f)
+		{m_bDrawTimedParticles = false;m_fTimer = 0.0f;m_pParticleSystem[SMOKE].m_bActive = false;}
+	}
 	if (m_bMoving)
 	{
 		if (m_vPath.size() > 0)
@@ -545,10 +552,10 @@ void CBattleMap::Update(float fElapsedTime)
 	CHUD::GetInstance()->Update(fElapsedTime);
 
 	//update the particle system
-// 	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
-// 	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
-// 	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
-// 	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
@@ -1431,6 +1438,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
+			PlaySFX(m_pAssets->aBMgrenadeSnd);
+			m_pParticleSystem[SMOKE].Emit((float)mouse.x, (float)mouse.y);
+			m_pParticleSystem[SMOKE].m_bActive = true;
+			m_bDrawTimedParticles = true;
 			for (int x = 2; x < m_nNumCols; ++x)
 			{
 				for (int y = 2; y < m_nNumRows; ++y)
@@ -1702,7 +1713,7 @@ void CBattleMap::HandleButton()
 		m_bxActionBox->SetActive();
 		return;
 	}
-	else if(m_bxItemBox && m_nCurrBtnSelected > -1&& m_nCurrBtnSelected != 100)
+	else if(m_bxItemBox && m_nCurrBtnSelected > -1 && m_nCurrBtnSelected != 100)
 	{
 		UseItem();
 		delete m_bxItemBox;
@@ -1886,7 +1897,16 @@ void CBattleMap::PerformAttack()
 	{
 		int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vEnemies[m_nCurrTarget]->GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
 		damage += rand() % (5 - (-4)) -5;
-	
+
+		for (int i = 0; i < 2; ++i)
+		{
+			int sound = rand() % 2;
+			if (sound == 0)
+				PlaySFX(m_pAssets->aBMpunchSnd1, true);
+			else
+				PlaySFX(m_pAssets->aBMpunchSnd2, true);
+		}
+
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
@@ -2210,6 +2230,7 @@ void CBattleMap::SetEnemyDead()
 	m_nCurrTarget = -1;
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
+	PlaySFX(m_pAssets->aBMdeathSnd);
 }
 
 int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
@@ -2257,4 +2278,23 @@ void CBattleMap::UseItem( )
 	}
 	//m_pPlayer->GetInstance()->RemoveItem(m_nCurrBtnSelected);
 
+}
+
+void CBattleMap::PlaySFX(int sfxID, bool waitTillDone)
+{
+	if (waitTillDone)
+	{
+		m_pFMOD->PlaySound(sfxID);
+		while (m_pFMOD->IsSoundPlaying(sfxID)) {}
+	}
+	else
+	{
+		if (m_pFMOD->IsSoundPlaying(sfxID))
+		{
+			m_pFMOD->StopSound(sfxID);
+			m_pFMOD->ResetSound(sfxID);
+		}
+		m_pFMOD->PlaySound(sfxID);
+		m_pFMOD->SetVolume(sfxID, m_pGame->GetSFXVolume());
+	}
 }

@@ -9,6 +9,8 @@
 
 #include "Turtle.h"
 #include "Animation.h"
+#include "BattleMap.h"
+#include "Assets.h"
 
 CTurtle::CTurtle(void)
 {
@@ -36,6 +38,7 @@ void CTurtle::Update(float fElapsedTime)
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if(GetExperience() >= (100 * GetLevel()))
 	{
+		CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMactionBoxID);
 		SetExperience(GetExperience()-(100* GetLevel()));
 		SetLevel(GetLevel() + 1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));

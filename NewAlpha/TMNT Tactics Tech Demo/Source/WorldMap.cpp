@@ -7,6 +7,7 @@
 #include "MainMenuState.h"
 #include "GamePlayState.h"
 #include "BattleMap.h"
+#include "CSGD_FModManager.h"
 #include "Player.h"
 #include "Box.h"
 #include "Skill.h"
@@ -29,9 +30,9 @@ CWorldMap::CWorldMap()
 	m_nMapHeight = 1610;
 
 	m_Locations[LOC_SIMUSA].name = "Simusa"; m_Locations[LOC_SIMUSA].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SIMUSA].mapXY = MAP_POINT(1516,804);
-	m_Locations[LOC_SINARO].name = "SINARO"; m_Locations[LOC_SINARO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SINARO].mapXY = MAP_POINT(1191,857);
-	m_Locations[LOC_IWAMI].name  = "IWAMI";	 m_Locations[LOC_IWAMI].imageID  = m_pAssets->aWMtempleID; m_Locations[LOC_IWAMI].mapXY  = MAP_POINT(530,910);
-	m_Locations[LOC_YAMATO].name = "YAMATO"; m_Locations[LOC_YAMATO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_YAMATO].mapXY = MAP_POINT(998,1064);
+	m_Locations[LOC_SINARO].name = "Sinaro"; m_Locations[LOC_SINARO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SINARO].mapXY = MAP_POINT(1191,857);
+	m_Locations[LOC_IWAMI].name  = "Iwami";	 m_Locations[LOC_IWAMI].imageID  = m_pAssets->aWMtempleID; m_Locations[LOC_IWAMI].mapXY  = MAP_POINT(530,910);
+	m_Locations[LOC_YAMATO].name = "Yamato"; m_Locations[LOC_YAMATO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_YAMATO].mapXY = MAP_POINT(998,1064);
 	
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
 
@@ -74,6 +75,7 @@ void CWorldMap::Enter()
 	m_nMapOSy = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1) + 100;
 	m_fTimer = 0.0f;
 	m_bWeaponBool = false;
+	CSGD_FModManager::GetInstance()->PlaySound(m_pAssets->aWMworldMapMusicID);
 }
 
 void CWorldMap::Exit()
@@ -94,7 +96,8 @@ void CWorldMap::Exit()
 		delete m_bxWeaponSelect;
 
 	m_pPlayer->GetInstance()->GetItems()->clear();
-
+	CSGD_FModManager::GetInstance()->StopSound(m_pAssets->aWMworldMapMusicID);
+	CSGD_FModManager::GetInstance()->ResetSound(m_pAssets->aWMworldMapMusicID);
 }
 
 void CWorldMap::Render()

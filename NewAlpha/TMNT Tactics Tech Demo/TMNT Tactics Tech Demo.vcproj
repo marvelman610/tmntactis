@@ -199,6 +199,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Source\CollectedAchievements.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Source\CreditState.cpp"
 				>
 			</File>
@@ -318,6 +322,10 @@
 			</File>
 			<File
 				RelativePath=".\Source\codeprofiler.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Source\CollectedAchievements.h"
 				>
 			</File>
 			<File

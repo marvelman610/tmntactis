@@ -16,8 +16,8 @@
 
 int Random(int min, int max)
 {
-	int number = abs(min) + abs(max);
-	return ((rand()%number) - abs(min));
+	int number = abs(max) - abs(min);
+	return ((rand()%number) + abs(min));
 }
 
 CBoss::CBoss(void)
@@ -281,6 +281,55 @@ void CBoss::AI()
 			/*CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
 			CBattleMap::GetInstance()->SetTurn(true);*/
+			switch(GetCurrAP())
+				{
+				case 4:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
+					}
+					break;
+				case 6:
+					{
+						//use skill low punch , sweep
+						//do 40+ damage 
+						int damage = Random(30, 50);//damage
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+					}
+					break;
+				case 8:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+					}
+					break;
+				case 10:
+					{
+						//use skill punch, kick
+						//do 60+ damage
+						int damage = Random(45, 65);//damage
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+					}
+					break;
+				case 12:
+					{
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+					}
+					break;
+				case 16:
+					{
+						//use skill low punch, sweep then use skill punck, kick
+						int damage = Random(80, 100);
+						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+					}
+					break;
+				default:
+					{
+					}
+					break;
+				}
+				//end shredder turn
+				CBattleMap::GetInstance()->UpdatePositions();
+				CBattleMap::GetInstance()->NinjaMoveComplete();
+				CBattleMap::GetInstance()->SetTurn(true);
 
 		}
 		break;
@@ -330,7 +379,7 @@ void CBoss::AI()
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
 			//end turn
 			
-			CBattleMap::GetInstance()->SetTurn(true);
+			//CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 		//three tiles, move in two tiles
@@ -806,11 +855,11 @@ void CBoss::AI()
 	default:
 		{
 			//end turn
-			SetCurrAP(0);
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);
+			//SetCurrAP(0);
+			////TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+			//CBattleMap::GetInstance()->UpdatePositions();
+			//CBattleMap::GetInstance()->NinjaMoveComplete();
+			//CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 		}
@@ -822,7 +871,7 @@ void CBoss::Update(float fElapsedTime)
 	//CBase::Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	// a ninja has been moved...execute the animation and position change over time
-	if (m_bMoving)
+	if (m_bMoving == true)
 	{
 		if (m_vPath.size() > 0)
 		{

@@ -74,6 +74,16 @@ CHUD::CHUD(void)
 	m_rEnemyAP.right = 104;
 	m_rEnemyAP.top = 0;
 
+	m_rShredderAP.bottom = 16;
+	m_rShredderAP.left = 0;
+	m_rShredderAP.right = 104;
+	m_rShredderAP.top = 0;
+
+	m_rShredderHP.bottom = 16;
+	m_rShredderHP.left = 0;
+	m_rShredderHP.right = 104;
+	m_rShredderHP.top = 0;
+
 	m_nImageID = -1;
 }
 
@@ -129,8 +139,8 @@ void CHUD::Update(float fElapsedTime)
 			{
 				float hpWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetBoss()->GetHealth() / (float)CBattleMap::GetInstance()->GetBoss()->GetMaxHealth() );
 				float apWidth = 104.0f * ( (float)CBattleMap::GetInstance()->GetBoss()->GetCurrAP() / (float)CBattleMap::GetInstance()->GetBoss()->GetBaseAP());
-				m_rEnemyHP.right = (LONG)hpWidth;
-				m_rEnemyAP.right = (LONG)apWidth;
+				m_rShredderHP.right = (LONG)hpWidth;
+				m_rShredderAP.right = (LONG)apWidth;
 			}
 		}
 
@@ -201,25 +211,27 @@ void CHUD::Render()
 
 
 		//enemy hud
-		if( CBattleMap::GetInstance()->GetCurrTarget() > -1 )
+		if(CBattleMap::GetInstance()->GetHasBoss() == true )
 		{
-			m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540,0,1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
-			//get current target 
-			m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
-			m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
-			char szLVL[3]; sprintf_s(szLVL, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetLevel());
-			CBitmapFont::GetInstance()->DrawString(szLVL, 928, 140, 0.05f, 0.5f);
-			char szEXP[8]; sprintf_s(szEXP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetExperience());
-			CBitmapFont::GetInstance()->DrawString(szEXP, 1009, 140, 0.05f, 0.5f);
-			char szHP[8]; sprintf_s(szHP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth());
-			CBitmapFont::GetInstance()->DrawString(szHP, 782, 78, 0.05f, 0.5f);
-			char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP());
-			CBitmapFont::GetInstance()->DrawString(szAP, 782, 125, 0.05f, 0.5f);
 
-		}
-		if(CBattleMap::GetInstance()->GetHasBoss() == true)
-		{
-			if(CBattleMap::GetInstance()->GetBoss() != NULL)
+			if( CBattleMap::GetInstance()->GetCurrTarget() > -1 && CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetType() != OBJECT_BOSS)
+			{
+				m_pTM->Draw(CAssets::GetInstance()->aFootClanHUDID, 540,0,1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
+				//get current target 
+				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
+				m_pTM->Draw(CAssets::GetInstance()->aBlueHealthBarID, 895, 105, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
+				char szLVL[3]; sprintf_s(szLVL, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetLevel());
+				CBitmapFont::GetInstance()->DrawString(szLVL, 928, 140, 0.05f, 0.5f);
+				char szEXP[8]; sprintf_s(szEXP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetExperience());
+				CBitmapFont::GetInstance()->DrawString(szEXP, 1009, 140, 0.05f, 0.5f);
+				char szHP[8]; sprintf_s(szHP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth());
+				CBitmapFont::GetInstance()->DrawString(szHP, 782, 78, 0.05f, 0.5f);
+				char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP());
+				CBitmapFont::GetInstance()->DrawString(szAP, 782, 125, 0.05f, 0.5f);
+
+			}
+
+			if(CBattleMap::GetInstance()->GetBoss() != NULL && CBattleMap::GetInstance()->GetCurrTarget() > -1 && CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetType() == OBJECT_BOSS)
 			{
 				m_pTM->Draw(CAssets::GetInstance()->aShredderHUDID, 512, 0,1.0f,1.0f,NULL, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(150, 255,255,255));
 				m_pTM->Draw(CAssets::GetInstance()->aGreenHealthBarID, 882, 90, -1.0f, 1.0f, &m_rEnemyHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));

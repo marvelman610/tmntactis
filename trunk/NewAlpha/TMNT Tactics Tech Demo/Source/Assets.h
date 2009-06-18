@@ -63,6 +63,11 @@ public:
 	ASSET aMouseMagGlassID;
 	ASSET aMouseMoveID;
 
+	ASSET aBMDonBGID;
+	ASSET aBMRaphBGID;
+	ASSET aBMMikeBGID;
+	ASSET aBMLeoBGID;
+
 	// box images
 	ASSET aBpointerID;
 

@@ -1,5 +1,0 @@
-load all skills into Player when the user chooses New or Load.
-
-each skill will have a base render and update which may be overwritten. These will be called from the Attack function of the Player depending on the current turtle.
-
-So if the player executes a skill, the skillToExecute will be set to the selected skill, m_bExecuteSkill = true, the attack function will be called, then calling the skillToExecute's update and render function

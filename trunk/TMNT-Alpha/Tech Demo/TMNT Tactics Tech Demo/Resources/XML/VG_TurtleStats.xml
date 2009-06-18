@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<Turtles>
-         <Leonardo AP="17" HP="100" strength ="16" defense ="6" accuracy="6" speed="5" level ="1" exp="0" range="1"/>
-         <Raphael AP="12" HP="105" strength ="23" defense ="5" accuracy="6" speed="6" level ="1" exp="0" range="1"/>
-         <Donatello AP="16" HP="105" strength ="15" defense ="7" accuracy="7" speed="5" level ="1" exp="0" range="2"/>
-         <Michelangelo AP="15" HP="100" strength ="20" defense ="7" accuracy="5" speed="5" level ="1" exp="0" range="1"/>
-</Turtles>
-

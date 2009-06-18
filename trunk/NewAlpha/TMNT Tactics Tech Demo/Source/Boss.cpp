@@ -246,7 +246,7 @@ void CBoss::AI()
 	}
 
 	POINT begin = GetMapCoord();
-	//safe check to see if turtle is chosen
+	//safe check to see if turtle is chosen if all turtles are == distance
 	if(m_nTurtle <= -1)
 	{
 		m_nTurtle = 0;
@@ -260,16 +260,6 @@ void CBoss::AI()
 		//on turtle
 	case 0:
 		{
-			//16 ap always
-			// attack four times (4ap * 4 = 16)
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
-			//end turn
-			//SetCurrAP(0);
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			/*CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);*/
-
 		}
 		break;
 		//one tile away from  turtle

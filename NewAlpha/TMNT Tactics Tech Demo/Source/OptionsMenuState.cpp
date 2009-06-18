@@ -17,6 +17,7 @@
 #include "Assets.h"
 #include <fstream>
 
+#define VOLUME_ADJUST_SPEED 80.0f
 enum {MUSIC_VOLUME, SFX_VOLUME, BACK, NULL_END};
 
 COptionsMenuState::COptionsMenuState() 
@@ -46,7 +47,7 @@ void COptionsMenuState::Enter()
 	
 //	m_fmsBGMusicID		= GetAssets()->m_fmsOMBGmusic;
 
-	SetMenuX(400); SetMenuY(350);
+	SetMenuX(300); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 	SetCurrMenuSelection( MUSIC_VOLUME );
 
@@ -61,26 +62,55 @@ void COptionsMenuState::Enter()
 
 bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 {
+
+	CBaseMenuState::Input(fElapsedTime, mousePt);
+	if (mousePt.y != m_nMouseY)
+	{
+		int oldSelection = GetCurrMenuSelection(); 
+		int newSelection = (mousePt.y - GetMenuY()) / GetMenuItemSpacing();
+		if (newSelection < 0)
+			newSelection = 0;
+		else if (newSelection > NULL_END-1)
+			newSelection = NULL_END-1;
+		if ( oldSelection != newSelection )
+		{
+			SetCurrMenuSelection( newSelection );
+			if (GetCurrMenuSelection() < 0)
+				SetCurrMenuSelection(MUSIC_VOLUME);
+			else if (GetCurrMenuSelection() > NULL_END-1)
+				SetCurrMenuSelection(NULL_END-1);
+			if (GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuMoveSnd))
+			{
+				GetFMOD()->StopSound(GetAssets()->aMMmenuMoveSnd);
+				GetFMOD()->ResetSound(GetAssets()->aMMmenuMoveSnd);
+			}
+			GetFMOD()->PlaySound(GetAssets()->aMMmenuMoveSnd);
+			if(!GetFMOD()->SetVolume(GetAssets()->aMMmenuMoveSnd, GetGame()->GetSFXVolume()*0.6f))
+				MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+		}
+	}
+	m_nMouseX = mousePt.x; m_nMouseY = mousePt.y;
+
 	if (GetDI()->KeyPressed(DIK_DOWN) || GetDI()->JoystickDPadPressed(3,0))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection()+1);
 		if (GetCurrMenuSelection() == NULL_END)
 			SetCurrMenuSelection(MUSIC_VOLUME);
 	}
-	else if (GetDI()->KeyPressed(DIK_UP)|| GetDI()->JoystickDPadPressed(2,0))
+	else if (GetDI()->KeyPressed(DIK_UP) || GetDI()->JoystickDPadPressed(2,0))
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection()-1);;
 		if (GetCurrMenuSelection() < MUSIC_VOLUME)
 			SetCurrMenuSelection(NULL_END-1);
 	}
-	else if (GetDI()->KeyDown(DIK_LEFT)|| GetDI()->JoystickDPadPressed(0,0))
+	else if (GetDI()->KeyDown(DIK_LEFT) || GetDI()->JoystickDPadPressed(0,0) || GetDI()->MouseButtonDown(MOUSE_LEFT))
 	{
 		switch(GetCurrMenuSelection())
 		{
 		case MUSIC_VOLUME:
 			if (m_nMusicVolume > 0)
 			{
-				m_nMusicVolume--;
+				m_nMusicVolume -= (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
 				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
@@ -89,7 +119,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 		case SFX_VOLUME:
 			if (m_nSFXVolume > 0)
 			{
-				m_nSFXVolume--;
+				m_nSFXVolume -= (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
 				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
@@ -97,14 +127,14 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			break;
 		}
 	}
-	else if (GetDI()->KeyDown(DIK_RIGHT)|| GetDI()->JoystickDPadPressed(1,0))
+	else if (GetDI()->KeyDown(DIK_RIGHT) || GetDI()->JoystickDPadPressed(1,0) || GetDI()->MouseButtonDown(MOUSE_RIGHT))
 	{
 		switch(GetCurrMenuSelection())
 		{
 		case MUSIC_VOLUME:
 			if (m_nMusicVolume < 100)
 			{
-				m_nMusicVolume++;
+				m_nMusicVolume += (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
 				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
@@ -113,14 +143,14 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 		case SFX_VOLUME:
 			if (m_nSFXVolume < 100)
 			{
-				m_nSFXVolume++;
+				m_nSFXVolume += (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
 				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 		}
 	}
-	else if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->JoystickButtonPressed(0,0))
+	if (GetDI()->KeyPressed(DIK_RETURN) || GetDI()->JoystickButtonPressed(0,0) || GetDI()->MouseButtonPressed(MOUSE_LEFT) || GetDI()->KeyPressed(DIK_ESCAPE))
 	{
 		switch(GetCurrMenuSelection())
 		{
@@ -134,16 +164,15 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 void COptionsMenuState::Render()
 {
 	CBaseMenuState::Render();
+	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
 	// TODO:: finish options rendering here
 	char szText[64];
 	sprintf_s(szText, "MUSIC VOLUME (%i)", m_nMusicVolume);
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
 	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY()+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	sprintf_s(szText, "SFX VOLUME (%i)", m_nSFXVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
-	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY()+4 + GetMenuItemSpacing(), 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
-	CBitmapFont::GetInstance()->DrawString("EXIT", 400,GetMenuY()+ (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
-	CBitmapFont::GetInstance()->DrawString("EXIT", 404,GetMenuY()+ (2*GetMenuItemSpacing())+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString("EXIT", GetMenuX(), GetMenuY() + (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

@@ -1223,8 +1223,22 @@ void CNinja::Update(float fElapsedTime)
 			if(m_nInRange == 1)
 			{
 				
-
-				switch(GetCurrAP())
+				if(GetCurrAP() >= 12)
+				{
+					SetCurrAnim(4);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+				}
+				else if( GetCurrAP() >= 8 && GetCurrAP() < 12)
+				{
+					SetCurrAnim(4);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+				}
+				else if( GetCurrAP() == 4)
+				{
+					SetCurrAnim(4);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+				}
+				/*switch(GetCurrAP())
 				{
 				case 4:
 					{
@@ -1249,9 +1263,8 @@ void CNinja::Update(float fElapsedTime)
 					{
 					}
 					break;
-				}
+				}*/
 				
-
 			}
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();

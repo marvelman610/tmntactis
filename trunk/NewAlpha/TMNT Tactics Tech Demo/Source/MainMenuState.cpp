@@ -263,8 +263,10 @@ void CMainMenuState::Render()
 	CBaseMenuState::Render();
 	DWORD color = D3DCOLOR_XRGB(0, 255, 0);	// draw bitmap font text green!!
 	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
-	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f, color);
-	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f, color);
+	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth()+6, 26, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth()+6, 106, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
 	if (m_bxProfile)
 		m_bxProfile->Render();
 	else if (m_bxMsg)
@@ -272,14 +274,29 @@ void CMainMenuState::Render()
 	else
 	{
 		// Draw menu item text
-		GetBitmapFont()->DrawString("S I G N  I N",		GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("S I G N  I N",		GetMenuX(), GetMenuY(), 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("S I G N  I N",		GetMenuX()+4, GetMenuY()+4, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("N E W  G A M E",	GetMenuX()+4, GetMenuY()+GetMenuItemSpacing()+4, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("L O A D",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("L O A D",			GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 2, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("O P T I O N S",	GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 3, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("C R E D I T S",	GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 4, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("T U T O R I A L",	GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 5, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 6, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+
+		GetBitmapFont()->DrawString("E X I T",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+		GetBitmapFont()->DrawString("E X I T",			GetMenuX()+4, GetMenuY()+4+GetMenuItemSpacing() * 7, 0.091f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 		// Draw menu cursor
 		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
 	}

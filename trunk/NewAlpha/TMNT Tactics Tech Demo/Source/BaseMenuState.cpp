@@ -17,7 +17,7 @@ CBaseMenuState::~CBaseMenuState()
 }
 void CBaseMenuState::Render()
 {
-	m_pTM->DrawWithZSort(m_nBGImageID, m_nBGX, m_nBGY, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(200, 200, 200));
+	m_pTM->DrawWithZSort(m_nBGImageID, m_nBGX, m_nBGY, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(150, 150, 150));
 }
 
 void CBaseMenuState::Update(float fElapsedTime)

@@ -222,6 +222,8 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
+	RECT rect = {0, 0, 1024, 512};
+	m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, &rect);
 	if (m_bExecuteSkill)
 	{
 		if (m_fTimer < 3.0f)

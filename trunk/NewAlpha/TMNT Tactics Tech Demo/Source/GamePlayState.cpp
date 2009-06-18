@@ -67,7 +67,6 @@ void CGamePlayState::Exit(void)
 	}
  	if(m_pHUD)
  	{
- 		//m_pHUD->Release();
  		m_pHUD = NULL;
 	}
 	if (m_pPlayer)
@@ -86,27 +85,11 @@ CGamePlayState* CGamePlayState::GetInstance(void)
 	return &instance;
 }
 
-// Messages
-// void MessageProc(CBaseMessage* pMsg)
-// {
-// 	switch( pMsg->GetMsgID() )
-// 	{
-// 	default:
-// 		break;
-// 	}
-// }
-
-
 // Input
 bool CGamePlayState::Input(float fElapsedTime, POINT mousePt)
 {
 	CSGD_DirectInput* pDI = CSGD_DirectInput::GetInstance();
 
-// 	if (pDI->KeyPressed(DIK_ESCAPE))
-// 	{
-// 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
-// 		return true;
-// 	}
 	if(pDI->KeyPressed(DIK_P) || pDI->JoystickButtonPressed(7,0))
 	{
 		m_bIsPaused = !m_bIsPaused;
@@ -220,15 +203,19 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		switch (mapID)		// which battle map file to load?
 		{
 		case LOC_SIMUSA:
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);
 			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 4);
 			break;
 		case LOC_IWAMI:
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
 			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 2, true);
 			break;
 		case LOC_SINARO:
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMDonBGID);
 			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 6);
 			break;
 		case LOC_YAMATO:
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMMikeBGID);
 			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 5);
 			break;
 		}

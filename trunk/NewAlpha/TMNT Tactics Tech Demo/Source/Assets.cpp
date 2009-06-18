@@ -77,6 +77,10 @@ void CAssets::LoadAssets()
 	aBMqteRightID		= m_pTM->LoadTexture("Resources/Images/VG_qteRIGHT.bmp");
 	aBMqteDownID		= m_pTM->LoadTexture("Resources/Images/VG_qteDOWN.bmp");
 	aBMqteUpID			= m_pTM->LoadTexture("Resources/Images/VG_qteUP.bmp");
+	aBMMikeBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgMike.png");
+	aBMLeoBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgLeo.png");
+	aBMRaphBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgRaph.png");
+	aBMDonBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgDon.png");
 
 	aBMpainSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_painScream.mp3");
 	aBMdeathSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_dying.mp3");

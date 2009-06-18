@@ -34,6 +34,7 @@
 #define BOUNDING_BOXES 0
 #define CAM_EDGE_DIST_TO_MOVE 20	// how close to edge of the screen the mouse has to get to start scrolling
 #define SCROLLSPEED 150.0f
+#define SCROLL_MAX 200
 
 CBattleMap::CBattleMap(void)
 {
@@ -208,10 +209,12 @@ void CBattleMap::Reset()
 	// 	}
 	for (int i = 0; i < 4; ++i)
 	{
-		if ( !m_pPlayer->GetTurtles()[i]->GetAlive() )
+		CTurtle* turtle = m_pPlayer->GetTurtles()[i];
+		if ( !turtle->GetAlive() )
 		{
-			m_pPlayer->GetTurtles()[i]->SetAlive(true);
-			m_pPlayer->GetTurtles()[i]->SetHealth(m_pPlayer->GetTurtles()[i]->GetMaxHealth());
+			turtle->SetAlive(true);
+			turtle->SetHealth(turtle->GetMaxHealth());
+			turtle->SetCurrAP(turtle->GetBaseAP());
 		}
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
@@ -222,8 +225,8 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
-	RECT rect = {0, 0, 1024, 512};
-	m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, &rect);
+	RECT rect = {0, 0, 1024, 768};
+	m_pTM->DrawWithZSort(GetBGimageID(), 0, 0, 1.0f, 1.0f, 1.0f, &rect);
 	if (m_bExecuteSkill)
 	{
 		if (m_fTimer < 3.0f)
@@ -2195,6 +2198,8 @@ void CBattleMap::FindPathToTarget()
 void CBattleMap::MoveCamUp(float fElapsedTime)
 {
 	m_fScrollY += SCROLLSPEED * fElapsedTime;
+	if (m_fScrollY >= SCROLL_MAX)
+		m_fScrollY = SCROLL_MAX;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	SetFTosY((int)m_fScrollY - m_nTileHeight);
@@ -2205,6 +2210,8 @@ void CBattleMap::MoveCamUp(float fElapsedTime)
 void CBattleMap::MoveCamDown(float fElapsedTime)
 {
 	m_fScrollY -= SCROLLSPEED * fElapsedTime;
+	if (m_fScrollY <= -SCROLL_MAX)
+		m_fScrollY = -SCROLL_MAX;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	SetFTosY((int)m_fScrollY - m_nTileHeight);
@@ -2215,6 +2222,8 @@ void CBattleMap::MoveCamDown(float fElapsedTime)
 void CBattleMap::MoveCamLeft(float fElapsedTime)
 {
 	m_fScrollX += SCROLLSPEED * fElapsedTime;
+	if (m_fScrollX >= SCROLL_MAX)
+		m_fScrollX = SCROLL_MAX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
@@ -2225,6 +2234,8 @@ void CBattleMap::MoveCamLeft(float fElapsedTime)
 void CBattleMap::MoveCamRight(float fElapsedTime)
 {
 	m_fScrollX -= SCROLLSPEED * fElapsedTime;
+	if (m_fScrollX <= -SCROLL_MAX)
+		m_fScrollX = -SCROLL_MAX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));

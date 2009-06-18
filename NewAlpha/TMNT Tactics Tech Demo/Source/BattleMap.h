@@ -84,6 +84,8 @@ class CBattleMap
 	string m_strCurrVersion;
 	bool m_bHasBoss;
 
+	int m_nBGimageID;
+
 	// button selection
 	int   m_nCurrBtnSelected;
 	bool  m_bDisplaySpecialBox;
@@ -423,6 +425,7 @@ public:
 	//	Accessors
 	//////////////////////////////////////////////////////////////////////////
 	int GetCurrSelectedTile() const {return m_nCurrSelectedTile;}
+	int GetBGimageID()	const		{return m_nBGimageID;}
 	int GetNumCols()	const		{return m_nNumCols;}
 	int GetTileHeight() const		{return m_nTileHeight;}
 	int GetTileWidth()  const		{return m_nTileWidth;}
@@ -459,6 +462,7 @@ public:
 	void SetCurrTargetTile(int nTarget)				{m_ncurrTargetTile = nTarget;}
 	void DecrementNumChars()						{m_nNumCharacters--;}
 	void DecrementNumTurtles()						{m_nNumTurtles--;}
+	void SetBGimageID(int id)						{m_nBGimageID = id;}
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();

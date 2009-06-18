@@ -419,12 +419,11 @@ void CBoss::AI()
 				break;
 			}
 			end = mapPt;
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
 			m_bMoving = true;
 			FindPath(begin, end);
+			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
+				CBattleMap::GetInstance()->GetNumCols(), true);*/		
 
 			//attack three times(12ap)= 16ap
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
@@ -482,12 +481,12 @@ void CBoss::AI()
 				break;
 			}
 			end = mapPt;
+			m_bMoving = true;
+			FindPath(begin, end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
-			
-			m_bMoving = true;
-			FindPath(begin, end);
+	
 
 			//attack twice(8ap) = 14ap
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
@@ -554,12 +553,11 @@ void CBoss::AI()
 				break;
 			}
 			end = mapPt;
+			m_bMoving = true;
+			FindPath(begin, end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			m_bMoving = true;
-			FindPath(begin, end);
 
 			//attack twice(8ap) = 16ap
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
@@ -637,12 +635,11 @@ void CBoss::AI()
 				break;
 			}
 			end = mapPt;
+			m_bMoving = true;
+			FindPath(begin, end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
-			
-			m_bMoving = true;
-			FindPath(begin, end);
 
 			//attack one(4ap) = 14ap
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
@@ -731,12 +728,11 @@ void CBoss::AI()
 				break;
 			}
 			end = mapPt;
+			m_bMoving = true;
+			FindPath(begin, end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			m_bMoving = true;
-			FindPath(begin, end);
 
 			//attack once(4ap) = 16ap
 			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
@@ -837,14 +833,13 @@ void CBoss::AI()
 			}
 
 			end = mapPt;
+			m_bMoving = true;
+			FindPath(begin, end);
 
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
 
-			m_bMoving = true;
-			
-			FindPath(begin, end);
 
 		}
 		break;
@@ -858,7 +853,7 @@ void CBoss::AI()
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
-		}
+	}
 
 
 }

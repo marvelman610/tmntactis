@@ -92,9 +92,11 @@ void CHowToPlayMenuState::Render()
 	CBaseMenuState::Render();
 	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
 
+	CBitmapFont::GetInstance()->DrawString("CLICK TO MOVE ON", 350, 680);
+
 	// TODO:: add the how to play info here
 	if (m_bMouseOverEsc)
-		CBitmapFont::GetInstance()->DrawString("ESC", 512, 730, 0.05f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
+		CBitmapFont::GetInstance()->DrawString("ESC", 512, 730, 0.001f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
 	else
 		CBitmapFont::GetInstance()->DrawString("ESC", 512, 730);
 }

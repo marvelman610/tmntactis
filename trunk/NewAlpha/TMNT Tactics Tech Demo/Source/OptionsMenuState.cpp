@@ -137,10 +137,13 @@ void COptionsMenuState::Render()
 	// TODO:: finish options rendering here
 	char szText[64];
 	sprintf_s(szText, "MUSIC VOLUME (%i)", m_nMusicVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY()+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	sprintf_s(szText, "SFX VOLUME (%i)", m_nSFXVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
-	CBitmapFont::GetInstance()->DrawString("EXIT", 400,GetMenuY()+ (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY()+4 + GetMenuItemSpacing(), 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	CBitmapFont::GetInstance()->DrawString("EXIT", 400,GetMenuY()+ (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+	CBitmapFont::GetInstance()->DrawString("EXIT", 404,GetMenuY()+ (2*GetMenuItemSpacing())+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

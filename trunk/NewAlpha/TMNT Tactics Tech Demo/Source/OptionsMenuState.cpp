@@ -50,8 +50,8 @@ void COptionsMenuState::Enter()
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 	SetCurrMenuSelection( MUSIC_VOLUME );
 
-	m_nSFXVolume	= (int)GetGame()->GetSFXVolume();
-	m_nMusicVolume	= (int)GetGame()->GetMusicVolume();
+	m_nSFXVolume	= (int)(GetGame()->GetSFXVolume() * 100.0f);
+	m_nMusicVolume	= (int)(GetGame()->GetMusicVolume() * 100.0f);
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 	
 	GetFMOD()->PlaySound(GetAssets()->aCMmusicID);

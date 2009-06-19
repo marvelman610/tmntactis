@@ -144,7 +144,7 @@ void CAssets::LoadAssets()
 	aDonatelloHUDID		= m_pTM->LoadTexture("Resources/Images/VG_DonatelloHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aRaphaelHUDID		= m_pTM->LoadTexture("Resources/Images/VG_RaphaelHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aFootClanHUDID		= m_pTM->LoadTexture("Resources/Images/VG_FootClanHUD2.png", D3DCOLOR_XRGB(255,255,255));
-	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD.png", D3DCOLOR_XRGB(255,255,255));
+	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD2.png", D3DCOLOR_XRGB(255,255,255));
 
 	///////////////////////////////////////////////////////////////////////
 	//Items and weapons

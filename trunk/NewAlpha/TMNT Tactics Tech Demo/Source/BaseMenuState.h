@@ -120,6 +120,8 @@ public:
 	int GetMenuY() const			{return m_nMenuY; }
 	int GetBGImageHeight()			{return m_nImageHeight; }
 	int GetBGImageWidth()			{return m_nImageWidth; }
+	int GetBGx()					{return m_nBGX;}
+	int GetBGy()					{return m_nBGY;}
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators

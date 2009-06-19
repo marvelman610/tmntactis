@@ -139,7 +139,7 @@ bool CGame::Main(POINT mouse)
 	
 		m_pMS->ProcessMsgs();
 	
-		m_pD3D->Clear(255,255,255);
+		m_pD3D->Clear(0,0,0);
 	
 		m_pD3D->DeviceBegin();
 		m_pD3D->SpriteBegin();

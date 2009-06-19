@@ -21,8 +21,9 @@ private:
 	CCreditState& operator=(const CCreditState&);
 	DWORD m_dwTimer;
 	int m_nAlpha;
-	int m_nYVelocity; // y speed
+	float m_fYVelocity; // y speed
 	int m_nYPos; // y position
+	float m_fTimer;
 	DWORD m_dwCounter; // counter
 
 public:

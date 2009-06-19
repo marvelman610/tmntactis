@@ -18,8 +18,8 @@ CCreditState::CCreditState()
 {
 	m_dwTimer = 0;
 	m_nAlpha = 0;
-	m_nYVelocity = -1;
-	m_nYPos = 300;
+	m_fYVelocity = -80.0f;
+	m_nYPos = 500;
 	m_dwCounter = 0;
 	//GetMenuItemSpacing() == offset between each line printed
 }
@@ -43,24 +43,26 @@ void CCreditState::Enter()
 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aCMbgID));
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aCMbgID));
 	CenterBGImage();
-	m_nYPos = 300;
-	m_nYVelocity = -1;
+	m_nYPos = 700;
+	m_fYVelocity = -80.0f;
 	m_nAlpha = 150;
+	m_fTimer = 0.0f;
+	SetMenuX(100);
 	GetFMOD()->PlaySound(GetAssets()->aBMninjarap);
 	GetFMOD()->SetVolume(GetAssets()->aBMninjarap, GetGame()->GetMusicVolume());
 }
 
 bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
 {
-	if(GetDI()->JoystickDPadPressed(2,0) || GetDI()->KeyPressed(DIK_UP))//up
+	if(GetDI()->JoystickDPadPressed(2,0) || GetDI()->KeyDown(DIK_UP))//up
 	{
 		//move text slower
-		m_nYVelocity--;
+		m_fYVelocity -= (50.0f * fElapsedTimes);
 	}
-	else if(GetDI()->JoystickDPadPressed(3,0) || GetDI()->KeyPressed(DIK_DOWN))//down
+	else if(GetDI()->JoystickDPadPressed(3,0) || GetDI()->KeyDown(DIK_DOWN))//down
 	{
 		//move text faster
-		m_nYVelocity++;
+		m_fYVelocity += (50.0f * fElapsedTimes);
 	}
 	if(GetDI()->KeyPressed(DIK_ESCAPE) || GetDI()->JoystickButtonPressed(1,0))
 	{
@@ -73,67 +75,68 @@ void CCreditState::Render()
 {
 	//CBaseMenuState::Render();
 	RECT imageRect = { 0, 0, GetBGImageWidth(), GetBGImageHeight()};
-	GetTM()->DrawWithZSort(GetBGImageID(), 0,0,0.1f,1.0f,1.0f, &imageRect, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(m_nAlpha, 255,255,255));
+	CenterBGImage();
+	GetTM()->DrawWithZSort(GetBGImageID(), GetBGx(), GetBGy(), 0.1f,1.0f,1.0f, &imageRect, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(m_nAlpha, 150,150,150));
 	
+	GetBitmapFont()->DrawStringAutoCenter("CREDITS", GetGame()->GetScreenWidth(), m_nYPos-GetMenuItemSpacing() );
 
-	GetBitmapFont()->DrawString("CREDITS", 100, m_nYPos );
+	GetBitmapFont()->DrawString("EXECUTIVE PRODUCER", GetMenuX(), m_nYPos + GetMenuItemSpacing());
+	GetBitmapFont()->DrawString("DUSTIN CLINGMAN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*2);
 
-	GetBitmapFont()->DrawString("EXECUTIVE PRODUCER", 100, m_nYPos + GetMenuItemSpacing());
-	GetBitmapFont()->DrawString("DUSTIN CLINGMAN", 100, m_nYPos + GetMenuItemSpacing()*2);
+	GetBitmapFont()->DrawString("ASSOCIATE PRODUCER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*4);
+	GetBitmapFont()->DrawString("ROB MARTINEZ", GetMenuX(), m_nYPos + GetMenuItemSpacing()*5);
 
-	GetBitmapFont()->DrawString("ASSOCIATE PRODUCER", 100, m_nYPos + GetMenuItemSpacing()*3);
-	GetBitmapFont()->DrawString("ROB MARTINEZ", 150, m_nYPos + GetMenuItemSpacing()*4);
+	GetBitmapFont()->DrawString("ENGINEER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*7);
 
-	GetBitmapFont()->DrawString("ENGINEER", 100, m_nYPos + GetMenuItemSpacing()*5);
+	GetBitmapFont()->DrawString("ART", GetMenuX(), m_nYPos + GetMenuItemSpacing()*9);
+	GetBitmapFont()->DrawString("CHRIS JAHOSKY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*10);
 
-	GetBitmapFont()->DrawString("ART", 100, m_nYPos + GetMenuItemSpacing()*6);
+	GetBitmapFont()->DrawString("ANIMATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*12);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*13);
 
-	GetBitmapFont()->DrawString("ANIMATION", 100, m_nYPos + GetMenuItemSpacing()*7);
-	GetBitmapFont()->DrawString("MATT DI MATTEO", 100, m_nYPos + GetMenuItemSpacing()*8);
+	GetBitmapFont()->DrawString("LEVEL DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*15);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*16);
 
-	GetBitmapFont()->DrawString("LEVEL DESIGN", 100, m_nYPos + GetMenuItemSpacing()*9);
-	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", 100, m_nYPos + GetMenuItemSpacing()*10);
+	GetBitmapFont()->DrawString("PROJECT LEAD", GetMenuX(), m_nYPos + GetMenuItemSpacing()*18);
 
-	GetBitmapFont()->DrawString("PROJECT LEAD", 100, m_nYPos + GetMenuItemSpacing()*11);
+	GetBitmapFont()->DrawString("TECHNICAL DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*21);
 
-	GetBitmapFont()->DrawString("TECHNICAL DIRECTOR", 100, m_nYPos + GetMenuItemSpacing()*12);
+	GetBitmapFont()->DrawString("AUDIO DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*24);
 
-	GetBitmapFont()->DrawString("AUDIO DIRECTOR", 100, m_nYPos + GetMenuItemSpacing()*13);
+	GetBitmapFont()->DrawString("LEAD SOUND DESIGNER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*27);
 
-	GetBitmapFont()->DrawString("LEAD SOUND DESIGNER", 100, m_nYPos + GetMenuItemSpacing()*14);
+	GetBitmapFont()->DrawString("SOUND DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*30);
 
-	GetBitmapFont()->DrawString("SOUND DESIGN", 100, m_nYPos + GetMenuItemSpacing()*15);
+	GetBitmapFont()->DrawString("SOUND ASSISTANT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*33);
 
-	GetBitmapFont()->DrawString("SOUND ASSISTANT", 100, m_nYPos + GetMenuItemSpacing()*16);
+	GetBitmapFont()->DrawString("VOICE DIRECTION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*36);
 
-	GetBitmapFont()->DrawString("VOICE DIRECTION", 100, m_nYPos + GetMenuItemSpacing()*17);
+	GetBitmapFont()->DrawString("VOICE TALENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*39);
 
-	GetBitmapFont()->DrawString("VOICE TALENT", 100, m_nYPos + GetMenuItemSpacing()*18);
+	GetBitmapFont()->DrawString("ORIGINAL MUSIC BY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*42);
+	GetBitmapFont()->DrawString("VANILLA ICE", GetMenuX(), m_nYPos + GetMenuItemSpacing()*43);
 
-	GetBitmapFont()->DrawString("ORIGINAL MUSIC BY", 100, m_nYPos + GetMenuItemSpacing()*19);
-	GetBitmapFont()->DrawString("VANILLA ICE", 100, m_nYPos + GetMenuItemSpacing()*20);
+	GetBitmapFont()->DrawString("PROJECT MANAGEMENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*46);
 
-	GetBitmapFont()->DrawString("PROJECT MANAGEMENT", 100, m_nYPos + GetMenuItemSpacing()*21);
+	GetBitmapFont()->DrawString("LEAD TESTER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*49);
 
-	GetBitmapFont()->DrawString("LEAD TESTER", 100, m_nYPos + GetMenuItemSpacing()*22);
+	GetBitmapFont()->DrawString("ART SUPPORT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*52);
 
-	GetBitmapFont()->DrawString("ART SUPPORT", 100, m_nYPos + GetMenuItemSpacing()*23);
+	GetBitmapFont()->DrawString("GENERAL MANAGER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*55);
 
-	GetBitmapFont()->DrawString("GENERAL MANAGER", 100, m_nYPos + GetMenuItemSpacing()*24);
+	GetBitmapFont()->DrawString("DOCUMENTATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*58);
 
-	GetBitmapFont()->DrawString("DOCUMENTATION", 100, m_nYPos + GetMenuItemSpacing()*25);
+	GetBitmapFont()->DrawString("PACKAGE DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*61);
 
-	GetBitmapFont()->DrawString("PACKAGE DESIGN", 100, m_nYPos + GetMenuItemSpacing()*26);
+	GetBitmapFont()->DrawString("TECHNICAL OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*64);
 
-	GetBitmapFont()->DrawString("TECHNICAL OFFICER", 100, m_nYPos + GetMenuItemSpacing()*27);
+	GetBitmapFont()->DrawString("GAMEPLAY OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*67);
 
-	GetBitmapFont()->DrawString("GAMEPLAY OFFICER", 100, m_nYPos + GetMenuItemSpacing()*28);
+	GetBitmapFont()->DrawString("INTERFACE OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 70);
 
-	GetBitmapFont()->DrawString("INTERFACE OFFICER", 100, m_nYPos + GetMenuItemSpacing() * 29);
+	GetBitmapFont()->DrawString("PROJECT OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 73);
 
-	GetBitmapFont()->DrawString("PROJECT OFFICER", 100, m_nYPos + GetMenuItemSpacing() * 30);
-
-	GetBitmapFont()->DrawString("SPECIAL THANKS", 100, m_nYPos + GetMenuItemSpacing()*31 );
+	GetBitmapFont()->DrawString("SPECIAL THANKS", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 76);
 }
 
 void CCreditState::Exit()
@@ -147,7 +150,9 @@ void CCreditState::Update(float fElapsedtime)
 {
 	CBaseMenuState::Update(fElapsedtime);
 
-	if(GetTickCount()- m_dwTimer > 3000)
+	m_fTimer += fElapsedtime;
+
+	if(m_fTimer > 3.5f)
 	{
 		//change the image
 		if(GetBGImageID() == GetAssets()->aCMbgID)
@@ -185,10 +190,10 @@ void CCreditState::Update(float fElapsedtime)
 			SetBGWidth(400);
 			CenterBGImage();
 		}
-		m_dwTimer = GetTickCount();
+		m_fTimer = 0.0f;
 	}
 	
-	if(GetTickCount() - m_dwTimer < 1500)
+	if(m_fTimer < 2.0f)
 	{
 		//fade in
 		if(m_nAlpha < 255)
@@ -201,10 +206,5 @@ void CCreditState::Update(float fElapsedtime)
 			m_nAlpha--;
 	}
 
-	m_dwCounter++;
-	if(m_dwCounter > 25)
-	{
-		m_nYPos += m_nYVelocity;
-		m_dwCounter = 0;
-	}
+	m_nYPos += (int)(m_fYVelocity * fElapsedtime);
 }

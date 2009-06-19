@@ -34,7 +34,7 @@ CMainMenuState::CMainMenuState()
 	{
 		m_sProfiles[i] = "Create New";
 	}
-	ifstream ifs("SavedFiles.dat", ios_base::binary);
+	ifstream ifs("Profiles.dat", ios_base::binary);
 	if (ifs.is_open())
 	{
 		for (int i = 1; i < 5; ++i)
@@ -61,9 +61,11 @@ CMainMenuState* CMainMenuState::GetInstance()
 	static CMainMenuState menuState;
 	return &menuState;
 }
+
 void CMainMenuState::Enter()
 {
-	ifstream ifs("SavedFiles.dat", ios_base::binary);
+	m_bNewGamePressed = false;
+	ifstream ifs("Profiles.dat", ios_base::binary);
 	if (ifs.is_open())
 	{
 		for (int i = 1; i < 5; ++i)
@@ -84,11 +86,19 @@ void CMainMenuState::Enter()
 	CenterBGImage();
 
 	SetCurrMenuSelection( PLAY );
-	SetMenuX(320); SetMenuY(350);
+	SetMenuX(350); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 
 	GetFMOD()->PlaySound(GetAssets()->aMMmusicID);
 	GetFMOD()->SetVolume(GetAssets()->aMMmusicID, GetGame()->GetMusicVolume());
+
+	if (CPlayer::GetInstance()->GetProfName() == "NONE")
+	{
+		m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+		m_bxProfile->SetActive();
+		m_bxProfile->SetType(BOX_WITH_BACK);
+		m_bxProfile->AcceptInput();
+	}
 }
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
@@ -139,14 +149,29 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				delete m_bxProfile;
 				m_bxProfile = NULL;
 				++m_nNumProfiles;
-				// TODO:: load the profile's saved game...if one exists, load that into the player
-				ifstream ifs("SavedFiles.dat", ios_base::binary);
-				if (ifs.is_open())
+
+				// save the profile names
+				ofstream ofs("Profiles.dat", ios_base::binary);
+				for (int i= 1; i < m_nNumProfiles+1; ++i)
 				{
-					ifs.close();
-					// load the save game..it exists already
-					string fileName = CPlayer::GetInstance()->GetProfName() + ".dat";
-					CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
+					ofs.write((char*)(&m_sProfiles[i]), sizeof(m_sProfiles[i]));
+				}
+				ofs.close();
+
+				// load the profile's saved game if one exists
+
+//				ifstream ifs("SavedFiles.dat", ios_base::binary);
+// 				if (ifs.is_open())
+// 				{
+// 					ifs.close();
+// 					// load the save game..it exists already
+// 					string fileName = CPlayer::GetInstance()->GetProfName() + ".dat";
+// 					CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
+// 				}
+				if (m_bNewGamePressed)
+				{
+					CPlayer::GetInstance()->NewGame();
+					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 				}
 					// no saved game yet...
 
@@ -201,16 +226,17 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		{
 		case SIGNIN:
 			{
-				m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+				m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
 				m_bxProfile->SetActive();
 				m_bxProfile->SetType(BOX_WITH_BACK);
 				m_bxProfile->AcceptInput();
 			}
 			break;
 		case PLAY:
+			m_bNewGamePressed = true;
 			if (CPlayer::GetInstance()->GetProfName() == "NONE")
 			{
-				m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+				m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
 				m_bxProfile->SetActive();
 				m_bxProfile->SetType(BOX_WITH_BACK);
 				m_bxProfile->AcceptInput();
@@ -295,13 +321,14 @@ void CMainMenuState::Update(float fElapsedTime)
 
 void CMainMenuState::Exit()
 {
+	m_bNewGamePressed = false;
 	GetFMOD()->StopSound(GetAssets()->aMMmusicID);
 	GetFMOD()->ResetSound(GetAssets()->aMMmusicID);
 
 	// saving any profile info -- the actual saved game file will be the profile name + .dat
 	if (m_nNumProfiles > 0)
 	{
-		fstream ofs("SavedFiles.dat", ios_base::binary);
+		fstream ofs("Profiles.dat", ios_base::binary);
 		for (int i= 1; i < m_nNumProfiles+1; ++i)
 		{
 			ofs.write((char*)(&m_sProfiles[i]), sizeof(m_sProfiles[i]));

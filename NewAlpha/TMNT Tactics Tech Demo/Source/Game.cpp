@@ -25,15 +25,10 @@ CGame::CGame()
 	m_pDI = NULL;
 	m_pPlayer = NULL;
 
-// 	m_pMessageSystem = NULL;
-// 	m_pObjectFactory = NULL;
-// 	m_pParticleSystem = NULL;
-
 	// variables
 	m_bIsRunning = false;
-	m_fSFXVolume = 0.2f;
-	m_fMusicVolume = 0.2f;
-/*	m_PlayerInfo = 0;*/
+	m_fSFXVolume = 0.5f;
+	m_fMusicVolume = 0.5f;
 
 	srand((unsigned int)(time(0)));
 }
@@ -59,10 +54,6 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 	m_nScreenWidth = nScreenWidth;
 	m_nScreenHeight = nScreenHeight;
 	
-	//m_pMessageSystem = MessageSysterm::GetInstance();
-	//m_pObjectFactory = Factory::GetInstance();
-	//m_pParticleSystem = ParticleSystem::GetInstance();
-
 	//  Initialize the singletons
 	m_pD3D->InitDirect3D(hWnd, nScreenWidth, nScreenHeight, bIsWindowed, false);
 	m_pTM->InitTextureManager(m_pD3D->GetDirect3DDevice(), m_pD3D->GetSprite());
@@ -94,21 +85,6 @@ void CGame::Shutdown()
 	ChangeState(NULL);
 	if(m_pMS){m_pMS->ShutdownMessageSystem(); m_pMS=NULL;}
 
-// 	if(m_pParticleSystem)
-// 	{
-// 		m_pParticleSystem->Shutdown();
-// 		m_pParticleSystem = NULL;
-// 	}
- 	//if(m_pObjectFactory)
- 	//{
- 	//	m_pObjectFactory->Shutdown();
- 	//	m_pObjectFactory = NULL;
- 	//}
-// 	if(m_pMessageSystem)
-// 	{
-// 		m_pMessageSystem->Shutdown();
-// 		m_pMessageSystem = NULL;
-// 	}
 	if (m_pFMOD)
 	{
 		m_pFMOD->ShutdownFModManager();
@@ -191,13 +167,7 @@ void CGame::LoadSettings(void)
 	// get settings
 	m_fSFXVolume = 0.2f;
 	m_fMusicVolume = 0.2f;
-//	m_PlayerInfo = 0;
 }
-
-//FMOD::System* CGame::GetFMODSystem(void)
-//{
-//	return &m_pFMODSystem;
-//}
 
 void CGame::SetMusicVolume(float _nMusicVolume)
 {
@@ -225,7 +195,6 @@ void MessageProc(CBaseMessage* pMsg)
 			CDestroyItem * pDP = (CDestroyItem*)pMsg;
 			CBattleItem p = *(pDP->GetItem());
 			CPlayer::GetInstance()->AddItem(p);
-			//CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].SetCurrAP(CBattleMap::GetInstance()->GetChars()[CBattleMap::GetInstance()->GetCurrActive()].GetCurrAP()+30);
 			ObjectManager::GetInstance()->Remove(pDP->GetItem());
 		}
 		break;

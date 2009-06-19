@@ -145,7 +145,8 @@ void CGamePlayState::Render(void)
 void CGamePlayState::LoadGame(const char* fileName)
 {
 	ifstream ifs;
-	ifs.open(fileName, ios_base::binary | ios_base::in);
+	string pathFileName = "Resources/SavedGames/" + fileName;
+	ifs.open(pathFileName, ios_base::binary | ios_base::in);
 	if (ifs.is_open())
 	{
 		CPlayer* player = CPlayer::GetInstance();
@@ -166,7 +167,8 @@ void CGamePlayState::LoadGame(const char* fileName)
 void CGamePlayState::SaveGame(const char* fileName)
 {
 	ofstream ofs;
-	ofs.open(fileName, ios_base::binary | ios_base::out);
+	string pathFileName = "Resources/SavedGames/" + fileName;
+	ofs.open(pathFileName, ios_base::binary | ios_base::out);
 
 	CPlayer* player = CPlayer::GetInstance();
 	CTurtle** turtles = player->GetTurtles();

@@ -82,6 +82,12 @@ public:
 	// Purpose: Draws game objects to the screen.
 	////////////////////////////////////////////////////////////////////
 	void Render();
+
+	void DrawRaphHUD();
+	void DrawDonHUD();
+	void DrawLeoHUD();
+	void DrawMikeyHUD();
+	void DrawFootClanHUD();
 };
 
 #endif

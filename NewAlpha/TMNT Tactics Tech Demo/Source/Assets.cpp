@@ -143,7 +143,7 @@ void CAssets::LoadAssets()
 	aLeonardoHUDID		= m_pTM->LoadTexture("Resources/Images/VG_LeonardoHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aDonatelloHUDID		= m_pTM->LoadTexture("Resources/Images/VG_DonatelloHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aRaphaelHUDID		= m_pTM->LoadTexture("Resources/Images/VG_RaphaelHUD.png", D3DCOLOR_XRGB(255,255,255));
-	aFootClanHUDID		= m_pTM->LoadTexture("Resources/Images/VG_FootClanHUD2.png", D3DCOLOR_XRGB(255,255,255));
+	aFootClanHUDID		= m_pTM->LoadTexture("Resources/Images/VG_FootClanHUD.png", D3DCOLOR_XRGB(255,255,255));
 	aShredderHUDID		= m_pTM->LoadTexture("Resources/Images/VG_ShredderHUD2.png", D3DCOLOR_XRGB(255,255,255));
 
 	///////////////////////////////////////////////////////////////////////

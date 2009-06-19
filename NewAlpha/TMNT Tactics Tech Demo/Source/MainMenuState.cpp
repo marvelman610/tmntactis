@@ -24,7 +24,7 @@
 #include <fstream>
 using std::fstream;
 
-enum {SIGNIN, PLAY, LOAD, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_END };
+enum {SIGNIN, PLAY, CONTINUE, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
@@ -254,7 +254,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		case CREDITS:
 			CGame::GetInstance()->ChangeState(CCreditState::GetInstance());
 			break;
-		case LOAD:
+		case CONTINUE:
 			{
 					// no saved
 				if (CPlayer::GetInstance()->GetProfName() == "NONE")
@@ -302,7 +302,7 @@ void CMainMenuState::Render()
 		// Draw menu item text
 		GetBitmapFont()->DrawString("SIGN IN",		GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("NEW GAME",		GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("LOAD",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
+		GetBitmapFont()->DrawString("CONTINUE",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("OPTIONS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("CREDITS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
 		GetBitmapFont()->DrawString("TUTORIAL",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);

@@ -112,7 +112,6 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nMusicVolume -= (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
-				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -121,7 +120,11 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nSFXVolume -= (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
-				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
+				if (!GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuClickSnd))
+				{
+					GetFMOD()->PlaySound(GetAssets()->aMMmenuClickSnd);
+					GetFMOD()->SetVolume(GetAssets()->aMMmenuClickSnd, GetGame()->GetSFXVolume());
+				}
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -136,7 +139,6 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nMusicVolume += (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
-				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -145,7 +147,11 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nSFXVolume += (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetSFXVolume((float)m_nSFXVolume/100.0f);
-				GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
+				if (!GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuClickSnd))
+				{
+					GetFMOD()->PlaySound(GetAssets()->aMMmenuClickSnd);
+					GetFMOD()->SetVolume(GetAssets()->aMMmenuClickSnd, GetGame()->GetSFXVolume());
+				}
 				m_bHasASettingChanged = true;
 			}
 		}
@@ -171,8 +177,10 @@ void COptionsMenuState::Render()
 	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
 	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY()+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	sprintf_s(szText, "SFX VOLUME (%i)", m_nSFXVolume);
-	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
-	GetBitmapFont()->DrawString("EXIT", GetMenuX(), GetMenuY() + (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX(), GetMenuY() + GetMenuItemSpacing(), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawString(szText, GetMenuX()+4, GetMenuY() + GetMenuItemSpacing()+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawString("EXIT", GetMenuX(), GetMenuY() + (2*GetMenuItemSpacing()), 0.05f, 1.0f, D3DCOLOR_ARGB(255,0,255,0));
+	GetBitmapFont()->DrawString("EXIT", GetMenuX()+4, GetMenuY() + (2*GetMenuItemSpacing())+4, 0.051f, 1.0f, D3DCOLOR_ARGB(255,255,0,0));
 	// Draw menu cursor
 	GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0);
 }

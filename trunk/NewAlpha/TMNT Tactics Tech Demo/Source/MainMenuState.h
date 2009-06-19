@@ -21,6 +21,7 @@ private:
 	CBox*	m_bxProfile;
 	CBox*	m_bxMsg;
 	bool	m_bDisplayLoadBox;
+	bool	m_bNewGamePressed;
 	int		m_nNumProfiles;
 	string m_sProfiles[4];
 

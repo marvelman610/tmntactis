@@ -43,6 +43,8 @@ void CCreditState::Enter()
 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aCMbgID));
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aCMbgID));
 	CenterBGImage();
+	m_nYPos = 300;
+	m_nYVelocity = -1;
 	m_nAlpha = 150;
 	GetFMOD()->PlaySound(GetAssets()->aBMninjarap);
 	GetFMOD()->SetVolume(GetAssets()->aBMninjarap, GetGame()->GetMusicVolume());

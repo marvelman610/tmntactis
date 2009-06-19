@@ -29,7 +29,7 @@ CAnimation::CAnimation(void)
 	m_bIsLooping = true;
 	bFacingLeft = false;
 
-	m_fSpeed = 0.25f;
+	m_fSpeed = 1.0f;
 
 	m_nImageID = -1;
 	m_pFrames = NULL;
@@ -125,7 +125,7 @@ void CAnimation::Load(const char* FileName, int numFrame, float duration, bool L
 				//	m_bIsLooping = false;
 
 				ifs.read(reinterpret_cast<char *>(&nDuration),4);  //0.35
-				m_fDuration = nDuration / 1000.0f;
+				//m_fDuration = nDuration / 1000.0f;
 
 				m_pFrames = new sFrame[m_nTotalFrames];
 
@@ -145,10 +145,13 @@ void CAnimation::Load(const char* FileName, int numFrame, float duration, bool L
 					delete[] m_pFrames;
 					m_pFrames = NULL;
 				}
-			if(i == numFrame)
-				m_fDuration = duration; m_bIsLooping = Looping;
+				if(i == numFrame)
+				{
+					m_fDuration = duration;
+					m_bIsLooping = Looping;
+				}
 			}
-			
+
 		}
 		else
 		{
@@ -167,7 +170,7 @@ void CAnimation::Load(const char* FileName, int numFrame, float duration, bool L
 }
 void CAnimation::Update(float fElapsedtime)
 {
-	m_fDuration = 0.1f;
+	
 	if(!m_bIsPlaying)
 		return;
 
@@ -207,8 +210,7 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, DWORD dwCol
 
 		}
 		//draw stuff to screen
-				/*CSGD_TextureManager::GetInstance()->Draw(m_nImageID,posx,posy,fScaleX,scale,&frame, 0, 0, 0);*/
-		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, posx, posy, posZ,
+		CSGD_TextureManager::GetInstance()->DrawWithZSort(m_nImageID, posx-m_pFrames[m_nCurrFrame].nAnchorX, posy - m_pFrames[m_nCurrFrame].nAnchorY, posZ,
 			fScaleX,
 			scale,
 			&frame,

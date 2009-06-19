@@ -234,13 +234,13 @@ bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 void CPlayer::LoadAnimations()
 {
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 1,0.25f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 2,0.15f, false);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 3,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 4,0.15f, false);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 4,0.25f, false);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 5,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
@@ -261,7 +261,7 @@ void CPlayer::LoadAnimations()
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 13,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 1,0.25f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 2,0.15f, false);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
@@ -284,7 +284,7 @@ void CPlayer::LoadAnimations()
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 11,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 1,0.25f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 2,0.15f, false);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
@@ -305,7 +305,7 @@ void CPlayer::LoadAnimations()
 	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 10,0.15f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 
-	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 1,0.25f);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 2,0.15f, false);
 	m_pTurtles[MIKEY]->AddAnim(anim);

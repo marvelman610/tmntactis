@@ -127,9 +127,9 @@ CBoss* Factory::CreateBoss()
 	boss->SetStrength(20);
 
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 1,0.15f);//idle1,0
+	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 1,0.25f);//idle1,0
 	boss->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 2,0.05f);//idle2,1
+	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 2,0.25f);//idle2,1
 	boss->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 3,0.05f, false);//high,2
 	boss->AddAnim(anim);
@@ -151,11 +151,11 @@ CNinja* Factory::CreateNinja()
 	CNinja* ninja = new CNinja();
 
 	CAnimation anim;
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 1,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 1,0.75f);
 	ninja->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 2,0.03f);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 2,0.15f);
 	ninja->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 3,0.03f);
+	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 3,0.15f);
 	ninja->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 4,0.15f);
 	ninja->AddAnim(anim);

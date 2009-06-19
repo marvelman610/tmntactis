@@ -49,10 +49,10 @@ RECT CBase::GetRect()
 {
 	LONG left, top, right, bottom;
 
-	left = (LONG)(m_fPosX);
-	top = (LONG)(m_fPosY);
-	right = (LONG)(left+m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nFrameWidth);
-	bottom = (LONG)(top+m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nFrameHeight);
+	left = (LONG)(m_fPosX );
+	top = (LONG)(m_fPosY  );
+	right = (LONG)(left+m_vAnimations[0].GetFrames()[0].nFrameWidth);
+	bottom = (LONG)(top+m_vAnimations[0].GetFrames()[0].nFrameHeight);
 
 	RECT rect = {left,top,right,bottom};
 	return rect;
@@ -73,8 +73,8 @@ void CBase::SetCurrTile(POINT mapPt, int xOffset, int yOffset, int tileWidth, in
 		SetPosX((float)(mapPt.x - mapPt.y) * (tileWidth >> 1) + xOffset + (tileWidth>>1));
 		SetPosY((float)(mapPt.x + mapPt.y) * (tileHeight >> 1) + yOffset + (tileHeight>>1));
 		POINT anchorPt;
-		anchorPt.x = (LONG)(GetPosX() + m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nAnchorX);
-		anchorPt.y = (LONG)(GetPosY() + m_vAnimations[m_nCurrAnimation].GetFrames()[m_nCurrAnimation].nAnchorY);
+		anchorPt.x = (LONG)(GetPosX() + m_vAnimations[0].GetFrames()[0].nAnchorX);
+		anchorPt.y = (LONG)(GetPosY() + m_vAnimations[0].GetFrames()[0].nAnchorY);
 		SetAnchor(anchorPt);
 	}
 	else

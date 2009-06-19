@@ -729,6 +729,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		SetPaused(true);
 	else if (!CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
 		SetPaused(false);
+
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;
 	mouse.x -= (LONG)m_fScrollX;

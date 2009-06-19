@@ -233,18 +233,25 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 			}
 			break;
 		case PLAY:
-			m_bNewGamePressed = true;
-			if (CPlayer::GetInstance()->GetProfName() == "NONE")
 			{
-				m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
-				m_bxProfile->SetActive();
-				m_bxProfile->SetType(BOX_WITH_BACK);
-				m_bxProfile->AcceptInput();
+				m_bNewGamePressed = true;
+				string profName = CPlayer::GetInstance()->GetProfName();
+				if (profName == "NONE")
+				{
+					m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
+					m_bxProfile->SetActive();
+					m_bxProfile->SetType(BOX_WITH_BACK);
+					m_bxProfile->AcceptInput();
+					break;
+				}
+				else
+				{
+					CPlayer::GetInstance()->NewGame();
+					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
+				}
 				break;
+
 			}
-			CPlayer::GetInstance()->NewGame();
-			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
-			break;
 		case OPTIONS:
 			CGame::GetInstance()->ChangeState(COptionsMenuState::GetInstance());
 			break;

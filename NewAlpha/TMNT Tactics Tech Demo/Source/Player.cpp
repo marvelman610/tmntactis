@@ -13,6 +13,7 @@
 #include "ObjectManager.h"
 #include "Skill.h"
 #include "Achievements.h"
+#include "Game.h"
 #include <string>
 #include <fstream>
 using namespace std;
@@ -147,6 +148,7 @@ void CPlayer::LoadNewSkills(const char* filename)
 				inactiveSkills.push_back(*Skill);
 			else
 				activeSkill.push_back(*Skill);
+			CGame::GetInstance()->AddSkill(*Skill);
 			pSkill = pSkill->NextSiblingElement();
 			delete Skill;
 		}

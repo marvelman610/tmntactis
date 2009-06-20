@@ -79,21 +79,28 @@ public:
 	//Function:	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////////
 	inline bool GetActive(void) { return m_bIsActive; }
+
+	//////////////////////////////////////////////////////////////////////////
+	// SKILLS
 	inline vector<CSkill>* GetSkills()  { return &m_vActiveSkills;}
 	inline vector<CSkill>* GetInactiveSkills() {return &m_vInactiveSkills;}
 	inline int GetNumSkills(void) {return m_vActiveSkills.size();}
 	inline int GetCurrSelectedSkillIndex() {return m_nCurrSelectedSkill;}
 	inline CSkill* GetCurrSelectedSkill() {return &m_vActiveSkills[m_nCurrSelectedSkill];}
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
-	inline bool GetAlive(void) { return m_bIsAlive; }
-	inline void SetAlive(bool set) { m_bIsAlive = set; }
 
-	inline int GetCurrWeaponIndex() {return m_nCurrWeapon;}
-	inline void SetCurrWeaponIndex(int i) {m_nCurrWeapon = i;}
+	//////////////////////////////////////////////////////////////////////////
+	inline bool GetAlive(void)				{ return m_bIsAlive; }
+	inline void SetAlive(bool set)			{ m_bIsAlive = set; }
 
-	vector<CBase>* GetWeapons()			{ return &m_vWeapons;		}
-	void SetWeapons(vector<CBase>& weapons) {m_vWeapons = weapons;}
-	void AddWeapon(CBase a)				{ m_vWeapons.push_back(a);	}
+	inline int GetCurrWeaponIndex()			{ return m_nCurrWeapon;}
+	inline void SetCurrWeaponIndex(int i)	{ m_nCurrWeapon = i;}
+
+	vector<CBase>* GetWeapons()				{ return &m_vWeapons;		}
+	void SetWeapons(vector<CBase>& weapons) { m_vWeapons = weapons;}
+	void AddWeapon(CBase a)					{ m_vWeapons.push_back(a);	}
+	void ClearWeapons()						{ m_vWeapons.clear();}
+
 };
 
 #endif

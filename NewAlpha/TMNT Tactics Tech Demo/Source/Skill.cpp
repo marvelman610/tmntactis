@@ -63,7 +63,24 @@ CSkill::~CSkill()
 	m_pTM			= NULL;
 	m_pCombination = NULL;
 }
-CSkill::CSkill() {}
+CSkill::CSkill() 
+{
+	m_strName = "NONE";
+	m_nType = -1;
+	m_nDamage = -1;
+	m_nRange = -1;
+	m_nSkillCost = -1;
+	m_nSkillID	= -1;
+	m_nCurrAmountSuccessful = 0;
+	m_nMaxCombinationAmount = -1;
+	m_pCombination  = NULL;
+	m_pPlayer		= CPlayer::GetInstance();
+	m_pBattleMap	= CBattleMap::GetInstance();
+	m_pDI			= CSGD_DirectInput::GetInstance();
+	m_pD3D			= CSGD_Direct3D::GetInstance();
+	m_pTM			= CSGD_TextureManager::GetInstance();
+
+}
 
 CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt, float duration)
 {
@@ -72,8 +89,10 @@ CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost,
 	m_nDamage = dmg;
 	m_nRange = range;
 	m_nSkillCost = cost;
+	m_nSkillID	= skillID;
 	m_nCurrAmountSuccessful = 0;
 	m_nMaxCombinationAmount = combAmt;
+	m_pCombination = NULL;
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pBattleMap	= CBattleMap::GetInstance();
 	m_pDI			= CSGD_DirectInput::GetInstance();
@@ -150,8 +169,8 @@ void CSkill::SetFunctions(int skillID)
 
 void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 {
-	m_pUpdatePtr(fElapsedTime, skill, ps);
 	m_fTimer += fElapsedTime;
+	m_pUpdatePtr(fElapsedTime, skill, ps);
 	
 	// there is still time to input a direction
 	if (m_fTimer <= (float)m_nMaxCombinationAmount)
@@ -223,7 +242,7 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	}
 
 	// Renders the current skill's particles
-	m_pRenderPtr(skill, ps);
+	//m_pRenderPtr(skill, ps);
 }
 
 void CSkill::SetComb(int num)

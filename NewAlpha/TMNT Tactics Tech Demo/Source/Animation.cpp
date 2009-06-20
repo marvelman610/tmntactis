@@ -10,7 +10,7 @@
 #include "Animation.h"
 
 
-#include<fstream>
+#include <fstream>
 #include <exception>
 using namespace std;
 #include "CSGD_TextureManager.h"

@@ -85,7 +85,7 @@ public:
 	//
 	// Purpose: Creates a pointer to the BattleItem object
 	////////////////////////////////////////////////////////////////////
-	CBase* CreateWeapon(int type, POINT mapPoint);
+	CBase* CreateWeapon(int type, POINT mapPoint, bool bAddToMngr = true);
 
 
 	

@@ -213,7 +213,7 @@ CBattleItem* Factory::CreateBattleItem(int type, POINT mapPoint)
 	ObjectManager::GetInstance()->Add(item);
 	return item;
 }
-CBase* Factory::CreateWeapon(int type, POINT mapPoint)
+CBase* Factory::CreateWeapon(int type, POINT mapPoint, bool bAddtoMngr)
 {
 	CBase* weapon = new CBase();
 
@@ -311,10 +311,13 @@ CBase* Factory::CreateWeapon(int type, POINT mapPoint)
 	weapon->SetWidth(32);
 	weapon->SetHeight(32);
 
-	CBattleMap* pBM =  CBattleMap::GetInstance();
-	weapon->SetCurrTile(mapPoint, pBM->GetOffsetX(),pBM->GetOffsetY(),pBM->GetTileWidth(), pBM->GetTileHeight(),pBM->GetNumCols(),false);
-
-	ObjectManager::GetInstance()->Add(weapon);
+	if (bAddtoMngr)
+	{
+		CBattleMap* pBM =  CBattleMap::GetInstance();
+		weapon->SetCurrTile(mapPoint, pBM->GetOffsetX(),pBM->GetOffsetY(),pBM->GetTileWidth(), pBM->GetTileHeight(),pBM->GetNumCols(),false);
+	
+		ObjectManager::GetInstance()->Add(weapon);
+	}
 
 	return weapon;
 }

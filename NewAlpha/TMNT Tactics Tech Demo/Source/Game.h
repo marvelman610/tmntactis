@@ -3,6 +3,7 @@
 
 #include "windows.h"
 #include "IGameState.h"
+#include "Skill.h"
 
 //class ParticleSystem;
 class CBitmapFont;
@@ -16,6 +17,8 @@ class CPlayer;
 class MessageSystem;
 class CBaseMessage;
 class Factory;
+#include <vector>
+using std::vector;
 #include <string>
 using std::string;
 
@@ -36,6 +39,7 @@ private:
 	//MessageSystem* m_pMessageSystem;
 	//Factory* m_pObjectFactory;
 	string m_sCurrProfName;
+	vector<CSkill> m_vSkills;
 
 	// variables
 	bool	m_bIsRunning;
@@ -111,8 +115,8 @@ public:
 	float  GetSFXVolume()		{return m_fSFXVolume;}
 	float  GetMusicVolume()		{return m_fMusicVolume;}
 	string GetProfName()		{return m_sCurrProfName;}
+	vector<CSkill>& GetSkills() {return m_vSkills;}
 	// 	bool GetIsPaused()			{return m_bIsPaused;}
-	// 	int  GetPanning()			{return m_nPanning;}
 
 	//////////////////////////////////////////////////////////////////////////
 	// Mutators
@@ -121,9 +125,9 @@ public:
 	void SetMusicVolume	(float _nMusicVolume);
 	void SetIsRunning	(bool _bIsRunning)		{m_bIsRunning = _bIsRunning;}
 	void SetProfName	(string profName)		{m_sCurrProfName = profName;}
+	void AddSkill		(CSkill& skills)		{m_vSkills.push_back(skills);}
 	//	void SetIsPaused	()					{m_bIsPaused = !m_bIsPaused;}
 	// 	void SetLastScore	(int _nLastScore)		{m_nLastScore = _nLastScore;}
-	// 	void SetPanning		(int _nPanning);
 };
 
 #endif

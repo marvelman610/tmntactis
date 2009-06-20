@@ -62,8 +62,10 @@ private:
 	 int	m_nSkillCost;
 	 int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
 	 int	m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	 int	m_nSkillID;					// enum for which skill this is
 	 int*	m_pCombination;				// the combination of random directions
 	 bool	m_bComplete;				// is execution of the skill complete?
+	 
 
 	 float m_fTimer;
 	 float m_fDuration;
@@ -102,6 +104,7 @@ public:
 	int GetDmg()					{return m_nDamage;}
 	int GetRange()					{return m_nRange;}
 	int GetCurrAmtSuccessful()		{return m_nCurrAmountSuccessful;}
+	int GetID()						{return m_nSkillID;}
 	void SetCurrAmtSuccessful(int amt){m_nCurrAmountSuccessful = amt;}
 	int GetMaxCombAmt()				{return m_nMaxCombinationAmount;}
 	void SetComb(int num);

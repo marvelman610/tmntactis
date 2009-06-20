@@ -13,9 +13,6 @@
 #include "CSGD_FModManager.h"
 #include "BitmapFont.h"
 #include <ctime>
-//#include "ParticleSystem.h"
-//#include "MessageSystem.h"
-//#include "ObjectFactory.h"
 
 CGame::CGame()
 {

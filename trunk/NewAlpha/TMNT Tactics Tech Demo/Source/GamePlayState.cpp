@@ -20,6 +20,7 @@
 #include "ObjectManager.h"
 #include "BitmapFont.h"
 #include "Achievements.h"
+#include "Factory.h"
 #include "WorldMap.h"
 #include "Skill.h"
 #include "Assets.h"
@@ -179,37 +180,66 @@ void CGamePlayState::LoadGame(const char* fileName)
 			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
 			turtles[i]->SetType(binIn);
 
-			// vectors	- inactive
+			// get the number of skills - active and ALLSKILLS - 
+			// for the number of each, load in the ids
+			// based on which category the ids are in, move the skill
+			// in the turtles' vectors to the appropriate place
+
+			turtles[i]->GetSkills()->clear();
+			turtles[i]->GetInactiveSkills()->clear();
+			// vectors	- ALLSKILLS
+			vector<CSkill> ALLSKILLS = CGame::GetInstance()->GetSkills();
+			// inactive...to add to turtle skill vectors
 			vector<CSkill> inactive;
-			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// inactive vector size
+			vector<CSkill> active;
+
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// ALLSKILLS vector size
+
 			for (int i2 = 0; i2 < binIn; ++i2)
 			{
-				CSkill* skill = new CSkill();
-				ifs.read(reinterpret_cast<char*>(skill), sizeof(CSkill));	
-				inactive.push_back(*skill);
-				delete skill;
+				int skillID;
+				ifs.read(reinterpret_cast<char*>(&skillID), sizeof(int));	// read in the skill ID to add to the inactive vector
+				for (unsigned int sInd = 0; sInd < ALLSKILLS.size(); ++sInd)
+				{
+					if (ALLSKILLS[sInd].GetID() == skillID)	// check if this is the skill to add
+					{
+						inactive.push_back(ALLSKILLS[sInd]);
+						break;
+					}
+				}
 			}
 			turtles[i]->SetSkillsInactive(inactive);
 
 			//			- active
-			vector<CSkill> active;
 			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// active vector size
 			for (int i2 = 0; i2 < binIn; ++i2)
 			{
-				CSkill* skill = new CSkill();
-				ifs.read(reinterpret_cast<char*>(skill), sizeof(CSkill));
-				active.push_back(*skill);
-				delete skill;
+				int skillID;
+				ifs.read(reinterpret_cast<char*>(&skillID), sizeof(int));	// read in the skill ID to add to the inactive vector
+				for (unsigned int sInd = 0; sInd < ALLSKILLS.size(); ++sInd)
+				{
+					if (ALLSKILLS[sInd].GetID() == skillID)	// check if this is the skill to add
+					{
+						active.push_back(ALLSKILLS[sInd]);
+						break;
+					}
+				}
 			}
 			turtles[i]->SetSkillsActive(active);
 
+			active.clear();
+			inactive.clear();
+
 			//			- weapons
-			CBase weapons;
+			turtles[i]->ClearWeapons();
 			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// num weapons
+			POINT pt; pt.x = 0; pt.y = 0;
+			int wID;
 			for (int i2 =0; i2 < binIn; ++i2)
 			{
-				ifs.read(reinterpret_cast<char*>(&weapons), sizeof(CBase));
-				turtles[i2]->AddWeapon(weapons);
+				ifs.read(reinterpret_cast<char*>(&wID), sizeof(int));
+				CBase* weapon = Factory::GetInstance()->CreateWeapon(wID, pt, true);
+				turtles[i]->AddWeapon(*weapon);
 			}
 		}
 		for (int i2 = 0; i2 < 10; ++i2)
@@ -219,6 +249,7 @@ void CGamePlayState::LoadGame(const char* fileName)
 			if (unlocked)
 				player->GetAch()->LoadUnlock(i2);
 		}
+
 		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
 		player->SetStage(currState);
 		ifs.close();
@@ -260,32 +291,36 @@ void CGamePlayState::SaveGame(const char* fileName)
 			int type = turtles[i]->GetType();
 			ofs.write((char*)&type, sizeof(int));
 
-			// inactive
+			// ALLSKILLS
 			int iSize = turtles[i]->GetInactiveSkills()->size();
-			ofs.write((char*)&iSize, sizeof(int));
+			ofs.write((char*)&iSize, sizeof(int));	// write out the number of skills (inactive)
 			vector<CSkill>* iSkills = turtles[i]->GetInactiveSkills();
 			for (int i2 = 0; i2 < iSize; ++i2)
 			{
-				CSkill skill = (*iSkills)[i2];
-				ofs.write((char*)&skill, sizeof(CSkill));
+				// now write out its ID
+				int skill = (*iSkills)[i2].GetID();
+				ofs.write((char*)&skill, sizeof(int));
 			}
+
 			// active
 			int aSize = turtles[i]->GetSkills()->size();
-			ofs.write((char*)&aSize, sizeof(int));
+			ofs.write((char*)&aSize, sizeof(int));	// number of active skills
 			vector<CSkill>* aSkills = turtles[i]->GetSkills();
 			for (int i2 = 0; i2 < aSize; ++i2)
 			{
-				CSkill skill = (*aSkills)[i2];
-				ofs.write((char*)&skill, sizeof(CSkill));
+				// now write out its ID
+				int skill = (*aSkills)[i2].GetID();
+				ofs.write((char*)&skill, sizeof(int));
 			}
+
 			// weapons
 			int wSize = turtles[i]->GetWeapons()->size();
 			ofs.write((char*)&wSize, sizeof(int));
 			vector<CBase>* vWeapons = turtles[i]->GetWeapons();
 			for (int i2 = 0; i2 < wSize; ++i2)
 			{
-				CBase weapon = (*vWeapons)[i2];
-				ofs.write((char*)&weapon, sizeof(CBase));
+				int weapon = (*vWeapons)[i2].GetNumType();
+				ofs.write((char*)&weapon, sizeof(int));
 			}
 		}
 		CAchievements* ach = player->GetAch();

@@ -200,20 +200,13 @@ void CBattleMap::Reset()
 		delete m_bxMessageBox;
 		m_bxMessageBox = NULL;
 	}
-// 	if (m_bxCurrActiveBox)
-// 	{
-// 		delete m_bxCurrActiveBox;
-// 		m_bxCurrActiveBox = NULL;
-	// 	}
+
 	for (int i = 0; i < 4; ++i)
 	{
 		CTurtle* turtle = m_pPlayer->GetTurtles()[i];
-		if ( !turtle->GetAlive() )
-		{
-			turtle->SetAlive(true);
-			turtle->SetHealth(turtle->GetMaxHealth());
-			turtle->SetCurrAP(turtle->GetBaseAP());
-		}
+		turtle->SetAlive(true);
+		turtle->SetHealth(turtle->GetMaxHealth());
+		turtle->SetCurrAP(turtle->GetBaseAP());
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
@@ -2029,7 +2022,7 @@ void CBattleMap::PerformAttack()
 		m_bHaveMoved = true;
 		string* text = new string[3];
 		text[0] = "Press the correct"; text[1] = "arrow key to" ;text[2] = "to do more damage";
-		m_bxQTE = new CBox(3, text, 300, 200, 0.05f, false, 30, 30, 25, -1, 0.65f);
+		m_bxQTE = new CBox(3, text, 300, 200, 0.51f, false, 30, 30, 25, -1, 0.65f);
 		m_bxQTE->SetType(BOX_NO_BACK);
 		m_bxQTE->SetActive(true);
 		m_bExecuteSkill = true;

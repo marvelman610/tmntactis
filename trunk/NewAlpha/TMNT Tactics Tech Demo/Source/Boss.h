@@ -27,12 +27,15 @@ private:
 	int m_nXChange;				//difference in x between turtle and shredder
 	int m_nYChange;				//difference in y between turtle and shredder
 	bool m_bMoving;				//moving bool
+	int m_nDistance;			//distance from turtle
 	
 	CPlayer* m_pPlayer;			//pointer to player
 	CTile* m_pTile;				//pointer to tile
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
+	MY_POINT_FLOAT m_ptCurrPos; //current position to check against change
 	vector<POINT>m_vClosedList; //list of the closed tiles
+	vector<POINT>m_vMoveList;	//list of tiles to move through(path)
 	
 
 
@@ -62,6 +65,8 @@ public:
 	void FindPath(POINT begin, POINT end);
 
 	void FindPathX(POINT endPt, vector<POINT>Closed);
+
+	void FindPathNew(POINT begin, POINT end);
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

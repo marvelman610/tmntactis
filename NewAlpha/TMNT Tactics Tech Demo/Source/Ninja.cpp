@@ -301,7 +301,8 @@ void CNinja::AI()
 
 			//16 ap always
 			// attack four times (4ap * 4 = 16)
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4)); 
+			int damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage*4)); 
 			//end turn
 			SetCurrAP(0);
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
@@ -319,7 +320,8 @@ void CNinja::AI()
  			SetCurrAnim(4);
 
 			//attack four times(4ap * 4 = 16)
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 4));
+			int damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 4));
 			//end turn
 			SetCurrAP(0);
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
@@ -1222,21 +1224,22 @@ void CNinja::Update(float fElapsedTime)
 
 			if(m_nInRange == 1)
 			{
+				int damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
 				
 				if(GetCurrAP() >= 12)
 				{
 					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 3));
 				}
 				else if( GetCurrAP() >= 8 && GetCurrAP() < 12)
 				{
 					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 2));
 				}
 				else if( GetCurrAP() == 4)
 				{
 					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
 				}
 				/*switch(GetCurrAP())
 				{

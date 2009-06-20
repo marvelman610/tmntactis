@@ -92,6 +92,9 @@ void CMainMenuState::Enter()
 		m_bxProfile->SetType(BOX_WITH_BACK);
 		m_bxProfile->AcceptInput();
 	}
+
+	CPlayer::GetInstance()->GetItems()->clear();
+
 }
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)

@@ -169,7 +169,6 @@ void CWorldMap::Exit()
 		m_bxMenu = NULL;
 	}
 
-	m_pPlayer->GetInstance()->GetItems()->clear();
 	CSGD_FModManager::GetInstance()->StopSound(m_pAssets->aWMworldMapMusicID);
 	CSGD_FModManager::GetInstance()->ResetSound(m_pAssets->aWMworldMapMusicID);
 }

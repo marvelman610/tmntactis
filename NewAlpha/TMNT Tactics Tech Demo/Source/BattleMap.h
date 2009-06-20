@@ -110,6 +110,9 @@ class CBattleMap
 	bool m_bIsPaused;
 	bool m_bDrawTimedParticles;
 
+	float m_fItemTimer;
+	float count;
+
 	// Map variables
 	int m_nMapWidth;
 	int m_nMapHeight;
@@ -183,8 +186,12 @@ class CBattleMap
 
 	//Item variables
 	bool m_bItemBool;
+	bool m_bItemBool2;
 	int m_nItemIndex;
 	bool m_bEggBool;
+	bool m_bEggBool2;
+
+	POINT nades;
 
 	// temp particles
 	CParticleSystem* m_pParticleSystem;

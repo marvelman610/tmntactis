@@ -61,8 +61,9 @@ void CTurtle::Update(float fElapsedTime)
 }
 void CTurtle::Render()
 {
-	if (m_bIsAlive)
-		m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX,(int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1.0f, m_dwColor);
+	if (!m_bIsAlive)
+		SetCurrAnim(9);
+	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX,(int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1.0f, m_dwColor);
 
 }
 void CTurtle::SetAttributes(int ap,int hp,int strength,int defense,int accuracy,int speed,int level, int experience,int range)

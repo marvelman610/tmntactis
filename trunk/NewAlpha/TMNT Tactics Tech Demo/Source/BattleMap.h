@@ -434,6 +434,7 @@ public:
 	int GetCurrSelectedTile() const {return m_nCurrSelectedTile;}
 	int GetBGimageID()	const		{return m_nBGimageID;}
 	int GetNumCols()	const		{return m_nNumCols;}
+	int GetNumRows()	const		{return m_nNumRows;}
 	int GetTileHeight() const		{return m_nTileHeight;}
 	int GetTileWidth()  const		{return m_nTileWidth;}
 	int GetOffsetX()	const		{return m_nOffsetX;}

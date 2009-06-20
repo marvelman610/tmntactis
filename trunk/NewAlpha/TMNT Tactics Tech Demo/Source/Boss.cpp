@@ -1759,7 +1759,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		}
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// FIRST CHECK (SPACE ONE/FOUR)
-		if(current.x - 1 > -1)
+		if(current.x - 1 > 1)
 		{
 			tile[0].x = current.x-1;
 			tile[0].y = current.y;
@@ -1770,7 +1770,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
-					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 						&& ( tile[0].x != m_vClosedList[i].x && tile[0].y != m_vClosedList[i].y) )
 					{
 						SetTile[0] = true;
@@ -1784,7 +1784,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			}
 			else
 			{
-				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[0] = true;
 					distance[0] = abs((end.x - tile[0].x) + (end.y - tile[0].y));
@@ -1807,7 +1807,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
-					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 						&& ( tile[1].x != m_vClosedList[i].x && tile[1].y != m_vClosedList[i].y) )
 					{
 						SetTile[1] = true;
@@ -1821,7 +1821,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			}
 			else
 			{
-				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[1] = true;
 					distance[1] = abs((end.x - tile[1].x) + (end.y - tile[1].y));
@@ -1831,7 +1831,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		}
 		////////////////////////////////////////////////////////////////////////////////////////
 		//THIRD CHECK
-		if(current.y - 1 > -1)
+		if(current.y - 1 > 1)
 		{
 			tile[2].x = current.x;
 			tile[2].y = current.y -1;
@@ -1842,7 +1842,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
-					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 						&& ( tile[2].x != m_vClosedList[i].x && tile[2].y != m_vClosedList[i].y) )
 					{
 						SetTile[2] = true;
@@ -1856,7 +1856,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			}
 			else
 			{
-				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[2] = true;
 					distance[2] = abs((end.x - tile[2].x) + (end.y - tile[2].y));
@@ -1866,7 +1866,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		}
 		////////////////////////////////////////////////////////////////////////////////////
 		//FOURTH CHECK
-		if(current.y + 1 < CBattleMap::GetInstance()->GetNumCols())
+		if(current.y + 1 < CBattleMap::GetInstance()->GetNumRows())
 		{
 			tile[3].x = current.x;
 			tile[3].y = current.y+1;
@@ -1877,7 +1877,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
-					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 						&& ( tile[3].x != m_vClosedList[i].x && tile[3].y != m_vClosedList[i].y) )
 					{
 						SetTile[3] = true;
@@ -1891,7 +1891,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			}
 			else
 			{
-				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[3] = true;
 					distance[3] = abs((end.x - tile[3].x) + (end.y - tile[3].y));

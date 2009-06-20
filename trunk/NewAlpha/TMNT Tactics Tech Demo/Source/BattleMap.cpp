@@ -132,9 +132,10 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_szMapName  = szMapName;
 	m_bIsPlayersTurn = (rand() % 2) ? true : false; //(bool)(rand() % 2);
 
-	
+	count = 0;
 	m_bItemBool = false;
 	m_bEggBool = false;
+	m_bEggBool2 = false;
 	m_bWin = false;
 	m_bLose = false;
 
@@ -207,6 +208,7 @@ void CBattleMap::Reset()
 		turtle->SetAlive(true);
 		turtle->SetHealth(turtle->GetMaxHealth());
 		turtle->SetCurrAP(turtle->GetBaseAP());
+		turtle->GetCurrAnim()->SetFacingLeft(false);
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
@@ -216,6 +218,41 @@ void CBattleMap::Reset()
 }
 void CBattleMap::Render()
 {
+	
+	if(m_bEggBool2)
+	{
+		POINT pt; 
+		float posx;
+		float posy;
+
+		count += 0.004f;
+
+		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- m_vEnemies[m_nCurrTarget]->GetPosX())*count;
+		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- m_vEnemies[m_nCurrTarget]->GetPosY())*count;
+		pt.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30-posx; 
+		pt.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30-posy;
+	
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,pt.x,pt.y,0.51f,1,1,0,pt.x/2, pt.y/2);
+		
+	}
+	else if(m_bItemBool2)
+	{
+		POINT pt; 
+		float posx;
+		float posy;
+
+		count += 0.008f;
+
+		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x)*count;
+		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y)*count;
+		pt.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50-posx; 
+		pt.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50-posy;
+
+		
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,pt.x,pt.y,0.51f);
+	}
+	
+
 	RECT rect = {0, 0, 1024, 768};
 	m_pTM->DrawWithZSort(GetBGimageID(), 0, 0, 1.0f, 1.0f, 1.0f, &rect);
 	if (m_bExecuteSkill)
@@ -476,6 +513,24 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	if(m_bEggBool2 || m_bItemBool2)
+	{
+		if(count >= 1)
+		{
+			
+
+			m_bEggBool2 = false;
+			m_bItemBool2 = false;
+			if(m_bEggBool2)
+				count = 0;
+			else if(count>2)
+			{
+				m_bDrawTimedParticles = true;
+				count = 0;
+			}
+		}
+	}
+	
 	if( m_nCurrCharacter > -1 && !m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->GetCurrAnim()->IsAnimationPlaying() )
 		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(2);
 	if(m_nNumTurtles <= 0)
@@ -489,6 +544,7 @@ void CBattleMap::Update(float fElapsedTime)
 	}*/
 	if (m_bItemBool)
 		CalculateRanges();
+
 	m_pPlayer->GetAch()->Update(fElapsedTime);
 
 	if (m_bDrawTimedParticles)
@@ -1439,6 +1495,15 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		{
 			m_bItemBool = false;
 			m_bEggBool = false;
+			m_bEggBool2 = false;
+			for(int nx = 2; nx < m_nNumCols; ++nx)
+				for(int ny = 2; ny < m_nNumRows; ++ny)
+				{
+					int id = ny*m_nNumCols+nx;
+					if (m_pTilesL1[id].Alpha() != 255)
+						m_pTilesL1[id].SetAlpha(255);
+				}
+				CalculateRanges();
 		}
 		else
 		{
@@ -1510,12 +1575,13 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
+			nades = mouse;
+			m_bItemBool2 = true;
 			PlaySFX(m_pAssets->aBMgrenadeSnd);
 			m_pParticleSystem[FIRE].Emit((float)mouse.x, (float)mouse.y);
 			m_pParticleSystem[FIRE].m_bActive = true;
 			m_pParticleSystem[SMOKE].Emit((float)mouse.x, (float)mouse.y);
 			m_pParticleSystem[SMOKE].m_bActive = true;
-			m_bDrawTimedParticles = true;
 			for (int x = 2; x < m_nNumCols; ++x)
 			{
 				for (int y = 2; y < m_nNumRows; ++y)
@@ -1707,11 +1773,14 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			{
 				if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange())
 				{
+					
+
 					m_vEnemies[m_nCurrTarget]->SetHealth(m_vEnemies[m_nCurrTarget]->GetHealth() - (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetDamage());
 					m_pPlayer->GetInstance()->RemoveItem(m_nItemIndex);
 					m_bEggBool = false;
 					m_nItemIndex = -1;
 					m_bIsMouseAttack = false;
+					m_bEggBool2 = true;
 					if (m_vEnemies[m_nCurrTarget]->GetHealth() <= 0)
 					{
 						m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
@@ -1887,6 +1956,19 @@ void CBattleMap::HandleButton()
 		{
 			m_bIsPlayersTurn = false;
 			m_bHaveMoved = false;
+			if(m_bItemBool || m_bEggBool)
+			{   
+				m_bItemBool = false;
+				m_bEggBool = false;
+				m_bEggBool2 = false;
+				for(int nx = 2; nx < m_nNumCols; ++nx)
+					for(int ny = 2; ny < m_nNumRows; ++ny)
+					{
+						int id = ny*m_nNumCols+nx;
+						if (m_pTilesL1[id].Alpha() != 255)
+							m_pTilesL1[id].SetAlpha(255);
+					}
+			}
 			if (m_nCurrCharacter > -1)
 			{
 				// reset ap
@@ -1969,7 +2051,9 @@ void CBattleMap::PerformAttack()
 	if (m_sCurrSkillName == "NONE")
 	{
 		m_bHaveMoved = true;
-		int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vEnemies[m_nCurrTarget]->GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
+		int weaponDmg = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrWeapon()->GetStrength();
+		int charStrength = m_vCharacters[m_nCurrCharacter].GetStrength() + weaponDmg;
+		int damage =  charStrength * ( m_vCharacters[m_nCurrCharacter].GetAccuracy()/m_vEnemies[m_nCurrTarget]->GetDefense() );
 		damage += rand() % (5 - (-4)) -5;
 
 		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(3);
@@ -1983,7 +2067,6 @@ void CBattleMap::PerformAttack()
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+10);
 	
-		m_vEnemies[m_nCurrTarget]->SetHealth(m_vEnemies[m_nCurrTarget]->GetHealth() - damage);
 		m_vEnemies[m_nCurrTarget]->SetHealth(m_vEnemies[m_nCurrTarget]->GetHealth() - damage);
 		
 		/*POINT point;

@@ -1127,7 +1127,7 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 			testTile[0].y = GetMapCoord().y;
 			if(Closed.size() > 0)//error check to make sure closed list not empty
 			{
-				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				for(unsigned int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
 				{
 					if(testTile[0].x == Closed[i].x && testTile[0].y == Closed[i].y)//if == then already in list and no need to check distance
 					{
@@ -1165,7 +1165,7 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 			testTile[1].y = GetMapCoord().y;
 			if(Closed.size() > 0)//error check to make sure closed list not empty
 			{
-				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				for(unsigned int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
 				{
 					if(testTile[1].x == Closed[i].x && testTile[1].y == Closed[i].y)//if == then already in list and no need to check distance
 					{
@@ -1202,7 +1202,7 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 			testTile[2].y = GetMapCoord().y-1;
 			if(Closed.size() > 0)//error check to make sure closed list not empty
 			{
-				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				for(unsigned int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
 				{
 					if(testTile[2].x == Closed[i].x && testTile[2].y == Closed[i].y)//if == then already in list and no need to check distance
 					{
@@ -1240,7 +1240,7 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 			testTile[3].y = GetMapCoord().y+1;
 			if(Closed.size() > 0)//error check to make sure closed list not empty
 			{
-				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				for(unsigned int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
 				{
 					if(testTile[3].x == Closed[i].x && testTile[3].y == Closed[i].y)//if == then already in list and no need to check distance
 					{
@@ -1768,7 +1768,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 
 			if(m_vClosedList.size() > 0)
 			{
-				for(int i = 0; i < m_vClosedList.size();i++)
+				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if(m_pTile[iterator].Flag() != FLAG_COLLISION
 						&& ( tile[0].x != m_vClosedList[i].x && tile[0].y != m_vClosedList[i].y) )
@@ -1805,7 +1805,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 
 			if(m_vClosedList.size() > 0)
 			{
-				for(int i = 0; i < m_vClosedList.size();i++)
+				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if(m_pTile[iterator].Flag() != FLAG_COLLISION
 						&& ( tile[1].x != m_vClosedList[i].x && tile[1].y != m_vClosedList[i].y) )
@@ -1840,7 +1840,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 
 			if(m_vClosedList.size() > 0)
 			{
-				for(int i = 0; i < m_vClosedList.size();i++)
+				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if(m_pTile[iterator].Flag() != FLAG_COLLISION
 						&& ( tile[2].x != m_vClosedList[i].x && tile[2].y != m_vClosedList[i].y) )
@@ -1875,7 +1875,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 
 			if(m_vClosedList.size() > 0)
 			{
-				for(int i = 0; i < m_vClosedList.size();i++)
+				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if(m_pTile[iterator].Flag() != FLAG_COLLISION
 						&& ( tile[3].x != m_vClosedList[i].x && tile[3].y != m_vClosedList[i].y) )

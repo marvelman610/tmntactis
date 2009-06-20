@@ -214,7 +214,7 @@ void ObjectManager::ClearEnemies()
 	int count = 0;
 	while(iter != m_vObjects.end())
 	{
-		if ((*iter)->GetType() == OBJECT_NINJA || (*iter)->GetType() == OBJECT_BOSS)
+		if ((*iter)->GetType() != OBJECT_TURTLE)
 		{
 			CBase* temp = m_vObjects[count--];
 			delete temp;

@@ -95,6 +95,8 @@ public:
 
 	inline int GetCurrWeaponIndex()			{ return m_nCurrWeapon;}
 	inline void SetCurrWeaponIndex(int i)	{ m_nCurrWeapon = i;}
+	inline CBase* GetCurrWeapon() {return &(m_vWeapons[m_nCurrWeapon]);}
+
 
 	vector<CBase>* GetWeapons()				{ return &m_vWeapons;		}
 	void SetWeapons(vector<CBase>& weapons) { m_vWeapons = weapons;}

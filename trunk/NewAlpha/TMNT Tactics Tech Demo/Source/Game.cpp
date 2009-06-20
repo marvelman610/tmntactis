@@ -81,6 +81,7 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 void CGame::Shutdown()
 {
 	ChangeState(NULL);
+	m_pPlayer->Exit();
 
 	if (m_pBitMapFont)
 		m_pBitMapFont = NULL;

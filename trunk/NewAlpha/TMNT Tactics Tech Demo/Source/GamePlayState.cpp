@@ -238,7 +238,7 @@ void CGamePlayState::LoadGame(const char* fileName)
 			for (int i2 =0; i2 < binIn; ++i2)
 			{
 				ifs.read(reinterpret_cast<char*>(&wID), sizeof(int));
-				CBase* weapon = Factory::GetInstance()->CreateWeapon(wID, pt, true);
+				CBase* weapon = Factory::GetInstance()->CreateWeapon(wID, pt, false);
 				turtles[i]->AddWeapon(*weapon);
 			}
 		}

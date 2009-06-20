@@ -32,6 +32,9 @@ CBoss::CBoss(void)
 	m_pPlayer = CPlayer::GetInstance();
 	m_pTile = CBattleMap::GetInstance()->GetTiles();
 	m_nType = OBJECT_BOSS;
+	m_vClosedList.clear();
+	m_vMoveList.clear();
+	m_nDistance = 0;
 	//m_vPath = 0;
 	//m_ptStartXY =0;	
 }
@@ -365,7 +368,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin ,end);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -419,7 +422,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -482,7 +485,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -555,7 +558,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -638,7 +641,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -732,7 +735,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -838,7 +841,7 @@ void CBoss::AI()
 
 			end = mapPt;
 			m_bMoving = true;
-			FindPathX(end,m_vClosedList);
+			FindPathNew(begin,end);
 			
 
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
@@ -863,7 +866,82 @@ void CBoss::AI()
 
 }
 void CBoss::Update(float fElapsedTime)
-{
+{ 
+
+	if(m_bMoving == true)
+	{
+		m_ptStartXY.x = GetPosX();
+		m_ptStartXY.y = GetPosY();
+
+		//get start position and next tile
+		if(GetMapCoord().x > m_vMoveList[0].x) //move left one x tile(on screen)
+		{
+			//32 pixels left 16 pixels up
+			m_ptCurrPos.x = GetPosX();
+			m_ptCurrPos.y = GetPosY();
+			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
+			{
+				m_ptCurrPos.x  -= GetVelX() * fElapsedTime;
+				m_ptCurrPos.y -= GetVelY() * fElapsedTime;
+				SetPosPtF(m_ptCurrPos);
+			}
+		}
+		else if(GetMapCoord().x < m_vMoveList[0].x)//move right one x tile(on screen)
+		{
+			//32 pixels right  16 pixels down
+			m_ptCurrPos.x = GetPosX();
+			m_ptCurrPos.y = GetPosY();
+			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
+			{
+				m_ptCurrPos.x += GetVelX() * fElapsedTime;
+				m_ptCurrPos.y += GetVelY() * fElapsedTime;
+				SetPosPtF(m_ptCurrPos);
+			}
+		}
+		else if(GetMapCoord().y > m_vMoveList[0].y)//move up one tile y(on screen)
+		{
+			//32 pixels up and 16 pixels right 
+			m_ptCurrPos.x = GetPosX();
+			m_ptCurrPos.y = GetPosY();
+			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
+			{
+				m_ptCurrPos.x += GetVelX() * fElapsedTime;
+				m_ptCurrPos.y -= GetVelY() * fElapsedTime;
+				SetPosPtF(m_ptCurrPos);
+			}
+		}
+		else if(GetMapCoord().y < m_vMoveList[0].y)//move down one tile y(on screen)
+		{
+			//32 pixels down and 16 pixels left
+			m_ptCurrPos.x = GetPosX();
+			m_ptCurrPos.y = GetPosY();
+			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
+			{
+				m_ptCurrPos.x -= GetVelX() * fElapsedTime;
+				m_ptCurrPos.y += GetVelY() * fElapsedTime;
+				SetPosPtF(m_ptCurrPos);
+			}
+		}
+
+
+		if( abs(m_ptStartXY.x - m_ptCurrPos.x) >= 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) > 16.0f)
+		{
+			SetCurrTile(m_vMoveList[0], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+			CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+			SetCurrAP(GetCurrAP()-2);
+			vector<POINT>::iterator first = m_vMoveList.begin();
+			m_vMoveList.erase(first);
+			CBattleMap::GetInstance()->UpdatePositions();
+		}
+
+		if(m_vMoveList.size() <= 0)
+		{
+			m_vMoveList.clear();
+			m_bMoving = false;
+			CBattleMap::GetInstance()->SetTurn(true);
+		}
+	}
+
 	//CBase::Update(fElapsedTime);
 	if(!GetCurrAnim()->IsAnimationPlaying())
 		SetCurrAnim(1);
@@ -1636,4 +1714,237 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 		}
 	}
 
+}
+
+void CBoss::FindPathNew(POINT begin, POINT end)
+{
+
+	POINT p;
+	p.x = end.x;
+	p.y = end.y;
+	
+	POINT o;
+	o.x = begin.x;
+	o.y = begin.y;
+
+	int debug = 0;
+
+	m_vMoveList.clear();
+	m_vClosedList.clear();
+
+	bool SetTile[4];//bool to see if the tile has been set
+
+	POINT tile[4];//tile coordinates
+
+	int distance[4];//distance from next tile to endpt
+
+	int minDistance = 100;//minimum distance from next tile to endpt
+
+	int TileNum;//index for the array
+
+	bool inClosed = false;//bool to see if the tile is in the closed list
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	//TODO:add a check to find the difference in x and y to the end point then select the higher one
+	////////////////////////////////////////////////////////////////////////////////////////////
+	
+	POINT current; current.x = begin.x; current.y = begin.y;
+
+	while(GetCurrAP() >=2 && abs((end.x - current.x)+(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
+	{
+		for(int i = 0; i < 4; i++)
+		{
+			SetTile[i] = false;
+			//distance[i] = 100;
+		}
+		/////////////////////////////////////////////////////////////////////////////////////////
+		// FIRST CHECK (SPACE ONE/FOUR)
+		if(current.x - 1 > -1)
+		{
+			tile[0].x = current.x-1;
+			tile[0].y = current.y;
+			
+			int iterator = tile[0].y * CBattleMap::GetInstance()->GetNumCols() + tile[0].x;
+
+			if(m_vClosedList.size() > 0)
+			{
+				for(int i = 0; i < m_vClosedList.size();i++)
+				{
+					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+						&& ( tile[0].x != m_vClosedList[i].x && tile[0].y != m_vClosedList[i].y) )
+					{
+						SetTile[0] = true;
+					}
+				}
+				if(SetTile[0] == true)
+				{
+					distance[0] = abs((end.x - tile[0].x) + (end.y - tile[0].y));
+					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
+				}
+			}
+			else
+			{
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				{
+					SetTile[0] = true;
+					distance[0] = abs((end.x - tile[0].x) + (end.y - tile[0].y));
+					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
+				}
+			}
+			
+		}
+
+		////////////////////////////////////////////////////////////////////////////////////////
+		//SECOND CHECK
+		if(current.x + 1 < CBattleMap::GetInstance()->GetNumCols())
+		{
+			tile[1].x = current.x+1;
+			tile[1].y = current.y;
+			
+			int iterator = tile[1].y * CBattleMap::GetInstance()->GetNumCols() + tile[1].x;
+
+			if(m_vClosedList.size() > 0)
+			{
+				for(int i = 0; i < m_vClosedList.size();i++)
+				{
+					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+						&& ( tile[1].x != m_vClosedList[i].x && tile[1].y != m_vClosedList[i].y) )
+					{
+						SetTile[1] = true;
+					}
+				}
+				if(SetTile[1] == true)
+				{
+					distance[1] = abs((end.x - tile[1].x) + (end.y - tile[1].y));
+					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
+				}
+			}
+			else
+			{
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				{
+					SetTile[1] = true;
+					distance[1] = abs((end.x - tile[1].x) + (end.y - tile[1].y));
+					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
+				}
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////////////
+		//THIRD CHECK
+		if(current.y - 1 > -1)
+		{
+			tile[2].x = current.x;
+			tile[2].y = current.y -1;
+			
+			int iterator = tile[2].y * CBattleMap::GetInstance()->GetNumCols() + tile[2].x;
+
+			if(m_vClosedList.size() > 0)
+			{
+				for(int i = 0; i < m_vClosedList.size();i++)
+				{
+					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+						&& ( tile[2].x != m_vClosedList[i].x && tile[2].y != m_vClosedList[i].y) )
+					{
+						SetTile[2] = true;
+					}
+				}
+				if(SetTile[2] == true)
+				{
+					distance[2] = abs((end.x - tile[2].x) + (end.y - tile[2].y));
+					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
+				}
+			}
+			else
+			{
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				{
+					SetTile[2] = true;
+					distance[2] = abs((end.x - tile[2].x) + (end.y - tile[2].y));
+					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
+				}
+			}
+		}
+		////////////////////////////////////////////////////////////////////////////////////
+		//FOURTH CHECK
+		if(current.y + 1 < CBattleMap::GetInstance()->GetNumCols())
+		{
+			tile[3].x = current.x;
+			tile[3].y = current.y+1;
+			
+			int iterator = tile[3].y * CBattleMap::GetInstance()->GetNumCols() + tile[3].x;
+
+			if(m_vClosedList.size() > 0)
+			{
+				for(int i = 0; i < m_vClosedList.size();i++)
+				{
+					if(m_pTile[iterator].Flag() != FLAG_COLLISION
+						&& ( tile[3].x != m_vClosedList[i].x && tile[3].y != m_vClosedList[i].y) )
+					{
+						SetTile[3] = true;
+					}
+				}
+				if(SetTile[3] == true)
+				{
+					distance[3] = abs((end.x - tile[3].x) + (end.y - tile[3].y));
+					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
+				}
+			}
+			else
+			{
+				if(m_pTile[iterator].Flag() != FLAG_COLLISION)
+				{
+					SetTile[3] = true;
+					distance[3] = abs((end.x - tile[3].x) + (end.y - tile[3].y));
+					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
+				}
+			}
+		}
+
+
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		//TODO:check which is greater difference the x or y delta and pick that one for the distance
+		/////////////////////////////////////////////////////////////////////////////////////////////
+		if(distance[0] == distance[2]){TileNum = 2;}
+		if(distance[1] == distance[3]){TileNum = 3;}
+		/////////////////////////////////////////////////////////////////////////////////
+		// once the next tile has been chosen, put the current tile on the closed list
+		// add the next tile to the move list and set the current tile to the next tile
+		switch(TileNum)
+		{
+		case 0:
+			m_vMoveList.push_back(tile[0]);
+			m_vClosedList.push_back(current);
+			current.x = tile[0].x;
+			current.y = tile[0].y;
+			break;
+
+		case 1: 
+			m_vMoveList.push_back(tile[1]);
+			m_vClosedList.push_back(current);
+			current.x = tile[1].x;
+			current.y = tile[1].y;
+			break;
+
+		case 2:
+			m_vMoveList.push_back(tile[2]);
+			m_vClosedList.push_back(current);
+			current.x = tile[2].x;
+			current.y = tile[2].y;
+			break;
+			
+		case 3:
+			m_vMoveList.push_back(tile[3]);
+			m_vClosedList.push_back(current);
+			current.x = tile[3].x;
+			current.y = tile[3].y;
+			break;
+		}
+		continue;
+
+	}
+	if(m_vMoveList.size() > 0)
+	{
+		m_bMoving = true;
+	}
+	else m_bMoving = false;
 }

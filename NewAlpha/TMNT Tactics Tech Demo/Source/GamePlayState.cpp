@@ -20,8 +20,10 @@
 #include "ObjectManager.h"
 #include "BitmapFont.h"
 #include "Achievements.h"
-#include <fstream>
 #include "WorldMap.h"
+#include "Skill.h"
+#include "Assets.h"
+#include <fstream>
 
 // Constructor
 CGamePlayState::CGamePlayState(void)
@@ -30,23 +32,23 @@ CGamePlayState::CGamePlayState(void)
 	m_pBattleMap = NULL;
 	m_pPlayer = NULL;
 	m_pHUD = NULL;
-	m_pWorldMap  = NULL;
-
+	m_pWorldMap = NULL;
 	m_nCurrentMap = 0;
+	m_bIsPaused = false;
 }
 
 // Destructor
 CGamePlayState::~CGamePlayState(void)
 {
+	m_pPlayer = NULL;
 }
 
 // Enter
 void CGamePlayState::Enter(void)
 {
-	//m_pCurrentMenuState = BaseMenuState::GetInstance();
 	m_pHUD = CHUD::GetInstance();
-	m_pWorldMap = CWorldMap::GetInstance();
 	m_pPlayer = CPlayer::GetInstance();
+	m_pWorldMap = CWorldMap::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
 
 	m_pWorldMap->Enter();
@@ -60,7 +62,7 @@ void CGamePlayState::Exit(void)
 	{
 		m_pBattleMap->Exit();
 	}
-	if(m_pWorldMap)
+	if(m_pWorldMap && m_nCurrentMap == MAP_WORLD)
 	{
 		m_pWorldMap->Exit();
 		m_pWorldMap = NULL;
@@ -69,8 +71,8 @@ void CGamePlayState::Exit(void)
  	{
  		m_pHUD = NULL;
 	}
-	if (m_pPlayer)
-		m_pPlayer = NULL;
+// 	if (m_pPlayer)
+// 		m_pPlayer = NULL;
 	if(m_pCurrentMenuState)
 	{
 		m_pCurrentMenuState->Exit();
@@ -151,14 +153,72 @@ void CGamePlayState::LoadGame(const char* fileName)
 	if (ifs.is_open())
 	{
 		CPlayer* player = CPlayer::GetInstance();
+		player->NewGame();
 		CTurtle** turtles = player->GetTurtles();
-		CAchievements* ach = player->GetAch();
 		int currState;
+
 		for (int i = 0; i < 4; ++i)
 		{
-			ifs.read(reinterpret_cast<char*>(&turtles[i]), sizeof(CTurtle));
+			int binIn;
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetCurrWeaponIndex(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetAccuracy(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetBaseAP(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetDefense(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetExperience(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetLevel(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetSkillXP(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetStrength(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetType(binIn);
+
+			// vectors	- inactive
+			vector<CSkill> inactive;
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// inactive vector size
+			for (int i2 = 0; i2 < binIn; ++i2)
+			{
+				CSkill* skill = new CSkill();
+				ifs.read(reinterpret_cast<char*>(skill), sizeof(CSkill));	
+				inactive.push_back(*skill);
+				delete skill;
+			}
+			turtles[i]->SetSkillsInactive(inactive);
+
+			//			- active
+			vector<CSkill> active;
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// active vector size
+			for (int i2 = 0; i2 < binIn; ++i2)
+			{
+				CSkill* skill = new CSkill();
+				ifs.read(reinterpret_cast<char*>(skill), sizeof(CSkill));
+				active.push_back(*skill);
+				delete skill;
+			}
+			turtles[i]->SetSkillsActive(active);
+
+			//			- weapons
+			CBase weapons;
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));	// num weapons
+			for (int i2 =0; i2 < binIn; ++i2)
+			{
+				ifs.read(reinterpret_cast<char*>(&weapons), sizeof(CBase));
+				turtles[i2]->AddWeapon(weapons);
+			}
 		}
-		ifs.read(reinterpret_cast<char*>(ach), sizeof(CAchievements));
+		for (int i2 = 0; i2 < 10; ++i2)
+		{
+			bool unlocked;
+			ifs.read(reinterpret_cast<char*>(&unlocked), sizeof(bool));
+			if (unlocked)
+				player->GetAch()->LoadUnlock(i2);
+		}
 		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
 		player->SetStage(currState);
 		ifs.close();
@@ -180,9 +240,60 @@ void CGamePlayState::SaveGame(const char* fileName)
 	{
 		for (int i = 0; i < 4; ++i)
 		{
-			ofs.write((char*)(&turtles[i]), sizeof(CTurtle));
+			// turtle
+			int wi = turtles[i]->GetCurrWeaponIndex();
+			ofs.write((char*)&wi, sizeof(int));
+			int acc = turtles[i]->GetAccuracy();
+			ofs.write((char*)&acc, sizeof(int));
+			int bAP = turtles[i]->GetBaseAP();
+			ofs.write((char*)&bAP, sizeof(int));
+			int def = turtles[i]->GetDefense();
+			ofs.write((char*)&def, sizeof(int));
+			int exp = turtles[i]->GetExperience();
+			ofs.write((char*)&exp, sizeof(int));
+			int lvl = turtles[i]->GetLevel();
+			ofs.write((char*)&lvl, sizeof(int));
+			int sXP = turtles[i]->GetSkillXP();
+			ofs.write((char*)&sXP, sizeof(int));
+			int str = turtles[i]->GetStrength();
+			ofs.write((char*)&str, sizeof(int));
+			int type = turtles[i]->GetType();
+			ofs.write((char*)&type, sizeof(int));
+
+			// inactive
+			int iSize = turtles[i]->GetInactiveSkills()->size();
+			ofs.write((char*)&iSize, sizeof(int));
+			vector<CSkill>* iSkills = turtles[i]->GetInactiveSkills();
+			for (int i2 = 0; i2 < iSize; ++i2)
+			{
+				CSkill skill = (*iSkills)[i2];
+				ofs.write((char*)&skill, sizeof(CSkill));
+			}
+			// active
+			int aSize = turtles[i]->GetSkills()->size();
+			ofs.write((char*)&aSize, sizeof(int));
+			vector<CSkill>* aSkills = turtles[i]->GetSkills();
+			for (int i2 = 0; i2 < aSize; ++i2)
+			{
+				CSkill skill = (*aSkills)[i2];
+				ofs.write((char*)&skill, sizeof(CSkill));
+			}
+			// weapons
+			int wSize = turtles[i]->GetWeapons()->size();
+			ofs.write((char*)&wSize, sizeof(int));
+			vector<CBase>* vWeapons = turtles[i]->GetWeapons();
+			for (int i2 = 0; i2 < wSize; ++i2)
+			{
+				CBase weapon = (*vWeapons)[i2];
+				ofs.write((char*)&weapon, sizeof(CBase));
+			}
 		}
-		ofs.write((char*)(player->GetAch()), sizeof(CAchievements));
+		CAchievements* ach = player->GetAch();
+		for (int i2 = 0; i2<10; ++i2)
+		{
+			bool unlocked = ach->GetLocked(i2);
+			ofs.write((char*)&unlocked, sizeof(bool));
+		}
 		ofs.write((char*)(&currStage), sizeof(int));
 		ofs.close();
 	}

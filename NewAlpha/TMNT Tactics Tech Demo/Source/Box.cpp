@@ -31,7 +31,7 @@ CBox::CBox(int numItems, string* sItems,
 	m_bHasTitle = bHasTitle;
 	if (bHasTitle)
 		m_nTitleWidth = (int)(sItems[0].size() * (34.0f * fTextScale));
-	m_bIsActive = m_bIsMsgBox = m_bAcceptInput = m_bEnterText = false;
+	m_bIsActive = m_bIsMsgBox = m_bAcceptInput = m_bEnterText = m_bMadeNew = false;
 	m_nBackType = BOX_NO_BACK;
 	m_nPosX = posX;
 	m_nPosY = posY;
@@ -135,6 +135,7 @@ void CBox::CheckMouse(POINT mousePt)
 		{
 			m_sItems[m_nCurrSelectedIndex].clear();
 			m_nCurrInputIndex = m_nCurrSelectedIndex;
+			m_bMadeNew = true;
 			m_bEnterText = true;
 		}
 		if (m_bHasTitle)
@@ -257,6 +258,7 @@ void CBox::CheckKeys()
 		m_sItems[m_nCurrInputIndex] = m_sOriginal[m_nCurrInputIndex];
 		m_nCurrSelectedIndex = m_nCurrInputIndex = -1;
 		m_bEnterText = false;
+		m_bMadeNew = false;
 	}
 	else if (m_pDI->KeyPressed(DIK_ESCAPE))
 	{

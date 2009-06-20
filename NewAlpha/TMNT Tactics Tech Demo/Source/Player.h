@@ -23,6 +23,7 @@ class CAchievements;
 class CPlayer
 {
 private:
+
 	CTurtle*  m_pTurtles[4];
 	CAchievements* m_pAcheivements;
 
@@ -65,6 +66,7 @@ private:
 	void LoadAnimations();
 
 public:
+	void Exit();
 	///////////////////////////////////////////////////////////////////
 	//  Function: "GetInstance"
 	//
@@ -96,7 +98,6 @@ public:
 	void SetFileName(string name)		{ m_sFileName = name;}
 	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
 	void SetStage(int stage)			{ m_nCurrStage = stage;}
-
 	
 	bool RemoveItem(int index);
 

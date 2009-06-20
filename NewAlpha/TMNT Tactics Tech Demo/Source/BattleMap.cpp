@@ -92,12 +92,10 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_bxActionBox = new CBox(3, text, 0, 575, depth.MENUS, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = m_bxItemBox = m_bxPauseBox = m_bxLoadBox = m_bxSaveBox = m_bxMessageBox = NULL;
-	//m_bxCurrActiveBox = m_bxActionBox; m_bxCurrActiveBox->BoxType(BX_ACTION);
 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
-	//m_pMoveableTiles = NULL;
 	m_bHaveMoved = false;
 	m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; m_nCurrSkillCost = -1; m_bExecuteSkill = false;
 	m_nCurrBtnSelected = -1;
@@ -1461,6 +1459,8 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				if (m_nCurrCharacter > -1)
 					CalculateRanges();
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
+				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";				
 			}
 
 			// pick a random enemy to move
@@ -1829,35 +1829,8 @@ void CBattleMap::HandleButton()
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 			return;
 		}
-// 		else if (m_nCurrBtnSelected == 2 /*Load*/)
-// 		{
-// 			// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
-// 			delete m_bxPauseBox; m_bxPauseBox = NULL;
-// 			string* sLoadGame = new string[2];
-// 			sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
-// 			m_bxLoadBox = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
-// 			m_bxLoadBox->SetType(BOX_WITH_BACK);
-// 			m_bxLoadBox->SetActive();
-// 			delete[] sLoadGame;
-// 			return;
-// 		}
-// 		else if (m_nCurrBtnSelected == 1 /*Save*/)
-// 		{
-// 			delete m_bxPauseBox; m_bxPauseBox = NULL;
-// 			string* sSaveGame = new string[2];
-// 			sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = "MY SAVED GAME...";
-// 			m_bxSaveBox = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
-// 			m_bxSaveBox->SetType(BOX_WITH_BACK);
-// 			m_bxSaveBox->SetActive();
-// 			delete[] sSaveGame;
-// 
-// 			// TODO::notify them when the game has saved
-// 			string fileName = m_pPlayer->GetProfName() + ".dat";
-// 			CGamePlayState::GetInstance()->SaveGame(fileName.c_str());
-// 
-// 			return;
-// 		}
 	}
+
 	// catches any random invalid input
 	else if ((m_bxItemBox || m_bxSkillBox || m_bxItemBox || m_bxSaveBox || m_bxLoadBox) && m_nCurrBtnSelected != BTN_BACK)
 		return;
@@ -1928,6 +1901,8 @@ void CBattleMap::HandleButton()
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
 				CalculateRanges();
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
+				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; 
 			}
 			// pick a random enemy to move
 			if (m_vEnemies.size() > 0)
@@ -1940,7 +1915,6 @@ void CBattleMap::HandleButton()
 				else
 				{
 					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-					
 					m_pCurrMovingNinja->AI();
 				}
 			}
@@ -2001,6 +1975,7 @@ void CBattleMap::PerformAttack()
 	// no skill selected
 	if (m_sCurrSkillName == "NONE")
 	{
+		m_bHaveMoved = true;
 		int damage = ( (m_vCharacters[m_nCurrCharacter].GetStrength() - m_vEnemies[m_nCurrTarget]->GetDefense()) + m_vCharacters[m_nCurrCharacter].GetAccuracy()) * 2;
 		damage += rand() % (5 - (-4)) -5;
 
@@ -2051,6 +2026,7 @@ void CBattleMap::PerformAttack()
 	// a skill has been selected, execute that skill
 	else
 	{
+		m_bHaveMoved = true;
 		string* text = new string[3];
 		text[0] = "Press the correct"; text[1] = "arrow key to" ;text[2] = "to do more damage";
 		m_bxQTE = new CBox(3, text, 300, 200, 0.05f, false, 30, 30, 25, -1, 0.65f);

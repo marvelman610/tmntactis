@@ -24,6 +24,13 @@ class CWorldMap;
 class CGamePlayState : public IGameState
 {
 private:
+// 	struct Acheivement 
+// 	{
+// 		bool bUnlocked;
+// 		int imageID;
+// 		string title;
+// 		char* description;
+// 	};
 	CBaseMenuState* m_pCurrentMenuState;
 	CBattleMap*		m_pBattleMap;
 	CPlayer*		m_pPlayer;

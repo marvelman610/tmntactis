@@ -24,7 +24,13 @@
 #define SCROLL_EDGE_DIST 35
 #define EXIT	100
 
-CWorldMap::CWorldMap()
+CWorldMap* CWorldMap::GetInstance()
+{
+	static CWorldMap instance;
+	return &instance;
+}
+
+CWorldMap::CWorldMap(void)
 {
 	m_pTM			= CSGD_TextureManager::GetInstance();
 	m_pBitmapFont	= CBitmapFont::GetInstance();
@@ -45,20 +51,20 @@ CWorldMap::CWorldMap()
 	
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
 
-	string* text = new string[3];
-	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
-	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
-	m_bxHelp->IsMsgBox(true);
-	m_bxHelp->SetAlpha(200);
-	delete[] text;
-	text = new string[4];
-	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
-	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
-	m_bxMenu->SetActive(); 
-	delete[] text;
+// 	string* text = new string[3];
+// 	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
+// 	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
+// 	m_bxHelp->IsMsgBox(true);
+// 	m_bxHelp->SetAlpha(200);
+// 	delete[] text;
+// 	text = new string[4];
+// 	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
+// 	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+// 	m_bxMenu->SetActive(); 
+// 	delete[] text;
 }
 
-CWorldMap::~CWorldMap()
+CWorldMap::~CWorldMap(void)
 {
 	if (m_bxHelp)
 		delete m_bxHelp;
@@ -71,16 +77,42 @@ CWorldMap::~CWorldMap()
 	m_pPlayer = NULL;
 }
 
-CWorldMap* CWorldMap::GetInstance()
-{
-	static CWorldMap instance;
-	return &instance;
-}
-
 void CWorldMap::Enter()
 {
+	m_pTM			= CSGD_TextureManager::GetInstance();
+	m_pBitmapFont	= CBitmapFont::GetInstance();
+	m_pDI			= CSGD_DirectInput::GetInstance();
+	m_pAssets		= CAssets::GetInstance();
+	m_pPlayer		= CPlayer::GetInstance();
+
+	m_nMapImageID = m_pAssets->aWMmapID;
+	m_nScreenWidth = CGame::GetInstance()->GetScreenWidth();
+	m_nScreenHeight = CGame::GetInstance()->GetScreenHeight();
+	m_nMapWidth = 1875;
+	m_nMapHeight = 1610;
+
+	m_Locations[LOC_SIMUSA].name = "Simusa"; m_Locations[LOC_SIMUSA].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SIMUSA].mapXY = MAP_POINT(1516,804);
+	m_Locations[LOC_SINARO].name = "Sinaro"; m_Locations[LOC_SINARO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SINARO].mapXY = MAP_POINT(1191,857);
+	m_Locations[LOC_IWAMI].name  = "Iwami";	 m_Locations[LOC_IWAMI].imageID  = m_pAssets->aWMtempleID; m_Locations[LOC_IWAMI].mapXY  = MAP_POINT(530,910);
+	m_Locations[LOC_YAMATO].name = "Yamato"; m_Locations[LOC_YAMATO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_YAMATO].mapXY = MAP_POINT(998,1064);
+
+	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
+
+	string* text = new string[3];
+	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
+	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
+	m_bxHelp->IsMsgBox(true);
+	m_bxHelp->SetAlpha(200);
+	delete[] text;
+	text = new string[4];
+	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
+	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
+	m_bxMenu->SetActive(); 
+	delete[] text;
+
 	if (m_pPlayer->GetAch()->GetLocked(ACH_NEWGAME) == false)
 		m_pPlayer->GetAch()->Unlock(ACH_NEWGAME);
+
 	m_bxTrainSkills = m_bxChooseTurtle = m_bxMsg = m_bxLoad = m_bxSave = m_bxWeapon = NULL;
 	m_nMapOSx = (m_nMapWidth >> 1) - (m_nScreenWidth >> 1) + 150;
 	m_nMapOSy = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1) + 100;
@@ -92,19 +124,50 @@ void CWorldMap::Enter()
 void CWorldMap::Exit()
 {
 	if (m_bxChooseTurtle)
+	{
 		delete m_bxChooseTurtle;
+		m_bxChooseTurtle = NULL;
+	}
 	if (m_bxTrainSkills)
+	{
 		delete m_bxTrainSkills;
+		m_bxTrainSkills = NULL;
+	}
 	if (m_bxLoad)
+	{
 		delete m_bxLoad;
+		m_bxLoad = NULL;
+	}
 	if (m_bxSave)
+	{
 		delete m_bxSave;
+		m_bxSave = NULL;
+	}
 	if (m_bxMsg)
+	{
 		delete m_bxMsg;
+		m_bxMsg = NULL;
+	}
 	if(m_bxWeapon)
+	{
 		delete m_bxWeapon;
+		m_bxWeapon = NULL;
+	}
 	if(m_bxWeaponSelect)
+	{
 		delete m_bxWeaponSelect;
+		m_bxWeaponSelect = NULL;
+	}
+	if (m_bxHelp)
+	{
+		delete m_bxHelp;
+		m_bxHelp = NULL;
+	}
+	if (m_bxMenu)
+	{
+		delete m_bxMenu;
+		m_bxMenu = NULL;
+	}
 
 	m_pPlayer->GetInstance()->GetItems()->clear();
 	CSGD_FModManager::GetInstance()->StopSound(m_pAssets->aWMworldMapMusicID);
@@ -122,7 +185,7 @@ void CWorldMap::Render()
 		if (m_Locations[i].bSelected)	// selected, display on bottom of screen
 		{
 			string name = "CURRENT LOCATION - " + m_Locations[i].name;
-			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5);
+			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5f);
 		}
 		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect && !m_pPlayer->GetAch()->Render())
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
@@ -313,8 +376,10 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 
 	// get boxes input (calls update)
 
-	m_bxHelp->Input(m_ptMouse);
-	m_nCurrBtn = m_bxMenu->Input(m_ptMouse);
+	if(m_bxHelp)
+		m_bxHelp->Input(m_ptMouse);
+	if (m_bxMenu)
+		m_nCurrBtn = m_bxMenu->Input(m_ptMouse);
 	if(m_nCurrBtn == 4)
 		m_nCurrBtn = MENU_BTN_EXIT;
 
@@ -366,29 +431,10 @@ bool CWorldMap::HandleButtons()
 		
 		case MENU_BTN_SAVE:
 			{
-// 				m_bxMenu->SetActive(false);
-// 				string* sSaveGame = new string[2];
-// 				sSaveGame[0] = "SAVE GAME"; sSaveGame[1] = m_pPlayer->GetProfName();
-// 				m_bxSave = new CBox(2, sSaveGame, 230, 300, 0.11f, true);
-// 				m_bxSave->SetType(BOX_WITH_BACK);
-// 				m_bxSave->SetActive();
-// 				delete[] sSaveGame;
-				string fileName = m_pPlayer->GetProfName() + ".dat";
+				string fileName = CGame::GetInstance()->GetProfName() + ".dat";
 				CGamePlayState::GetInstance()->SaveGame(fileName.c_str());
 			}
 			break;
-// 		case MENU_BTN_LOAD:
-// 			{
-// 				m_bxMenu->SetActive(false);
-// 				// TODO:: get the current profile's saved game, set up the load game box, handle results elsewhere
-// 				string* sLoadGame = new string[2];
-// 				sLoadGame[0] = "LOAD GAME"; sLoadGame[1] = "Bob's saved game";
-// 				m_bxLoad = new CBox(2, sLoadGame, 230, 300, 0.11f, true);
-// 				m_bxLoad->SetType(BOX_WITH_BACK);
-// 				m_bxLoad->SetActive();
-// 				delete[] sLoadGame;
-// 			}
-// 			break;
 		case MENU_BTN_WEAPON:
 			{
 				m_bxMenu->SetActive(false);

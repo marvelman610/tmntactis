@@ -29,6 +29,7 @@ CGame::CGame()
 	m_bIsRunning = false;
 	m_fSFXVolume = 0.5f;
 	m_fMusicVolume = 0.5f;
+	m_sCurrProfName = "NONE";
 
 	srand((unsigned int)(time(0)));
 }
@@ -83,30 +84,30 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 void CGame::Shutdown()
 {
 	ChangeState(NULL);
-	if(m_pMS){m_pMS->ShutdownMessageSystem(); m_pMS=NULL;}
 
+	if (m_pBitMapFont)
+		m_pBitMapFont = NULL;
 	if (m_pFMOD)
 	{
 		m_pFMOD->ShutdownFModManager();
 		m_pFMOD = NULL;
-	}
-	if(m_pDI)
-	{
-		m_pDI->ShutdownDirectInput();
-		m_pDI = NULL;
-	}
-	if(m_pTM)
-	{
-		m_pTM->ShutdownTextureManager();
-		m_pTM = NULL;
 	}
 	if(m_pD3D)
 	{
 		m_pD3D->ShutdownDirect3D();
 		m_pD3D = NULL;
 	}
-	if (m_pBitMapFont)
-		m_pBitMapFont = NULL;
+	if(m_pDI)
+	{
+		m_pDI->ShutdownDirectInput();
+		m_pDI = NULL;
+	}
+	if(m_pMS){m_pMS->ShutdownMessageSystem(); m_pMS=NULL;}
+	if(m_pTM)
+	{
+		m_pTM->ShutdownTextureManager();
+		m_pTM = NULL;
+	}
 }
 
 bool CGame::Main(POINT mouse)

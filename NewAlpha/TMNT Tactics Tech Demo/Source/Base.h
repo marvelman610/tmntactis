@@ -29,7 +29,7 @@ class CBase : public IBaseInterface
 {
 private:
 	int m_nImageID;
-	int m_nState;
+	//int m_nState;
 
 	char* m_szName;
 
@@ -66,15 +66,15 @@ private:
 	int m_nExperience;
 	int m_nSkillXP;
 
-	int m_nNumType;
 
 	//////////////////////////////////////////////////////////////////////////
 	//CTile m_pTileArray;
-	CBase* m_pOwner;
 
 protected:
+	CBase* m_pOwner;
 	int m_nType;
 	DWORD m_dwColor;
+	int m_nNumType;
 
 	vector<CAnimation> m_vAnimations;
 	int m_nCurrAnimation;

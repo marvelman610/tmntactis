@@ -12,7 +12,6 @@
 #include <ctime>
 #include "Player.h"
 #include "BattleMap.h"
-#include "Tile.h"
 #include "ObjectManager.h"
 #include "Achievements.h"
 
@@ -366,7 +365,7 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -420,7 +419,8 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/		
@@ -482,7 +482,8 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -554,7 +555,8 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -636,7 +638,8 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -729,7 +732,8 @@ void CBoss::AI()
 			}
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
 				CBattleMap::GetInstance()->GetNumCols(), true);*/
@@ -834,7 +838,8 @@ void CBoss::AI()
 
 			end = mapPt;
 			m_bMoving = true;
-			FindPath(begin, end);
+			FindPathX(end,m_vClosedList);
+			
 
 			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
 				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
@@ -864,132 +869,132 @@ void CBoss::Update(float fElapsedTime)
 		SetCurrAnim(1);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	// a ninja has been moved...execute the animation and position change over time
-	if (m_bMoving == true)
-	{
-		if (m_vPath.size() > 0)
-		{
-			// grab the next move and take it out of the vector..if the previous move is complete
-			POINT newPoint = m_vPath[0];
-			// set up variables
-			POINT currPoint= GetMapCoord();
-			MY_POINT_FLOAT currPos; 
-			currPos.x = GetPosX(); currPos.y = GetPosY();
-
-			// NORTHWEST
-			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				SetCurrAnimFacing(true);
-
-				currPos.x -= GetVelX() * fElapsedTime;
-				currPos.y -= GetVelY() * fElapsedTime;
-				SetPosPtF(currPos);
-			}
-			// SOUTHEAST
-			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				SetCurrAnimFacing(false);
-
-				currPos.x += GetVelX() * fElapsedTime;
-				currPos.y += GetVelY() * fElapsedTime;
-				SetPosPtF(currPos);
-			}
-			// NORTHEAST
-			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				SetCurrAnimFacing(false);
-
-				currPos.y -= GetVelY() * fElapsedTime;
-				currPos.x += GetVelX() * fElapsedTime;
-				SetPosPtF(currPos);
-			}
-			// SOUTHWEST
-			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				SetCurrAnimFacing(true);
-
-				currPos.y += GetVelY() * fElapsedTime;
-				currPos.x -= GetVelX() * fElapsedTime;
-				SetPosPtF(currPos);
-			}
-			// check to see if this current tile move is complete
-			if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
-			{
-				vector<POINT>::iterator first = m_vPath.begin();
-				m_vPath.erase(first);
-				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-// 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-// 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-				
- 				DecrementCurrAP(2);
-				m_ptStartXY.x = GetPosX();
-				m_ptStartXY.y = GetPosY();
-			}
-		}
-		else // movement is done
-		{
-			SetCurrAP(GetCurrAP());
-			m_bMoving = false;
-			//SetCurrAnim(3);
-
-			if(m_nInRange == 1)
-			{
-				//skills punch, kick
-				//skills low punch, sweep
-				switch(GetCurrAP())
-				{
-				case 4:
-					{
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
-					}
-					break;
-				case 6:
-					{
-						//use skill low punch , sweep
-						//do 40+ damage 
-						int damage = Random(30, 50);//damage
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				case 8:
-					{
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
-					}
-					break;
-				case 10:
-					{
-						//use skill punch, kick
-						//do 60+ damage
-						int damage = Random(45, 65);//damage
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				case 12:
-					{
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
-					}
-					break;
-				case 16:
-					{
-						//use skill low punch, sweep then use skill punck, kick
-						int damage = Random(80, 100);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				default:
-					{
-					}
-					break;
-				}
-				//end shredder turn
-				CBattleMap::GetInstance()->SetTurn(true);
-			}
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);
-		}
-	}
+//	if (m_bMoving == true)
+//	{
+//		if (m_vPath.size() > 0)
+//		{
+//			// grab the next move and take it out of the vector..if the previous move is complete
+//			POINT newPoint = m_vPath[0];
+//			// set up variables
+//			POINT currPoint= GetMapCoord();
+//			MY_POINT_FLOAT currPos; 
+//			currPos.x = GetPosX(); currPos.y = GetPosY();
+//
+//			// NORTHWEST
+//			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+//			{
+//				SetCurrAnimFacing(true);
+//
+//				currPos.x -= GetVelX() * fElapsedTime;
+//				currPos.y -= GetVelY() * fElapsedTime;
+//				SetPosPtF(currPos);
+//			}
+//			// SOUTHEAST
+//			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+//			{
+//				SetCurrAnimFacing(false);
+//
+//				currPos.x += GetVelX() * fElapsedTime;
+//				currPos.y += GetVelY() * fElapsedTime;
+//				SetPosPtF(currPos);
+//			}
+//			// NORTHEAST
+//			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+//			{
+//				SetCurrAnimFacing(false);
+//
+//				currPos.y -= GetVelY() * fElapsedTime;
+//				currPos.x += GetVelX() * fElapsedTime;
+//				SetPosPtF(currPos);
+//			}
+//			// SOUTHWEST
+//			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+//			{
+//				SetCurrAnimFacing(true);
+//
+//				currPos.y += GetVelY() * fElapsedTime;
+//				currPos.x -= GetVelX() * fElapsedTime;
+//				SetPosPtF(currPos);
+//			}
+//			// check to see if this current tile move is complete
+//			if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
+//			{
+//				vector<POINT>::iterator first = m_vPath.begin();
+//				m_vPath.erase(first);
+//				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
+//					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+//// 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
+//// 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+//				
+// 				DecrementCurrAP(2);
+//				m_ptStartXY.x = GetPosX();
+//				m_ptStartXY.y = GetPosY();
+//			}
+//		}
+//		else // movement is done
+//		{
+//			SetCurrAP(GetCurrAP());
+//			m_bMoving = false;
+//			//SetCurrAnim(3);
+//
+//			if(m_nInRange == 1)
+//			{
+//				//skills punch, kick
+//				//skills low punch, sweep
+//				switch(GetCurrAP())
+//				{
+//				case 4:
+//					{
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
+//					}
+//					break;
+//				case 6:
+//					{
+//						//use skill low punch , sweep
+//						//do 40+ damage 
+//						int damage = Random(30, 50);//damage
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+//					}
+//					break;
+//				case 8:
+//					{
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
+//					}
+//					break;
+//				case 10:
+//					{
+//						//use skill punch, kick
+//						//do 60+ damage
+//						int damage = Random(45, 65);//damage
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+//					}
+//					break;
+//				case 12:
+//					{
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
+//					}
+//					break;
+//				case 16:
+//					{
+//						//use skill low punch, sweep then use skill punck, kick
+//						int damage = Random(80, 100);
+//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
+//					}
+//					break;
+//				default:
+//					{
+//					}
+//					break;
+//				}
+//				//end shredder turn
+//				CBattleMap::GetInstance()->SetTurn(true);
+//			}
+//			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
+//			CBattleMap::GetInstance()->UpdatePositions();
+//			CBattleMap::GetInstance()->NinjaMoveComplete();
+//			CBattleMap::GetInstance()->SetTurn(true);
+//		}
+//	}
 
 	if( GetExperience() >= 100)
 	{
@@ -1011,5 +1016,624 @@ void CBoss::Update(float fElapsedTime)
 void CBoss::Render()
 {
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX, (int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1, m_dwColor);
+
+}
+
+
+void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
+{
+	POINT x;
+	x.x = endPt.x;
+	x.y = endPt.y;
+	
+	int debug = 0;
+
+	POINT testTile[4];
+	int distance[4];
+	int tileNum;
+	int minDistance = 100;
+	bool onList[4];
+	for(int i =0; i < 4; i++)
+	{
+		onList[i] = false;
+	}
+	int coordID;
+	if(GetCurrAP() >= 2)
+	{
+		//add curr position in closed list
+		Closed.push_back( GetMapCoord() );
+		if(GetMapCoord().x - 1 > -1 )//check if (x-1>-1)
+		{
+			//set those points to a new point called testTile
+			testTile[0].x = GetMapCoord().x-1;
+			testTile[0].y = GetMapCoord().y;
+			if(Closed.size() > 0)//error check to make sure closed list not empty
+			{
+				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				{
+					if(testTile[0].x == Closed[i].x && testTile[0].y == Closed[i].y)//if == then already in list and no need to check distance
+					{
+						onList[i] = true;
+					}
+					if(onList[i] == false)
+					{
+						//set coordid to its respective tileID number
+						coordID = testTile[0].y * CBattleMap::GetInstance()->GetNumCols() + testTile[0].x;
+						if(m_pTile[coordID].Flag() != FLAG_COLLISION)//check if that coorid is collision tile or not 
+						{
+							//get the distance from this coordinate to the endpt
+							distance[0] = abs( (endPt.x - testTile[0].x)+(endPt.y - testTile[0].y) );
+							//check if distance is < mindistance
+							if(distance[0] < minDistance)
+							{
+								minDistance = distance[0];
+								tileNum = 0;
+							}
+						}
+						else//add the position to the closed list
+						{
+							Closed.push_back(testTile[0]);
+						}
+					}
+				}
+			}
+		}
+
+		// (x+1<GetNumRows()) ,(y+1<GetNumRows())
+		if(GetMapCoord().x +1 < CBattleMap::GetInstance()->GetNumCols() )//check if (x+1<getnumcols())
+		{
+			//set those points to a new point called testTile
+			testTile[1].x = GetMapCoord().x+1;
+			testTile[1].y = GetMapCoord().y;
+			if(Closed.size() > 0)//error check to make sure closed list not empty
+			{
+				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				{
+					if(testTile[1].x == Closed[i].x && testTile[1].y == Closed[i].y)//if == then already in list and no need to check distance
+					{
+						onList[i] = true;
+					}
+					if(onList[i] == false)
+					{
+						//set coordid to its respective tileID number
+						coordID = testTile[1].y * CBattleMap::GetInstance()->GetNumCols() + testTile[1].x;
+						if(m_pTile[coordID].Flag() != FLAG_COLLISION)//check if that coorid is collision tile or not 
+						{
+							//get the distance from this coordinate to the endpt
+							distance[1] = abs( (endPt.x - testTile[1].x)+(endPt.y - testTile[1].y) );
+							//check if distance is < mindistance
+							if(distance[1] < minDistance)
+							{
+								minDistance = distance[1];
+								tileNum = 1;
+							}
+						}
+						else//add the position to the closed list
+						{
+							Closed.push_back(testTile[1]);
+						}
+					}
+				}
+			}
+		}
+
+		if(GetMapCoord().y - 1 > -1 )//check if (y-1>-1)
+		{
+			//set those points to a new point called testTile
+			testTile[2].x = GetMapCoord().x;
+			testTile[2].y = GetMapCoord().y-1;
+			if(Closed.size() > 0)//error check to make sure closed list not empty
+			{
+				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				{
+					if(testTile[2].x == Closed[i].x && testTile[2].y == Closed[i].y)//if == then already in list and no need to check distance
+					{
+						onList[i] = true;
+					}
+					if(onList[i] == false)
+					{
+						//set coordid to its respective tileID number
+						coordID = testTile[2].y * CBattleMap::GetInstance()->GetNumCols() + testTile[2].x;
+						if(m_pTile[coordID].Flag() != FLAG_COLLISION)//check if that coorid is collision tile or not 
+						{
+							//get the distance from this coordinate to the endpt
+							distance[2] = abs( (endPt.x - testTile[2].x)+(endPt.y - testTile[2].y) );
+							//check if distance is < mindistance
+							if(distance[2] < minDistance)
+							{
+								minDistance = distance[2];
+								tileNum = 2;
+							}
+						}
+						else//add the position to the closed list
+						{
+							Closed.push_back(testTile[2]);
+						}
+					}
+				}
+			}
+		}
+
+
+		if(GetMapCoord().y + 1 < CBattleMap::GetInstance()->GetNumCols() )//check if (y+1<getnumcols())
+		{
+			//set those points to a new point called testTile
+			testTile[3].x = GetMapCoord().x;
+			testTile[3].y = GetMapCoord().y+1;
+			if(Closed.size() > 0)//error check to make sure closed list not empty
+			{
+				for(int i = 0; i < Closed.size(); i++)//go through the list of points comparing each
+				{
+					if(testTile[3].x == Closed[i].x && testTile[3].y == Closed[i].y)//if == then already in list and no need to check distance
+					{
+						onList[i] = true;
+					}
+					if(onList[i] == false)
+					{
+						//set coordid to its respective tileID number
+						coordID = testTile[3].y * CBattleMap::GetInstance()->GetNumCols() + testTile[3].x;
+						if(m_pTile[coordID].Flag() != FLAG_COLLISION)//check if that coorid is collision tile or not 
+						{
+							//get the distance from this coordinate to the endpt
+							distance[3] = abs( (endPt.x - testTile[3].x)+(endPt.y - testTile[3].y) );
+							//check if distance is < mindistance
+							if(distance[3] < minDistance)
+							{
+								minDistance = distance[3];
+								tileNum = 3;
+							}
+						}
+						else//add the position to the closed list
+						{
+							Closed.push_back(testTile[3]);
+						}
+					}
+				}
+			}
+		}
+
+	///////////////////////////////////////////////////////////////////////////////////////
+	// select tile to move to and what to do next
+
+		int damage = 0;
+		switch(tileNum)
+		{
+		case 0:
+			SetCurrTile(testTile[0], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+			SetCurrAP(GetCurrAP()-2);
+			
+			//animate movement
+			//update position
+			CBattleMap::GetInstance()->UpdatePositions();
+
+			m_vClosedList = Closed;
+			if( distance[0] > 0 && GetCurrAP() >= 2) //more than one space away and 2 ap left
+			{
+				FindPathX(endPt, Closed);
+			}
+			else if( distance[0] == 0 && GetCurrAP() >=4)//at one tile and enough ap to attack
+			{
+				//switch to check how much ap
+				switch(GetCurrAP())
+				{
+				case 4:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 5:
+					//attack
+					 damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 6:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 7:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 8:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 9:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 10:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 11:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 12:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 13:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 14:
+					//special attack1 then special attack 2
+					damage = Random(40,50);
+					damage += Random(50,60);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				}
+			}
+			else
+			{
+				//end turn
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+			break;
+		case 1:
+			SetCurrTile(testTile[1], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+			SetCurrAP(GetCurrAP()-2);
+			//update position
+			CBattleMap::GetInstance()->UpdatePositions();
+			//animate movement
+			m_vClosedList = Closed;
+			if( distance[1] > 0 && GetCurrAP() >= 2) //more than one space away and 2 ap left
+			{
+				FindPathX(endPt, Closed);
+			}
+			else if( distance[1] == 0 && GetCurrAP() >=4)//at one tile and enough ap to attack
+			{
+				//switch to check how much ap
+				switch(GetCurrAP())
+				{
+				case 4:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 5:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 6:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 7:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 8:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 9:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 10:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 11:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 12:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 13:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 14:
+					//special attack1 then special attack 2
+					damage = Random(40,50);
+					damage += Random(50,60);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				}
+			}
+			else
+			{
+				//end turn
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+			break;
+		case 2:
+			SetCurrTile(testTile[2], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+			SetCurrAP(GetCurrAP()-2);
+			//update position
+			CBattleMap::GetInstance()->UpdatePositions();
+			//animate movement
+			m_vClosedList = Closed;
+			if( distance[2] > 0 && GetCurrAP() >= 2) //more than one space away and 2 ap left
+			{
+				FindPathX(endPt, Closed);
+			}
+			else if( (distance[2] == 0) && GetCurrAP() >=4)//at one tile and enough ap to attack
+			{
+				//switch to check how much ap
+				switch(GetCurrAP())
+				{
+				case 4:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 5:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 6:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 7:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 8:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 9:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 10:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 11:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 12:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 13:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 14:
+					//special attack1 then special attack 2
+					damage = Random(40,50);
+					damage += Random(50,60);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				}			
+			}
+			else
+			{
+				//end turn
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+			break;
+		case 3:
+			SetCurrTile(testTile[3], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
+			SetCurrAP(GetCurrAP()-2);
+			//update position
+			CBattleMap::GetInstance()->UpdatePositions();
+			//animate movement
+			m_vClosedList = Closed;
+			if( distance[3] > 0 && GetCurrAP() >= 2) //more than one space away and 2 ap left
+			{
+				FindPathX(endPt, Closed);
+			}
+			else if( distance[3] == 0 && GetCurrAP() >=4)//at one tile and enough ap to attack
+			{
+				//switch to check how much ap
+				switch(GetCurrAP())
+				{
+				case 4:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 5:
+					//attack
+					damage = Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 6:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 7:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 8:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 9:
+					//special attack
+					damage = Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 10:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 11:
+					//special attack && attack
+					damage = Random(40,50);
+					damage += Random(20,30);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 12:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 13:
+					//special attack x2
+					damage = Random(40,50);
+					damage += Random(40,50);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				case 14:
+					//special attack1 then special attack 2
+					damage = Random(40,50);
+					damage += Random(50,60);
+					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(GetHealth()-damage);
+					//end turn
+					CBattleMap::GetInstance()->SetTurn(true);
+					break;
+				}
+			}
+			else
+			{
+				//end turn
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
+			break;
+		default:
+			//end turn
+			CBattleMap::GetInstance()->SetTurn(true);
+			break;
+
+		}
+	}
 
 }

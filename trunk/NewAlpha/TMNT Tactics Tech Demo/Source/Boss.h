@@ -11,9 +11,13 @@
 #define BOSS_H
 
 #include "Base.h"
+#include <vector>
+#include "Tile.h"
+using std::vector;
 
-class CTile;
+
 class CPlayer;
+
 
 class CBoss : public CBase
 {
@@ -28,6 +32,7 @@ private:
 	CTile* m_pTile;				//pointer to tile
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
+	vector<POINT>m_vClosedList; //list of the closed tiles
 	
 
 
@@ -55,6 +60,8 @@ public:
 	// Purpose : Function to handle the path finding for the ninja
 	/////////////////////////////////////////////////////////////////////
 	void FindPath(POINT begin, POINT end);
+
+	void FindPathX(POINT endPt, vector<POINT>Closed);
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

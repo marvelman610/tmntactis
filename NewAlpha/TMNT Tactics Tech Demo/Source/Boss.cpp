@@ -1750,7 +1750,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	
 	POINT current; current.x = begin.x; current.y = begin.y;
 
-	while(GetCurrAP() >=2 && abs((end.x - current.x)+(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
+	while(GetCurrAP() >=2 && abs((end.x - current.x)+abs(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
 	{
 		for(int i = 0; i < 4; i++)
 		{
@@ -1904,8 +1904,9 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		//TODO:check which is greater difference the x or y delta and pick that one for the distance
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		if(distance[0] == distance[2]){TileNum = 2;}
-		if(distance[1] == distance[3]){TileNum = 3;}
+		if(distance[0] == distance[2] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 2;}
+		if(distance[1] == distance[3] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 3;}
+
 		/////////////////////////////////////////////////////////////////////////////////
 		// once the next tile has been chosen, put the current tile on the closed list
 		// add the next tile to the move list and set the current tile to the next tile

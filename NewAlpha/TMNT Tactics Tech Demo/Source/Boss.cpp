@@ -1750,13 +1750,14 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	
 	POINT current; current.x = begin.x; current.y = begin.y;
 
-	while(GetCurrAP() >=2 && abs((end.x - current.x)+abs(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
+ 	while(GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
 	{
 		for(int i = 0; i < 4; i++)
 		{
 			SetTile[i] = false;
 			//distance[i] = 100;
 		}
+		minDistance = 100;
 		/////////////////////////////////////////////////////////////////////////////////////////
 		// FIRST CHECK (SPACE ONE/FOUR)
 		if(current.x - 1 > 1)
@@ -1917,6 +1918,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			m_vClosedList.push_back(current);
 			current.x = tile[0].x;
 			current.y = tile[0].y;
+			SetCurrAP(GetCurrAP()-2);
 			break;
 
 		case 1: 
@@ -1924,6 +1926,8 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			m_vClosedList.push_back(current);
 			current.x = tile[1].x;
 			current.y = tile[1].y;
+			SetCurrAP(GetCurrAP()-2);
+
 			break;
 
 		case 2:
@@ -1931,6 +1935,8 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			m_vClosedList.push_back(current);
 			current.x = tile[2].x;
 			current.y = tile[2].y;
+			SetCurrAP(GetCurrAP()-2);
+
 			break;
 			
 		case 3:
@@ -1938,6 +1944,8 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 			m_vClosedList.push_back(current);
 			current.x = tile[3].x;
 			current.y = tile[3].y;
+			SetCurrAP(GetCurrAP()-2);
+
 			break;
 		}
 		continue;

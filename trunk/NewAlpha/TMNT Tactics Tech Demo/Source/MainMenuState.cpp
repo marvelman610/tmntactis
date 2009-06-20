@@ -24,7 +24,7 @@
 #include <fstream>
 using std::fstream;
 
-enum {SIGNIN, PLAY, CONTINUE, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_END };
+enum {SIGNIN, NEWGAME, CONTINUE, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT, NULL_END };
 
 CMainMenuState::CMainMenuState()
 {
@@ -35,17 +35,8 @@ CMainMenuState::CMainMenuState()
 		m_sProfiles[i] = "Create New";
 	}
 	ifstream ifs("Profiles.dat", ios_base::binary);
-	if (ifs.is_open())
-	{
-		for (int i = 1; i < 5; ++i)
-		{
-			if (!ifs.eof())
-				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
-			else
-				break;
-			++m_nNumProfiles;
-		}
-	}
+
+	m_fTimer = 0.0f;
 }
 
 CMainMenuState::~CMainMenuState()
@@ -64,6 +55,7 @@ CMainMenuState* CMainMenuState::GetInstance()
 
 void CMainMenuState::Enter()
 {
+	m_fTimer = 0.0f;
 	m_bNewGamePressed = false;
 	ifstream ifs("Profiles.dat", ios_base::binary);
 	if (ifs.is_open())
@@ -74,7 +66,8 @@ void CMainMenuState::Enter()
 				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
 			else
 				break;
-			++m_nNumProfiles;
+			if(m_sProfiles[i] != "Create New")
+				++m_nNumProfiles;
 		}
 	}
 	m_bxMsg = NULL; m_bxProfile = NULL;
@@ -85,14 +78,14 @@ void CMainMenuState::Enter()
 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aMMBGimageID));
 	CenterBGImage();
 
-	SetCurrMenuSelection( PLAY );
+	SetCurrMenuSelection( NEWGAME );
 	SetMenuX(350); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 
 	GetFMOD()->PlaySound(GetAssets()->aMMmusicID);
 	GetFMOD()->SetVolume(GetAssets()->aMMmusicID, GetGame()->GetMusicVolume());
-
-	if (CPlayer::GetInstance()->GetProfName() == "NONE")
+	
+	if (GetGame()->GetProfName() == "NONE")
 	{
 		m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
 		m_bxProfile->SetActive();
@@ -103,6 +96,8 @@ void CMainMenuState::Enter()
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 {
+	if (m_fTimer < 0.25f)	// stop any input, before the screen is actually loaded
+		return true;
 	CBaseMenuState::Input(fElapsedTime, mousePt);
 
 	if (mousePt.y != m_nMouseY && !m_bxProfile && !m_bxMsg)
@@ -117,7 +112,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		{
 			SetCurrMenuSelection( newSelection );
 			if (GetCurrMenuSelection() < 0)
-				SetCurrMenuSelection(PLAY);
+				SetCurrMenuSelection(NEWGAME);
 			else if (GetCurrMenuSelection() > NULL_END-1)
 				SetCurrMenuSelection(NULL_END-1);
 			if (GetFMOD()->IsSoundPlaying(GetAssets()->aMMmenuMoveSnd))
@@ -144,11 +139,15 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				&& m_bxProfile->GetItems()[index].size() > 0)
 			{
 				// set the profile name
-				CPlayer::GetInstance()->SetProfileName(m_bxProfile->GetItems()[index]);
+				//m_sCurrProfName = m_bxProfile->GetItems()[index].c_str();
+				//CPlayer::GetInstance()->SetProfileName(m_sCurrProfName);
 				m_sProfiles[index] = m_bxProfile->GetItems()[index];
+				string profName = m_sProfiles[index];
+				CGame::GetInstance()->SetProfName(profName);
+				if (m_bxProfile->GetMadeNew())
+					++m_nNumProfiles;
 				delete m_bxProfile;
 				m_bxProfile = NULL;
-				++m_nNumProfiles;
 
 				// save the profile names
 				ofstream ofs("Profiles.dat", ios_base::binary);
@@ -158,22 +157,25 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				}
 				ofs.close();
 
-				// load the profile's saved game if one exists
 
-//				ifstream ifs("SavedFiles.dat", ios_base::binary);
-// 				if (ifs.is_open())
-// 				{
-// 					ifs.close();
-// 					// load the save game..it exists already
-// 					string fileName = CPlayer::GetInstance()->GetProfName() + ".dat";
-// 					CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
-// 				}
 				if (m_bNewGamePressed)
 				{
 					CPlayer::GetInstance()->NewGame();
 					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 				}
-					// no saved game yet...
+				else
+				{
+					// load the profile's saved game if one exists
+					string fileName = CGame::GetInstance()->GetProfName() + ".dat";
+					string pathFileName = "Resources/SavedGames/" + fileName;
+					ifstream ifs;
+					ifs.open(pathFileName.c_str(), ios_base::binary | ios_base::in);
+					if (ifs.is_open())
+					{
+						ifs.close();
+						CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
+					}
+				}
 
 			}
 			else if (input == BTN_BACK) // save nothing
@@ -188,14 +190,14 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	if(GetDI()->JoystickDPadPressed(2, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() -1);
-		if (GetCurrMenuSelection() < PLAY)
+		if (GetCurrMenuSelection() < NEWGAME)
 			SetCurrMenuSelection(NULL_END-1);
 	}
 	else if(GetDI()->JoystickDPadPressed(3, 0) ) //0 = left, 1 = right, 2 = up, 3 = down
 	{
 		SetCurrMenuSelection(GetCurrMenuSelection() +1);
 		if (GetCurrMenuSelection() == NULL_END)
-			SetCurrMenuSelection(PLAY);
+			SetCurrMenuSelection(NEWGAME);
 	}
 	// a = 0, b = 1, x = 2, y = 3, lb = 4, rb = 5, select = 6, start = 7, lstick button = 8
 	// rstick button = 9,  triggers??
@@ -232,10 +234,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_bxProfile->AcceptInput();
 			}
 			break;
-		case PLAY:
+		case NEWGAME:
 			{
 				m_bNewGamePressed = true;
-				string profName = CPlayer::GetInstance()->GetProfName();
+				string profName = CGame::GetInstance()->GetProfName();
 				if (profName == "NONE")
 				{
 					m_bxProfile = new CBox(5, m_sProfiles, 300, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
@@ -264,7 +266,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		case CONTINUE:
 			{
 					// no saved
-				if (CPlayer::GetInstance()->GetProfName() == "NONE")
+				if (CGame::GetInstance()->GetProfName() == "NONE")
 				{
 					m_bxProfile = new CBox(5, m_sProfiles, 250, 300, 0.11f, true, 35, 35, 25, -1, 0.75f);
 					m_bxProfile->SetActive();
@@ -273,8 +275,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				}
 				else
 				{
-					string name = CPlayer::GetInstance()->GetProfName() + ".dat";
-					CGamePlayState::GetInstance()->LoadGame(name.c_str());
+					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 				}
 				break;
 			}
@@ -322,8 +323,8 @@ void CMainMenuState::Render()
 
 void CMainMenuState::Update(float fElapsedTime)
 {
-
-}
+	m_fTimer += fElapsedTime;
+}	
 
 
 void CMainMenuState::Exit()

@@ -16,6 +16,8 @@ class CPlayer;
 class MessageSystem;
 class CBaseMessage;
 class Factory;
+#include <string>
+using std::string;
 
 class CGame
 {
@@ -33,6 +35,7 @@ private:
 	//ParticleSystem* m_pParticleSystem;
 	//MessageSystem* m_pMessageSystem;
 	//Factory* m_pObjectFactory;
+	string m_sCurrProfName;
 
 	// variables
 	bool	m_bIsRunning;
@@ -107,6 +110,7 @@ public:
 	bool GetIsRunning()			{return m_bIsRunning;}
 	float  GetSFXVolume()		{return m_fSFXVolume;}
 	float  GetMusicVolume()		{return m_fMusicVolume;}
+	string GetProfName()		{return m_sCurrProfName;}
 	// 	bool GetIsPaused()			{return m_bIsPaused;}
 	// 	int  GetPanning()			{return m_nPanning;}
 
@@ -116,6 +120,7 @@ public:
 	void SetSFXVolume	(float _nSFXVolume);
 	void SetMusicVolume	(float _nMusicVolume);
 	void SetIsRunning	(bool _bIsRunning)		{m_bIsRunning = _bIsRunning;}
+	void SetProfName	(string profName)		{m_sCurrProfName = profName;}
 	//	void SetIsPaused	()					{m_bIsPaused = !m_bIsPaused;}
 	// 	void SetLastScore	(int _nLastScore)		{m_nLastScore = _nLastScore;}
 	// 	void SetPanning		(int _nPanning);

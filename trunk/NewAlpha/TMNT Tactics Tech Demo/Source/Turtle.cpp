@@ -22,6 +22,8 @@ CTurtle::CTurtle(void)
 	SetWidth(50);
 	SetHeight(80);
 	m_nCurrWeapon = 0;
+	m_pOwner = NULL;
+	m_nNumType = -1;
 }
 
 CTurtle::~CTurtle(void)

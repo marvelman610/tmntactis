@@ -49,9 +49,10 @@ CPlayer::CPlayer(void)
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
 	m_pTurtles[MIKEY]->GetCurrAnim()->Play();	 
 
+	m_nCurrStage = 0;
 }
 
-CPlayer::~CPlayer(void)
+void CPlayer::Exit()
 {
 	for(int i = 0; i < 4; i++)
 	{
@@ -60,6 +61,12 @@ CPlayer::~CPlayer(void)
 	}
 	delete m_pAcheivements;
 }
+
+CPlayer::~CPlayer(void)
+{
+	int  i = 0;
+}
+
 CPlayer* CPlayer::GetInstance()
 {
 	static CPlayer instance;
@@ -68,8 +75,40 @@ CPlayer* CPlayer::GetInstance()
 
 void CPlayer::NewGame()
 {
+	ObjectManager::GetInstance()->RemoveAll();
+	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
+	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
+	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
+	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
+
+	m_pAcheivements = new CAchievements();
+
+	CBase weapon;
+	weapon.SetWeapon("Bokken",6,0,-1,0);
+	m_pTurtles[LEONARDO]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Oak Bo Staff",5,1,-1,7);
+	m_pTurtles[DONATELLO]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Rusty Sais",6,0,-1,10);
+	m_pTurtles[RAPHAEL]->AddWeapon( weapon);
+
+	weapon.SetWeapon("Wooden Nunchaku",3,0,-1,4);
+	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
+
+	LoadAnimations();
+	m_sProfileName = "NONE"; m_sFileName = "NONE";
+
+	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
+	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
+	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
+	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
+
+	m_nCurrStage = 0;
+
 	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+	//////////////////////////////////////////////////////////////////////////
 	POINT pt; pt.x = 15; pt.y = 18;
 	Factory::GetInstance()->CreateBattleItem(GRENADO, pt);
 }

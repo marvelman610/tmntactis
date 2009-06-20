@@ -61,11 +61,7 @@ CSkill::~CSkill()
 	m_pDI			= NULL;
 	m_pD3D			= NULL;
 	m_pTM			= NULL;
-	if (m_pCombination)
-	{
-		//delete[] m_pCombination;
-		m_pCombination = NULL;
-	}
+	m_pCombination = NULL;
 }
 CSkill::CSkill() {}
 

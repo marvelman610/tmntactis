@@ -62,6 +62,7 @@ class CBox
 	// mouse selection (buttons being hovered over/pressed)
 	int m_nCurrSelectedIndex;
 	int m_nCurrInputIndex;
+	bool m_bMadeNew;
 	bool m_bIsMsgBox;
 	bool m_bIsActive;
 	bool m_bIsMouseInBox;
@@ -145,6 +146,7 @@ class CBox
 	bool IsMsgBox() const { return m_bIsMsgBox; }
 	void IsMsgBox(bool val) { m_bIsMsgBox = val; }
 	string* GetItems() {return m_sItems;}
+	bool GetMadeNew() {return m_bMadeNew;}
 };
 
 #endif

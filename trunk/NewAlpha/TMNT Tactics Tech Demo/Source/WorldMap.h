@@ -22,7 +22,7 @@ class CBox;
 class CPlayer;
 
 enum {LOC_SIMUSA, LOC_SINARO, LOC_YAMATO, LOC_IWAMI, NUM_LOCATIONS, };
-enum {MENU_BTN_SKILL, MENU_BTN_WEAPON, MENU_BTN_SAVE,  /*MENU_BTN_LOAD,*/ MENU_BTN_EXIT=100, };
+enum {MENU_BTN_SKILL, MENU_BTN_WEAPON, MENU_BTN_SAVE, MENU_BTN_EXIT=100, };
 
 class CWorldMap
 {
@@ -97,8 +97,8 @@ class CWorldMap
 	CSGD_TextureManager*	m_pTM;
 	CSGD_DirectInput*		m_pDI;
 	
-	CWorldMap();
-	~CWorldMap();
+	CWorldMap(void);
+	~CWorldMap(void);
 	CWorldMap(const CWorldMap&);
 	CWorldMap& operator= (const CWorldMap&);
 

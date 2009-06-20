@@ -115,7 +115,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
 	//particle test
-	m_pParticleSystem = new CParticleSystem[4];
+	m_pParticleSystem = new CParticleSystem[5];
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
 	m_pParticleSystem[FIRE].m_bLoop = false;
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
@@ -124,6 +124,8 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_pParticleSystem[GLOW].m_bLoop = false;
 	m_pParticleSystem[BLOOD].Load("Resources/ParticleInfo/VG_Blood.dat");
 	m_pParticleSystem[BLOOD].m_bLoop = false;
+	m_pParticleSystem[GLASS].Load("Resources/ParticleInfo/VG_Glass.dat");
+	m_pParticleSystem[GLASS].m_bLoop = false;
 
 	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
@@ -478,6 +480,8 @@ void CBattleMap::Render()
 	{ m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle); }
 	if(m_pParticleSystem[BLOOD].m_bActive == true)
 	{ m_pParticleSystem[BLOOD].DrawParticle(m_pAssets->aBloodParticle); }
+	if(m_pParticleSystem[GLASS].m_bActive == true)
+	{ m_pParticleSystem[GLASS].DrawParticle(m_pAssets->AGlassParticle);	}
 
 	DrawDebugInfo();
 }
@@ -552,11 +556,13 @@ void CBattleMap::Update(float fElapsedTime)
 		m_fTimer += fElapsedTime;
 		m_pParticleSystem[FIRE].DrawParticle(m_pAssets->aFireParticle);
 		m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle);
+		m_pParticleSystem[GLASS].DrawParticle(m_pAssets->aGlassParticle);
 		if (m_fTimer >= 2.0f)
 		{
 			m_bDrawTimedParticles = false;m_fTimer = 0.0f;
 			m_pParticleSystem[FIRE].m_bActive  = false;
 			m_pParticleSystem[SMOKE].m_bActive = false;
+			m_pParticleSystem[GLASS].m_bActive = false;
 		}
 	}
 	if (m_bMoving)
@@ -650,6 +656,7 @@ void CBattleMap::Update(float fElapsedTime)
 	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
 	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
 	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
 	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )

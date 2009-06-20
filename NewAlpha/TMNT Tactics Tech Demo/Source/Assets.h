@@ -166,6 +166,7 @@ public:
 	ASSET aBloodParticle;
 	ASSET aSmokeParticle;
 	ASSET aGlowParticle;
+	ASSET aGlassParticle;
 
 	//achievementes
 		// images

@@ -141,6 +141,9 @@ CBoss* Factory::CreateBoss()
 	boss->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 7,0.15f);//lose
 	boss->AddAnim(anim);
+
+	boss->SetVelX(100);
+	boss->SetVelY(50);
 	
 	ObjectManager::GetInstance()->Add(boss);
 	return boss;
@@ -167,6 +170,12 @@ CNinja* Factory::CreateNinja()
 	ninja->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_WhiteNinja1.dat", 8,0.15f);
 	ninja->AddAnim(anim);
+
+	ninja->SetStrength(16);
+	ninja->SetDefense(5);
+	ninja->SetAccuracy(10);
+	ninja->SetRange(2);
+
 
 	ObjectManager::GetInstance()->Add(ninja);
 

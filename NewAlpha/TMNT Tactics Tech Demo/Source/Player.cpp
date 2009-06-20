@@ -60,12 +60,14 @@ void CPlayer::Exit()
 		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();
 	}
-	delete m_pAcheivements;
+	delete m_pAcheivements; m_pAcheivements = NULL;
 }
 
 CPlayer::~CPlayer(void)
 {
 	int  i = 0;
+	if (m_pAcheivements)
+	{ delete m_pAcheivements; m_pAcheivements = NULL;}
 }
 
 CPlayer* CPlayer::GetInstance()

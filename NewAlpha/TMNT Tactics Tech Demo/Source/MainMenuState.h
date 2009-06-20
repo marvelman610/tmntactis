@@ -23,8 +23,8 @@ private:
 	bool	m_bDisplayLoadBox;
 	bool	m_bNewGamePressed;
 	int		m_nNumProfiles;
-	string m_sProfiles[4];
-	float m_fTimer;
+	string  m_sProfiles[4];
+	float	m_fTimer;
 
 
 	CMainMenuState();

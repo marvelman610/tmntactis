@@ -1779,7 +1779,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if(SetTile[0] == true)
 				{
-					distance[0] = abs((end.x - tile[0].x) + (end.y - tile[0].y));
+					distance[0] = (abs(end.x - tile[0].x) + abs(end.y - tile[0].y));
 					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
 				}
 			}
@@ -1788,7 +1788,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[0] = true;
-					distance[0] = abs((end.x - tile[0].x) + (end.y - tile[0].y));
+					distance[0] = (abs(end.x - tile[0].x) + abs(end.y - tile[0].y));
 					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
 				}
 			}
@@ -1816,7 +1816,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if(SetTile[1] == true)
 				{
-					distance[1] = abs((end.x - tile[1].x) + (end.y - tile[1].y));
+					distance[1] = (abs(end.x - tile[1].x) + abs(end.y - tile[1].y));
 					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
 				}
 			}
@@ -1825,7 +1825,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[1] = true;
-					distance[1] = abs((end.x - tile[1].x) + (end.y - tile[1].y));
+					distance[1] = (abs(end.x - tile[1].x) + abs(end.y - tile[1].y));
 					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
 				}
 			}
@@ -1851,7 +1851,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if(SetTile[2] == true)
 				{
-					distance[2] = abs((end.x - tile[2].x) + (end.y - tile[2].y));
+					distance[2] = (abs(end.x - tile[2].x) + abs(end.y - tile[2].y));
 					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
 				}
 			}
@@ -1860,7 +1860,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[2] = true;
-					distance[2] = abs((end.x - tile[2].x) + (end.y - tile[2].y));
+					distance[2] = (abs(end.x - tile[2].x) + abs(end.y - tile[2].y));
 					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
 				}
 			}
@@ -1886,7 +1886,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if(SetTile[3] == true)
 				{
-					distance[3] = abs((end.x - tile[3].x) + (end.y - tile[3].y));
+					distance[3] = (abs(end.x - tile[3].x) + abs(end.y - tile[3].y));
 					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
 				}
 			}
@@ -1895,7 +1895,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
 					SetTile[3] = true;
-					distance[3] = abs((end.x - tile[3].x) + (end.y - tile[3].y));
+					distance[3] = (abs(end.x - tile[3].x) + abs(end.y - tile[3].y));
 					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
 				}
 			}
@@ -1905,8 +1905,8 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		//////////////////////////////////////////////////////////////////////////////////////////////
 		//TODO:check which is greater difference the x or y delta and pick that one for the distance
 		/////////////////////////////////////////////////////////////////////////////////////////////
-		if(distance[0] == distance[2] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 2;}
-		if(distance[1] == distance[3] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 3;}
+		//if(distance[0] == distance[2] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 2;}
+		//if(distance[1] == distance[3] && abs(m_ptStartXY.y - end.y) < abs(m_ptStartXY.x - end.x) ){TileNum = 3;}
 
 		/////////////////////////////////////////////////////////////////////////////////
 		// once the next tile has been chosen, put the current tile on the closed list

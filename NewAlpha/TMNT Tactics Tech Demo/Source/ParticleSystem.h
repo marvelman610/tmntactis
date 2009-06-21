@@ -112,6 +112,25 @@ public:
 		particleBuff = NULL;
 		texture = NULL;
 	}
+
+	///////////////////////////////////////////////////////////////////////////////////////////
+	// Function	: SetVelocity
+	//
+	// Purpose : To set the velocity of each particle
+	///////////////////////////////////////////////////////////////////////////////////////////
+	void SetVelocity(float min, float max)
+	{
+		if(m_nNumParticles > 0)
+		{
+			for(int i = 0; i < m_nNumParticles; i++)
+			{
+				particles[i].vel.x = RandomFloat(min,max);
+				particles[i].vel.y = RandomFloat(min,max);
+				particles[i].vel.z = 0;
+			}
+		}
+	}
+
 	///////////////////////////////////////////////////////////////////////////////////////////
 	// Function : InitParticle
 	//

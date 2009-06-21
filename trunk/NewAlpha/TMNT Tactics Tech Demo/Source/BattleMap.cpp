@@ -632,6 +632,8 @@ void CBattleMap::Update(float fElapsedTime)
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 			m_bMoving = false;
 			m_bPathDisplayed = false;
+			m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
+			m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
 		}
 	}
 	cheat();
@@ -797,8 +799,6 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 	// Keyboard input
 	if (m_bExecuteSkill)
 		return true;
-	if (!HandleKeyBoardInput(fElapsedTime))
-		return false;
 
 	// Mouse movement (edge of screen to move camera)
 	if (m_bIsPlayersTurn || m_bIsPaused)
@@ -856,6 +856,9 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		if (m_pDI->KeyPressed(DIK_D))
 			int i = 0;
 	}
+	if (!HandleKeyBoardInput(fElapsedTime))
+		return false;
+
 	return true;
 }
 
@@ -1499,6 +1502,16 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				m_nMoveDirection = MOVE_ADD_Y;
 			}
 		}
+		if (m_pDI->KeyPressed(DIK_Z))
+		{
+			m_nCurrBtnSelected = BTN_SPECIAL;
+			HandleButton();
+		}
+		else if (m_pDI->KeyPressed(DIK_I))
+		{
+			m_nCurrBtnSelected = BTN_ITEM;
+			HandleButton();
+		}
 	}
 	if (m_pDI->KeyPressed(DIK_SPACE) || m_pDI->JoystickButtonPressed(6,0))
 	{
@@ -1718,7 +1731,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 
 			// the user has clicked for the second time on the same location to move to..moving now
 			if (m_bPathDisplayed && !bOccupied && m_ptEndCoord.x == xID && m_ptEndCoord.y == yID)
-					m_bMoving = true;
+			{	m_bMoving = true; PlaySFX(m_pAssets->aBMfootstepsSnd);}
 			// reset..a new path needs to be evaluated
 			else if (m_bPathDisplayed && !bOccupied && (m_ptEndCoord.x != xID || m_ptEndCoord.y != yID) )
 			{
@@ -1737,6 +1750,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			FindPathToTarget();
 			m_bPathDisplayed = true;
 		}
+		// Handles buttons pressed
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused || m_bxMessageBox)
 			HandleButton();
 	}
@@ -2116,6 +2130,8 @@ void CBattleMap::PerformAttack()
 			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 				m_vCharacters.push_back(*m_vEnemies[i]);
 		}
+		else
+			PlaySFX(m_pAssets->aBMpainSnd);
 	} 
 	// a skill has been selected, execute that skill
 	else

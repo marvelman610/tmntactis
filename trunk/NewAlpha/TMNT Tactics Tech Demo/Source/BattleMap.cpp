@@ -160,6 +160,7 @@ void CBattleMap::Exit()
 }
 void CBattleMap::Reset()
 {
+	m_Timer.ResetTimer();
 	m_nNumEnemiesLeft = m_nNumEnemiesKilled = m_nNumCharacters = 0;
 	m_nCurrCharacterTile = -1;
 
@@ -274,12 +275,12 @@ void CBattleMap::Render()
 		}
 	}
 	m_pPlayer->GetAch()->Render();
-	if(m_bWin)
+	if(m_bWin && m_Timer.IsTimerRunning() )
 	{
 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
 	}
-	else if(m_bLose)
+	else if(m_bLose && m_Timer.IsTimerRunning() )
 	{
 		CBitmapFont::GetInstance()->DrawString("YOU LOSE", 100, 200, 0.05f, 3.0f);
 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
@@ -467,9 +468,6 @@ void CBattleMap::Render()
 
 	if (m_nCurrCharacter > -1)
 	{
-// 		char apText[64];
-// 		sprintf_s(apText, "AP: %i", m_vCharacters[m_nCurrCharacter].GetCurrAP());
-// 		m_pD3D->DrawText(apText, 10, 480, 0,0,0);
 		if (m_nCurrTarget > -1)
 		{
 			char distText[64];
@@ -526,12 +524,32 @@ void CBattleMap::SetPaused(bool IsPaused)
 }
 void CBattleMap::Update(float fElapsedTime)
 {
+	bool bTimerDone = m_Timer.Update(fElapsedTime);
+
+	// check for loss, if so start the timer for displaying "Defeat"
+	if(m_nNumTurtles <= 0)
+	{
+		m_bLose = true;
+		m_Timer.StartTimer(3.0f);
+	}
+	if (bTimerDone)	// catch all events that are m_Timer related
+	{
+		// exit to the main menu if all turtles are dead, else to the world map
+		if (m_bWin)
+			CGamePlayState::GetInstance()->ChangeMap();
+		else if (m_bLose)
+			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+	}
+	m_pPlayer->GetAch()->Update(fElapsedTime);
+
+	if(m_bWin || m_bLose)
+		return;
+	//////////////////////////////////////////////////////////////////////////
+
 	if(m_bEggBool2 || m_bItemBool2)
 	{
 		if(count >= 1)
 		{
-			
-
 			m_bEggBool2 = false;
 			m_bItemBool2 = false;
 			if(m_bEggBool2)
@@ -540,25 +558,15 @@ void CBattleMap::Update(float fElapsedTime)
 			{
 				m_bDrawTimedParticles = true;
 				count = 0;
+				m_pFMOD->PlaySound(m_pAssets->aBMeggSmackSnd);
 			}
 		}
 	}
 	
 	if( m_nCurrCharacter > -1 && !m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->GetCurrAnim()->IsAnimationPlaying() )
 		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(2);
-	if(m_nNumTurtles <= 0)
-		m_bLose = true;
-	if(m_bWin || m_bLose)
-		return;
-	// a turtle has been moved...execute the animation and position change over time
-	/*if(m_nNumEnemiesLeft <= 0)
-	{
-		CBitmapFont::GetInstance()->DrawString("VICTORY", 300, 300, 0.05f, 3.0f);
-	}*/
 	if (m_bItemBool)
 		CalculateRanges();
-
-	m_pPlayer->GetAch()->Update(fElapsedTime);
 
 	if (m_bDrawTimedParticles)
 	{
@@ -574,6 +582,7 @@ void CBattleMap::Update(float fElapsedTime)
 			m_pParticleSystem[GLASS].m_bActive = false;
 		}
 	}
+	// a turtle has been moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
 		if (m_vPath.size() > 0)
@@ -797,7 +806,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
 	if(m_bWin || m_bLose)
 	{
-		if(m_pDI->KeyPressed(DIK_ESCAPE))
+		if(m_pDI->KeyPressed(DIK_ESCAPE) || m_pDI->KeyPressed(DIK_RETURN))
 			CGamePlayState::GetInstance()->ChangeMap();
 		return true;
 	}
@@ -807,7 +816,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		SetPaused(false);
 
 	int xID, yID;
-	m_ptMouseScreenCoord = mouse;
+	m_ptMouseScreenCoord = mouse;	// get the screen position before offsetting for scroll
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 	if (m_bMoving)
@@ -818,6 +827,7 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		return true;
 	if (!HandleKeyBoardInput(fElapsedTime))
 		return false;
+
 	// Mouse movement (edge of screen to move camera)
 	if (m_bIsPlayersTurn || m_bIsPaused)
 	{

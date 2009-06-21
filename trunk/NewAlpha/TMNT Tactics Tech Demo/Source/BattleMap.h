@@ -11,6 +11,7 @@
 
 #include <windows.h>
 #include "Base.h"
+#include "Timer.h"
 #include <vector>
 using std::vector;
 #include <iostream>
@@ -110,6 +111,7 @@ class CBattleMap
 	bool m_bExecuteSkill;
 	bool m_bIsPaused;
 	bool m_bDrawTimedParticles;
+	CTimer m_Timer;
 
 	float m_fItemTimer;
 	float count;

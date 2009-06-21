@@ -97,6 +97,7 @@ public:
 	ASSET aBMcowabungaSnd;
 	ASSET aBMninjarap;
 	ASSET aHTPsound;
+	ASSET aBMeggSmackSnd;
 
 	//////////////////////////////////////////////////////////////////////////
 

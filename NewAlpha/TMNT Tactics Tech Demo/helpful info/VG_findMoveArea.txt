@@ -1,0 +1,38 @@
+			resetGrid();
+			
+			var start:int = getTimer() ;
+			
+			_open = new Array() ;
+			_selected = new Array() ;
+			_open.push(getGridChild(CHARACTER_ROW, CHARACTER_COL)) ;
+			_open[0].cost = 0 ;
+			
+			while(_open.length > 0)
+			{
+				var item:AStarGridCell = AStarGridCell(_open.pop())  ;
+				var adjacent:Array = getAdjacentFromCell(item) ;
+				for(var i:int = adjacent.length - 1; i >= 0; --i)
+				{
+					var adjItem:AStarGridCell = adjacent[i] as AStarGridCell ;
+					if(adjItem != null)
+					{
+						var costs:int = adjItem.terrainCost + item.cost ;
+						if(costs < adjItem.cost || adjItem.cost == -1)
+						{
+							adjItem.cost = costs ;
+							if(_open.indexOf(adjItem) == -1)
+							{
+								_open.push(adjItem) ;
+							}
+						}
+						if(adjItem.cost <= _maxMovement && _selected.indexOf(adjItem) == -1)
+						{
+							_selected.push(adjItem) ;
+						}
+						if(adjItem.cost > _maxMovement*1.2)
+						{
+							break ;
+						}
+					}
+				}
+			}

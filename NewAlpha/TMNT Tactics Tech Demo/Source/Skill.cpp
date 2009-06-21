@@ -173,8 +173,8 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	{
 		m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(4);
 	}
-	m_fTimer += fElapsedTime;
 	m_pUpdatePtr(fElapsedTime, skill, ps);
+	m_fTimer += fElapsedTime;
 	
 	// if the attack is done, set stats and gain experience and skill
 	// if target is dead...remove 
@@ -245,7 +245,20 @@ void CSkill::SetComb(int num)
 {
 	m_pCombination = new int[num];
 	for (int i = 0; i < num; ++i)
-		m_pCombination[i] = rand() % 4;	// set to a random direction ( one of four)
+	{
+		int dir = 0;
+		if (i > 0)
+		{
+			while (dir == m_pCombination[i-1])
+			{
+				// find a different direction than the one before this one
+				dir = rand() % 4;
+			}
+		}
+		else
+			dir = rand() % 4;
+		m_pCombination[i] = dir;	// set to a random direction ( one of four)
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

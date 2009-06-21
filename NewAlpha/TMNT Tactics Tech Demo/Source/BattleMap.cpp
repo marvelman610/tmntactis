@@ -96,7 +96,7 @@ void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool 
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
-	m_bHaveMoved = false;
+	m_bHaveMoved = false; m_nMoveCost = 0;
 	m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; m_nCurrSkillCost = -1; m_bExecuteSkill = false;
 	m_nCurrBtnSelected = -1;
 	m_nCurrCharacter = -1;
@@ -162,7 +162,7 @@ void CBattleMap::Reset()
 {
 	m_Timer.ResetTimer();
 	m_nNumEnemiesLeft = m_nNumEnemiesKilled = m_nNumCharacters = 0;
-	m_nCurrCharacterTile = -1;
+	m_nCurrCharacterTile = m_nMoveCost = -1; m_vPath.clear();
 
 	delete[] m_pTilesL1; m_pTilesL1 = NULL;
 	delete[] m_pTilesL2; m_pTilesL2 = NULL;
@@ -223,40 +223,8 @@ void CBattleMap::Reset()
 
 void CBattleMap::Render()
 {
-	
-	if(m_bEggBool2)
-	{
-		POINT pt; 
-		float posx;
-		float posy;
-
-		count += 0.004f;
-
-		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- m_vEnemies[m_nCurrTarget]->GetPosX())*count;
-		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- m_vEnemies[m_nCurrTarget]->GetPosY())*count;
-		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30)-posx); 
-		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30)-posy);
-	
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f,1,1,0,pt.x/2.0f, pt.y/2.0f);
-		
-	}
-	else if(m_bItemBool2)
-	{
-		POINT pt; 
-		float posx;
-		float posy;
-
-		count += 0.008f;
-
-		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x)*count;
-		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y)*count;
-		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)-posx); 
-		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)-posy);
-
-		
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)pt.x,(int)pt.y,0.51f);
-	}
-	
+	// draw items being thrown
+	DrawThrowItems();
 
 	RECT rect = {0, 0, 1024, 768};
 	m_pTM->DrawWithZSort(GetBGimageID(), 0, 0, 1.0f, 1.0f, 1.0f, &rect);
@@ -270,11 +238,10 @@ void CBattleMap::Render()
 				m_bxMessageBox->Render();
 		}
 		else
-		{
 			m_pSkillToExecute->Render();
-		}
 	}
 	m_pPlayer->GetAch()->Render();
+
 	if(m_bWin && m_Timer.IsTimerRunning() )
 	{
 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
@@ -286,10 +253,8 @@ void CBattleMap::Render()
 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
 	}
 
-	//m_pTM->DrawWithZSort(m_pAssets->aBMbgID, 0, 0, 1.0f, 1.0f, 1.0f, NULL, 0.0f, 0.0f, 0.0f, D3DCOLOR_XRGB(100, 100, 100));
 	if ((m_nHoverCharacter > -1 || (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft)) && m_bIsPlayersTurn)
 		DrawHover();
-
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter == -1)
 		SetMousePtr(m_pAssets->aMousePointerID);
 	else if (m_nHoverCharacter == -1 && m_nCurrCharacter > -1)
@@ -310,14 +275,15 @@ void CBattleMap::Render()
 		m_pPlayer->GetTurtles()[RAPHAEL]->Colorize(false);
 		m_pPlayer->GetTurtles()[MIKEY]->Colorize(false);
 		if (m_nHoverEnemy == -1)
-		{
 			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 				m_vEnemies[i]->Colorize(false);
-		}
 	}
 
 	// draw layer one & two
-	MY_POINT mapPT;
+	MY_POINT mapPT;	int moveTileID = -1;
+	if (m_vPath.size() > 0)
+	{moveTileID = m_vPath[m_vPath.size()-1].y * m_nNumCols + m_vPath[m_vPath.size()-1].x;}
+
 	for (int x = 2; x < m_nNumCols; ++x)
 	{
 		for (int y = 2; y < m_nNumRows; ++y)
@@ -339,7 +305,7 @@ void CBattleMap::Render()
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(m_pTilesL1[tileID].Alpha(),0,255,0) );
 			}
-			else if (m_pTilesL1[tileID].Alpha() == 201)
+			else if (m_pTilesL1[tileID].Alpha() == 201)	// 201 = grenade blast radius
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(/*m_pTilesL1[tileID].Alpha()*/255,255,0,0) );				
@@ -348,6 +314,13 @@ void CBattleMap::Render()
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
 					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(255,255,255,255));
+			}
+			// draw movement cost on last tile in the move path
+			if (moveTileID == tileID && !m_bxPauseBox && !m_bxSkillBox && !m_bxMessageBox && !m_bxItemBox && !m_bxQTE)
+			{
+				char cost[8];
+				sprintf_s(cost, "-%i-", m_nMoveCost);
+				m_pBitmapFont->DrawString(cost, mapPT.x, mapPT.y, 0.01f, 0.6f, 0xffff0000);
 			}
 			// Layer two
 			if (m_pTilesL2[tileID].DestXID() != -1)
@@ -460,7 +433,7 @@ void CBattleMap::Render()
 	else if(m_bItemBool || m_bEggBool)
 		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
 
-	if (m_fTimer > 3 && (m_bNotEnoughAP || m_bOutOfRange))
+	if (m_fTimer > 3.0f && (m_bNotEnoughAP || m_bOutOfRange))
 	{
 		m_bNotEnoughAP = m_bOutOfRange = false;
 		m_fTimer = 0.0f;
@@ -540,7 +513,14 @@ void CBattleMap::Update(float fElapsedTime)
 		else if (m_bLose)
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	}
+	CHUD::GetInstance()->Update(fElapsedTime);
 	m_pPlayer->GetAch()->Update(fElapsedTime);
+	//update the particle system
+	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
 
 	if(m_bWin || m_bLose)
 		return;
@@ -552,13 +532,14 @@ void CBattleMap::Update(float fElapsedTime)
 		{
 			m_bEggBool2 = false;
 			m_bItemBool2 = false;
+			if (m_bEggBool2)
+				m_pFMOD->PlaySound(m_pAssets->aBMeggSmackSnd);
 			if(m_bEggBool2)
 				count = 0;
 			else if(count>2)
 			{
 				m_bDrawTimedParticles = true;
 				count = 0;
-				m_pFMOD->PlaySound(m_pAssets->aBMeggSmackSnd);
 			}
 		}
 	}
@@ -666,16 +647,8 @@ void CBattleMap::Update(float fElapsedTime)
 		APcheat = !APcheat;
 		APbool = false;
 	}
-	//CPlayer::GetInstance()->Update(fElapsedTime);
-	CHUD::GetInstance()->Update(fElapsedTime);
 
-	//update the particle system
-	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
-	
+	//////////////////////////////////////////////////////////////////////////
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{
@@ -696,9 +669,9 @@ void CBattleMap::Update(float fElapsedTime)
 				delete m_bxMessageBox;
 				m_bxMessageBox = NULL;
 			}
-			//m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(4);
 		}
 		m_pSkillToExecute->Update(fElapsedTime, m_pSkillToExecute, m_pParticleSystem);
+		// if the skill is complete
 		if (m_pSkillToExecute->IsComplete())
 		{ 
 			if (m_vEnemies[m_nCurrTarget]->GetHealth() <= 0)
@@ -725,7 +698,6 @@ void CBattleMap::Update(float fElapsedTime)
 			for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 				m_vCharacters.push_back(*m_vEnemies[i]);
 			m_bExecuteSkill = false; 
-			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(0); 
 			m_fTimer = 0.0f; m_bQTEbeenShown = true;
 		}
 		return;
@@ -1691,6 +1663,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		return;
 	}
 
+	//////////////////////////////////////////////////////////////////////////
+	// BOX INPUT
 	// is the mouse over a box button?
 	if ((m_bIsPlayersTurn || m_bIsPaused) && m_nCurrCharacter > -1)
 	{
@@ -1710,8 +1684,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nCurrBtnSelected = m_bxSaveBox->Input(m_ptMouseScreenCoord);
 	else if (m_bxMessageBox)
 		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
+	//////////////////////////////////////////////////////////////////////////
 
-	// when the left mouse button is clicked...handling non-box input only
 	if((m_pDI->JoystickButtonPressed(2,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
 		(index == -1 && m_nCurrCharacter == -1 && !m_bxMessageBox) )
 	{
@@ -1723,6 +1697,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_bxMessageBox->IsMsgBox(true);
 		delete[] message;
 	}
+
+	//////////////////////////////////////////////////////////////////////////
+	// when the left mouse button is clicked...handling non-box input only
+	// input for moving current character
 	if ( (m_pDI->JoystickButtonPressed(0,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT)) && !m_bItemBool )
 	{
 		// for movement, see if the tile is open
@@ -1762,11 +1740,12 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused || m_bxMessageBox)
 			HandleButton();
 	}
+	// selection and attacking input
 	else if ( (m_pDI->MouseButtonPressed(MOUSE_RIGHT) || m_pDI->JoystickButtonPressed(0,0) ) && !m_bIsPaused )
 	{
 		if (index > -1 && !m_bHaveMoved && !m_bItemBool)	// see if we're clicking on a character (turtle), and we haven't already moved
 		{
-			m_nCurrSkillCost	 = -1;
+			m_nCurrSkillCost	 = m_nMoveCost = -1; m_vPath.clear();
 			m_nCurrCharacter	 = index;
 			m_nCurrCharacterTile = m_vCharacters[index].GetCurrTile();
 			if (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkillIndex() > -1)
@@ -2293,6 +2272,7 @@ void CBattleMap::FindPathToTarget()
 		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
 		for (unsigned int i = 0; i < m_vPath.size(); ++i)
 			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);
+		m_nMoveCost = m_vPath.size() * 2;
 	}
 }
 
@@ -2516,5 +2496,38 @@ void CBattleMap::PlaySFX(int sfxID, bool waitTillDone)
 		}
 		m_pFMOD->PlaySound(sfxID);
 		m_pFMOD->SetVolume(sfxID, m_pGame->GetSFXVolume());
+	}
+}
+
+void CBattleMap::DrawThrowItems()
+{
+	if(m_bEggBool2)
+	{
+		POINT pt; 
+		float posx;
+		float posy;
+		count += 0.004f;
+
+		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- m_vEnemies[m_nCurrTarget]->GetPosX())*count;
+		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- m_vEnemies[m_nCurrTarget]->GetPosY())*count;
+		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30)-posx); 
+		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30)-posy);
+
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f,1,1,0,pt.x/2.0f, pt.y/2.0f);
+
+	}
+	else if(m_bItemBool2)
+	{
+		POINT pt; 
+		float posx;
+		float posy;
+		count += 0.008f;
+
+		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x)*count;
+		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y)*count;
+		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)-posx); 
+		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)-posy);
+
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)pt.x,(int)pt.y,0.51f);
 	}
 }

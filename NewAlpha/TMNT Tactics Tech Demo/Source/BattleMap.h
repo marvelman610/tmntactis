@@ -104,7 +104,7 @@ class CBattleMap
 	CBox* m_bxCurrActiveBox;	// pointer used to handle the currently active box's functionality
 	bool  m_bQTEbeenShown;
 
-	// Times
+	// Timers
 	float m_fTimer;
 	bool m_bNotEnoughAP;
 	bool m_bOutOfRange;
@@ -131,6 +131,7 @@ class CBattleMap
 	bool  m_bHaveMoved;
 	bool  m_bMoving;			// is the character in the middle of moving?
 	bool  m_bPathDisplayed;		// has the user clicked to see the path they could move on?
+	int   m_nMoveCost;
 	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to
 	MY_POINT_FLOAT m_ptStartXY;	// keeps track of the starting position for each tile move
 	vector<POINT> m_vPath;		// the path to take
@@ -389,6 +390,8 @@ public:
 	//	Purpose		:	Render the Map and all objects on it
 	//////////////////////////////////////////////////////////////////////////
 	void Render();
+
+	void DrawThrowItems();
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Input
 	//

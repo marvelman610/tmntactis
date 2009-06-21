@@ -182,7 +182,7 @@ void CHUD::DrawLeoHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 180, 70, 0.4f, 1.0f,1.0f,&m_rLeoHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 180, 125, 0.4f, 1.0f, 1.0f,&m_rLeoAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 47,155,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 55,155,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetExperience());
 	CBitmapFont::GetInstance()->DrawString(szEXP, 162,155,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetHealth());

@@ -56,8 +56,8 @@ void CAssets::LoadAssets()
 	//////////////////////////////////////////////////////////////////////////
 	// globally used IDs
 	aBitmapFontID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont.png", D3DCOLOR_XRGB(0,0,0));
-	aBitmapFont2ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont2.png", D3DCOLOR_XRGB(0,0,0));
-	aBitmapFont3ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont3.png", D3DCOLOR_XRGB(0,0,0));
+	//aBitmapFont2ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont2.png", D3DCOLOR_XRGB(0,0,0));
+	//aBitmapFont3ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont3.png", D3DCOLOR_XRGB(0,0,0));
 	aMenuCursorImageID	= m_pTM->LoadTexture("Resources/Images/VG_menuCursor.bmp", D3DCOLOR_XRGB(255,255,255));
 	aMouseMagGlassID	= m_pTM->LoadTexture("Resources/Images/VG_cursorMagGlass.png", D3DCOLOR_XRGB(255,255,255));
 	aMouseAttackID		= m_pTM->LoadTexture("Resources/Images/VG_cursorAttack.png", D3DCOLOR_XRGB(255,255,255));
@@ -68,12 +68,12 @@ void CAssets::LoadAssets()
 
 	//////////////////////////////////////////////////////////////////////////
 	//	box IDs
-	aBpointerID			= m_pTM->LoadTexture("Resources/Images/VG_boxPointer.png", D3DCOLOR_XRGB(255,255,255));
+	//aBpointerID			= m_pTM->LoadTexture("Resources/Images/VG_boxPointer.png", D3DCOLOR_XRGB(255,255,255));
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Battle Map IDs
-	aBMbgID				= m_pTM->LoadTexture("Resources/Images/VG_MountainBG.png", D3DCOLOR_XRGB(255,255,255));
+	//aBMbgID				= m_pTM->LoadTexture("Resources/Images/VG_MountainBG.png", D3DCOLOR_XRGB(255,255,255));
 	aBMcursorID			= m_pTM->LoadTexture("Resources/Images/VG_SquareCursor.png", D3DCOLOR_XRGB(0,0,0));
 	aBMgreenSquareID	= m_pTM->LoadTexture("Resources/Images/VG_SquareSelectedGreen.png", D3DCOLOR_XRGB(0,0,0));
 	aBMcurrSelectedArrowID=m_pTM->LoadTexture("Resources/Images/VG_currArrow.png", D3DCOLOR_XRGB(255,255,255));

@@ -169,24 +169,36 @@ void CSkill::SetFunctions(int skillID)
 
 void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 {
+	if (m_fTimer == 0.0f)
+	{
+		m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(4);
+	}
 	m_fTimer += fElapsedTime;
 	m_pUpdatePtr(fElapsedTime, skill, ps);
 	
-	// there is still time to input a direction
-	if (m_fTimer <= (float)m_nMaxCombinationAmount)
+	// if the attack is done, set stats and gain experience and skill
+	// if target is dead...remove 
+	if (m_fTimer > (float)m_nMaxCombinationAmount)
 	{
-		//m_pD3D->Clear(255, 255, 255);
-		m_pD3D->DeviceBegin();
-		m_pD3D->SpriteBegin();
+		m_bComplete = true; 
+		m_pUpdatePtr(fElapsedTime, skill, ps);
+		m_fTimer = 0.0f;
+	}
+}
 
-		switch (skill->GetComb()[skill->GetCurrAmtSuccessful()])
+void CSkill::Render()
+{
+	// there is still time to input a direction
+	if (m_fTimer <= (float)m_nMaxCombinationAmount && m_fTimer > 0.0f)
+	{
+		switch (GetComb()[GetCurrAmtSuccessful()])
 		{
 		case UP:
 			{
 				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteUpID, QTEX, QTEY, 0.0f, 1.5f, 1.5f);
 				if (m_pDI->KeyPressed(DIK_UP))
 				{
-					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
 				}
 				else if (m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_RIGHT))
 					m_bComplete = true;
@@ -197,7 +209,7 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteDownID, QTEX, QTEY, 0.0f, 1.5f, 1.5f);
 				if (m_pDI->KeyPressed(DIK_DOWN))
 				{
-					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_RIGHT))
 					m_bComplete = true;
@@ -208,7 +220,7 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteLeftID, QTEX, QTEY, 0.0f, 1.5f, 1.5f);
 				if (m_pDI->KeyPressed(DIK_LEFT))
 				{
-					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_RIGHT))
 					m_bComplete = true;
@@ -219,30 +231,14 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBMqteRightID, QTEX, QTEY, 0.0f, 1.5f, 1.5f);
 				if (m_pDI->KeyPressed(DIK_RIGHT))
 				{
-					skill->SetCurrAmtSuccessful(skill->GetCurrAmtSuccessful()+1);
+					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_DOWN))
 					m_bComplete = true;
 			}
 			break;
 		}
-
-		m_pD3D->SpriteEnd();
-		m_pD3D->DeviceEnd();
-		m_pD3D->Present();
 	}
-
-	// if the attack is done, set stats and gain experience and skill
-	// if target is dead...remove 
-	if (m_fTimer > (float)m_nMaxCombinationAmount)
-	{
-		m_bComplete = true; 
-		m_pUpdatePtr(fElapsedTime, skill, ps);
-		m_fTimer = 0.0f;
-	}
-
-	// Renders the current skill's particles
-	//m_pRenderPtr(skill, ps);
 }
 
 void CSkill::SetComb(int num)

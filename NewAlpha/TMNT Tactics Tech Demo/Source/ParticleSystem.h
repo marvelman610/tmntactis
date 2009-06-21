@@ -433,23 +433,28 @@ public:
 		if (particles != NULL)
 		{
 			delete [] particles;
+			particles = NULL;
 		}
 		if(vertexDecl)
 		{
 			vertexDecl->Release();
+			vertexDecl = NULL;
 		}
 		if(particleBuff)
 		{
 			particleBuff->Release();
+			particleBuff = NULL;
 		}
 		if(texture)
 		{
 			texture->Release();
+			texture = NULL;
 		}
-		if(m_nImageID > -1)
-		{
-			m_pTM->UnloadTexture(m_nImageID);
-		}
+// 		if(m_nImageID > -1)
+// 		{
+// 			m_pTM->(m_nImageID);
+// 			m_nImageID = -1;
+// 		}
 	}
 
 	///////////////////////////////////////////////////////////////////////

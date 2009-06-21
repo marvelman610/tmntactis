@@ -10,6 +10,7 @@
 #include "Base.h"
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
+#include "BattleMap.h"
 
 CBase::CBase(void)
 {
@@ -34,7 +35,11 @@ CBase::CBase(void)
 
 void CBase::Update(float fElapsedTime)
 {
-
+	if (GetType() == OBJECT_WEAPON)
+	{
+		CBattleMap* pBM =  CBattleMap::GetInstance();
+		SetCurrTile(GetMapCoord(),pBM->GetOffsetX(), pBM->GetOffsetY(), pBM->GetTileWidth(), pBM->GetTileHeight(), pBM->GetNumCols(), false);
+	}
 }
 
 void CBase::Render()
@@ -93,11 +98,12 @@ void CBase::Colorize(bool bColorize)
 		m_dwColor = D3DCOLOR_XRGB(255,255,255);
 }
 
-void CBase::SetCurrAnim(int animID)
+void CBase::SetCurrAnim(int animID, bool play)
 {
 	m_vAnimations[m_nCurrAnimation].Stop();
 	m_nCurrAnimation = animID;
 	//if (animID == 0)
+	if (play)
 		m_vAnimations[m_nCurrAnimation].Play();
 
 }

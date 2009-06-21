@@ -73,10 +73,12 @@ void CAssets::LoadAssets()
 	aBMcurrTargetArrowID= m_pTM->LoadTexture("Resources/Images/VG_currTargetArrow.png", D3DCOLOR_XRGB(255,255,255));
 	aBMactionBoxID		= m_pTM->LoadTexture("Resources/Images/VG_actionBox.png", D3DCOLOR_XRGB(255,255,255));
 	aBMskillBoxID		= m_pTM->LoadTexture("Resources/Images/VG_skillBoxBG.png", D3DCOLOR_XRGB(255,255,255));
-	aBMqteLeftID		= m_pTM->LoadTexture("Resources/Images/VG_qteLEFT.bmp");
-	aBMqteRightID		= m_pTM->LoadTexture("Resources/Images/VG_qteRIGHT.bmp");
-	aBMqteDownID		= m_pTM->LoadTexture("Resources/Images/VG_qteDOWN.bmp");
-	aBMqteUpID			= m_pTM->LoadTexture("Resources/Images/VG_qteUP.bmp");
+	//////////////////////////////////////////////////////////////////////////
+	aBMqteLeftID		= m_pTM->LoadTexture("Resources/Images/VG_qteLEFT.png", D3DCOLOR_XRGB(1,1,1));
+	aBMqteRightID		= m_pTM->LoadTexture("Resources/Images/VG_qteRIGHT.png", D3DCOLOR_XRGB(1,1,1));
+	aBMqteDownID		= m_pTM->LoadTexture("Resources/Images/VG_qteDOWN.png", D3DCOLOR_XRGB(1,1,1));
+	aBMqteUpID			= m_pTM->LoadTexture("Resources/Images/VG_qteUP.png", D3DCOLOR_XRGB(1,1,1));
+	//////////////////////////////////////////////////////////////////////////
 	aBMMikeBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgMike.png");
 	aBMLeoBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgLeo.png");
 	aBMRaphBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgRaph.png");

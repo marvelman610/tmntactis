@@ -3,7 +3,7 @@
 <!-- TurtleName: 0=LEO, 1=DON, 2=RAPH, 3=MIKEY-->
 <Skills>
         <TURTLE NumberOfSkills="5" TurtleName="0">
-                  <SKILL Name="SWORD JAB"           ID="1" Type="0" Dmg="15" Range="1" Cost="10" CombAmt="5" Duration="3"/>
+                  <SKILL Name="SWORD JAB"           ID="1" Type="0" Dmg="15" Range="1" Cost="10" CombAmt="5" Duration="2"/>
                   <SKILL Name="SWORD SPIN"          ID="0" Type="0" Dmg="10" Range="1" Cost="14" CombAmt="7" Duration="3"/>
                   <SKILL Name="FLIP BACKSTAB"       ID="2" Type="0" Dmg="20" Range="1" Cost="15" CombAmt="7" Duration="3"/>
                   <SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="10" Range="1" Cost="8" CombAmt="3" Duration="3"/>

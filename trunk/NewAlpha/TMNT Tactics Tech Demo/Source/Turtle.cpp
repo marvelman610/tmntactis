@@ -38,7 +38,7 @@ void CTurtle::Update(float fElapsedTime)
 	if(GetExperience() >= (100 * GetLevel()))
 	{
 		CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMcowabungaSnd);
-		SetExperience(GetExperience()-(100* GetLevel()));
+		SetExperience(0/*GetExperience()-(100* GetLevel())*/);
 		SetLevel(GetLevel() + 1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));
 		SetHealth((int)((float)GetMaxHealth()));

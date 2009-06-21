@@ -183,6 +183,7 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 		m_bComplete = true; 
 		m_pUpdatePtr(fElapsedTime, skill, ps);
 		m_fTimer = 0.0f;
+		m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(2);
 	}
 }
 

@@ -301,7 +301,7 @@ void CNinja::AI()
 
 			//16 ap always
 			// attack four times (4ap * 4 = 16)
-			float damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+			float damage = (float)(GetStrength() * (GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense())));
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage*4)); 
 			//end turn
 			SetCurrAP(0);
@@ -320,7 +320,7 @@ void CNinja::AI()
  			SetCurrAnim(4);
 
 			//attack four times(4ap * 4 = 16)
-   			float damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+   			float damage = (float)(GetStrength() * (GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense())));
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 4));
 			//end turn
 			SetCurrAP(0);

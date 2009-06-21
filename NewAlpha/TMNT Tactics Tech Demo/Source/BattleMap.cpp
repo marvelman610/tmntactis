@@ -490,7 +490,7 @@ void CBattleMap::Render()
 	if(m_pParticleSystem[BLOOD].m_bActive == true)
 	{ m_pParticleSystem[BLOOD].DrawParticle(m_pAssets->aBloodParticle); }
 	if(m_pParticleSystem[GLASS].m_bActive == true)
-	{ m_pParticleSystem[GLASS].DrawParticle(m_pAssets->AGlassParticle);	}
+	{ m_pParticleSystem[GLASS].DrawParticle(m_pAssets->aGlassParticle);	}
 
 	DrawDebugInfo();
 }

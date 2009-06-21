@@ -118,14 +118,14 @@ public:
 	//
 	// Purpose : To set the velocity of each particle
 	///////////////////////////////////////////////////////////////////////////////////////////
-	void SetVelocity(float min, float max)
+	void SetVelocity(float scalar)
 	{
 		if(m_nNumParticles > 0)
 		{
 			for(int i = 0; i < m_nNumParticles; i++)
 			{
-				particles[i].vel.x = RandomFloat(min,max);
-				particles[i].vel.y = RandomFloat(min,max);
+				particles[i].vel.x *= scalar;
+				particles[i].vel.y *= scalar;
 				particles[i].vel.z = 0;
 			}
 		}

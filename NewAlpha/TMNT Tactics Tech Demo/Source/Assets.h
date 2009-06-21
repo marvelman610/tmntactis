@@ -13,7 +13,7 @@
 // For a background image used in the BattleMap class for instance, 
 // the variable name would be aBM_bgID.
 //
-//		the template is a<all capital letters of class name minus the "C">_<what the image is>ID
+//		the template is a<all capital letters of class name minus the "C">_<what the image is>ID (or "Snd" for sounds)
 //////////////////////////////////////////////////////////////////////////
 
 class CSGD_FModManager;
@@ -81,11 +81,18 @@ public:
 	ASSET aBMcurrTargetArrowID;
 	ASSET aBMactionBoxID;
 	ASSET aBMskillBoxID;
-	ASSET aBMarcadeMusicID;
 	ASSET aBMqteLeftID;
 	ASSET aBMqteRightID;
 	ASSET aBMqteDownID;
 	ASSET aBMqteUpID;
+	// BATTLE MAP MUSIC
+	ASSET aBMarcadeMusicID;
+	ASSET aBMsimusaMusicID;
+	ASSET aBMsinaroMusicID;
+	ASSET aBMyamatoMusicID;
+	ASSET aBMiwamiMusicID;
+
+
 		// sounds
 	ASSET aBMdeathSnd;
 	ASSET aBMpunchSnd1;
@@ -98,6 +105,7 @@ public:
 	ASSET aBMninjarap;
 	ASSET aHTPsound;
 	ASSET aBMeggSmackSnd;
+	ASSET aBMfootstepsSnd;
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -114,14 +122,13 @@ public:
 
 	// Options Menu IDs
 	ASSET aOMbgID;
+	ASSET aOMmusicSnd;
 
 	//achievement menu id
 	ASSET aAchievementBGID;
 	ASSET aMinimalKesoID;
 	
-
 	// Credits Menu IDs
-	ASSET aCMmusicID;
 	ASSET aCMbgID;
 	ASSET aCMbgID2;
 	ASSET aCMbgID3;
@@ -169,7 +176,10 @@ public:
 	ASSET aGlowParticle;
 	ASSET aGlassParticle;
 
-	//achievementes
+
+	//////////////////////////////////////////////////////////////////////////
+	//		ACHIEVEMENTS
+
 		// images
 	ASSET aAvenged;
 	ASSET aBreakGame;
@@ -184,7 +194,7 @@ public:
 		// sounds
 	ASSET aStrikeHardSnd;
 	ASSET aLessonInPainSnd;
-
+	//////////////////////////////////////////////////////////////////////////
 };
 
 #endif

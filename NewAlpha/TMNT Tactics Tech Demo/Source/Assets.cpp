@@ -13,7 +13,11 @@
 #include "BitmapFont.h"
 #include "Game.h"
 
-#define LOAD_MUSIC 0
+#ifdef _DEBUG
+	const bool bLoadMusic = true;
+#else
+	const bool bLoadMusic = true;
+#endif
 
 CAssets* CAssets::GetInstance()
 {
@@ -35,6 +39,9 @@ CAssets::~CAssets()
 
 void CAssets::LoadAssets()
 {
+	int timeTravel = m_pFMOD->LoadSound("Resources/Sounds/VG_timeTravel.mp3");
+	m_pFMOD->PlaySound(timeTravel);
+
 	m_bLoading = true;
 	CSGD_Direct3D *d3d = CSGD_Direct3D::GetInstance();
 	d3d->Clear(0,0,0);
@@ -84,18 +91,20 @@ void CAssets::LoadAssets()
 	aBMRaphBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgRaph.png");
 	aBMDonBGID			= m_pTM->LoadTexture("Resources/Images/VG_bgDon.png");
 
-#if LOAD_MUSIC
-	aBMeggSmackSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_eggSmack.mp3");
-	aBMpainSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_painScream.mp3");
-	aBMdeathSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_dying.mp3");
-	aBMpunchSnd1		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch.mp3");
-	aBMpunchSnd2		= m_pFMOD->LoadSound("Resources/Sounds/VG_punchKick.mp3");
-	aBMgrenadeSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_grenadeExplosion.mp3");
-	aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
-	aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
-	aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
-	//////////////////////////////////////////////////////////////////////////
-#endif
+	if(bLoadMusic)
+	{
+		aBMeggSmackSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_eggSmack.mp3");
+		aBMpainSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_painScream.mp3");
+		aBMdeathSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_dying.mp3");
+		aBMpunchSnd1		= m_pFMOD->LoadSound("Resources/Sounds/VG_punch.mp3");
+		aBMpunchSnd2		= m_pFMOD->LoadSound("Resources/Sounds/VG_punchKick.mp3");
+		aBMgrenadeSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_grenadeExplosion.mp3");
+		aBMpickupSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_pickup.mp3");
+		aBMninjaPizzaSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaPizza.mp3");
+		aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
+		aBMfootstepsSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_footsteps.mp3", FMOD_LOOP_NORMAL);
+		//////////////////////////////////////////////////////////////////////////
+	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// WorldMap IDs
@@ -187,20 +196,23 @@ void CAssets::LoadAssets()
 	//bg
 	aAchievementBGID = m_pTM->LoadTexture("Resources/Images/VG_AchievementBG.png");
 
-#if LOAD_MUSIC
-	aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
-	aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
-	//////////////////////////////////////////////////////////////////////////
-	
-
-	aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
-	aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
-	aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
-	aCMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
-	aBMninjarap			= m_pFMOD->LoadSound("Resources/Sounds/VG_NINJARAP.mp3", FMOD_LOOP_NORMAL);
-	aHTPsound			= m_pFMOD->LoadSound("Resources/Sounds/VG_ZombieOutbreak.mp3", FMOD_LOOP_NORMAL);
-	aMinimalKesoID		= m_pFMOD->LoadSound("Resources/Sounds/VG_Minimal.mp3", FMOD_LOOP_NORMAL);
-#endif
-
+	if (bLoadMusic)
+	{
+		aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
+		aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
+		//////////////////////////////////////////////////////////////////////////
+		
+		aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
+// 		aBMsimusaMusicID;
+// 		aBMsinaroMusicID;
+// 		aBMiwamiMusicID;
+// 		aBMyamatoMusicID;
+		aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
+		aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
+		aOMmusicSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);
+		aBMninjarap			= m_pFMOD->LoadSound("Resources/Sounds/VG_NINJARAP.mp3", FMOD_LOOP_NORMAL);
+		aHTPsound			= m_pFMOD->LoadSound("Resources/Sounds/VG_ZombieOutbreak.mp3", FMOD_LOOP_NORMAL);
+		aMinimalKesoID		= m_pFMOD->LoadSound("Resources/Sounds/VG_Minimal.mp3", FMOD_LOOP_NORMAL);
+	}
 	m_bLoading = false;
 }

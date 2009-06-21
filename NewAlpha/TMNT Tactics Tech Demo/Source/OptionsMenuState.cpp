@@ -55,8 +55,8 @@ void COptionsMenuState::Enter()
 	m_nMusicVolume	= (int)(GetGame()->GetMusicVolume() * 100.0f);
 	//m_pFMODsys->Play(FMOD_CHANNEL_FREE, m_fmsBGMusicID, false, FMOD_CHANNEL_REUSE);
 	
-	GetFMOD()->PlaySound(GetAssets()->aCMmusicID);
-	GetFMOD()->SetVolume(GetAssets()->aCMmusicID, GetGame()->GetMusicVolume());
+	GetFMOD()->PlaySound(GetAssets()->aOMmusicSnd);
+	GetFMOD()->SetVolume(GetAssets()->aOMmusicSnd, GetGame()->GetMusicVolume());
 }
 
 
@@ -112,6 +112,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 			{
 				m_nMusicVolume -= (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
+				GetFMOD()->SetVolume(GetAssets()->aOMmusicSnd, GetGame()->GetMusicVolume());
 				m_bHasASettingChanged = true;
 			}
 			break;
@@ -140,6 +141,7 @@ bool COptionsMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_nMusicVolume += (int)(VOLUME_ADJUST_SPEED * fElapsedTime);
 				GetGame()->SetMusicVolume((float)m_nMusicVolume/100.0f);
 				m_bHasASettingChanged = true;
+				GetFMOD()->SetVolume(GetAssets()->aOMmusicSnd, GetGame()->GetMusicVolume());
 			}
 			break;
 		case SFX_VOLUME:
@@ -198,8 +200,8 @@ void COptionsMenuState::SaveSettings()
 
 void COptionsMenuState::Exit()
 {
-	GetFMOD()->StopSound(GetAssets()->aCMmusicID);
-	GetFMOD()->ResetSound(GetAssets()->aCMmusicID);
+	GetFMOD()->StopSound(GetAssets()->aOMmusicSnd);
+	GetFMOD()->ResetSound(GetAssets()->aOMmusicSnd);
 	if (m_bHasASettingChanged)
 		SaveSettings();
 	CBaseMenuState::Exit();

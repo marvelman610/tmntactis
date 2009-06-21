@@ -163,10 +163,11 @@ void CBattleMap::Reset()
 	m_nNumEnemiesLeft = m_nNumEnemiesKilled = m_nNumCharacters = 0;
 	m_nCurrCharacterTile = -1;
 
-	delete[] m_pTilesL1;
-	delete[] m_pTilesL2;
-	delete[] m_pFreeTiles;
+	delete[] m_pTilesL1; m_pTilesL1 = NULL;
+	delete[] m_pTilesL2; m_pTilesL2 = NULL;
+	delete[] m_pFreeTiles; m_pFreeTiles = NULL;
 	delete[] m_pParticleSystem;
+	m_pParticleSystem = NULL;
 
 	if(m_bxItemBox)
 	{
@@ -218,6 +219,7 @@ void CBattleMap::Reset()
 	m_bIsPaused = false;
 	CGamePlayState::GetInstance()->SetPaused(false);
 }
+
 void CBattleMap::Render()
 {
 	
@@ -231,10 +233,10 @@ void CBattleMap::Render()
 
 		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- m_vEnemies[m_nCurrTarget]->GetPosX())*count;
 		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- m_vEnemies[m_nCurrTarget]->GetPosY())*count;
-		pt.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30-posx; 
-		pt.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30-posy;
+		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30)-posx); 
+		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30)-posy);
 	
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,pt.x,pt.y,0.51f,1,1,0,pt.x/2, pt.y/2);
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f,1,1,0,pt.x/2.0f, pt.y/2.0f);
 		
 	}
 	else if(m_bItemBool2)
@@ -247,11 +249,11 @@ void CBattleMap::Render()
 
 		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x)*count;
 		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y)*count;
-		pt.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50-posx; 
-		pt.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50-posy;
+		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)-posx); 
+		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)-posy);
 
 		
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,pt.x,pt.y,0.51f);
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)pt.x,(int)pt.y,0.51f);
 	}
 	
 
@@ -259,9 +261,16 @@ void CBattleMap::Render()
 	m_pTM->DrawWithZSort(GetBGimageID(), 0, 0, 1.0f, 1.0f, 1.0f, &rect);
 	if (m_bExecuteSkill)
 	{
-		if (m_fTimer < 3.0f)
+		if (m_fTimer < 3.0f && !m_bQTEbeenShown)
 		{
-			m_bxQTE->Render();
+			if (m_bxQTE)
+				m_bxQTE->Render();
+			else
+				m_bxMessageBox->Render();
+		}
+		else
+		{
+			m_pSkillToExecute->Render();
 		}
 	}
 	m_pPlayer->GetAch()->Render();
@@ -666,8 +675,20 @@ void CBattleMap::Update(float fElapsedTime)
 			m_fTimer += fElapsedTime;
 			return;
 		}
-		else
-		{delete m_bxQTE; m_bxQTE = NULL;}
+		else if (m_fTimer >= 3.0f && m_fTimer <= 3.1f)
+		{
+			if(m_bxQTE)
+			{
+				delete m_bxQTE; 
+				m_bxQTE = NULL;
+			}
+			else if (m_bxMessageBox)
+			{
+				delete m_bxMessageBox;
+				m_bxMessageBox = NULL;
+			}
+			//m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(4);
+		}
 		m_pSkillToExecute->Update(fElapsedTime, m_pSkillToExecute, m_pParticleSystem);
 		if (m_pSkillToExecute->IsComplete())
 		{ 
@@ -696,6 +717,7 @@ void CBattleMap::Update(float fElapsedTime)
 				m_vCharacters.push_back(*m_vEnemies[i]);
 			m_bExecuteSkill = false; 
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(0); 
+			m_fTimer = 0.0f; m_bQTEbeenShown = true;
 		}
 		return;
 	}
@@ -2109,22 +2131,31 @@ void CBattleMap::PerformAttack()
 	// a skill has been selected, execute that skill
 	else
 	{
-		m_bHaveMoved = true;
-		string* text = new string[3];
-		text[0] = "Press the correct"; text[1] = "arrow key to" ;text[2] = "to do more damage";
-		m_bxQTE = new CBox(3, text, 300, 200, 0.51f, false, 30, 30, 25, -1, 0.65f);
-		m_bxQTE->SetType(BOX_NO_BACK);
-		m_bxQTE->SetActive(true);
+		m_bHaveMoved = true; 
+
+		if (!m_bQTEbeenShown)
+		{
+			string* text = new string[3];
+			text[0] = "Press the correct"; text[1] = "arrow keys to" ;text[2] = "to execute the skill";
+			m_bxQTE = new CBox(3, text, 250, 250, 0.1f, false, 30, 30, 25, -1, 0.65f);
+			m_bxQTE->SetType(BOX_NO_BACK);
+			m_bxQTE->SetActive(true); 
+		}
+		else
+		{
+			string* message = new string[1];
+			message[0] = "GET READY..";
+			m_bxMessageBox = new CBox(1, message, 270, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
+			m_bxMessageBox->SetType(BOX_NO_BACK); m_bxMessageBox->SetActive();
+			delete[] message;
+		}
 		m_bExecuteSkill = true;
 		m_pSkillToExecute = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill();
 		m_pSkillToExecute->IsComplete(false);
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(m_nCurrSkillCost);
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(m_nCurrSkillCost);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+15);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSkillXP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetSkillXP()+1);
-		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(4);
-		//m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetAnimations()[1].Play();
 	}
 	CalculateRanges();
 }

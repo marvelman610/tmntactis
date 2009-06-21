@@ -131,7 +131,7 @@ public:
 	//	Purpose	:	To set the specified type
 	///////////////////////////////////////
 	void SetCurrAnimFacing(bool IsLeft)     {m_vAnimations[m_nCurrAnimation].SetFacingLeft(IsLeft);}
-	void SetCurrAnim(int animID);	
+	void SetCurrAnim(int animID, bool play = true);	
 	inline void SetImageID(int nImageID)	{m_nImageID = nImageID;}
 	inline void SetAnchor(POINT pt)			{m_ptAnchor = pt;}
 	inline void SetMapCoord(POINT mapCoord) {m_ptMapCoord = mapCoord;}

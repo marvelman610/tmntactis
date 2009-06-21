@@ -101,6 +101,7 @@ class CBattleMap
 	CBox* m_bxMessageBox;
 	CBox* m_bxQTE;
 	CBox* m_bxCurrActiveBox;	// pointer used to handle the currently active box's functionality
+	bool  m_bQTEbeenShown;
 
 	// Times
 	float m_fTimer;

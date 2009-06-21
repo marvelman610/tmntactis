@@ -14,7 +14,7 @@
 #include "Game.h"
 
 #ifdef _DEBUG
-	const bool bLoadMusic = true;
+	const bool bLoadMusic = false;
 #else
 	const bool bLoadMusic = true;
 #endif

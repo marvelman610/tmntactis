@@ -34,7 +34,6 @@
 #define BOUNDING_BOXES 0
 #define CAM_EDGE_DIST_TO_MOVE 20	// how close to edge of the screen the mouse has to get to start scrolling
 #define SCROLLSPEED 150.0f
-#define SCROLL_MAX 200
 
 CBattleMap::CBattleMap(void)
 {
@@ -279,6 +278,7 @@ void CBattleMap::Render()
 				m_vEnemies[i]->Colorize(false);
 	}
 
+	//////////////////////////////////////////////////////////////////////////
 	// draw layer one & two
 	MY_POINT mapPT;	int moveTileID = -1;
 	if (m_vPath.size() > 0)
@@ -816,8 +816,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		}
 
 		// transform the mouse into map coordinates
-		xID = ((m_nTileWidth * (mouse.y )) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-		yID = ((m_nTileWidth * (mouse.y )) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		xID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+16)) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		yID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+16)) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 		// these check for the mouse being off the map
 		// if it is, it is reset to the lowest row/column
 		if (xID >= m_nNumCols && yID >= m_nNumRows)
@@ -930,7 +930,13 @@ void CBattleMap::LoadMapInfo()
 			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
 
 			m_nIsoCenterLeftY = -(m_nTileHeight<<1)+(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
-			m_nIsoCenterTopX = (int)((((float)(m_nNumCols)) / 2.0f) * m_nTileWidth - (m_nTileWidth<<1));
+			m_nIsoCenterTopX = 512; // map is always centered on the y
+			m_nMaxScrollX = m_nMaxScrollY = 50;
+			if (m_nMapWidth > m_nScreenWidth)
+				m_nMaxScrollX = (m_nMapWidth>>1) - (m_nScreenWidth>>1);
+			if (m_nMapHeight > m_nScreenHeight)
+				m_nMaxScrollY = (m_nMapHeight>>1) - (m_nScreenHeight>>1);
+
 			m_nFreeTileOSx = (m_nTileWidth<<1);	
 			m_nfreeTileOSy = (m_nTileHeight<<1);
 			// allocate memory for layer 1, 2, and 3(free placed tiles)
@@ -960,6 +966,7 @@ void CBattleMap::LoadMapInfo()
 	}
 
 	int tilesetCount = 0;	// how many tilesets are we going to be drawing from?
+	int numCols = 0;
 	int xID, yID, destID, sourceID, flag, width, height; // tile variables
 	float rotation;
 	string trigger;	// tile trigger string
@@ -1021,13 +1028,13 @@ void CBattleMap::LoadMapInfo()
 			ifs.read(reinterpret_cast<char*>(&size), 1);
 			ifs.read(buff, size);
 			tilesetName = buff;
-
 			// determine which image id this tile should have
 			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
 			{
 				if (tilesetName == m_pTilesets[tsIndex].name)
 				{
 					imageID = m_pTilesets[tsIndex].id;
+					numCols = m_pTM->GetTextureWidth(imageID) / 64;
 					break;
 				}
 			}
@@ -1044,7 +1051,7 @@ void CBattleMap::LoadMapInfo()
 
 			// setting up each tile of the first layer
 			destID = yID * m_nNumCols + xID;	// the id of the tile in the 1-d array
-			m_pTilesL1[destID] = CTile(sourceID, imageID, m_nNumCols, xID, yID, width, height, flag, trigger);
+			m_pTilesL1[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
 			rotation = 0;
 			// skip ahead to determine if we have more tiles
 			// or if we move on to layer 2 ("L") or 3 ("F")
@@ -1052,8 +1059,6 @@ void CBattleMap::LoadMapInfo()
 			ifs.seekg(sPos+1);
 			eat = ifs.peek();
 			count++;
-			if (count == 400)
-				int i = 0;
 			if (eat == "L" || eat == "F")
 				break;
 			else
@@ -1093,6 +1098,7 @@ void CBattleMap::LoadMapInfo()
 				if (tilesetName == m_pTilesets[tsIndex].name)
 				{
 					imageID = m_pTilesets[tsIndex].id;
+					numCols = m_pTM->GetTextureWidth(imageID) / 64;
 					break;
 				}
 			}
@@ -1109,7 +1115,7 @@ void CBattleMap::LoadMapInfo()
 
 			// setting up each tile of the first layer
 			destID = yID * m_nNumCols + xID;
-			m_pTilesL2[destID] = CTile(sourceID, imageID, m_nNumCols, xID, yID, width, height, flag, trigger);
+			m_pTilesL2[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
 			sPos = ifs.tellg();
 			ifs.seekg(sPos+1);
 			eat = ifs.peek();
@@ -1160,13 +1166,13 @@ void CBattleMap::LoadMapInfo()
 				}
 			}
 
-			ifs.read(reinterpret_cast<char*>(&srcPosX), 4);
-			ifs.read(reinterpret_cast<char*>(&srcPosY), 4);
-			ifs.read(reinterpret_cast<char*>(&flag), 4);
-			ifs.read(reinterpret_cast<char*>(&destX), 4);
-			ifs.read(reinterpret_cast<char*>(&destY), 4);
-			ifs.read(reinterpret_cast<char*>(&width), 4);
-			ifs.read(reinterpret_cast<char*>(&height), 4);
+			ifs.read(reinterpret_cast<char*>(&srcPosX), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&srcPosY), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&flag), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&destX), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&destY), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&width), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&height), sizeof(int));
 			ZeroMemory(buff, 256);
 			ifs.read(reinterpret_cast<char*>(&size), 1);
 			ifs.read(buff, size);
@@ -2295,8 +2301,8 @@ void CBattleMap::FindPathToTarget()
 void CBattleMap::MoveCamUp(float fElapsedTime)
 {
 	m_fScrollY += SCROLLSPEED * fElapsedTime;
-	if (m_fScrollY >= SCROLL_MAX)
-		m_fScrollY = SCROLL_MAX;
+	if (m_fScrollY >= m_nMaxScrollY)
+		m_fScrollY = (float)m_nMaxScrollY;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	SetFTosY((int)m_fScrollY - m_nTileHeight);
@@ -2307,8 +2313,8 @@ void CBattleMap::MoveCamUp(float fElapsedTime)
 void CBattleMap::MoveCamDown(float fElapsedTime)
 {
 	m_fScrollY -= SCROLLSPEED * fElapsedTime;
-	if (m_fScrollY <= -SCROLL_MAX)
-		m_fScrollY = -SCROLL_MAX;
+	if (m_fScrollY <= -m_nMaxScrollY)
+		m_fScrollY = (float)-m_nMaxScrollY;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	SetFTosY((int)m_fScrollY - m_nTileHeight);
@@ -2319,8 +2325,8 @@ void CBattleMap::MoveCamDown(float fElapsedTime)
 void CBattleMap::MoveCamLeft(float fElapsedTime)
 {
 	m_fScrollX += SCROLLSPEED * fElapsedTime;
-	if (m_fScrollX >= SCROLL_MAX)
-		m_fScrollX = SCROLL_MAX;
+	if (m_fScrollX >= m_nMaxScrollX)
+		m_fScrollX = (float)m_nMaxScrollX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
@@ -2331,8 +2337,8 @@ void CBattleMap::MoveCamLeft(float fElapsedTime)
 void CBattleMap::MoveCamRight(float fElapsedTime)
 {
 	m_fScrollX -= SCROLLSPEED * fElapsedTime;
-	if (m_fScrollX <= -SCROLL_MAX)
-		m_fScrollX = -SCROLL_MAX;
+	if (m_fScrollX <= -m_nMaxScrollX)
+		m_fScrollX = (float)-m_nMaxScrollX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));

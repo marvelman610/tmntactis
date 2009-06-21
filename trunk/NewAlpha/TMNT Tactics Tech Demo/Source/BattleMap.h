@@ -126,6 +126,8 @@ class CBattleMap
 	int m_nTotalNumTiles;
 	int m_nCurrSelectedTile;	// where the mouse cursor is at on the map
 	int m_nCurrMouseTileTarget;	// the tile of the target that the mouse is over
+	int m_nMaxScrollX;
+	int m_nMaxScrollY;
 
 	// movement
 	bool  m_bHaveMoved;

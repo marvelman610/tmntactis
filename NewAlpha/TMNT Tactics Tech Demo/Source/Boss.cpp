@@ -1743,7 +1743,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 
 	int TileNum;//index for the array
 
-	bool inClosed = false;//bool to see if the tile is in the closed list
+	//bool inClosed = false;//bool to see if the tile is in the closed list
 	
 	////////////////////////////////////////////////////////////////////////////////////////////
 	//TODO:add a check to find the difference in x and y to the end point then select the higher one

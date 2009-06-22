@@ -484,7 +484,6 @@ public:
 	void SetStartPositions();
 	void SetEnemyDead();
 
-
 	void UseItem();
 };
 

@@ -241,6 +241,7 @@ void CBattleMap::Render()
 		else
 			m_pSkillToExecute->Render();
 	}
+	// achievement RENDER
 	m_pPlayer->GetAch()->Render();
 
 	if(m_bWin && m_Timer.IsTimerRunning() )
@@ -405,16 +406,26 @@ void CBattleMap::Render()
 		}
 #endif
 	}
+	//////////////////////////////////////////////////////////////////////////
+	// BOXES
 	if (m_bIsPlayersTurn)
 		DrawBoxes();
 	if (m_bIsPaused && m_bxPauseBox)
 		m_bxPauseBox->Render();
+	//////////////////////////////////////////////////////////////////////////
+
+	// HUD
 	m_pHUD->Render();
+
+	// who's turn it is
 	if (m_bIsPlayersTurn)
 		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
 	else
 		m_pBitmapFont->DrawStringAutoCenter("COMPUTER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
-	if (m_bIsPlayersTurn && m_nCurrCharacter > -1)
+
+	// current skill's AP cost
+	// AND display the current AP cost to attack right above the mouse pointer
+	if (m_bIsPlayersTurn && m_nCurrCharacter > -1 && !m_bxPauseBox)
 	{
 		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 0.5f);
 		m_pBitmapFont->DrawString(m_sCurrSkillName.c_str(), 5, 220, 0.05f, 0.5f);
@@ -424,8 +435,15 @@ void CBattleMap::Render()
 			sprintf_s(temp, "COST: %i", m_nCurrSkillCost);
 			string sCost = temp;
 			m_pBitmapFont->DrawString(sCost.c_str(), 5, 250, 0.05f, 0.5f);
+			char atkCost[8]; sprintf_s(atkCost, "-%i-", m_nCurrSkillCost);
+			if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
+				m_pBitmapFont->DrawString(atkCost, m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 0.5f, D3DCOLOR_XRGB(0,255,255) );
 		}
+		else if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
+			m_pBitmapFont->DrawString("-4-", m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 0.5f, D3DCOLOR_XRGB(0,255,255));
 	}
+	//////////////////////////////////////////////////////////////////////////
+	// messages to display top center of screen
 	if (m_bNotEnoughAP && m_fTimer < 3)
 	{
 		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
@@ -436,12 +454,12 @@ void CBattleMap::Render()
 	}
 	else if(m_bItemBool || m_bEggBool)
 		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
-
 	if (m_fTimer > 3.0f && (m_bNotEnoughAP || m_bOutOfRange))
 	{
 		m_bNotEnoughAP = m_bOutOfRange = false;
 		m_fTimer = 0.0f;
 	}
+	//////////////////////////////////////////////////////////////////////////
 
 	if (m_nCurrCharacter > -1)
 	{
@@ -454,6 +472,7 @@ void CBattleMap::Render()
 	}
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
+
 	/////////////////////////////////////////////////////////////////////////////
 	//draw particles when active
 	if(m_pParticleSystem[FIRE].m_bActive == true)
@@ -903,16 +922,14 @@ void CBattleMap::LoadMapInfo()
 			if (m_nMapHeight > m_nScreenHeight)
 				m_nMaxScrollY = (m_nMapHeight>>1) - (m_nScreenHeight>>1);
 
-			m_nFreeTileOSx = (m_nTileWidth<<1);	
-			m_nfreeTileOSy = (m_nTileHeight<<1);
 			// allocate memory for layer 1, 2, and 3(free placed tiles)
 			m_pTilesL1  = new CTile[m_nNumRows*m_nNumCols];
 			m_pTilesL2  = new CTile[m_nNumRows*m_nNumCols];
 			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
 			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-			SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
-			SetFTosY((int)m_fScrollY - m_nTileHeight);
+			SetFTosX(m_nIsoCenterTopX - (m_nMapWidth >> 1));
+			SetFTosY(m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 		}
 		else // didn't have the correct version number...
 		{
@@ -2303,7 +2320,7 @@ void CBattleMap::MoveCamUp(float fElapsedTime)
 		m_fScrollY = (float)m_nMaxScrollY;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-	SetFTosY((int)m_fScrollY - m_nTileHeight);
+	SetFTosY((int)m_fScrollY  + m_nIsoCenterLeftY - (m_nTileHeight >> 1)/*- (m_nTileHeight >> 1)*/);
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
@@ -2315,7 +2332,7 @@ void CBattleMap::MoveCamDown(float fElapsedTime)
 		m_fScrollY = (float)-m_nMaxScrollY;
 	// tile offsets
 	SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-	SetFTosY((int)m_fScrollY - m_nTileHeight);
+	SetFTosY((int)m_fScrollY  + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
@@ -2327,7 +2344,7 @@ void CBattleMap::MoveCamLeft(float fElapsedTime)
 		m_fScrollX = (float)m_nMaxScrollX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) );
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();
@@ -2339,7 +2356,7 @@ void CBattleMap::MoveCamRight(float fElapsedTime)
 		m_fScrollX = (float)-m_nMaxScrollX;
 	// tile offsets
 	SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) - (m_nTileWidth >> 1));
+	SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) );
 	for (int i = 0; i < m_nNumCharacters; ++i)
 		m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 	UpdatePositions();

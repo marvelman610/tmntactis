@@ -269,13 +269,16 @@
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.AllowDrop = true;
             this.splitContainer1.Panel2.Controls.Add(this.lbCurrentLayer);
             this.splitContainer1.Panel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseMove);
+            this.splitContainer1.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel2_DragDrop);
             this.splitContainer1.Panel2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer1_Panel2_Scroll);
             this.splitContainer1.Panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseClick);
             this.splitContainer1.Panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseDown);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer1.Panel2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseUp);
+            this.splitContainer1.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel2_DragEnter);
             this.splitContainer1.Panel2MinSize = 50;
             this.splitContainer1.Size = new System.Drawing.Size(1295, 747);
             this.splitContainer1.SplitterDistance = 346;
@@ -376,6 +379,7 @@
             // 
             // binaryToolStripMenuItem
             // 
+            this.binaryToolStripMenuItem.Enabled = false;
             this.binaryToolStripMenuItem.Name = "binaryToolStripMenuItem";
             this.binaryToolStripMenuItem.Size = new System.Drawing.Size(133, 22);
             this.binaryToolStripMenuItem.Text = "Binary";

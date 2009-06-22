@@ -61,7 +61,7 @@ namespace test.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to VG_MORPHOSIS GRASS2_63x32.bmp.
+        ///   Looks up a localized string similar to VG_tileset.png.
         /// </summary>
         internal static string defaultTilesetFilename {
             get {

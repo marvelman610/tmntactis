@@ -101,6 +101,8 @@ namespace grid
         Point[] ptGridLinesHorizEnd;
 
         ManagedDirect3D mD3d;
+        ManagedTextureManager mTM;
+        int m_nDotID;
 
         public CGrid(int cellWidth, int cellHeight, int numVertical, int numHorizontal, int gridZoom, int zoomIncrement, int xOff, int yOff, bool bIsIso)
         {
@@ -128,11 +130,13 @@ namespace grid
             m_bIsIsometric = bIsIso;
             if (m_bIsIsometric)
             {
-                m_nIsoCenterLeftY = (int)((((float)(NNumHorizontalLines-1)) / 2.0f) * cellHeight);
-                m_nIsoCenterTopX  = (int)((((float)(NNumVertLines-1))       / 2.0f) * cellWidth);
+                m_nIsoCenterLeftY = (int)((((float)(NNumHorizontalLines-1)) * 0.5f) * cellHeight);
+                m_nIsoCenterTopX  = (int)((((float)(NNumVertLines-1))       * 0.5f) * cellWidth);
             }
             // the d3d device to draw lines
             mD3d = ManagedDirect3D.Instance;
+            mTM = ManagedTextureManager.Instance;
+            m_nDotID = mTM.LoadTexture("dot.png", 0);
             SetGridLines();
         }
         private void SetGridLines( )
@@ -184,12 +188,14 @@ namespace grid
                 mD3d.DrawLine(ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y,
                                 ptGridLinesHorizEnd[i].X, ptGridLinesHorizEnd[i].Y,
                                 clrGridLines.R, clrGridLines.G, clrGridLines.B);
+                //mTM.Draw(m_nDotID, ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
             }
             for (int i2 = 0; i2 < m_nGridNumVertLines; ++i2)
             {
                 mD3d.DrawLine(ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y,
                                 ptGridLinesVertEnd[i2].X, ptGridLinesVertEnd[i2].Y,
-                                clrGridLines.R, clrGridLines.G, clrGridLines.B);
+                                 clrGridLines.R, clrGridLines.G, clrGridLines.B);
+                //mTM.Draw(m_nDotID, ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
             }
         }
         public void GridAdjust(int vertLines, int horizontalLines)

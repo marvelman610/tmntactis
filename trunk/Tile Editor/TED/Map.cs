@@ -31,7 +31,7 @@ namespace map
         #region DECLS 1
         const int MAX_NUM_FREETILES = 500;
         const int MAX_NUM_TILESETS = 4;
-        int m_nAnchorOffset = 30;
+        int m_nAnchorOffset = 0/*100*/;
 	    public  int AnchorOffset
 	    {
 		    get { return m_nAnchorOffset; }

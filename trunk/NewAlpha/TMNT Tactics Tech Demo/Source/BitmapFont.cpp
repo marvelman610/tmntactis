@@ -156,4 +156,5 @@ void CBitmapFont::ChangeBMFont(int imageID, int width, int height, int cols)
 	m_nCharHeight = height;
 	m_nNumCols = cols;
 	m_nImageID = imageID;
+	// set new start char?
 }

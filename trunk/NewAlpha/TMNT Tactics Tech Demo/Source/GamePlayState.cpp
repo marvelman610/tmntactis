@@ -355,7 +355,7 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		{
 		case LOC_SIMUSA:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);				// first map
-			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", LOC_SIMUSA, "SIMUSA", 1);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_SIMUSA, "SIMUSA", 3);
 			break;
 		case LOC_IWAMI:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);

@@ -72,8 +72,7 @@ void CGamePlayState::Exit(void)
  	{
  		m_pHUD = NULL;
 	}
-// 	if (m_pPlayer)
-// 		m_pPlayer = NULL;
+
 	if(m_pCurrentMenuState)
 	{
 		m_pCurrentMenuState->Exit();
@@ -252,6 +251,7 @@ void CGamePlayState::LoadGame(const char* fileName)
 
 		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
 		player->SetStage(currState);
+		ifs.read(reinterpret_cast<char*>(player->GetMapsUnlocked()), NUM_MAPS * sizeof(bool));
 		ifs.close();
 	}
 }
@@ -330,6 +330,7 @@ void CGamePlayState::SaveGame(const char* fileName)
 			ofs.write((char*)&unlocked, sizeof(bool));
 		}
 		ofs.write((char*)(&currStage), sizeof(int));
+		ofs.write((char*)(m_pPlayer->GetMapsUnlocked()), NUM_MAPS*sizeof(bool));
 		ofs.close();
 	}
 }
@@ -354,7 +355,7 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		{
 		case LOC_SIMUSA:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);				// first map
-			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", LOC_SIMUSA, "SIMUSA", 4);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", LOC_SIMUSA, "SIMUSA", 1);
 			break;
 		case LOC_IWAMI:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);

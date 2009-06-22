@@ -50,18 +50,7 @@ CWorldMap::CWorldMap(void)
 	m_Locations[LOC_YAMATO].name = "Yamato"; m_Locations[LOC_YAMATO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_YAMATO].mapXY = MAP_POINT(998,1064);
 	
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
-
-// 	string* text = new string[3];
-// 	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
-// 	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
-// 	m_bxHelp->IsMsgBox(true);
-// 	m_bxHelp->SetAlpha(200);
-// 	delete[] text;
-// 	text = new string[4];
-// 	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
-// 	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
-// 	m_bxMenu->SetActive(); 
-// 	delete[] text;
+	m_bHelpShown = false;
 }
 
 CWorldMap::~CWorldMap(void)
@@ -99,11 +88,14 @@ void CWorldMap::Enter()
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
 
 	string* text = new string[3];
-	text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
-	m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
-	m_bxHelp->IsMsgBox(true);
-	m_bxHelp->SetAlpha(200);
-	delete[] text;
+	if (!m_bHelpShown)
+	{
+		text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
+		m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
+		m_bxHelp->IsMsgBox(true);
+		m_bxHelp->SetAlpha(200);
+		delete[] text;
+	}
 	text = new string[4];
 	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE";  text[3] = "EXIT"; /*text[3] = "LOAD";*/
 	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
@@ -119,6 +111,7 @@ void CWorldMap::Enter()
 	m_fTimer = 0.0f;
 	m_bWeaponBool = false;
 	CSGD_FModManager::GetInstance()->PlaySound(m_pAssets->aWMworldMapMusicID);
+	m_Timer.StartTimer(5.0f);
 }
 
 void CWorldMap::Exit()
@@ -168,7 +161,7 @@ void CWorldMap::Exit()
 		delete m_bxMenu;
 		m_bxMenu = NULL;
 	}
-
+	m_Timer.ResetTimer();
 	CSGD_FModManager::GetInstance()->StopSound(m_pAssets->aWMworldMapMusicID);
 	CSGD_FModManager::GetInstance()->ResetSound(m_pAssets->aWMworldMapMusicID);
 }
@@ -191,15 +184,16 @@ void CWorldMap::Render()
 				0.0f, 0.5f, m_Locations[i].color);
 		if (m_pPlayer->GetMapsUnlocked()[i] == false)
 		{
-			m_pTM->DrawWithZSort(m_pAssets->aWMlockID, m_Locations[i].mapXY.x - m_nMapOSx - 5, m_Locations[i].mapXY.y - m_nMapOSy - 30, 0.1f, 0.6f, 0.6f);
+			m_pTM->DrawWithZSort(m_pAssets->aWMlockID, m_Locations[i].mapXY.x - m_nMapOSx - 5, m_Locations[i].mapXY.y - m_nMapOSy - 30, 0.2f, 0.6f, 0.6f);
 		}
 	}
 	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouse.x-10, m_ptMouse.y-3, 0.0f);
 
 	//////////////////////////////////////////////////////////////////////////
 	// draw boxes
-	m_bxHelp->Render();
 	m_bxMenu->Render();
+	if (m_bxHelp)
+		m_bxHelp->Render();
 	if (m_bxChooseTurtle)
 		m_bxChooseTurtle->Render();
 	else if (m_bxTrainSkills)
@@ -224,6 +218,8 @@ void CWorldMap::Update(float fElapsedTime)
 	{
 		if (m_bxMsg)
 		{delete m_bxMsg; m_bxMsg = NULL;}
+		if (m_bxHelp)
+		{delete m_bxHelp; m_bxHelp = NULL; m_bHelpShown = true;}
 	}
 	m_pPlayer->GetAch()->Update(fElapsedTime);
 	if (m_ptMouse.x < SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_A))
@@ -307,12 +303,13 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 				{
 					CGamePlayState::GetInstance()->ChangeMap(false, i); // i = currently selected map
 				}
-				else	// the map is locked
+				else if (m_Locations[i].bSelected)	// the map is locked
 				{
 					string* msg = new string[3];
 					msg[0] = "You must achieve"; msg[1] = "Victory in " + m_Locations[i-1].name; msg[2] = "to unlock this map";
-					m_bxMsg = new CBox(3, msg, 150, 300);
+					m_bxMsg = new CBox(3, msg, 150, 300, 0.11f, false, 35, 35, 25, -1, 0.8f);
 					m_bxMsg->IsMsgBox(true);
+					m_bxMsg->SetScaleY(0.8f);
 					m_Timer.StartTimer(3.0f);
 					delete[] msg;
 					break;
@@ -444,6 +441,15 @@ bool CWorldMap::HandleButtons()
 			{
 				string fileName = CGame::GetInstance()->GetProfName() + ".dat";
 				CGamePlayState::GetInstance()->SaveGame(fileName.c_str());
+				CMainMenuState::GetInstance()->SetIsLoaded(true);
+
+				string* msg = new string[1];
+				msg[0] = "Game Saved";
+				m_bxMsg = new CBox(1, msg, 300, 300, 0.11f, false, 35, 35, 25, -1, 0.8f);
+				m_bxMsg->IsMsgBox(true);
+				m_bxMsg->SetScaleY(0.5f);
+				m_Timer.StartTimer(2.0f);
+				delete[] msg;
 			}
 			break;
 		case MENU_BTN_WEAPON:

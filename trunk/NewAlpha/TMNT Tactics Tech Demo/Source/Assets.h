@@ -85,13 +85,13 @@ public:
 	ASSET aBMqteRightID;
 	ASSET aBMqteDownID;
 	ASSET aBMqteUpID;
+	ASSET aBMvictoryID, aBMdefeatID;
 	// BATTLE MAP MUSIC
 	ASSET aBMarcadeMusicID;
 	ASSET aBMsimusaMusicID;
 	ASSET aBMsinaroMusicID;
 	ASSET aBMyamatoMusicID;
 	ASSET aBMiwamiMusicID;
-
 
 		// sounds
 	ASSET aBMdeathSnd;
@@ -106,6 +106,7 @@ public:
 	ASSET aHTPsound;
 	ASSET aBMeggSmackSnd;
 	ASSET aBMfootstepsSnd;
+	ASSET aBMninjaAttackSnd;
 
 	//////////////////////////////////////////////////////////////////////////
 

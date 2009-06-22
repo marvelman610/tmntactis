@@ -71,7 +71,7 @@ bool CAchievements::Render()
 		if (m_fTimer < 3.0f)
 		{
 			// display achievement image
-			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, 350, 300, 0.0f);
+			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, 350, 450, 0.0f);
 			return true;
 		}
 		else

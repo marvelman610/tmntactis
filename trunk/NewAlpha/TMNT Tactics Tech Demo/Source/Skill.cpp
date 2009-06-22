@@ -14,6 +14,7 @@
 #include "CSGD_DirectInput.h"
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
+#include "Achievements.h"
 #include "Assets.h"
 #include "Box.h"
 

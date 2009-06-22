@@ -545,6 +545,8 @@ void CBattleMap::Update(float fElapsedTime)
 	}
 	if (bTimerDone)	// catch all events that are m_Timer related
 	{
+		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
+			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
 		// exit to the main menu if all turtles are dead, else to the world map
 		if (m_bWin)
 			CGamePlayState::GetInstance()->ChangeMap();
@@ -2463,7 +2465,7 @@ void CBattleMap::cheat()
 void CBattleMap::SetEnemyDead()
 {
 	++m_nKillCount[m_nCurrCharacter];
-	if (m_nKillCount == 3 && !m_pPlayer->GetAch()->GetLocked(ACH_MEGAKILL))
+	if (m_nKillCount[m_nCurrCharacter] == 3 && !m_pPlayer->GetAch()->GetLocked(ACH_MEGAKILL))
 		m_pPlayer->GetAch()->Unlock(ACH_MEGAKILL);
 	--m_nNumCharacters;
 	--m_nNumEnemiesLeft;
@@ -2478,12 +2480,10 @@ void CBattleMap::SetEnemyDead()
 	if(m_nNumEnemiesLeft <= 0)
 	{
 		m_bWin = true;
-		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
-			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
 		if (m_nMapID < NUM_MAPS)
 			m_pPlayer->SetMapUnlocked(m_nMapID+1);
 		PlaySFX(m_pAssets->aBMvictorySnd);
-		m_Timer.StartTimer(4.0f);
+		m_Timer.StartTimer(6.0f);
 	}
 }
 

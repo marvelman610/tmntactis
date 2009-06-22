@@ -180,6 +180,9 @@ public:
 	ASSET aSmokeParticle;
 	ASSET aGlowParticle;
 	ASSET aGlassParticle;
+	ASSET aHealthGlowParticle;
+	ASSET aShredderParticle;
+	ASSET aDustCloudParticle;
 
 
 	//////////////////////////////////////////////////////////////////////////

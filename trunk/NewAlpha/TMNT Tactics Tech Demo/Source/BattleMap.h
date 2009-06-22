@@ -38,7 +38,7 @@ class CSkill;
  // enum for tile flags
  enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
  enum {MOVE_MINUS_Y, MOVE_MINUS_X, MOVE_ADD_Y, MOVE_ADD_X, };
- enum {FIRE, SMOKE, BLOOD, GLOW, GLASS};
+ enum {FIRE, SMOKE, BLOOD, GLOW, GLASS, HEALTH_GLOW};
  enum {BX_ACTION, BX_MSG, BX_SKILL, BX_ITEM, BX_PAUSE, BX_LOAD, BX_SAVE, BX_NULL, };	// all the box types
 
 #include "Base.h"

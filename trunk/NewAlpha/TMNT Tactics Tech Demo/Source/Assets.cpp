@@ -181,11 +181,13 @@ void CAssets::LoadAssets()
 
 	////////////////////////////////////////////////////////////////////////
 	//Particles
-	aGlowParticle = aFireParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
+	aGlowParticle = aFireParticle =aHealthGlowParticle = aShredderParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
 	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
 	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
 	aGlassParticle = m_pTM->LoadTexture("Resources/Images/VG_Glass.png");
-	
+	aDustCloudParticle = m_pTM->LoadTexture("Resources/Images/VG_Dust.png");
+
+
 	////////////////////////////////////////////////////////////////////////
 	// Achievements
 	aAvenged = m_pTM->LoadTexture("Resources/Images/VG_Avenged.png", D3DCOLOR_XRGB(255,0,0));

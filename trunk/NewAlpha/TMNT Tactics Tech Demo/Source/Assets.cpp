@@ -205,8 +205,11 @@ void CAssets::LoadAssets()
 	{
 		aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
 		aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
+		aMegaKill			= m_pFMOD->LoadSound("Resources/Sounds/VG_megaKill.mp3");
+		aQuickFingersSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_quickFingers.mp3");
 		//////////////////////////////////////////////////////////////////////////
 		
+		aBMvictorySnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_allClear.mp3");
 		aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
 // 		aBMsimusaMusicID;
 // 		aBMsinaroMusicID;

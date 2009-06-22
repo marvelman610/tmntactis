@@ -83,7 +83,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	// SKILLS
 	inline vector<CSkill>* GetSkills()  { return &m_vActiveSkills;}
-	inline vector<CSkill>* GetInactiveSkills() {return &m_vInactiveSkills;}
+	inline vector<CSkill>* GetInactiveSkills() {if(m_vInactiveSkills.size()>0)return &m_vInactiveSkills; else return NULL;}
 	inline int GetNumSkills(void) {return m_vActiveSkills.size();}
 	inline int GetCurrSelectedSkillIndex() {return m_nCurrSelectedSkill;}
 	inline CSkill* GetCurrSelectedSkill() {return &m_vActiveSkills[m_nCurrSelectedSkill];}

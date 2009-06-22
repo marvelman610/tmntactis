@@ -180,6 +180,8 @@ void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 	// if target is dead...remove 
 	if (m_fTimer > (float)m_nMaxCombinationAmount)
 	{
+		if (m_nCurrAmountSuccessful == m_nMaxCombinationAmount && !m_pPlayer->GetAch()->GetLocked(ACH_QUICKFINGERS))
+			m_pPlayer->GetAch()->Unlock(ACH_QUICKFINGERS);
 		m_bComplete = true; 
 		m_pUpdatePtr(fElapsedTime, skill, ps);
 		m_fTimer = 0.0f;

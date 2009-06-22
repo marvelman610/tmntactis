@@ -30,6 +30,7 @@ private:
 	vector<CBattleItem> m_nInventory;
 	bool	m_bMapsUnlocked[NUM_MAPS];
 	int		m_nCurrStage;
+	int		m_nKillCount;	// used for kill 30 achievement
 	string  m_sProfileName;
 	string  m_sFileName;
 
@@ -86,6 +87,7 @@ public:
 	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////
 	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
+	inline int GetKillCount(void)		{ return m_nKillCount;}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
 	inline CAchievements* GetAch()		{ return m_pAcheivements;}
 	inline string GetProfName()			{ return m_sProfileName;}
@@ -100,6 +102,8 @@ public:
 	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
 	void SetStage(int stage)			{ m_nCurrStage = stage;}
 	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true;}
+	void IncrementKillCount()			{ ++m_nKillCount;}
+	void SetKillCount(int count)		{ m_nKillCount = count;}
 	//void SetALLMapsUnlocked(bool mUnlocked) {m_bMapsUnlocked = &mUnlocked;}
 	
 	bool RemoveItem(int index);

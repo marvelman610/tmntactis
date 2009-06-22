@@ -252,6 +252,9 @@ void CGamePlayState::LoadGame(const char* fileName)
 		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
 		player->SetStage(currState);
 		ifs.read(reinterpret_cast<char*>(player->GetMapsUnlocked()), NUM_MAPS * sizeof(bool));
+		int killCount = 0;
+		ifs.read(reinterpret_cast<char*>(&killCount), sizeof(int));
+		player->SetKillCount(killCount);
 		ifs.close();
 	}
 }
@@ -331,6 +334,8 @@ void CGamePlayState::SaveGame(const char* fileName)
 		}
 		ofs.write((char*)(&currStage), sizeof(int));
 		ofs.write((char*)(m_pPlayer->GetMapsUnlocked()), NUM_MAPS*sizeof(bool));
+		int killCount = m_pPlayer->GetKillCount();
+		ofs.write((char*)(&killCount), sizeof(int));
 		ofs.close();
 	}
 }

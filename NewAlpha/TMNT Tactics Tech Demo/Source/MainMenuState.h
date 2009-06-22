@@ -22,7 +22,9 @@ private:
 	CBox*	m_bxMsg;
 	bool	m_bDisplayLoadBox;
 	bool	m_bNewGamePressed;
+	bool	m_bGameLoaded;
 	int		m_nNumProfiles;
+	int		m_nCurrProfileInd;
 	string  m_sProfiles[4];
 	float	m_fTimer;
 
@@ -71,6 +73,8 @@ public:
 	//	Purpose		:	Clean up any dynamic memory, release textures, etc...
 	//////////////////////////////////////////////////////////////////////////
 	void Exit();
+
+	void SetIsLoaded(bool bLoaded) {m_bGameLoaded = bLoaded;}
 
 };
 

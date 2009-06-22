@@ -37,6 +37,7 @@ CMainMenuState::CMainMenuState()
 	ifstream ifs("Profiles.dat", ios_base::binary);
 
 	m_fTimer = 0.0f;
+	m_bGameLoaded = false;
 }
 
 CMainMenuState::~CMainMenuState()
@@ -55,6 +56,7 @@ CMainMenuState* CMainMenuState::GetInstance()
 
 void CMainMenuState::Enter()
 {
+	m_nCurrProfileInd = -1;
 	m_fTimer = 0.0f;
 	m_bNewGamePressed = false;
 	ifstream ifs("Profiles.dat", ios_base::binary);
@@ -92,9 +94,6 @@ void CMainMenuState::Enter()
 		m_bxProfile->SetType(BOX_WITH_BACK);
 		m_bxProfile->AcceptInput();
 	}
-
-	CPlayer::GetInstance()->GetItems()->clear();
-
 }
 
 bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
@@ -142,8 +141,6 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				&& m_bxProfile->GetItems()[index].size() > 0)
 			{
 				// set the profile name
-				//m_sCurrProfName = m_bxProfile->GetItems()[index].c_str();
-				//CPlayer::GetInstance()->SetProfileName(m_sCurrProfName);
 				m_sProfiles[index] = m_bxProfile->GetItems()[index];
 				string profName = m_sProfiles[index];
 				CGame::GetInstance()->SetProfName(profName);
@@ -166,7 +163,9 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					CPlayer::GetInstance()->NewGame();
 					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 				}
-				else
+				m_nCurrProfileInd = index;
+
+				if ( !m_bNewGamePressed )	// they have simply selected a profile to sign in with
 				{
 					// load the profile's saved game if one exists
 					string fileName = CGame::GetInstance()->GetProfName() + ".dat";
@@ -177,9 +176,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					{
 						ifs.close();
 						CGamePlayState::GetInstance()->LoadGame(fileName.c_str());
+						m_bGameLoaded = true;
 					}
+					else
+						m_bGameLoaded = false;
 				}
-
 			}
 			else if (input == BTN_BACK) // save nothing
 			{
@@ -276,8 +277,13 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					m_bxProfile->SetType(BOX_WITH_BACK);
 					m_bxProfile->AcceptInput();
 				}
-				else
+				else if (m_bGameLoaded)
 				{
+					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
+				}
+				else	// start a new game
+				{
+					CPlayer::GetInstance()->NewGame();
 					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
 				}
 				break;

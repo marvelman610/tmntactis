@@ -80,6 +80,7 @@ void CPlayer::NewGame()
 {
 	m_sProfileName = "NONE"; m_sFileName = "NONE";
 	ObjectManager::GetInstance()->RemoveAll();
+	GetItems()->clear();
 	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
 	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");

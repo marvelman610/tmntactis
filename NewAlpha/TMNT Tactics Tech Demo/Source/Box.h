@@ -131,6 +131,9 @@ class CBox
 	void PosY(int val) { m_nPosY = val; }
 	int PosX() const { return m_nPosX; }
 	void PosX(int val) { m_nPosX = val; }
+	void SetScale(float scale) {m_fScaleY = m_fScaleX = scale;}
+	void SetScaleX(float xScale) {m_fScaleX = xScale;}
+	void SetScaleY(float yScale) {m_fScaleY = yScale;}
 	int BoxHeight() const { return m_nBoxHeight; }
 	void BoxHeight(int val) { m_nBoxHeight = val; }
 	int BoxWidth() const { return m_nBoxWidth; }

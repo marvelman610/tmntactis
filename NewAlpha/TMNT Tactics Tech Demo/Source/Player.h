@@ -100,6 +100,7 @@ public:
 	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
 	void SetStage(int stage)			{ m_nCurrStage = stage;}
 	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true;}
+	//void SetALLMapsUnlocked(bool mUnlocked) {m_bMapsUnlocked = &mUnlocked;}
 	
 	bool RemoveItem(int index);
 

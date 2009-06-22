@@ -57,7 +57,8 @@ class CWorldMap
 
 	float m_fTimer;
 	bool  m_bTrained;
-	bool m_bWeaponBool;
+	bool  m_bHelpShown;
+	bool  m_bWeaponBool;
 
 	CTimer m_Timer;
 

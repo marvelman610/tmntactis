@@ -244,13 +244,15 @@ void CBattleMap::Render()
 
 	if(m_bWin && m_Timer.IsTimerRunning() )
 	{
-		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
-		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+// 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
+// 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+		m_pTM->DrawWithZSort(m_pAssets->aBMvictoryID, 256, 175, 0.01f);
 	}
 	else if(m_bLose && m_Timer.IsTimerRunning() )
 	{
-		CBitmapFont::GetInstance()->DrawString("YOU LOSE", 100, 200, 0.05f, 3.0f);
-		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+// 		CBitmapFont::GetInstance()->DrawString("YOU LOSE", 100, 200, 0.05f, 3.0f);
+// 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
+		m_pTM->DrawWithZSort(m_pAssets->aBMdefeatID, 256, 175, 0.01f);
 	}
 
 	if ((m_nHoverCharacter > -1 || (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft)) && m_bIsPlayersTurn)
@@ -499,12 +501,23 @@ void CBattleMap::SetPaused(bool IsPaused)
 void CBattleMap::Update(float fElapsedTime)
 {
 	bool bTimerDone = m_Timer.Update(fElapsedTime);
+	CHUD::GetInstance()->Update(fElapsedTime);
+	m_pPlayer->GetAch()->Update(fElapsedTime);
+	//update the particle system
+	if (m_pParticleSystem)
+	{
+		m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
+	}
 
 	// check for loss, if so start the timer for displaying "Defeat"
 	if(m_nNumTurtles <= 0)
 	{
 		m_bLose = true;
-		m_Timer.StartTimer(3.0f);
+		m_Timer.StartTimer(4.0f);
 	}
 	if (bTimerDone)	// catch all events that are m_Timer related
 	{
@@ -514,14 +527,6 @@ void CBattleMap::Update(float fElapsedTime)
 		else if (m_bLose)
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
 	}
-	CHUD::GetInstance()->Update(fElapsedTime);
-	m_pPlayer->GetAch()->Update(fElapsedTime);
-	//update the particle system
-	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
 
 	if(m_bWin || m_bLose)
 		return;
@@ -550,7 +555,7 @@ void CBattleMap::Update(float fElapsedTime)
 	if (m_bItemBool)
 		CalculateRanges();
 
-	if (m_bDrawTimedParticles)
+	if (m_bDrawTimedParticles && m_pParticleSystem)
 	{
 		m_fTimer += fElapsedTime;
 		m_pParticleSystem[FIRE].DrawParticle(m_pAssets->aFireParticle);
@@ -779,12 +784,6 @@ void CBattleMap::NinjaMoveComplete()
 
 bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 {
-	if(m_bWin || m_bLose)
-	{
-		if(m_pDI->KeyPressed(DIK_ESCAPE) || m_pDI->KeyPressed(DIK_RETURN))
-			CGamePlayState::GetInstance()->ChangeMap();
-		return true;
-	}
 	if(CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
 		SetPaused(true);
 	else if (!CGamePlayState::GetInstance()->GetPaused() && !m_bxLoadBox && !m_bxSaveBox)
@@ -792,6 +791,12 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 
 	int xID, yID;
 	m_ptMouseScreenCoord = mouse;	// get the screen position before offsetting for scroll
+	if(m_bWin || m_bLose)
+	{
+		if(m_pDI->KeyPressed(DIK_ESCAPE) || m_pDI->KeyPressed(DIK_RETURN))
+			CGamePlayState::GetInstance()->ChangeMap();
+		return true;
+	}
 	mouse.x -= (LONG)m_fScrollX;
 	mouse.y -= (LONG)m_fScrollY;
 	if (m_bMoving)
@@ -2458,8 +2463,9 @@ void CBattleMap::SetEnemyDead()
 		m_bWin = true;
 		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
 			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
-		m_pPlayer->SetMapUnlocked(m_nMapID);
-		m_Timer.StartTimer(3.0f);
+		if (m_nMapID < NUM_MAPS)
+			m_pPlayer->SetMapUnlocked(m_nMapID+1);
+		m_Timer.StartTimer(4.0f);
 	}
 }
 

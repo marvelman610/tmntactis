@@ -34,11 +34,11 @@ public:
 	// if you pass in an endtime, the update will return true when that endtime is reached
 	void StartTimer(float endTime = 0.0f, bool reset = true)
 	{
+		if (reset)
+			ResetTimer();
 		m_bIsOn = true;
 		if (endTime > 0.0f)
 			m_fEndTime = endTime;
-		if (reset)
-			ResetTimer();
 	}
 
 	//////////////////////////////////////////////////////////////////////////

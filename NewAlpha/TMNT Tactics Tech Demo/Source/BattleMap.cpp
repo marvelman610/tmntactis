@@ -78,8 +78,9 @@ CBattleMap* CBattleMap::GetInstance()
 	static CBattleMap instance;
 	return &instance;
 }
-void CBattleMap::Enter(char* szFileName, char* szMapName, int nNumEnemies, bool bBoss)
+void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEnemies, bool bBoss)
 {
+	m_nMapID = nMapID;
 	SetMousePtr(m_pAssets->aMousePointerID);
 	m_bIsMouseAttack = m_bOutOfRange = false;
 	m_bHasBoss = bBoss;
@@ -929,7 +930,7 @@ void CBattleMap::LoadMapInfo()
 			//	set up the map so that it centers at the beginning
 			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
 
-			m_nIsoCenterLeftY = -(m_nTileHeight<<1)+(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
+			m_nIsoCenterLeftY = -/*(m_nTileHeight<<1)+*/(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
 			m_nIsoCenterTopX = 512; // map is always centered on the y
 			m_nMaxScrollX = m_nMaxScrollY = 50;
 			if (m_nMapWidth > m_nScreenWidth)
@@ -2450,11 +2451,15 @@ void CBattleMap::SetEnemyDead()
 	m_nHoverCharacter = -1;
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
+
+	// winning condition
 	if(m_nNumEnemiesLeft <= 0)
 	{
 		m_bWin = true;
 		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
 			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
+		m_pPlayer->SetMapUnlocked(m_nMapID);
+		m_Timer.StartTimer(3.0f);
 	}
 }
 

@@ -353,20 +353,20 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		switch (mapID)		// which battle map file to load?
 		{
 		case LOC_SIMUSA:
-			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 4);
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);				// first map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", LOC_SIMUSA, "SIMUSA", 4);
 			break;
 		case LOC_IWAMI:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2test.dat", "Test", 2, true);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2test.dat", LOC_IWAMI, "IWAMI", 4, true);	// boss map
 			break;
 		case LOC_SINARO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMDonBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_ZSortTest.dat", "Test", 6);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl3test.dat", LOC_SINARO, "SINARO", 6);
 			break;
 		case LOC_YAMATO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMMikeBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", "Test", 5);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 5);
 			break;
 		}
 		break;

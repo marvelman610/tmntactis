@@ -78,6 +78,7 @@ CPlayer* CPlayer::GetInstance()
 
 void CPlayer::NewGame()
 {
+	m_sProfileName = "NONE"; m_sFileName = "NONE";
 	ObjectManager::GetInstance()->RemoveAll();
 	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
 	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
@@ -85,7 +86,12 @@ void CPlayer::NewGame()
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
 
 	m_pAcheivements = new CAchievements();
+	for (int i = 1; i < NUM_MAPS; ++i)		// lock all maps, except first one
+		m_bMapsUnlocked[i] = false;
+	m_bMapsUnlocked[0] = true;
 
+	//////////////////////////////////////////////////////////////////////////
+	// create and add starting weapons
 	CBase weapon;
 	weapon.SetWeapon("Bokken",6,0,-1,0);
 	m_pTurtles[LEONARDO]->AddWeapon( weapon);
@@ -98,20 +104,27 @@ void CPlayer::NewGame()
 
 	weapon.SetWeapon("Wooden Nunchaku",3,0,-1,4);
 	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
+	//////////////////////////////////////////////////////////////////////////
 
+	//////////////////////////////////////////////////////////////////////////
+	// load animations...play starting idles
 	LoadAnimations();
-	m_sProfileName = "NONE"; m_sFileName = "NONE";
-
 	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
 	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
 	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 
-	m_nCurrStage = 0;
+	m_nCurrStage = 0;	// current stage starts at the first battle map
 
-	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
-	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
 	//////////////////////////////////////////////////////////////////////////
+	// load the skills
+	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
+
+	// set stats to starting values
+	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+
+	//////////////////////////////////////////////////////////////////////////
+	// TODO:: remove temp items before final build
 	POINT pt; pt.x = 15; pt.y = 18;
 	Factory::GetInstance()->CreateBattleItem(BLACK_EGGS, pt);
 }

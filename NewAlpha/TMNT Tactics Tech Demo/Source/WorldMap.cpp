@@ -105,7 +105,7 @@ void CWorldMap::Enter()
 	m_bxHelp->SetAlpha(200);
 	delete[] text;
 	text = new string[4];
-	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE"; /*text[3] = "LOAD";*/ text[3] = "EXIT";
+	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE";  text[3] = "EXIT"; /*text[3] = "LOAD";*/
 	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);
 	m_bxMenu->SetActive(); 
 	delete[] text;
@@ -175,7 +175,7 @@ void CWorldMap::Exit()
 
 void CWorldMap::Render()
 {	
-	m_pTM->DrawWithZSort(m_nMapImageID, -m_nMapOSx, -m_nMapOSy, 1.0f, 1.0f, 1.0f);
+	m_pTM->DrawWithZSort(m_nMapImageID, -m_nMapOSx, -m_nMapOSy, 1.0f, 1.0f, 1.0f);	// draws the map of japan
 	m_pBitmapFont->DrawStringAutoCenter("World Map", m_nScreenWidth, 20);
 	for (int i = 0; i < NUM_LOCATIONS; ++i)
 	{
@@ -189,39 +189,42 @@ void CWorldMap::Render()
 		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect && !m_pPlayer->GetAch()->Render())
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
 				0.0f, 0.5f, m_Locations[i].color);
+		if (m_pPlayer->GetMapsUnlocked()[i] == false)
+		{
+			m_pTM->DrawWithZSort(m_pAssets->aWMlockID, m_Locations[i].mapXY.x - m_nMapOSx - 5, m_Locations[i].mapXY.y - m_nMapOSy - 30, 0.1f, 0.6f, 0.6f);
+		}
 	}
 	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouse.x-10, m_ptMouse.y-3, 0.0f);
 
+	//////////////////////////////////////////////////////////////////////////
 	// draw boxes
-
 	m_bxHelp->Render();
 	m_bxMenu->Render();
 	if (m_bxChooseTurtle)
-	{
 		m_bxChooseTurtle->Render();
-	}
 	else if (m_bxTrainSkills)
-	{
 		m_bxTrainSkills->Render();
-	}
 	else if (m_bxLoad)
-	{
 		m_bxLoad->Render();
-	}
 	else if (m_bxSave)
-	{
 		m_bxSave->Render();
-	}
 	else if (m_bxMsg)
 		m_bxMsg->Render();
 	else if(m_bxWeapon)
 		m_bxWeapon->Render();
 	else if(m_bxWeaponSelect)
 		m_bxWeaponSelect->Render();
+	//////////////////////////////////////////////////////////////////////////
 }
 
 void CWorldMap::Update(float fElapsedTime)
 {
+	bool bTimerResult = m_Timer.Update(fElapsedTime);
+	if (bTimerResult)
+	{
+		if (m_bxMsg)
+		{delete m_bxMsg; m_bxMsg = NULL;}
+	}
 	m_pPlayer->GetAch()->Update(fElapsedTime);
 	if (m_ptMouse.x < SCROLL_EDGE_DIST || m_pDI->KeyDown(DIK_A))
 		m_nMapOSx -= (int)( SCROLL_SPEED * fElapsedTime);
@@ -238,8 +241,8 @@ void CWorldMap::Update(float fElapsedTime)
 		m_nMapOSy = m_nMapHeight-m_nScreenHeight;
 	if (m_nMapOSx < 0)
 		m_nMapOSx = 0;
-	if (m_nMapOSx > m_nMapWidth-m_nScreenWidth)
-		m_nMapOSx = m_nMapWidth-m_nScreenWidth;
+	if (m_nMapOSx > m_nMapWidth-m_nScreenWidth-10)
+		m_nMapOSx = m_nMapWidth-m_nScreenWidth-10;
 
 	for (int i = 0; i < NUM_LOCATIONS; ++i)
 	{
@@ -300,10 +303,19 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 		{
 			if (m_Locations[i].bHovering == true)
 			{
-				if (m_Locations[i].bSelected)	// going into the battle map
+				if (m_Locations[i].bSelected && m_pPlayer->GetMapsUnlocked()[i])	// going into the battle map
 				{
-
 					CGamePlayState::GetInstance()->ChangeMap(false, i); // i = currently selected map
+				}
+				else	// the map is locked
+				{
+					string* msg = new string[3];
+					msg[0] = "You must achieve"; msg[1] = "Victory in " + m_Locations[i-1].name; msg[2] = "to unlock this map";
+					m_bxMsg = new CBox(3, msg, 150, 300);
+					m_bxMsg->IsMsgBox(true);
+					m_Timer.StartTimer(3.0f);
+					delete[] msg;
+					break;
 				}
 				m_Locations[i].bSelected = true;
 				m_Locations[i].color = D3DCOLOR_XRGB(255,0,0);

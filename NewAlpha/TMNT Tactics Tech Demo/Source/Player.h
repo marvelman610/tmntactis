@@ -11,7 +11,7 @@
 #define PLAYER_H
 
 enum { LEONARDO, DONATELLO, RAPHAEL, MIKEY, };
-enum { WORLD_MAP, BATTLE_MAP, };
+enum { WORLD_MAP, BATTLE_MAP, NUM_MAPS = 4, };
 #include "Turtle.h"
 #include "Base.h"
 #include "BattleItem.h"
@@ -28,6 +28,7 @@ private:
 	CAchievements* m_pAcheivements;
 
 	vector<CBattleItem> m_nInventory;
+	bool	m_bMapsUnlocked[NUM_MAPS];
 	int		m_nCurrStage;
 	string  m_sProfileName;
 	string  m_sFileName;
@@ -89,15 +90,16 @@ public:
 	inline CAchievements* GetAch()		{ return m_pAcheivements;}
 	inline string GetProfName()			{ return m_sProfileName;}
 	inline string GetFileName()			{ return m_sFileName;}
-	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
-
+	inline bool* GetMapsUnlocked()		{ return m_bMapsUnlocked;}
 	inline int GetNumItems()			{ return m_nInventory.size();}
 	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
+	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
 
 	void SetProfileName(string name)	{ m_sProfileName = name;}
 	void SetFileName(string name)		{ m_sFileName = name;}
 	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
 	void SetStage(int stage)			{ m_nCurrStage = stage;}
+	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true;}
 	
 	bool RemoveItem(int index);
 

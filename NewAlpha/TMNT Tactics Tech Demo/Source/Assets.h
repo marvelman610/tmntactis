@@ -112,6 +112,7 @@ public:
 	// WorldMap IDs
 	ASSET aWMmapID;
 	ASSET aWMtempleID;
+	ASSET aWMlockID;
 	ASSET aWMworldMapMusicID;
 
 	// Main Menu IDs

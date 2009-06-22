@@ -116,7 +116,7 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
 	//particle test
-	m_pParticleSystem = new CParticleSystem[5];
+	m_pParticleSystem = new CParticleSystem[6];
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
 	m_pParticleSystem[FIRE].m_bLoop = false;
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
@@ -127,6 +127,8 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_pParticleSystem[BLOOD].m_bLoop = false;
 	m_pParticleSystem[GLASS].Load("Resources/ParticleInfo/VG_Glass.dat");
 	m_pParticleSystem[GLASS].m_bLoop = false;
+	m_pParticleSystem[HEALTH_GLOW].Load("Resources/ParticleInfo/VG_HealthGlow.dat");
+	m_pParticleSystem[HEALTH_GLOW].m_bLoop = false;
 
 	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
@@ -487,6 +489,8 @@ void CBattleMap::Render()
 	{ m_pParticleSystem[BLOOD].DrawParticle(m_pAssets->aBloodParticle); }
 	if(m_pParticleSystem[GLASS].m_bActive == true)
 	{ m_pParticleSystem[GLASS].DrawParticle(m_pAssets->aGlassParticle);	}
+	if(m_pParticleSystem[HEALTH_GLOW].m_bActive == true)
+	{ m_pParticleSystem[HEALTH_GLOW].DrawParticle(m_pAssets->aHealthGlowParticle);	}
 
 	DrawDebugInfo();
 }
@@ -683,7 +687,14 @@ void CBattleMap::Update(float fElapsedTime)
 		APbool = false;
 	}
 
-	//////////////////////////////////////////////////////////////////////////
+	//update the particle system
+	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[HEALTH_GLOW].UpdateParticle(fElapsedTime);
+	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{

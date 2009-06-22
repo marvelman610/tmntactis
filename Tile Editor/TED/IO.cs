@@ -25,6 +25,7 @@ namespace test
     public partial class Form1 : Form
     {
         int loadType;
+        string strAutoSaveString;
 
         private void asTextFileToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -254,6 +255,7 @@ namespace test
                             xml.WriteElementString("Width", m_mMap.FreePlaced[i].SourceRect.Width.ToString());
                             xml.WriteElementString("Height", m_mMap.FreePlaced[i].SourceRect.Height.ToString());
                             xml.WriteElementString("Trigger", m_mMap.FreePlaced[i].Trigger.ToString());
+                            xml.WriteElementString("Rotation", m_mMap.FreePlaced[i].Rotation.ToString());
 
                             xml.WriteEndElement();
                         }
@@ -268,17 +270,21 @@ namespace test
         {
             m_bChangesMade = false;
             m_bHaveSaved = true;
-            string strAutoSave = "AutoSave.xml";
+            if (Path.GetExtension(strAutoSaveString) != "xml")
+            {
+                strAutoSaveString = strAutoSaveString.Replace("dat", "xml");
+            }
+
 
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.ConformanceLevel = ConformanceLevel.Document;
             settings.Indent = true;
 
-            using (XmlWriter xml = XmlWriter.Create(strAutoSave, settings))
+            using (XmlWriter xml = XmlWriter.Create(strAutoSaveString, settings))
             {
                 xml.WriteStartElement(m_strVersionNumber);
                 xml.WriteStartElement("Map");
-                xml.WriteAttributeString("Name", strAutoSave);
+                xml.WriteAttributeString("Name", strAutoSaveString);
                 xml.WriteAttributeString("Isometric", m_bIsIsometric.ToString());
                 xml.WriteAttributeString("TotalTiles", m_mMap.NTotalNumTiles.ToString());
                 xml.WriteAttributeString("Columns", m_mMap.NNumCols.ToString());
@@ -357,6 +363,7 @@ namespace test
                         xml.WriteElementString("Width", m_mMap.FreePlaced[i].SourceRect.Width.ToString());
                         xml.WriteElementString("Height", m_mMap.FreePlaced[i].SourceRect.Height.ToString());
                         xml.WriteElementString("Trigger", m_mMap.FreePlaced[i].Trigger.ToString());
+                        xml.WriteElementString("Rotation", m_mMap.FreePlaced[i].Rotation.ToString());
 
                         xml.WriteEndElement();
                     }
@@ -370,6 +377,8 @@ namespace test
         {
             SaveFileDialog sfd = new SaveFileDialog();
             DialogResult dr = new DialogResult();
+            if (Path.GetExtension(m_strSaveFileName) == ".xml")
+                m_strSaveFileName = Path.GetFileNameWithoutExtension(m_strSaveFileName);
             sfd.FileName = m_strSaveFileName + ".dat";
             sfd.Filter = "DAT Files|*.dat";
             if (!bHaveSaved)
@@ -383,7 +392,7 @@ namespace test
             {
                 m_strSaveFileName = Path.GetFileNameWithoutExtension(sfd.FileName);
                 this.Text = "TED - " + m_strSaveFileName;
-                string newFileName = Path.GetFileName(sfd.FileName);
+                string newFileName = strAutoSaveString = Path.GetFileName(sfd.FileName);
                 using (BinaryWriter bw = new BinaryWriter(File.Open(newFileName, FileMode.Create)))
                 {
                     bw.Write(m_strVersionNumber);
@@ -491,6 +500,8 @@ namespace test
                                     bw.Write(m_mMap.FreePlaced[i].SourceRect.Width);
                                     bw.Write(m_mMap.FreePlaced[i].SourceRect.Height);
                                     bw.Write(m_mMap.FreePlaced[i].Trigger);
+                                    int rot = (int)((decimal)m_mMap.FreePlaced[i].Rotation * 10M);
+                                    bw.Write(rot);
                                 }
                             }
                         }
@@ -671,6 +682,7 @@ namespace test
                                         int tileY = 0;
                                         int tileWidth = 0;
                                         int tileHeight = 0;
+                                        float rotation = 0.0f;
                                         string trigger = "";
                                         Rectangle srcRect;
                                         m_mMap.NCurrLayer = (int)LAYER.LAYER_ONE;
@@ -765,14 +777,17 @@ namespace test
                                             tileHeight = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             trigger = reader.ReadString();
+                                            reader.Read();
+                                            rotation = (float)Convert.ToDouble(reader.ReadString());
+                                            reader.Read();
 
                                             srcRect = new Rectangle(tileX, tileY, tileWidth, tileHeight);
-                                            CFREETILE tempFree = new CFREETILE(posX, posY, srcRect, flag, tileImageID);
+                                            CFREETILE tempFree = new CFREETILE(posX, posY, srcRect, flag, tileImageID, rotation);
                                             tempFree.Trigger = trigger;
                                             // TODO:: save and load rotation
                                             m_mMap.LoadFreePlacedTiles(tempFree, count++);
                                             reader.Read();
-                                            reader.Read();
+                                            //reader.Read();
                                         }
                                     }
                                 }

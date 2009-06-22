@@ -218,7 +218,10 @@ namespace test
                 clrKey = key;
             else
                 clrKey = Color.White;
-            SetupTileset(0, imageID);
+            if (cellHeight == cellWidth)
+                SetupTileset(0, imageID);
+            else
+                SetupTilesetNotSqure(0, imageID);
         }
         public void SetupTileset(int tileFlag, int imageID)
         {
@@ -232,6 +235,23 @@ namespace test
                 m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID);
             }
         }
+        public void SetupTilesetNotSqure(int tileFlag, int imageID)
+        {
+            int srcX = 0, srcY = 0;
+            m_tTilesetTiles = new CTILE[m_nTotalNumTiles];
+            for (int y = 0; y < m_nNumRows; ++y )
+            {
+                for (int x = 0; x < m_nNumCols; ++x )
+                {
+                    int id = y * m_nNumCols + x;
+                    srcX = id % m_nNumCols * m_nCellWidth;
+                    srcY = m_nCellHeight * y;
+                    Rectangle srcRect = new Rectangle(srcX, srcY, m_nCellWidth, m_nCellHeight);
+                    m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID);
+                }
+            }
+        }
+
         public void DrawTSGrid()
         {
             //if (m_bShowGrid)
@@ -319,10 +339,19 @@ namespace test
         }
         public void DrawTileset()
         {
+            bool bSquare = true;
+            if (m_nCellHeight != m_nCellWidth)
+                bSquare = false;
+            int osX = nOffsetX + nScrollOSx; int osY = nOffsetY + nScrollOSy;
             for (int id = 0; id < m_nTotalNumTiles; ++id )
             {
-                int x = nOffsetX + nScrollOSx + (id % m_nNumCols * m_nCellSize);
-                int y = nOffsetY + nScrollOSy + (id / m_nNumCols * m_nCellSize);
+                int y ;
+                int x = osX + ((id % m_nNumCols) * m_nCellWidth);
+                if (bSquare)
+                    y = osY + ((id / m_nNumCols) * m_nCellWidth);
+                else
+                    y = id / m_nNumCols * m_nCellHeight + osY;
+
                 if (x < m_nPanelWidth && y < m_nPanelHeight)
                 {
 	                mTM.Draw(nTilesetImageID, 

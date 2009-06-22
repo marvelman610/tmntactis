@@ -368,11 +368,11 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 			break;
 		case LOC_SINARO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMDonBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl3test.dat", LOC_SINARO, "SINARO", 6);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_SINARO, "SINARO", 6);	// second map
 			break;
 		case LOC_YAMATO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMMikeBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 5);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 5);	// third map
 			break;
 		}
 		break;

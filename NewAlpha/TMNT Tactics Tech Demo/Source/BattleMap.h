@@ -182,6 +182,7 @@ class CBattleMap
 	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
 	CSkill* m_pSkillToExecute;
 	int m_nNumTurtles;
+	int m_nKillCount[4];
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Turn variables
@@ -200,7 +201,7 @@ class CBattleMap
 
 	POINT nades;
 
-	// temp particles
+	// particles
 	CParticleSystem* m_pParticleSystem;
 	// temp ninja
 

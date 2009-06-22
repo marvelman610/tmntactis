@@ -50,7 +50,7 @@ CPlayer::CPlayer(void)
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
 	m_pTurtles[MIKEY]->GetCurrAnim()->Play();	 
 
-	m_nCurrStage = 0;
+	m_nCurrStage = 0; m_nKillCount = 0;
 }
 
 void CPlayer::Exit()

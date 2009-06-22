@@ -563,7 +563,8 @@ bool CWorldMap::HandleButtons()
 			skills[i+1] += " - Trained";  
 		}
 		// untrained skills
-		vskills = *(m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetInactiveSkills());
+		if (m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetInactiveSkills())
+			vskills = *(m_pPlayer->GetTurtles()[m_nCurrBtn-1]->GetInactiveSkills());
 		for (int i = 0; i < numUntrainedSkills; ++i)
 		{
 			skills[numTrainedSkills+i+1] = vskills[i].GetSkillName();
@@ -596,6 +597,8 @@ bool CWorldMap::HandleButtons()
 					if (i == m_nCurrBtn-m_nFirstTrainable)
 					{
 						vskillsPtr->erase(iter);
+						if (vskillsPtr->size() == 0)
+							m_pPlayer->GetAch()->Unlock(ACH_ALLUNLOCKED);
 						break;
 					}
 					++iter;

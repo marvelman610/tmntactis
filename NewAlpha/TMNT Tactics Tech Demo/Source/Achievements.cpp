@@ -12,16 +12,16 @@ CAchievements::CAchievements()
 	m_pD3D = CSGD_Direct3D::GetInstance();
 	m_fTimer = 0.0f;
 	SetToLocked();
-	m_pAcheivements[ACH_NEWGAME].imageID =			m_pAssets->aPartyTime;
-	m_pAcheivements[ACH_LVLUP].imageID =			m_pAssets->aCowabunga;	
-	m_pAcheivements[ACH_TURTLESDEAD].imageID =		m_pAssets->aFlipNow;
-	m_pAcheivements[ACH_ALLUNLOCKED].imageID =		m_pAssets->aBreakGame;
-	m_pAcheivements[ACH_FIRSTMAPCOMPLETE].imageID = m_pAssets->aStrikeHard;
-	m_pAcheivements[ACH_KILL30].imageID =			m_pAssets->aLessonInPain;	
-	m_pAcheivements[ACH_MEGAKILL].imageID =			m_pAssets->aMegaKill;
-	m_pAcheivements[ACH_KILL_SHREDDER].imageID=		m_pAssets->aAvenged;
-	m_pAcheivements[ACH_UNLOCKSKILLS].imageID =		m_pAssets->aTrueNinja;
-	m_pAcheivements[ACH_QUICKFINGERS].imageID =		m_pAssets->aQuickFingers;
+	m_pAcheivements[ACH_NEWGAME].imageID =			m_pAssets->aPartyTime;		// DONE
+	m_pAcheivements[ACH_LVLUP].imageID =			m_pAssets->aCowabunga;		// DONE
+	m_pAcheivements[ACH_TURTLESDEAD].imageID =		m_pAssets->aFlipNow;		// DONE
+	m_pAcheivements[ACH_ALLUNLOCKED].imageID =		m_pAssets->aBreakGame;		// DONE
+	m_pAcheivements[ACH_FIRSTMAPCOMPLETE].imageID = m_pAssets->aStrikeHard;		// DONE
+	m_pAcheivements[ACH_KILL30].imageID =			m_pAssets->aLessonInPain;	// DONE
+	m_pAcheivements[ACH_MEGAKILL].imageID =			m_pAssets->aMegaKill;		// DONE
+	m_pAcheivements[ACH_KILL_SHREDDER].imageID=		m_pAssets->aAvenged;		// DONE
+	m_pAcheivements[ACH_UNLOCKSKILLS].imageID =		m_pAssets->aTrueNinja;		// DONE
+	m_pAcheivements[ACH_QUICKFINGERS].imageID =		m_pAssets->aQuickFingers;	// DONE
 
 	m_pAcheivements[ACH_NEWGAME].title =		"PARTY TIME";
 	m_pAcheivements[ACH_LVLUP].title =			"COWABUNGA";
@@ -38,7 +38,7 @@ CAchievements::CAchievements()
 	m_pAcheivements[ACH_LVLUP].description =			"First turtle leveled up.";
 	m_pAcheivements[ACH_TURTLESDEAD].description =		"All turtles dead...good job.";
 	m_pAcheivements[ACH_ALLUNLOCKED].description =		"All achievements unlocked.";
-	m_pAcheivements[ACH_FIRSTMAPCOMPLETE].description = "First victory in battle!";
+	m_pAcheivements[ACH_FIRSTMAPCOMPLETE].description = "First victory in a battle!";
 	m_pAcheivements[ACH_KILL30].description =			"Killed 30 enemies!";
 	m_pAcheivements[ACH_MEGAKILL].description =			"One turtle killed 3 enemies on a map!";
 	m_pAcheivements[ACH_KILL_SHREDDER].description =	"Shredder has been defeated.";
@@ -102,6 +102,14 @@ void CAchievements::Unlock(int id)
 	m_nCurrUnlocked = id;
 	if (id == ACH_FIRSTMAPCOMPLETE)
 		CBattleMap::GetInstance()->PlaySFX(m_pAssets->aStrikeHardSnd);
+	else if (id == ACH_KILL30)
+		CBattleMap::GetInstance()->PlaySFX(m_pAssets->aLessonInPainSnd);
+	else if (id == ACH_KILL_SHREDDER)
+		CBattleMap::GetInstance()->PlaySFX(m_pAssets->aBMwillBeOthersSnd);
+	else if (id == ACH_MEGAKILL)
+		CBattleMap::GetInstance()->PlaySFX(m_pAssets->aMegaKillSnd);
+	else if (id == ACH_QUICKFINGERS)
+		CBattleMap::GetInstance()->PlaySFX(m_pAssets->aQuickFingersSnd);
 	++m_nUnlockCount;
 	if (m_nUnlockCount == 10)
 		m_pAcheivements[ACH_ALLUNLOCKED].bUnlocked = true;

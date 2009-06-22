@@ -108,6 +108,7 @@ public:
 	ASSET aBMfootstepsSnd;
 	ASSET aBMninjaAttackSnd;
 	ASSET aBMwillBeOthersSnd;
+	ASSET aBMvictorySnd;
 
 	//////////////////////////////////////////////////////////////////////////
 
@@ -197,6 +198,8 @@ public:
 		// sounds
 	ASSET aStrikeHardSnd;
 	ASSET aLessonInPainSnd;
+	ASSET aMegaKillSnd;
+	ASSET aQuickFingersSnd;
 	//////////////////////////////////////////////////////////////////////////
 };
 

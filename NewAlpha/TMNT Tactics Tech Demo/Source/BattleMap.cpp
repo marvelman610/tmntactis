@@ -143,6 +143,8 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_bLose = false;
 
 	m_nNumTurtles = 4;
+	for (int i = 0; i < m_nNumTurtles; ++i)
+		m_nKillCount[i] = 0;
 
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
@@ -538,6 +540,8 @@ void CBattleMap::Update(float fElapsedTime)
 	{
 		m_bLose = true;
 		m_Timer.StartTimer(4.0f);
+		if (!m_pPlayer->GetAch()->GetLocked(ACH_TURTLESDEAD))
+			m_pPlayer->GetAch()->Unlock(ACH_TURTLESDEAD);
 	}
 	if (bTimerDone)	// catch all events that are m_Timer related
 	{
@@ -2457,6 +2461,9 @@ void CBattleMap::cheat()
 
 void CBattleMap::SetEnemyDead()
 {
+	++m_nKillCount[m_nCurrCharacter];
+	if (m_nKillCount == 3 && !m_pPlayer->GetAch()->GetLocked(ACH_MEGAKILL))
+		m_pPlayer->GetAch()->Unlock(ACH_MEGAKILL);
 	--m_nNumCharacters;
 	--m_nNumEnemiesLeft;
 	++m_nNumEnemiesKilled;
@@ -2469,13 +2476,12 @@ void CBattleMap::SetEnemyDead()
 	// winning condition
 	if(m_nNumEnemiesLeft <= 0)
 	{
-		if (m_nMapID == LOC_IWAMI)
-			PlaySFX(m_pAssets->aBMwillBeOthersSnd);
 		m_bWin = true;
 		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
 			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
 		if (m_nMapID < NUM_MAPS)
 			m_pPlayer->SetMapUnlocked(m_nMapID+1);
+		PlaySFX(m_pAssets->aBMvictorySnd);
 		m_Timer.StartTimer(4.0f);
 	}
 }

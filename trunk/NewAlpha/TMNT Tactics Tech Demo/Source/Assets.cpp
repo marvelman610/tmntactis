@@ -39,8 +39,8 @@ CAssets::~CAssets()
 
 void CAssets::LoadAssets()
 {
-	int timeTravel = m_pFMOD->LoadSound("Resources/Sounds/VG_timeTravel.mp3");
-	m_pFMOD->PlaySound(timeTravel);
+// 	int timeTravel = m_pFMOD->LoadSound("Resources/Sounds/VG_timeTravel.mp3");
+// 	m_pFMOD->PlaySound(timeTravel);
 
 	m_bLoading = true;
 	CSGD_Direct3D *d3d = CSGD_Direct3D::GetInstance();
@@ -110,6 +110,7 @@ void CAssets::LoadAssets()
 	// WorldMap IDs
 	aWMmapID			= m_pTM->LoadTexture("Resources/Images/VG_worldMap.png", D3DCOLOR_XRGB(255,255,255));
 	aWMtempleID			= m_pTM->LoadTexture("Resources/Images/VG_templeIcon.png", D3DCOLOR_XRGB(255,255,255));
+	aWMlockID			= m_pTM->LoadTexture("Resources/Images/VG_lock.png", D3DCOLOR_XRGB(255,255,255));
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

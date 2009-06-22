@@ -94,7 +94,7 @@ void CNinja::AI()
 		{
 			if(tempRange1 < tempRange3)
 			{
-				if(tempRange1 < tempRange4)
+				if(tempRange1 <= tempRange4)
 				{
 					m_nInRange = tempRange1;
 					m_nXChange = m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x;
@@ -111,7 +111,7 @@ void CNinja::AI()
 		{
 			if(tempRange2 < tempRange3)
 			{
-				if(tempRange2 < tempRange4)
+				if(tempRange2 <= tempRange4)
 				{
 					m_nInRange = tempRange2;
 					m_nXChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x;
@@ -129,7 +129,7 @@ void CNinja::AI()
 		{
 			if(tempRange3 < tempRange2)
 			{
-				if(tempRange3 < tempRange4)
+				if(tempRange3 <= tempRange4)
 				{
 					m_nInRange = tempRange3;
 					m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
@@ -147,7 +147,7 @@ void CNinja::AI()
 		{
 			if(tempRange4 < tempRange2)
 			{
-				if(tempRange4 < tempRange3)
+				if(tempRange4 <= tempRange3)
 				{
 					m_nInRange = tempRange4;
 					m_nXChange = m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
@@ -297,28 +297,14 @@ void CNinja::AI()
 		//next to turtle
 	case 0:
 		{
-			SetCurrAnim(4);
-
-			//16 ap always
-			// attack four times (4ap * 4 = 16)
-			float damage = (float)(GetStrength() * (GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense())));
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage*4)); 
-			//end turn
-			SetCurrAP(0);
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			
-			//CBattleMap::GetInstance()->SetTurn(true);
-			m_bAttackBool = true;
-
+			// should never get here
+			int debug = 0;
 		}
 		break;
-		//one tile away from  turtle
+		//one tile away from turtle
 	case 1:
 		{
  			SetCurrAnim(4);
-
 			//attack four times(4ap * 4 = 16)
    			float damage = (float)(GetStrength() * (GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense())));
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 4));
@@ -1204,8 +1190,6 @@ void CNinja::Update(float fElapsedTime)
 				m_vPath.erase(first);
 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-// 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-// 					CBattleMap::GetInstance()->GetTileHeight(), nNumCols);
 				
  				DecrementCurrAP(2);
 				m_nInRange--;
@@ -1232,75 +1216,23 @@ void CNinja::Update(float fElapsedTime)
 						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
 					}
 				}
-
 			}
 		}
 		else // movement is done
-		{			
-				
+		{				
 			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
 				SetCurrAnim(0);
 			
-
 			SetCurrAP(GetCurrAP());
 			m_bMoving = false;
 
-			/*if(m_nInRange == 1)
-			{
-				float damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
-				
-				if(GetCurrAP() >= 12)
-				{
-					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 3));
-				}
-				else if( GetCurrAP() >= 8 && GetCurrAP() < 12)
-				{
-					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 2));
-				}
-				else if( GetCurrAP() == 4)
-				{
-					SetCurrAnim(4);
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-				}*/
-				/*switch(GetCurrAP())
-				{
-				case 4:
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
-
-					}
-					break;
-				case 8:
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
-					}
-					break;
-				case 12:
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
-					}
-					break;
-				default:
-					{
-					}
-					break;
-				}*/
-				
-			//}
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
 			SetCurrAnim(0);
 			CBattleMap::GetInstance()->SetTurn(true);
-		}
-		
+		}		
 	}
-
 
 	if(GetHealth() <= 0)
 	{
@@ -1310,7 +1242,6 @@ void CNinja::Update(float fElapsedTime)
 		else			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
 
 		return;
-
 	}
 
 	//if( ( (float)GetHealth()/(float)GetMaxHealth()) < ( ( (float)GetMaxHealth() * 0.3f ) / (float)GetMaxHealth() ) )

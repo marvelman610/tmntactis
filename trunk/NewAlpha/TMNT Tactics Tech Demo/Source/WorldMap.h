@@ -11,6 +11,7 @@
 
 #include <Windows.h>
 #include "CSGD_Direct3D.h"
+#include "Timer.h"
 #include <string>
 using std::string;
 
@@ -57,6 +58,8 @@ class CWorldMap
 	float m_fTimer;
 	bool  m_bTrained;
 	bool m_bWeaponBool;
+
+	CTimer m_Timer;
 
 	struct MAP_POINT
 	{

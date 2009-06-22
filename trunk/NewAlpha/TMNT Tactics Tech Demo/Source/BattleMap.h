@@ -50,6 +50,7 @@ class CSkill;
  };
 class CBattleMap
 {
+	int m_nMapID;	// the enum ID for which map this is (LOC_***)
 	struct sTileset 
 	{
 		string name;
@@ -373,7 +374,7 @@ public:
 	//
 	//	Purpose		:	Set up the new battle map, load file, set numEnemies...
 	//////////////////////////////////////////////////////////////////////////
-	void Enter(char* szFileName, char* szMapName = "Test", int nNumEnemies = 0, bool bBoss = false);
+	void Enter(char* szFileName,int nMapID, char* szMapName = "Test", int nNumEnemies = 0, bool bBoss = false);
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Exit
 	//

@@ -53,7 +53,7 @@ public:
 		// setup source rect here, once and for all
 		int left, top, right, bottom; 
 		left = nSourceID % numCols * nWidth;
-		top = nSourceID / numCols * nWidth;
+		top = (nSourceID / numCols) * nHeight;
 		right = left + nWidth;
 		bottom = top + nHeight;
 		RECT rect = {left, top, right, bottom};

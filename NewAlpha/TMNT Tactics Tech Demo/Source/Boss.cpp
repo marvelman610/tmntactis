@@ -15,6 +15,8 @@
 #include "ObjectManager.h"
 #include "Achievements.h"
 
+enum {MINUS_X, MINUS_Y, ADD_X, ADD_Y, };
+
 int Random(int min, int max)
 {
 	int number = abs(max) - abs(min);
@@ -1718,7 +1720,6 @@ void CBoss::FindPathX(POINT endPt, vector<POINT>Closed)
 
 void CBoss::FindPathNew(POINT begin, POINT end)
 {
-
 	POINT p;
 	p.x = end.x;
 	p.y = end.y;
@@ -1750,153 +1751,154 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	
 	POINT current; current.x = begin.x; current.y = begin.y;
 
- 	while(GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0)//while ap > 2 and the distance > 0
+ 	while(GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0) //while ap > 2 and the distance > 0
 	{
 		for(int i = 0; i < 4; i++)
 		{
 			SetTile[i] = false;
 			//distance[i] = 100;
 		}
-		minDistance = 100;
+		minDistance = 100;	// should this be set to the distance between the current tile and the destination?
+							// or would that stop it from finding a path if there was an obstacle in the immediate way?
+		int numCols = CBattleMap::GetInstance()->GetNumCols();
 		/////////////////////////////////////////////////////////////////////////////////////////
-		// FIRST CHECK (SPACE ONE/FOUR)
+		// FIRST CHECK (SPACE ONE/FOUR) (MINUS_X)
 		if(current.x - 1 > 1)
 		{
-			tile[0].x = current.x-1;
-			tile[0].y = current.y;
+			tile[MINUS_X].x = current.x-1;
+			tile[MINUS_X].y = current.y;
 			
-			int iterator = tile[0].y * CBattleMap::GetInstance()->GetNumCols() + tile[0].x;
+			int iterator = tile[MINUS_X].y * numCols + tile[MINUS_X].x;
 
-			if(m_vClosedList.size() > 0)
+			if(m_vClosedList.size() > MINUS_X)
 			{
-				for(unsigned int i = 0; i < m_vClosedList.size();i++)
+				for(unsigned int i = MINUS_X; i < m_vClosedList.size();i++)
 				{
 					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
-						&& ( tile[0].x != m_vClosedList[i].x && tile[0].y != m_vClosedList[i].y) )
+						&& ( tile[MINUS_X].x != m_vClosedList[i].x && tile[MINUS_X].y != m_vClosedList[i].y) )
 					{
-						SetTile[0] = true;
+						SetTile[MINUS_X] = true;
 					}
 				}
-				if(SetTile[0] == true)
+				if(SetTile[MINUS_X] == true)
 				{
-					distance[0] = (abs(end.x - tile[0].x) + abs(end.y - tile[0].y));
-					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
+					distance[MINUS_X] = (abs(end.x - tile[MINUS_X].x) + abs(end.y - tile[MINUS_X].y));
+					if(distance[MINUS_X] < minDistance){minDistance = distance[MINUS_X]; TileNum = MINUS_X;}
 				}
 			}
 			else
 			{
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
-					SetTile[0] = true;
-					distance[0] = (abs(end.x - tile[0].x) + abs(end.y - tile[0].y));
-					if(distance[0] < minDistance){minDistance = distance[0]; TileNum = 0;}
+					SetTile[MINUS_X] = true;
+					distance[MINUS_X] = (abs(end.x - tile[MINUS_X].x) + abs(end.y - tile[MINUS_X].y));
+					if(distance[MINUS_X] < minDistance){minDistance = distance[MINUS_X]; TileNum = MINUS_X;}
 				}
 			}
-			
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////
-		//SECOND CHECK
-		if(current.x + 1 < CBattleMap::GetInstance()->GetNumCols())
+		//SECOND CHECK (ADD_X)
+		if(current.x + 1 < numCols)
 		{
-			tile[1].x = current.x+1;
-			tile[1].y = current.y;
+			tile[ADD_X].x = current.x+1;
+			tile[ADD_X].y = current.y;
 			
-			int iterator = tile[1].y * CBattleMap::GetInstance()->GetNumCols() + tile[1].x;
+			int iterator = tile[ADD_X].y * numCols + tile[ADD_X].x;
 
 			if(m_vClosedList.size() > 0)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
-						&& ( tile[1].x != m_vClosedList[i].x && tile[1].y != m_vClosedList[i].y) )
+						&& ( tile[ADD_X].x != m_vClosedList[i].x && tile[ADD_X].y != m_vClosedList[i].y) )
 					{
-						SetTile[1] = true;
+						SetTile[ADD_X] = true;
 					}
 				}
-				if(SetTile[1] == true)
+				if(SetTile[ADD_X] == true)
 				{
-					distance[1] = (abs(end.x - tile[1].x) + abs(end.y - tile[1].y));
-					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
+					distance[ADD_X] = (abs(end.x - tile[ADD_X].x) + abs(end.y - tile[ADD_X].y));
+					if(distance[ADD_X] < minDistance){minDistance = distance[ADD_X]; TileNum = ADD_X;}
 				}
 			}
 			else
 			{
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
-					SetTile[1] = true;
-					distance[1] = (abs(end.x - tile[1].x) + abs(end.y - tile[1].y));
-					if(distance[1] < minDistance){minDistance = distance[1]; TileNum = 1;}
+					SetTile[ADD_X] = true;
+					distance[ADD_X] = (abs(end.x - tile[ADD_X].x) + abs(end.y - tile[ADD_X].y));
+					if(distance[ADD_X] < minDistance){minDistance = distance[ADD_X]; TileNum = ADD_X;}
 				}
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////////////
-		//THIRD CHECK
+		//THIRD CHECK (MINUS_Y)
 		if(current.y - 1 > 1)
 		{
-			tile[2].x = current.x;
-			tile[2].y = current.y -1;
+			tile[MINUS_Y].x = current.x;
+			tile[MINUS_Y].y = current.y -1;
 			
-			int iterator = tile[2].y * CBattleMap::GetInstance()->GetNumCols() + tile[2].x;
+			int iterator = tile[MINUS_Y].y * numCols + tile[MINUS_Y].x;
 
 			if(m_vClosedList.size() > 0)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
-						&& ( tile[2].x != m_vClosedList[i].x && tile[2].y != m_vClosedList[i].y) )
+						&& ( tile[MINUS_Y].x != m_vClosedList[i].x && tile[MINUS_Y].y != m_vClosedList[i].y) )
 					{
-						SetTile[2] = true;
+						SetTile[MINUS_Y] = true;
 					}
 				}
-				if(SetTile[2] == true)
+				if(SetTile[MINUS_Y] == true)
 				{
-					distance[2] = (abs(end.x - tile[2].x) + abs(end.y - tile[2].y));
-					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
+					distance[MINUS_Y] = (abs(end.x - tile[MINUS_Y].x) + abs(end.y - tile[MINUS_Y].y));
+					if(distance[MINUS_Y] < minDistance){minDistance = distance[MINUS_Y]; TileNum = MINUS_Y;}
 				}
 			}
 			else
 			{
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
-					SetTile[2] = true;
-					distance[2] = (abs(end.x - tile[2].x) + abs(end.y - tile[2].y));
-					if(distance[2] < minDistance){minDistance = distance[2]; TileNum = 2;}
+					SetTile[MINUS_Y] = true;
+					distance[MINUS_Y] = (abs(end.x - tile[MINUS_Y].x) + abs(end.y - tile[MINUS_Y].y));
+					if(distance[MINUS_Y] < minDistance){minDistance = distance[MINUS_Y]; TileNum = MINUS_Y;}
 				}
 			}
 		}
 		////////////////////////////////////////////////////////////////////////////////////
-		//FOURTH CHECK
+		//FOURTH CHECK (ADD_Y)
 		if(current.y + 1 < CBattleMap::GetInstance()->GetNumRows())
 		{
-			tile[3].x = current.x;
-			tile[3].y = current.y+1;
+			tile[ADD_Y].x = current.x;
+			tile[ADD_Y].y = current.y+1;
 			
-			int iterator = tile[3].y * CBattleMap::GetInstance()->GetNumCols() + tile[3].x;
+			int iterator = tile[ADD_Y].y * numCols + tile[ADD_Y].x;
 
 			if(m_vClosedList.size() > 0)
 			{
 				for(unsigned int i = 0; i < m_vClosedList.size();i++)
 				{
 					if((m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
-						&& ( tile[3].x != m_vClosedList[i].x && tile[3].y != m_vClosedList[i].y) )
+						&& ( tile[ADD_Y].x != m_vClosedList[i].x && tile[ADD_Y].y != m_vClosedList[i].y) )
 					{
-						SetTile[3] = true;
+						SetTile[ADD_Y] = true;
 					}
 				}
-				if(SetTile[3] == true)
+				if(SetTile[ADD_Y] == true)
 				{
-					distance[3] = (abs(end.x - tile[3].x) + abs(end.y - tile[3].y));
-					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
+					distance[ADD_Y] = (abs(end.x - tile[ADD_Y].x) + abs(end.y - tile[ADD_Y].y));
+					if(distance[ADD_Y] < minDistance){minDistance = distance[ADD_Y]; TileNum = ADD_Y;}
 				}
 			}
 			else
 			{
 				if(m_pTile[iterator].Flag() != FLAG_COLLISION || m_pTile[iterator].Flag() != FLAG_OBJECT_EDGE)
 				{
-					SetTile[3] = true;
-					distance[3] = (abs(end.x - tile[3].x) + abs(end.y - tile[3].y));
-					if(distance[3] < minDistance){minDistance = distance[3]; TileNum = 3;}
+					SetTile[ADD_Y] = true;
+					distance[ADD_Y] = (abs(end.x - tile[ADD_Y].x) + abs(end.y - tile[ADD_Y].y));
+					if(distance[ADD_Y] < minDistance){minDistance = distance[ADD_Y]; TileNum = ADD_Y;}
 				}
 			}
 		}
@@ -1913,39 +1915,38 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		// add the next tile to the move list and set the current tile to the next tile
 		switch(TileNum)
 		{
-		case 0:
-			m_vMoveList.push_back(tile[0]);
+		case MINUS_X:
+			m_vMoveList.push_back(tile[MINUS_X]);
 			m_vClosedList.push_back(current);
-			current.x = tile[0].x;
-			current.y = tile[0].y;
+			current.x = tile[MINUS_X].x;
+			current.y = tile[MINUS_X].y;
+			SetCurrAP(GetCurrAP()-2);	// 2 will be replaced with tileCost (if implemented)
+			break;
+// i don't think the current AP should actually be updated until the path is found
+// since a different path may need to be chosen, if, for example, this path ends up
+// being a dead end...or simply not the best path
+		case ADD_X: 
+			m_vMoveList.push_back(tile[ADD_X]);
+			m_vClosedList.push_back(current);
+			current.x = tile[ADD_X].x;
+			current.y = tile[ADD_X].y;
 			SetCurrAP(GetCurrAP()-2);
 			break;
 
-		case 1: 
-			m_vMoveList.push_back(tile[1]);
+		case MINUS_Y:
+			m_vMoveList.push_back(tile[MINUS_Y]);
 			m_vClosedList.push_back(current);
-			current.x = tile[1].x;
-			current.y = tile[1].y;
+			current.x = tile[MINUS_Y].x;
+			current.y = tile[MINUS_Y].y;
 			SetCurrAP(GetCurrAP()-2);
-
-			break;
-
-		case 2:
-			m_vMoveList.push_back(tile[2]);
-			m_vClosedList.push_back(current);
-			current.x = tile[2].x;
-			current.y = tile[2].y;
-			SetCurrAP(GetCurrAP()-2);
-
 			break;
 			
-		case 3:
-			m_vMoveList.push_back(tile[3]);
+		case ADD_Y:
+			m_vMoveList.push_back(tile[ADD_Y]);
 			m_vClosedList.push_back(current);
-			current.x = tile[3].x;
-			current.y = tile[3].y;
+			current.x = tile[ADD_Y].x;
+			current.y = tile[ADD_Y].y;
 			SetCurrAP(GetCurrAP()-2);
-
 			break;
 		}
 		continue;

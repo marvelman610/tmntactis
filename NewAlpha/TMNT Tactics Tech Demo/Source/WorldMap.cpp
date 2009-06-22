@@ -74,6 +74,9 @@ void CWorldMap::Enter()
 	m_pAssets		= CAssets::GetInstance();
 	m_pPlayer		= CPlayer::GetInstance();
 
+	// TODO::remove this in final build
+	m_pPlayer->SetMapUnlocked(LOC_IWAMI);
+
 	m_nMapImageID = m_pAssets->aWMmapID;
 	m_nScreenWidth = CGame::GetInstance()->GetScreenWidth();
 	m_nScreenHeight = CGame::GetInstance()->GetScreenHeight();

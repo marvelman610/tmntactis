@@ -107,6 +107,7 @@ public:
 	ASSET aBMeggSmackSnd;
 	ASSET aBMfootstepsSnd;
 	ASSET aBMninjaAttackSnd;
+	ASSET aBMwillBeOthersSnd;
 
 	//////////////////////////////////////////////////////////////////////////
 

@@ -34,6 +34,7 @@
 #define BOUNDING_BOXES 0
 #define CAM_EDGE_DIST_TO_MOVE 20	// how close to edge of the screen the mouse has to get to start scrolling
 #define SCROLLSPEED 150.0f
+enum {LOC_SIMUSA, LOC_SINARO, LOC_YAMATO, LOC_IWAMI, NUM_LOCATIONS, };
 
 CBattleMap::CBattleMap(void)
 {
@@ -548,6 +549,7 @@ void CBattleMap::Update(float fElapsedTime)
 				count = 0;
 			}
 		}
+		CalculateRanges();
 	}
 	
 	if( m_nCurrCharacter > -1 && !m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->GetCurrAnim()->IsAnimationPlaying() )
@@ -710,52 +712,10 @@ void CBattleMap::Update(float fElapsedTime)
 		}
 		return;
 	}
-
-	// for keyboard movement
-	if (m_nMoveDirection != -1)
-	{
-		POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
-		switch(m_nMoveDirection)
-		{
-		case MOVE_ADD_X:
-			++newPt.x;
-			if (newPt.x > m_nNumCols-1)
-				newPt.x = m_nNumCols-1;
-			break;
-		case MOVE_ADD_Y:
-			++newPt.y;
-			if (newPt.y > m_nNumRows-1)
-				newPt.y = m_nNumRows-1;
-			break;
-		case MOVE_MINUS_X:
-			--newPt.x;
-			if (newPt.x < 2)
-				newPt.x = 2;
-			break;
-		case MOVE_MINUS_Y:
-			--newPt.y;
-			if (newPt.y < 2)
-				newPt.y = 2;
-			break;
-		}
-		int id = newPt.y * m_nNumCols + newPt.x;
-		if (m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
-			(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= DistanceToTarget(newPt.x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x,
-				newPt.y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2)
-		{
-			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
-			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
-			CalculateRanges();
-	  	}
-		m_nMoveDirection = -1;
-	}
 	if (m_bNotEnoughAP || m_bOutOfRange)
 	{
 		m_fTimer += fElapsedTime;
 	}
-	
 }
 
 void CBattleMap::NinjaMoveComplete()
@@ -1452,7 +1412,6 @@ void CBattleMap::SetStartPositions()
 	m_vCharacters.clear();
 	for (int i = 0; i < 4; ++i)
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
-
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 	{
 		mapCoordinate.x = rand() % (18 - 3) + 2;
@@ -1460,8 +1419,6 @@ void CBattleMap::SetStartPositions()
 		m_vEnemies[i]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 		m_vCharacters.push_back(*m_vEnemies[i]);
 	}
-
-	
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
@@ -1497,29 +1454,64 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		// character movement
 		if (m_nCurrCharacter != -1)
 		{
+			m_nMoveDirection = -1;
 			if (m_pDI->KeyPressed(DIK_NUMPAD7) || m_pDI->JoystickDPadPressed(0,0))
-			{
 				m_nMoveDirection = MOVE_MINUS_X;
-			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD3) || m_pDI->JoystickDPadPressed(1,0))
-			{
 				m_nMoveDirection = MOVE_ADD_X;
-			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD9) || m_pDI->JoystickDPadPressed(2,0))
-			{
 				m_nMoveDirection = MOVE_MINUS_Y;	
-			}
 			else if (m_pDI->KeyPressed(DIK_NUMPAD1) || m_pDI->JoystickDPadPressed(3,0))
-			{
 				m_nMoveDirection = MOVE_ADD_Y;
+
+			if (m_nMoveDirection > -1)
+			{
+				POINT newPt = m_vCharacters[m_nCurrCharacter].GetMapCoord();
+				m_ptStartXY.x = (float)newPt.x; m_ptStartXY.y = (float)newPt.y;
+				switch(m_nMoveDirection)
+				{
+				case MOVE_ADD_X:
+					++newPt.x;
+					if (newPt.x > m_nNumCols-1)
+						newPt.x = m_nNumCols-1;
+					break;
+				case MOVE_ADD_Y:
+					++newPt.y;
+					if (newPt.y > m_nNumRows-1)
+						newPt.y = m_nNumRows-1;
+					break;
+				case MOVE_MINUS_X:
+					--newPt.x;
+					if (newPt.x < 2)
+						newPt.x = 2;
+					break;
+				case MOVE_MINUS_Y:
+					--newPt.y;
+					if (newPt.y < 2)
+						newPt.y = 2;
+					break;
+				}
+				int id = newPt.y * m_nNumCols + newPt.x;
+				if (!CheckTileOccupied(id) && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION && 
+								(m_vCharacters[m_nCurrCharacter].GetCurrAP() >= DistanceToTarget(newPt.x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x,
+										 				newPt.y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y) ) * 2)
+				{
+					m_vPath.push_back(newPt);
+					m_bMoving = true;
+					PlaySFX(m_pAssets->aBMfootstepsSnd);
+					m_ptEndCoord.x = newPt.x; m_ptEndCoord.y = newPt.y;
+					FindPathToTarget();
+					m_bPathDisplayed = true;
+				}
 			}
 		}
-		if (m_pDI->KeyPressed(DIK_Z))
+		// HOTKEYS for boxes
+		if (m_pDI->KeyPressed(DIK_Z))	// special 
 		{
 			m_nCurrBtnSelected = BTN_SPECIAL;
 			HandleButton();
 		}
-		else if (m_pDI->KeyPressed(DIK_I))
+		else if (m_pDI->KeyPressed(DIK_I))	// item
 		{
 			m_nCurrBtnSelected = BTN_ITEM;
 			HandleButton();
@@ -2460,6 +2452,8 @@ void CBattleMap::SetEnemyDead()
 	// winning condition
 	if(m_nNumEnemiesLeft <= 0)
 	{
+		if (m_nMapID == LOC_IWAMI)
+			PlaySFX(m_pAssets->aBMwillBeOthersSnd);
 		m_bWin = true;
 		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
 			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);

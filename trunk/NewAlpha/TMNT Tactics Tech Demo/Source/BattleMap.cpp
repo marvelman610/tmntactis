@@ -2107,6 +2107,7 @@ void CBattleMap::PerformAttack()
 	// no skill selected
 	if (m_sCurrSkillName == "NONE")
 	{
+		PlaySFX(m_pAssets->aBMturtleAttackSnd);
 		m_bHaveMoved = true;
 		int weaponDmg = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrWeapon()->GetStrength();
 		int charStrength = m_vCharacters[m_nCurrCharacter].GetStrength() + weaponDmg;
@@ -2114,11 +2115,11 @@ void CBattleMap::PerformAttack()
 		damage += rand() % (5 - (-4)) -5;
 
 		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(3);
-			int sound = rand() % 2;
-			if (sound == 0)
-				PlaySFX(m_pAssets->aBMpunchSnd1);
-			else
-				PlaySFX(m_pAssets->aBMpunchSnd2);
+		int sound = rand() % 2;
+		if (sound == 0)
+			PlaySFX(m_pAssets->aBMpunchSnd1);
+		else
+			PlaySFX(m_pAssets->aBMpunchSnd2);
 
 		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(4);
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->DecrementCurrAP(4);

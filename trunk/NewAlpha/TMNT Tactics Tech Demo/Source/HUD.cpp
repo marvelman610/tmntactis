@@ -148,7 +148,7 @@ void CHUD::Update(float fElapsedTime)
 
 void CHUD::DrawFootClanHUD()
 {
-	m_pTM->DrawWithZSort(CAssets::GetInstance()->aFootClanHUDID,	540, 0, 0.4f, 1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
+	m_pTM->DrawWithZSort(CAssets::GetInstance()->aFootClanHUDID,	543, -6, 0.4f, 1.0f,1.0f, NULL, 0.0f, 0.0f, 0.0f,D3DCOLOR_ARGB(150,255,255,255));
 	//get current target 
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, 0.4f, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID,	895, 105,0.4f, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
@@ -284,7 +284,7 @@ void CHUD::Render()
 			}
 		}
 	}
-
+	// enemy's turn
 	else
 	{
 		if(CBattleMap::GetInstance()->GetCurrMovingNinja() != NULL)

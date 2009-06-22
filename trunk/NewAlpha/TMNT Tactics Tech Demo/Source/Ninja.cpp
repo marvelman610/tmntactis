@@ -317,9 +317,7 @@ void CNinja::AI()
 			//SetCurrAnim(0);
 			m_bAttackBool = true;
 
-
 			//CBattleMap::GetInstance()->SetTurn(true);
-
 		}
 		break;
 		//two tiles away from turtle 1 out of range
@@ -1198,6 +1196,7 @@ void CNinja::Update(float fElapsedTime)
 
 				if(m_nInRange == 1)
 				{
+					CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
 					float damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
 
 					if(GetCurrAP() >= 12)

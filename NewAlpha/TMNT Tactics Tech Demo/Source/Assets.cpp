@@ -106,6 +106,7 @@ void CAssets::LoadAssets()
 		aBMcowabungaSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_cowabunga.mp3");
 		aBMninjaAttackSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_ninjaAttack.mp3");
 		aBMwillBeOthersSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_willBeOthers.mp3");
+		aBMturtleAttackSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_turtleAttack.mp3");
 		aBMfootstepsSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_footsteps.mp3", FMOD_LOOP_NORMAL);
 		//////////////////////////////////////////////////////////////////////////
 	}

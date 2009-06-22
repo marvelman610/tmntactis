@@ -109,6 +109,7 @@ public:
 	ASSET aBMninjaAttackSnd;
 	ASSET aBMwillBeOthersSnd;
 	ASSET aBMvictorySnd;
+	ASSET aBMturtleAttackSnd;
 
 	//////////////////////////////////////////////////////////////////////////
 

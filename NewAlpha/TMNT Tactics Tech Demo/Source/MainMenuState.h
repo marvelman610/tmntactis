@@ -25,9 +25,8 @@ private:
 	bool	m_bGameLoaded;
 	int		m_nNumProfiles;
 	int		m_nCurrProfileInd;
-	string  m_sProfiles[4];
+	string*  m_sProfiles;
 	float	m_fTimer;
-
 
 	CMainMenuState();
 	~CMainMenuState();

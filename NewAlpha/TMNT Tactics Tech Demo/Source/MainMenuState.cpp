@@ -29,6 +29,7 @@ enum {SIGNIN, NEWGAME, CONTINUE, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT
 CMainMenuState::CMainMenuState()
 {
 	m_nNumProfiles = 0;
+	m_sProfiles = new string[5];
 	m_sProfiles[0] = "LOG IN";
 	for (int i =1; i < 5; ++i)
 	{
@@ -42,10 +43,13 @@ CMainMenuState::CMainMenuState()
 
 CMainMenuState::~CMainMenuState()
 {
-	if (m_bxMsg)
-	{delete m_bxMsg; m_bxMsg = NULL;}
-	if (m_bxProfile)
-	{delete m_bxProfile; m_bxProfile = NULL;}
+// 	if (m_bxMsg)
+// 	{delete m_bxMsg; m_bxMsg = NULL;}
+// 	if (m_bxProfile)
+// 	{delete m_bxProfile; m_bxProfile = NULL;}
+// 	delete[] m_sProfiles;
+// 	m_sProfiles = NULL;
+// 	int i = 0;
 }
 
 CMainMenuState* CMainMenuState::GetInstance()
@@ -133,8 +137,11 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	// entering a profile name
 	if (m_bxProfile)
 	{
+		if (GetDI()->KeyPressed(DIK_ESCAPE))
+		{delete m_bxProfile; m_bxProfile = NULL;return true;}
+
 		int input = m_bxProfile->Input(mousePt);
-		if (GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN) && m_bxProfile->GetItems()[m_bxProfile->GetInputIndex()].size() > 0))
+		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[m_bxProfile->GetInputIndex()].size() > 0))
 		{
 			int index = m_bxProfile->GetInputIndex();
 			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "Create New"

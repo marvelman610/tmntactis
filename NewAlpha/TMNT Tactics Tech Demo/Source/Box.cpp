@@ -25,6 +25,7 @@ CBox::CBox(int numItems, string* sItems,
 		   int red /* = 0 */, int green /* = 0 */, int blue /* = 0 */)
 {
 	m_sItems = new string[numItems];
+	m_sOriginal = new string[numItems];
 
 	//////////////////////////////////////////////////////////////////////////
 	// box properties
@@ -41,7 +42,7 @@ CBox::CBox(int numItems, string* sItems,
 	for (int i = 0; i < numItems; ++i)
 	{
 		m_sItems[i] = sItems[i];
-		if (i > 0 && i < 5)
+		if (i > 0 && i < numItems)
 			m_sOriginal[i] = sItems[i];	// hang on to the original in case they cancel with ESC
 		if ((int)sItems[i].size() > m_nLongestString)
 			m_nLongestString = sItems[i].size();
@@ -93,7 +94,8 @@ CBox::~CBox()
 	m_pAssets = NULL;
 	m_pDI = NULL;
 	m_pFMOD = NULL;
-	delete[] m_sItems;
+	delete[] m_sItems; delete[] m_sOriginal;
+	m_sItems = NULL; m_sOriginal = NULL;
 }
 
 void CBox::CheckMouse(POINT mousePt)

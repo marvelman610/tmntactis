@@ -1277,6 +1277,12 @@ int CBattleMap::IsMousePosValid(POINT mousePt, bool bFindTurtle)
 		}
 	}
 	// determine if the mouse is over an invalid tile for movement
+	if (m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_COLLISION ||
+		m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_OBJECT_EDGE)
+	{
+		m_nCurrMouseTileTarget = m_nCurrSelectedTile = -1;
+		return -1;
+	}
 	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_COLLISION)
 	{
 		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
@@ -1284,11 +1290,6 @@ int CBattleMap::IsMousePosValid(POINT mousePt, bool bFindTurtle)
 	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_OBJECT_EDGE)
 	{
 		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
-	}
-	if (m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_COLLISION ||
-			 m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_OBJECT_EDGE)
-	{
-		m_nCurrMouseTileTarget = m_nCurrSelectedTile = -1;
 	}
 	return -1;
 }
@@ -1326,10 +1327,23 @@ void CBattleMap::CalculateRanges()
 				m_pTilesL1[id].SetAlpha(255);
 		}
 	// mark tiles to be drawn with range color
-	// scan the neighbors
 	
-	if(!m_bItemBool)
+	if(!m_bItemBool)	// checking movement range for character
 	{
+		vector<CTile> open; vector<CTile> selected;
+		CTile start = m_pTilesL1[GetCurrChar()->GetCurrTile()]; start.SetCost( 0 );
+		open.push_back(start);
+
+		while (open.size() > 0)
+		{
+			// get the current tile
+			CTile curr = open[open.size()-1];
+			CTile* adjTiles = GetAdjTiles(curr.DestXID(), curr.DestYID());
+
+			delete[] adjTiles;
+		}
+
+		// scan the neighbors
 		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
 		{
 			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
@@ -1348,8 +1362,9 @@ void CBattleMap::CalculateRanges()
 			}
 		}
 	}
-	else
+	else		// checking distance for an item use (throw grenade)
 	{
+		// scan the neighbors
 		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
 		{
 			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
@@ -1371,6 +1386,34 @@ void CBattleMap::CalculateRanges()
 		m_nDistanceToTarget = DistanceToTarget(m_vEnemies[m_nCurrTarget]->GetMapCoord().x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
 			m_vEnemies[m_nCurrTarget]->GetMapCoord().y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
 	}
+}
+
+CTile* CBattleMap::GetAdjTiles(int StartX, int StartY)
+{
+	CTile* cells = new CTile[4]; int countX = 0, countY = 0;
+
+
+
+	for (int x = StartX - 1; countX < 2; ++x)
+	{
+		for (int y = StartY - 1; countY < 2; ++y)
+		{
+			int tileID = y * m_nNumCols + x;
+			// it's off the map
+			if (x < 2 || y < 2 || x >= m_nNumCols || y >= m_nNumRows)
+			{
+				cells[countX+countY].SetTerrainCost(-1);
+			}
+			// it's a valid tile
+			else
+			{
+				cells[countX+countY] = m_pTilesL1[tileID];
+			}
+			++countY;
+		}
+		++countX;
+	}
+	return cells;
 }
 
 void CBattleMap::DrawHover()
@@ -1426,6 +1469,8 @@ void CBattleMap::DrawHover()
 
 void CBattleMap::SetStartPositions()
 {
+	// TODO::find the flags on the map where the characters can spawn
+
 	// mapCoordinates represents the grid x=column, y=row
 	POINT mapCoordinate;
 	mapCoordinate.x = 10;
@@ -1443,6 +1488,7 @@ void CBattleMap::SetStartPositions()
 	mapCoordinate.x = 4;
 	mapCoordinate.y = 17;
 	m_pPlayer->GetTurtles()[MIKEY]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+
 	m_vCharacters.clear();
 	for (int i = 0; i < 4; ++i)
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
@@ -1683,12 +1729,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 										m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 									for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 										m_vCharacters.push_back(*m_vEnemies[i]);
-
 								}
 							}
-
 						}
-
 					}
 				}
 			}
@@ -1705,11 +1748,9 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 					if (m_pTilesL1[id].Alpha() != 255)
 						m_pTilesL1[id].SetAlpha(255);
 				}
-
 		}
 		else	// out of range
 		{
-
 		}
 		return;
 	}
@@ -1843,8 +1884,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			{
 				if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange())
 				{
-					
-
 					m_vEnemies[m_nCurrTarget]->SetHealth(m_vEnemies[m_nCurrTarget]->GetHealth() - (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetDamage());
 					m_pPlayer->GetInstance()->RemoveItem(m_nItemIndex);
 					m_bEggBool = false;

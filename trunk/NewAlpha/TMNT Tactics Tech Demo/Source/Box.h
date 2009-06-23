@@ -54,7 +54,7 @@ class CBox
 	bool m_bEnterText;
 	int  m_nTitleWidth;
 	string* m_sItems;
-	string m_sOriginal[5];	// when accepting input
+	string* m_sOriginal;	// when accepting input
 	float m_fTextScale;
 	int m_nNumItems;
 	DWORD m_dwColor;

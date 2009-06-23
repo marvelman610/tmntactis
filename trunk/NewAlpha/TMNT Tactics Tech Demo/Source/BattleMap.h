@@ -79,6 +79,16 @@ class CBattleMap
 			MENUS = 0.11f;
 		}
 	};
+	struct CELL
+	{
+		int cost;
+		int tileCost;
+		CELL()
+		{
+			cost = -1;
+			tileCost = 0;
+		}
+	};
 	POINT m_ptMouseScreenCoord;	// the mouse location, updated each Update() call
 	POINT m_ptMouseMapCoord;
 	int m_nCurrMousePtr;		// which image is currently being used as the mouse pointer
@@ -461,6 +471,7 @@ public:
 	CBase* GetBoss()	const		{if(m_vEnemies.size() > 0 && m_vEnemies[m_nNumEnemiesLeft-1]->GetType() == OBJECT_BOSS) return m_vEnemies[m_nNumEnemiesLeft-1];else return NULL;}
 	CNinja* GetMovingNinja() const	{return m_pCurrMovingNinja;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vEnemies.size())return m_vEnemies[m_nCurrTarget];else return NULL;}
+	CTile* GetAdjTiles(int x, int y);
 
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetCurrChar()			{return &m_vCharacters[m_nCurrCharacter];}

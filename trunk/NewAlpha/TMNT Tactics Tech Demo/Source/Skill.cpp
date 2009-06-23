@@ -289,7 +289,6 @@ void UpdateSwordSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 		skill->SetComb(skill->GetMaxCombAmt());
-
 	}
 	if (skill->IsComplete())
 	{
@@ -678,7 +677,6 @@ void UpdateSaiFury( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 		skill->SetComb(skill->GetMaxCombAmt());
-
 	}
 	if (skill->IsComplete())
 	{
@@ -717,7 +715,6 @@ void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill, CParticleSys
 		ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;
 		skill->SetComb(skill->GetMaxCombAmt());
-
 	}
 	if (skill->IsComplete())
 	{

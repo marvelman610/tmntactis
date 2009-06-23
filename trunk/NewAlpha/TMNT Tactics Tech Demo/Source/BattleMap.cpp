@@ -471,14 +471,13 @@ void CBattleMap::Render()
 	if(m_bPlayerAttack && m_nCurrCharacter > -1 && m_nCurrTarget >-1 && !m_bxPauseBox)
 	{
 		int offset = (int)(m_Timer.GetElapsed() * 13.0f )-15;
-		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
+		m_pBitmapFont->ChangeBMFont(m_pAssets->aBitmapFontBubblyID,16,15,20);
 		char tempXP[16];
 		sprintf_s(tempXP, "+%i", m_nXP);
 		m_pBitmapFont->DrawString(tempXP,(int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
 		char tempDmg[16];
 		sprintf_s(tempDmg, "-%i", m_nDmg);
 		m_pBitmapFont->DrawString(tempDmg,(int)m_vEnemies[m_nCurrTarget]->GetPosX()+5, (int)m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
-
 		m_pBitmapFont->Reset();
 	}
 
@@ -601,7 +600,6 @@ void CBattleMap::Update(float fElapsedTime)
 			m_bPlayerAttack = false;
 			m_nDmg = 0;
 			m_nXP = 0;
-
 		}
 	}
 
@@ -1030,19 +1028,22 @@ int CBattleMap::IsMousePosValid(POINT mousePt, bool bFindTurtle)
 		}
 	}
 	// determine if the mouse is over an invalid tile for movement
-	if (m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_COLLISION ||
-		m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_OBJECT_EDGE)
+	if (m_nCurrSelectedTile > -1)
 	{
-		m_nCurrMouseTileTarget = m_nCurrSelectedTile = -1;
-		return -1;
-	}
-	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_COLLISION)
-	{
-		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
-	}
-	if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_OBJECT_EDGE)
-	{
-		m_nCurrMouseTileTarget = m_nCurrSelectedTile;
+		if (m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_COLLISION ||
+			m_pTilesL1[m_nCurrSelectedTile].Flag() == FLAG_OBJECT_EDGE)
+		{
+			m_nCurrMouseTileTarget = m_nCurrSelectedTile = -1;
+			return -1;
+		}
+		if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_COLLISION)
+		{
+			m_nCurrMouseTileTarget = m_nCurrSelectedTile;
+		}
+		if (m_pTilesL1[m_nCurrSelectedTile].Flag() != FLAG_OBJECT_EDGE)
+		{
+			m_nCurrMouseTileTarget = m_nCurrSelectedTile;
+		}
 	}
 	return -1;
 }
@@ -1406,6 +1407,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			HandleButton();
 		}
 	}
+	// TODO::make sure the player can't press space when it's not their turn
 	if (m_pDI->KeyPressed(DIK_SPACE) || m_pDI->JoystickButtonPressed(6,0))
 	{
 		if(m_bItemBool || m_bEggBool)
@@ -1449,9 +1451,9 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				else
 				{
 					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-					
 					m_pCurrMovingNinja->AI();
 				}
+				return true;
 			}
 		}
 	}
@@ -1568,6 +1570,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		}
 		return;
 	}
+	if (!m_bIsPlayersTurn)
+		return;
 
 	//////////////////////////////////////////////////////////////////////////
 	// BOX INPUT
@@ -1867,9 +1871,7 @@ void CBattleMap::HandleButton()
 				string* item = new string[temp->size()];
 
 				for(int i = 0; i < (int)temp->size(); i++)
-				{
 					item[i] = (*temp)[i].GetName();
-				}
 
 				m_bxItemBox = new CBox(m_pPlayer->GetInstance()->GetNumItems(), item, m_bxActionBox->BoxRight()+20, 400, depth.MENUS-0.04f,false,35,35,25,-1,0.75f);
 				delete[] item;
@@ -2256,13 +2258,13 @@ void CBattleMap::CenterCam(float fElapsedTime)
 		m_fScrollX = m_vCharacters[m_nCurrCharacter].GetPosX() - (m_nScreenWidth >> 1);
 		m_fScrollY = m_vCharacters[m_nCurrCharacter].GetPosY() - (m_nScreenHeight >> 1);
 		if (m_fScrollX < -m_nMaxScrollX)
-			m_fScrollX = -m_nMaxScrollX;
+			m_fScrollX = (float)-m_nMaxScrollX;
 		else if (m_fScrollX > m_nMaxScrollX)
-			m_fScrollX = m_nMaxScrollX;
+			m_fScrollX = (float)m_nMaxScrollX;
 		if (m_fScrollY < -m_nMaxScrollY)
-			m_fScrollY = -m_nMaxScrollY;
+			m_fScrollY = (float)-m_nMaxScrollY;
 		else if (m_fScrollY > m_nMaxScrollY)
-			m_fScrollY = m_nMaxScrollY;
+			m_fScrollY = (float)m_nMaxScrollY;
 		SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
 		SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) );
 		for (int i = 0; i < m_nNumCharacters; ++i)

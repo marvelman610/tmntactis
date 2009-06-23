@@ -377,7 +377,7 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 			break;
 		case LOC_IWAMI:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 4, true);	// boss map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 1, true);	// boss map
 			break;
 		}
 		break;

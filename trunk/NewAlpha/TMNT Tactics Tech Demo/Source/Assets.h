@@ -57,6 +57,7 @@ public:
 	ASSET aBitmapFontID;
 	ASSET aBitmapFont2ID;
 	ASSET aBitmapFont3ID;
+	ASSET aBitmapFontBubblyID;
 	ASSET aMousePointerID;
 	ASSET aMouseGrabID;
 	ASSET aMouseAttackID;

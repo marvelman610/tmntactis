@@ -13,6 +13,7 @@
 #include "MessageSystem.h"
 #include "ObjectManager.h"
 #include "BattleMap.h"
+#include "BitmapFont.h"
 
 CNinja::CNinja(void)
 {
@@ -44,7 +45,10 @@ CNinja::CNinja(void)
 	m_pTile = CBattleMap::GetInstance()->GetTiles();
 
 	m_bAttackBool = false;
-	m_fTimer = 0;
+	m_nDamage = 0;
+	m_nAttacksSoFar = 0;
+	m_nTotalAttacks = 0;
+	m_pBitmapFont = CBitmapFont::GetInstance();
 
 }
 
@@ -305,11 +309,14 @@ void CNinja::AI()
 	case 1:
 		{
  			SetCurrAnim(4);
+			m_nTotalAttacks = 4;
 			//attack four times(4ap * 4 = 16)
-   			float damage = (float)(GetStrength() * (GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense())));
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 4));
+   			/*m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+			m_nDamage += rand() % (5 - (-4)) -5;
+			
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (m_nDamage * m_nTotalAttacks));*/
 			//end turn
-			SetCurrAP(0);
+			//SetCurrAP(0);
 			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
@@ -1053,18 +1060,34 @@ void CNinja::FindPath(POINT begin, POINT end)
 ///////////////////////////////////////////////////////////////////////////////
 void CNinja::Update(float fElapsedTime)
 {
+	bool bTimerDone = m_Timer.Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if (m_bAttackBool)
+	{
+		if(!m_vAnimations[4].IsAnimationPlaying())
 		{
-			m_fTimer += fElapsedTime;
-			if(m_fTimer >= 1.6f)
-			{
-				m_fTimer = 0.0f;
-				SetCurrAnim(0);
-				m_bAttackBool = false;
-				CBattleMap::GetInstance()->SetTurn(true);
-			}
+			CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
+
+			m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+			m_nDamage += rand() % (5 - (-4)) -5;
+
+			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
+
+			SetCurrAnim(4);
+			m_Timer.StartTimer(1.5f);
+
+			m_nAttacksSoFar++;
 		}
+		if(m_nAttacksSoFar >= m_nTotalAttacks)
+		{
+			SetCurrAnim(0);
+			m_bAttackBool = false;
+			m_nAttacksSoFar = 0;
+			m_nTotalAttacks = 0;
+			CBattleMap::GetInstance()->SetTurn(true);
+		}
+		
+	}
 
 	// a ninja has been moved...execute the animation and position change over time
 	if (m_bMoving)
@@ -1137,26 +1160,22 @@ void CNinja::Update(float fElapsedTime)
 				m_ptStartXY.x = GetPosX();
 				m_ptStartXY.y = GetPosY();
 
-				if(m_nInRange == 1)
+				if(m_nInRange == 1 && GetCurrAP() >=4)
 				{
-					CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
-					float damage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
-
-					if(GetCurrAP() >= 12)
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 3));
-					}
+					if( GetCurrAP() == 4)
+						m_nTotalAttacks = 1;
 					else if( GetCurrAP() >= 8 && GetCurrAP() < 12)
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (damage * 2));
-					}
-					else if( GetCurrAP() == 4)
-					{
-						SetCurrAnim(4);
-						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-					}
+						m_nTotalAttacks = 2;
+					else if(GetCurrAP() >= 12)
+						m_nTotalAttacks = 3;
+					
+					SetCurrAnim(4);
+
+
+					m_bAttackBool = true;
+					
+
+					m_Timer.StartTimer(1.5f);
 				}
 			}
 		}
@@ -1192,12 +1211,14 @@ void CNinja::Update(float fElapsedTime)
 	//}
 	//else m_nLowHealth = 0;
 
-	if( GetExperience() >= 100)
+	if( GetExperience() >= (100 * GetLevel()) )
 	{
 		SetExperience( GetExperience() - (100* GetLevel()) );
-		SetLevel(GetLevel()+1);
+		CBase::SetLevel(GetLevel()+1);
 		SetHealthMax((int)((float)GetMaxHealth() * 1.25f));
-		SetBaseAP(GetBaseAP()+2);
+		SetHealth((int)GetMaxHealth());
+		//SetBaseAP(GetBaseAP()+2);
+		SetBaseAP(16);
 		SetStrength( (int)( (float)GetStrength() * 1.2f ) );
 		SetDefense( (int) ( (float)GetDefense() * 1.2f ) );
 		SetAccuracy( (int) ( (float)GetAccuracy() * 1.2f ) );
@@ -1208,4 +1229,44 @@ void CNinja::Update(float fElapsedTime)
 void CNinja::Render()
 {
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX, (int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1, m_dwColor);
+	
+	if(m_bAttackBool)
+	{
+		int offset = (m_Timer.GetElapsed()*20 )-15;
+
+		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
+
+		//temp
+		//TODO:: implement xp gain
+		int nXP = 10;
+
+		//ninja xp
+		char tempXP[16];
+		sprintf_s(tempXP, "+%i", nXP);
+		m_pBitmapFont->DrawString(tempXP,this->GetPosX()+5,this->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,255,0));
+
+		//player damage
+		char tempDmg[16];
+		sprintf_s(tempDmg, "-%i", m_nDamage);
+		m_pBitmapFont->DrawString(tempDmg,m_pPlayer->GetTurtles()[m_nTurtle]->GetPosX()+5,m_pPlayer->GetTurtles()[m_nTurtle]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
+
+		m_pBitmapFont->Reset();
+
+	}
+}
+void CNinja::SetLevel(int nLevel)	
+{
+	nLevel--;
+	SetExperience(0);
+	CBase::SetLevel(nLevel+1);
+	//SetBaseAP( GetBaseAP() + (nLevel*2)-2 );
+	SetBaseAP( 16 );
+	SetHealthMax((int) ((float)GetMaxHealth() + (16 * nLevel)) );
+	SetStrength( (int) ((float)GetStrength()  + (1  * nLevel)) );
+	SetDefense(  (int) ((float)GetDefense()   + (1  * nLevel)) );
+	SetAccuracy( (int) ((float)GetAccuracy()  + (1  * nLevel)) );
+	
+	SetHealth((int)GetMaxHealth());
+
+
 }

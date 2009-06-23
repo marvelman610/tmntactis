@@ -328,7 +328,7 @@ public:
 
 				if(m_bVelDiff == true){}
 
-				particles[i].pos += particles[i].vel;// * fElapsedTime;
+				particles[i].pos += particles[i].vel* fElapsedTime;
 				particles[i].life++;
 				if(m_bLoop == true)
 				{

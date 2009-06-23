@@ -47,9 +47,8 @@ CMainMenuState::~CMainMenuState()
 // 	{delete m_bxMsg; m_bxMsg = NULL;}
 // 	if (m_bxProfile)
 // 	{delete m_bxProfile; m_bxProfile = NULL;}
-// 	delete[] m_sProfiles;
-// 	m_sProfiles = NULL;
-// 	int i = 0;
+	delete[] m_sProfiles;
+	m_sProfiles = NULL;
 }
 
 CMainMenuState* CMainMenuState::GetInstance()
@@ -69,7 +68,14 @@ void CMainMenuState::Enter()
 		for (int i = 1; i < 5; ++i)
 		{
 			if (!ifs.eof())
-				ifs.read(reinterpret_cast<char*>(&m_sProfiles[i]), sizeof(string));
+			{
+				char buff[32];
+				ZeroMemory(buff, 32);
+				int size = 0;
+				ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
+				ifs.read(reinterpret_cast<char*>(&buff), size);
+				m_sProfiles[i] = buff;
+			}
 			else
 				break;
 			if(m_sProfiles[i] != "Create New")
@@ -160,7 +166,9 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				ofstream ofs("Profiles.dat", ios_base::binary);
 				for (int i= 1; i < m_nNumProfiles+1; ++i)
 				{
-					ofs.write((char*)(&m_sProfiles[i]), sizeof(m_sProfiles[i]));
+					int size = m_sProfiles[i].size();
+					ofs.write((char*)(&size), 4);
+					ofs.write((char*)(&m_sProfiles[i]), 4);
 				}
 				ofs.close();
 
@@ -355,7 +363,9 @@ void CMainMenuState::Exit()
 		fstream ofs("Profiles.dat", ios_base::binary);
 		for (int i= 1; i < m_nNumProfiles+1; ++i)
 		{
-			ofs.write((char*)(&m_sProfiles[i]), sizeof(m_sProfiles[i]));
+			int size = m_sProfiles[i].size();
+			ofs.write((char*)(&size), 4);
+			ofs.write((char*)(&m_sProfiles[i]), size/*sizeof(m_sProfiles[i])*/);
 		}
 		ofs.close();
 	}

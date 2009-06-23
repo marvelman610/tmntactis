@@ -1385,30 +1385,71 @@ void CBattleMap::CalculateRanges()
 		while (open.size() > 0)
 		{
 			// get the current tile
-			CTile curr = open[open.size()-1];
+			CTile curr = open[open.size()-1]; open.pop_back();
 			CTile* adjTiles = GetAdjTiles(curr.DestXID(), curr.DestYID());
-
+			for (int i = 3; i >= 0; --i)
+			{
+				CTile adj = adjTiles[i];
+				// make sure it's a valid tile
+				if (adj.TerrainCost() > -1)
+				{
+					bool found = false;
+					int costs = adj.TerrainCost() + adj.Cost();
+					if (costs < adj.Cost() || adj.Cost() == -1)
+					{
+						adj.SetCost(costs);
+						for (unsigned int ind = 0; ind < open.size(); ++ind)
+						{
+							if (open[ind].DestXID() == adj.DestXID() &&
+								open[ind].DestYID() == adj.DestYID())
+							{found = true; break;}
+						}
+						if (!found)
+							open.push_back(adj);
+					}
+					found = false;
+					if (adj.Cost() <= range)
+					{
+						for (unsigned int ind = 0; ind < selected.size(); ++ind)
+						{
+							if (selected[ind].DestXID() == adj.DestXID() &&
+								selected[ind].DestYID() == adj.DestYID())
+							{found = true; break;}
+						}
+						if (!found)
+							selected.push_back(adj);
+					}
+					if (adj.Cost() > (int)((float)range * 1.2f))
+						break;
+				}
+			}
 			delete[] adjTiles;
+		}
+		// found all movable tiles, set alphas
+		for (unsigned int i = 0; i < selected.size(); ++i)
+		{
+			int id = selected[i].DestYID() * m_nNumCols + selected[i].DestXID();
+			m_pTilesL1[id].SetAlpha(alpha);
 		}
 
 		// scan the neighbors
-		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
-		{
-			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
-			{
-				//make sure the neighbor is on the map
-				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
-					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
-				{
-					int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
-					int id		 = ny*m_nNumCols+nx;
-					if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
-					{
-						m_pTilesL1[id].SetAlpha(alpha);
-					}
-				}
-			}
-		}
+// 		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
+// 		{
+// 			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
+// 			{
+// 				//make sure the neighbor is on the map
+// 				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
+// 					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
+// 				{
+// 					int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
+// 					int id		 = ny*m_nNumCols+nx;
+// 					if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
+// 					{
+// 						m_pTilesL1[id].SetAlpha(alpha);
+// 					}
+// 				}
+// 			}
+// 		}
 	}
 	else		// checking distance for an item use (throw grenade)
 	{
@@ -1438,29 +1479,39 @@ void CBattleMap::CalculateRanges()
 
 CTile* CBattleMap::GetAdjTiles(int StartX, int StartY)
 {
-	CTile* cells = new CTile[4]; int countX = 0, countY = 0;
+	CTile* cells = new CTile[4];
 
+	int tileID = StartY * m_nNumCols + StartX;
 
+	if (StartX-1 > 1)
+		cells[MINUS_X] = m_pTilesL1[tileID-1];
+	else
+		cells[MINUS_X].SetTerrainCost(-1);
 
-	for (int x = StartX - 1; countX < 2; ++x)
+	if (StartX+1 <= m_nNumCols)
+		cells[ADD_X] = m_pTilesL1[tileID+1];
+	else
+		cells[ADD_X].SetTerrainCost(-1);
+
+	if (StartY-1 > 1)
+		cells[MINUS_Y] = m_pTilesL1[tileID-m_nNumCols];
+	else
+		cells[MINUS_Y].SetTerrainCost(-1);
+
+	if (StartY+1 <= m_nNumRows)
+		cells[ADD_Y] = m_pTilesL1[tileID+m_nNumCols];
+	else
+		cells[ADD_Y].SetTerrainCost(-1);
+	for (int i = 0; i < 4; ++i)
 	{
-		for (int y = StartY - 1; countY < 2; ++y)
+		if (cells[i].TerrainCost() > -1)
 		{
-			int tileID = y * m_nNumCols + x;
-			// it's off the map
-			if (x < 2 || y < 2 || x >= m_nNumCols || y >= m_nNumRows)
-			{
-				cells[countX+countY].SetTerrainCost(-1);
-			}
-			// it's a valid tile
-			else
-			{
-				cells[countX+countY] = m_pTilesL1[tileID];
-			}
-			++countY;
+			tileID = cells[i].DestYID() * m_nNumCols + cells[i].DestXID();
+			if (m_pTilesL1[tileID].Flag() == FLAG_COLLISION || m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
+				cells[i].SetCost(999);
 		}
-		++countX;
 	}
+
 	return cells;
 }
 
@@ -1584,13 +1635,13 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 		{
 			m_nMoveDirection = -1;
 			if (m_pDI->KeyPressed(DIK_NUMPAD7) || m_pDI->JoystickDPadPressed(0,0))
-				m_nMoveDirection = MOVE_MINUS_X;
+				m_nMoveDirection = MINUS_X;
 			else if (m_pDI->KeyPressed(DIK_NUMPAD3) || m_pDI->JoystickDPadPressed(1,0))
-				m_nMoveDirection = MOVE_ADD_X;
+				m_nMoveDirection = ADD_X;
 			else if (m_pDI->KeyPressed(DIK_NUMPAD9) || m_pDI->JoystickDPadPressed(2,0))
-				m_nMoveDirection = MOVE_MINUS_Y;	
+				m_nMoveDirection = MINUS_Y;	
 			else if (m_pDI->KeyPressed(DIK_NUMPAD1) || m_pDI->JoystickDPadPressed(3,0))
-				m_nMoveDirection = MOVE_ADD_Y;
+				m_nMoveDirection = ADD_Y;
 
 			if (m_nMoveDirection > -1)
 			{
@@ -1598,22 +1649,22 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				m_ptStartXY.x = (float)newPt.x; m_ptStartXY.y = (float)newPt.y;
 				switch(m_nMoveDirection)
 				{
-				case MOVE_ADD_X:
+				case ADD_X:
 					++newPt.x;
 					if (newPt.x > m_nNumCols-1)
 						newPt.x = m_nNumCols-1;
 					break;
-				case MOVE_ADD_Y:
+				case ADD_Y:
 					++newPt.y;
 					if (newPt.y > m_nNumRows-1)
 						newPt.y = m_nNumRows-1;
 					break;
-				case MOVE_MINUS_X:
+				case MINUS_X:
 					--newPt.x;
 					if (newPt.x < 2)
 						newPt.x = 2;
 					break;
-				case MOVE_MINUS_Y:
+				case MINUS_Y:
 					--newPt.y;
 					if (newPt.y < 2)
 						newPt.y = 2;

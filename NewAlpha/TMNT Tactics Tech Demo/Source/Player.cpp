@@ -126,8 +126,10 @@ void CPlayer::NewGame()
 
 	//////////////////////////////////////////////////////////////////////////
 	// TODO:: remove temp items before final build
-	POINT pt; pt.x = 15; pt.y = 18;
+	POINT pt; pt.x = 3; pt.y = 17;
 	Factory::GetInstance()->CreateBattleItem(BLACK_EGGS, pt);
+	Factory::GetInstance()->CreateBattleItem(GRENADO, pt);
+	Factory::GetInstance()->CreateBattleItem(PIZZA, pt);
 }
 
 void CPlayer::LoadNewSkills(const char* filename)
@@ -271,7 +273,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 9,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 10,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 10,0.5f,true);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 11,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
@@ -298,7 +300,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 9,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 10,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 10,0.5f,false);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 11,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
@@ -321,7 +323,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 9,0.15f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 10,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 10,0.5f,false);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 
 	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 1,0.25f);
@@ -342,7 +344,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[MIKEY]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 9,0.15f);
 	m_pTurtles[MIKEY]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 10,0.15f);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 10,0.5f,false);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 }
 bool CPlayer::RemoveItem(int index)

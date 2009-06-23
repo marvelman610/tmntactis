@@ -153,7 +153,7 @@ public:
 	inline void SetDefense(int nDefense)	{m_nDefense = nDefense;}
 	inline void SetAccuracy(int nAccuracy)	{m_nAccuracy = nAccuracy;}
 	inline void SetSpeed(int nSpeed)		{m_nSpeed = nSpeed;}
-	inline void SetLevel(int nLevel)		{m_nLevel = nLevel;}
+	virtual void SetLevel(int nLevel)		{m_nLevel = nLevel;}
 	inline void SetRange(int nRange)		{m_nRange = nRange;}
 	inline void SetName(char* name)			{m_szName = name;}
 	inline void SetType(int type)			{m_nType = type;}

@@ -143,6 +143,11 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_bEggBool2 = false;
 	m_bWin = false;
 	m_bLose = false;
+	nades.x = 0;
+	nades.y = 0;
+	m_nXP = 0;
+	m_nDmg = 0;
+	m_bPlayerAttack = false;
 
 	m_nNumTurtles = 4;
 	for (int i = 0; i < m_nNumTurtles; ++i)
@@ -218,6 +223,7 @@ void CBattleMap::Reset()
 		turtle->SetHealth(turtle->GetMaxHealth());
 		turtle->SetCurrAP(turtle->GetBaseAP());
 		turtle->GetCurrAnim()->SetFacingLeft(false);
+		turtle->SetCurrAnim(0);
 	}
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
@@ -362,13 +368,13 @@ void CBattleMap::Render()
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				if (m_nCurrCharacterTile == tileID && m_nCurrCharacter > -1)
+				if (m_nCurrCharacterTile == tileID && m_nCurrCharacter > -1 && !m_bPlayerAttack)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 					m_pTM->DrawWithZSort(m_pAssets->aBMcurrSelectedArrowID, (int)m_vCharacters[m_nCurrCharacter].GetPosX()+8, 
 						(int)m_vCharacters[m_nCurrCharacter].GetPosY()-32, depth.ARROW);
 				}
-				else if (m_ncurrTargetTile == tileID && m_nCurrTarget > -1)
+				else if (m_ncurrTargetTile == tileID && m_nCurrTarget > -1 && !m_bPlayerAttack)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 					m_pTM->DrawWithZSort(m_pAssets->aBMcurrTargetArrowID, (int)m_vEnemies[m_nCurrTarget]->GetPosX()+8,
@@ -446,6 +452,21 @@ void CBattleMap::Render()
 		else if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
 			m_pBitmapFont->DrawString("-4-", m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 0.5f, D3DCOLOR_XRGB(0,255,255));
 	}
+	if(m_bPlayerAttack && m_nCurrCharacter > -1 && m_nCurrTarget >-1 && !m_bxPauseBox)
+	{
+		int offset = (m_Timer.GetElapsed()*13 )-15;
+		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
+		char tempXP[16];
+		sprintf_s(tempXP, "+%i", m_nXP);
+		m_pBitmapFont->DrawString(tempXP,m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5,m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
+		char tempDmg[16];
+		sprintf_s(tempDmg, "-%i", m_nDmg);
+		m_pBitmapFont->DrawString(tempDmg,m_vEnemies[m_nCurrTarget]->GetPosX()+5,m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
+
+		m_pBitmapFont->Reset();
+
+	}
+
 	//////////////////////////////////////////////////////////////////////////
 	// messages to display top center of screen
 	if (m_bNotEnoughAP && m_fTimer < 3)
@@ -549,13 +570,24 @@ void CBattleMap::Update(float fElapsedTime)
 	}
 	if (bTimerDone)	// catch all events that are m_Timer related
 	{
-		if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
-			m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
+		
 		// exit to the main menu if all turtles are dead, else to the world map
 		if (m_bWin)
+		{	
 			CGamePlayState::GetInstance()->ChangeMap();
+			
+			if (!m_pPlayer->GetAch()->GetLocked(ACH_FIRSTMAPCOMPLETE))
+				m_pPlayer->GetAch()->Unlock(ACH_FIRSTMAPCOMPLETE);
+		}
 		else if (m_bLose)
 			CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+		else if(m_bPlayerAttack)
+		{
+			m_bPlayerAttack = false;
+			m_nDmg = 0;
+			m_nXP = 0;
+
+		}
 	}
 
 	if(m_bWin || m_bLose)
@@ -566,17 +598,24 @@ void CBattleMap::Update(float fElapsedTime)
 	{
 		if(count >= 1)
 		{
-			m_bEggBool2 = false;
-			m_bItemBool2 = false;
 			if (m_bEggBool2)
 				m_pFMOD->PlaySound(m_pAssets->aBMeggSmackSnd);
 			if(m_bEggBool2)
+			{
 				count = 0;
+				m_bEggBool2 = false;
+			}
 			else if(count>2)
 			{
 				m_bDrawTimedParticles = true;
 				count = 0;
+				m_bItemBool2 = false;
+				m_pParticleSystem[FIRE].m_bActive = true;
+				m_pParticleSystem[SMOKE].m_bActive = true;
+				PlaySFX(m_pAssets->aBMgrenadeSnd);
+
 			}
+
 		}
 		CalculateRanges();
 	}
@@ -589,15 +628,16 @@ void CBattleMap::Update(float fElapsedTime)
 	if (m_bDrawTimedParticles && m_pParticleSystem)
 	{
 		m_fTimer += fElapsedTime;
-		m_pParticleSystem[FIRE].DrawParticle(m_pAssets->aFireParticle);
-		m_pParticleSystem[SMOKE].DrawParticle(m_pAssets->aSmokeParticle);
-		m_pParticleSystem[GLASS].DrawParticle(m_pAssets->aGlassParticle);
+		
+			
+		
 		if (m_fTimer >= 2.0f)
 		{
-			m_bDrawTimedParticles = false;m_fTimer = 0.0f;
+			m_bDrawTimedParticles = false;
+			m_fTimer = 0.0f;
 			m_pParticleSystem[FIRE].m_bActive  = false;
 			m_pParticleSystem[SMOKE].m_bActive = false;
-			m_pParticleSystem[GLASS].m_bActive = false;
+			//m_pParticleSystem[GLASS].m_bActive = false;
 		}
 	}
 	// a turtle has been moved...execute the animation and position change over time
@@ -866,9 +906,15 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 
 void CBattleMap::CreateEnemies(bool bBoss)
 {
+	int lvl = 1;
+	for(int i = 0; i < 4; i++)
+	{
+		if(m_pPlayer->GetTurtles()[i]->GetLevel() > lvl)
+			lvl = m_pPlayer->GetTurtles()[i]->GetLevel();
+	}
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 	{
-		CNinja* ninja = Factory::GetInstance()->CreateNinja();
+		CNinja* ninja = Factory::GetInstance()->CreateNinja(lvl);
 		m_vCharacters.push_back((CBase)*ninja);
 		m_vEnemies.push_back((CBase*)ninja);
 	}
@@ -1314,6 +1360,8 @@ void CBattleMap::CalculateRanges()
 		//grenades
 		//if((*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetName()== "Grenado")
 		ptGridLocation = m_ptMouseMapCoord;
+		nades.x = ptGridLocation.x;
+		nades.y = ptGridLocation.y;
 		range = (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRadius();
 		alpha = 201;
 	}
@@ -1683,13 +1731,18 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
-			nades = mouse;
+			nades.x = mouse.y;
+			nades.y = mouse.y;
+			 
 			m_bItemBool2 = true;
-			PlaySFX(m_pAssets->aBMgrenadeSnd);
 			m_pParticleSystem[FIRE].Emit((float)mouse.x, (float)mouse.y);
-			m_pParticleSystem[FIRE].m_bActive = true;
 			m_pParticleSystem[SMOKE].Emit((float)mouse.x, (float)mouse.y);
-			m_pParticleSystem[SMOKE].m_bActive = true;
+
+			m_pParticleSystem[FIRE].SetVelocity(12);
+			m_pParticleSystem[FIRE].m_nMaxLife *= 6;
+			m_pParticleSystem[SMOKE].SetVelocity(26);
+			m_pParticleSystem[SMOKE].m_nMaxLife *= 8;
+			
 			for (int x = 2; x < m_nNumCols; ++x)
 			{
 				for (int y = 2; y < m_nNumRows; ++y)
@@ -2166,6 +2219,13 @@ void CBattleMap::PerformAttack()
 		int damage =  charStrength * ( m_vCharacters[m_nCurrCharacter].GetAccuracy()/m_vEnemies[m_nCurrTarget]->GetDefense() );
 		damage += rand() % (5 - (-4)) -5;
 
+		m_bPlayerAttack = true;
+		m_Timer.StartTimer(3.0f);
+	
+		m_nDmg = damage;
+		m_nXP = 10;
+
+
 		m_pPlayer->GetInstance()->GetTurtles()[m_nCurrCharacter]->SetCurrAnim(3);
 		int sound = rand() % 2;
 		if (sound == 0)
@@ -2188,6 +2248,8 @@ void CBattleMap::PerformAttack()
 		if (m_vEnemies[m_nCurrTarget]->GetHealth() <= 0)
 		{
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
+
+			m_nXP += 30;
 			
 			vector<CBase*>::iterator iter = m_vEnemies.begin();
 			int count = 0;

@@ -14,6 +14,9 @@
 #include "CSGD_TextureManager.h"
 #include "Player.h"
 #include "Tile.h"
+#include "Timer.h"
+
+class CBitmapFont;
 
 class CNinja : public CBase
 {
@@ -36,7 +39,17 @@ private:
 	bool m_bMoving;
 
 	bool m_bAttackBool;
-	float m_fTimer;
+	//float m_fTimer;
+
+	int m_nTotalAttacks;
+	int m_nAttacksSoFar;
+
+	int m_nDamage;
+
+	CTimer m_Timer;
+
+	CBitmapFont* m_pBitmapFont;
+
 
 
 public:
@@ -88,6 +101,8 @@ public:
 	inline int GetYDifference(void)		{ return m_nYChange;	}
 	inline void SetYDifference(int set)	{ m_nYChange = set;		}
 	inline int GetTurtle(void)			{ return m_nTurtle;		}
+
+	void SetLevel(int nLevel);
 
 };
 #endif

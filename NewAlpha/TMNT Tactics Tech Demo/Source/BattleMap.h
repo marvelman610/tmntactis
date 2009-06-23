@@ -210,6 +210,9 @@ class CBattleMap
 	bool m_bEggBool2;
 
 	POINT nades;
+	int m_nXP;
+	int m_nDmg;
+	bool m_bPlayerAttack;
 
 	// particles
 	CParticleSystem* m_pParticleSystem;

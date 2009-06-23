@@ -1378,7 +1378,7 @@ void CBattleMap::CalculateRanges()
 	{
 		vector<CTile*> open; vector<CTile*> selected;
 		CTile start = m_pTilesL1[GetCurrChar()->GetCurrTile()]; start.SetCost( 0 );
-		open.push_back(start);
+		open.push_back(&start);
 
 		while (open.size() > 0)
 		{
@@ -1398,24 +1398,24 @@ void CBattleMap::CalculateRanges()
 						adj.SetCost(costs);
 						for (unsigned int ind = 0; ind < open.size(); ++ind)
 						{
-							if (open[ind].DestXID() == adj.DestXID() &&
-								open[ind].DestYID() == adj.DestYID())
+							if (open[ind]->DestXID() == adj.DestXID() &&
+								open[ind]->DestYID() == adj.DestYID())
 							{found = true; break;}
 						}
 						if (!found)
-							open.push_back(adj);
+							open.push_back(&adj);
 					}
 					found = false;
 					if (adj.Cost() <= range)
 					{
 						for (unsigned int ind = 0; ind < selected.size(); ++ind)
 						{
-							if (selected[ind].DestXID() == adj.DestXID() &&
-								selected[ind].DestYID() == adj.DestYID())
+							if (selected[ind]->DestXID() == adj.DestXID() &&
+								selected[ind]->DestYID() == adj.DestYID())
 							{found = true; break;}
 						}
 						if (!found)
-							selected.push_back(adj);
+							selected.push_back(&adj);
 					}
 					if (adj.Cost() > (int)((float)range * 1.2f))
 						break;
@@ -1426,7 +1426,7 @@ void CBattleMap::CalculateRanges()
 		// found all movable tiles, set alphas
 		for (unsigned int i = 0; i < selected.size(); ++i)
 		{
-			int id = selected[i].DestYID() * m_nNumCols + selected[i].DestXID();
+			int id = selected[i]->DestYID() * m_nNumCols + selected[i]->DestXID();
 			m_pTilesL1[id].SetAlpha(alpha);
 		}
 

@@ -1349,7 +1349,6 @@ bool CBattleMap::CheckTileOccupied(int tileID)
 }
 void CBattleMap::CalculateRanges()
 {
-	
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
 	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 	int ap	  = m_vCharacters[m_nCurrCharacter].GetCurrAP();
@@ -1374,19 +1373,18 @@ void CBattleMap::CalculateRanges()
 			if (m_pTilesL1[id].Alpha() != 255)
 				m_pTilesL1[id].SetAlpha(255);
 		}
-	// mark tiles to be drawn with range color
-	
+	// mark tiles to be drawn with range color	
 	if(!m_bItemBool)	// checking movement range for character
 	{
-		vector<CTile> open; vector<CTile> selected;
+		vector<CTile*> open; vector<CTile*> selected;
 		CTile start = m_pTilesL1[GetCurrChar()->GetCurrTile()]; start.SetCost( 0 );
 		open.push_back(start);
 
 		while (open.size() > 0)
 		{
 			// get the current tile
-			CTile curr = open[open.size()-1]; open.pop_back();
-			CTile* adjTiles = GetAdjTiles(curr.DestXID(), curr.DestYID());
+			CTile* curr = open[open.size()-1]; open.pop_back();
+			CTile* adjTiles = GetAdjTiles(curr->DestXID(), curr->DestYID());
 			for (int i = 3; i >= 0; --i)
 			{
 				CTile adj = adjTiles[i];

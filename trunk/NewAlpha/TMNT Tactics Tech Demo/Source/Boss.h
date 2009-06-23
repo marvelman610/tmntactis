@@ -27,6 +27,7 @@ private:
 	int m_nXChange;				//difference in x between turtle and shredder
 	int m_nYChange;				//difference in y between turtle and shredder
 	bool m_bMoving;				//moving bool
+	bool m_bAttacking;
 	int m_nDistance;			//distance from turtle
 	
 	CPlayer* m_pPlayer;			//pointer to player

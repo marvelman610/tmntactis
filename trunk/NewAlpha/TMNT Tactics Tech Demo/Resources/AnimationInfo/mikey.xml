@@ -1,0 +1,143 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="10">
+  <Animation Name="idle" Looping="false" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>14,7,58,83</Rect>
+      <Anchor>39,79</Anchor>
+      <Rect>74,8,66,83</Rect>
+      <Anchor>106,75</Anchor>
+      <Rect>140,3,68,87</Rect>
+      <Anchor>169,72</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="draw" Looping="false" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>212,9,49,79</Rect>
+      <Anchor>238,75</Anchor>
+      <Rect>262,2,69,83</Rect>
+      <Anchor>298,73</Anchor>
+      <Rect>333,3,84,87</Rect>
+      <Anchor>369,72</Anchor>
+      <Rect>415,3,90,85</Rect>
+      <Anchor>458,77</Anchor>
+      <Rect>502,5,65,84</Rect>
+      <Anchor>531,76</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="idleWeapon" Looping="false" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>5,92,60,91</Rect>
+      <Anchor>32,166</Anchor>
+      <Rect>79,91,65,92</Rect>
+      <Anchor>107,164</Anchor>
+      <Rect>148,97,71,82</Rect>
+      <Anchor>178,165</Anchor>
+      <Rect>217,88,70,94</Rect>
+      <Anchor>254,162</Anchor>
+      <Rect>302,88,64,93</Rect>
+      <Anchor>332,165</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="kick" Looping="false" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>372,90,73,92</Rect>
+      <Anchor>419,161</Anchor>
+      <Rect>446,86,130,93</Rect>
+      <Anchor>513,163</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="skullSplitter" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>8,299,74,105</Rect>
+      <Anchor>43,379</Anchor>
+      <Rect>98,300,117,97</Rect>
+      <Anchor>137,379</Anchor>
+      <Rect>213,275,80,122</Rect>
+      <Anchor>250,376</Anchor>
+      <Rect>310,288,109,105</Rect>
+      <Anchor>345,377</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="nunchukspin" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>284,514,83,80</Rect>
+      <Anchor>322,577</Anchor>
+      <Rect>375,505,115,89</Rect>
+      <Anchor>409,573</Anchor>
+      <Rect>493,482,115,114</Rect>
+      <Anchor>525,576</Anchor>
+      <Rect>2,593,64,138</Rect>
+      <Anchor>38,708</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="roll" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>361,620,105,109</Rect>
+      <Anchor>406,705</Anchor>
+      <Rect>475,629,109,107</Rect>
+      <Anchor>525,716</Anchor>
+      <Rect>7,736,67,88</Rect>
+      <Anchor>41,802</Anchor>
+      <Rect>83,740,77,86</Rect>
+      <Anchor>122,796</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="counter" Looping="false" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>111,957,69,75</Rect>
+      <Anchor>150,1010</Anchor>
+      <Rect>185,928,109,111</Rect>
+      <Anchor>230,1011</Anchor>
+      <Rect>299,931,92,102</Rect>
+      <Anchor>336,1015</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="knockback" Looping="false" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>7,497,63,94</Rect>
+      <Anchor>43,578</Anchor>
+      <Rect>84,496,101,105</Rect>
+      <Anchor>128,570</Anchor>
+      <Rect>178,499,92,94</Rect>
+      <Anchor>216,565</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KO" Looping="false" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_MikeyAnimations.png</SheetName>
+    <TriggerName>dddd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>520,1641,94,94</Rect>
+      <Anchor>560,1703</Anchor>
+      <Rect>633,1652,120,73</Rect>
+      <Anchor>687,1700</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

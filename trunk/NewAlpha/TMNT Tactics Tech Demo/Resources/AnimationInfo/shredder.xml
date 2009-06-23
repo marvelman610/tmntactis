@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="7">
+  <Animation Name="idle1" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>-1,84,56,105</Rect>
+      <Anchor>26,177</Anchor>
+      <Rect>59,85,63,106</Rect>
+      <Anchor>89,180</Anchor>
+      <Rect>124,89,68,100</Rect>
+      <Anchor>155,178</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="idle2" Looping="true" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>204,80,58,108</Rect>
+      <Anchor>228,180</Anchor>
+      <Rect>263,78,57,111</Rect>
+      <Anchor>290,178</Anchor>
+      <Rect>321,82,58,110</Rect>
+      <Anchor>346,180</Anchor>
+      <Rect>382,84,60,110</Rect>
+      <Anchor>406,180</Anchor>
+      <Rect>442,82,59,112</Rect>
+      <Anchor>467,181</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="highAtk" Looping="true" FrameCount="10" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>175,190,86,104</Rect>
+      <Anchor>222,274</Anchor>
+      <Rect>265,192,74,97</Rect>
+      <Anchor>300,275</Anchor>
+      <Rect>346,192,103,100</Rect>
+      <Anchor>376,267</Anchor>
+      <Rect>454,192,105,94</Rect>
+      <Anchor>482,271</Anchor>
+      <Rect>563,184,91,118</Rect>
+      <Anchor>604,276</Anchor>
+      <Rect>2,298,67,107</Rect>
+      <Anchor>28,390</Anchor>
+      <Rect>76,296,80,106</Rect>
+      <Anchor>112,379</Anchor>
+      <Rect>183,298,64,101</Rect>
+      <Anchor>218,385</Anchor>
+      <Rect>283,295,82,100</Rect>
+      <Anchor>328,382</Anchor>
+      <Rect>476,290,105,110</Rect>
+      <Anchor>526,380</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="lowAtk" Looping="true" FrameCount="7" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>3,581,110,76</Rect>
+      <Anchor>41,643</Anchor>
+      <Rect>111,585,109,77</Rect>
+      <Anchor>148,646</Anchor>
+      <Rect>235,587,67,82</Rect>
+      <Anchor>263,657</Anchor>
+      <Rect>312,579,87,88</Rect>
+      <Anchor>360,648</Anchor>
+      <Rect>394,577,115,87</Rect>
+      <Anchor>444,646</Anchor>
+      <Rect>517,584,78,82</Rect>
+      <Anchor>561,648</Anchor>
+      <Rect>598,584,129,86</Rect>
+      <Anchor>647,652</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="flip" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>5,1066,81,86</Rect>
+      <Anchor>71,1130</Anchor>
+      <Rect>95,1055,60,122</Rect>
+      <Anchor>121,1158</Anchor>
+      <Rect>167,1057,88,113</Rect>
+      <Anchor>209,1155</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KO" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>234,943,105,80</Rect>
+      <Anchor>290,1006</Anchor>
+      <Rect>345,977,104,58</Rect>
+      <Anchor>392,1012</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="lose" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_shredder.png</SheetName>
+    <TriggerName>sdsdsd</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>319,374,79,117</Rect>
+      <Anchor>360,474</Anchor>
+      <Rect>395,339,77,152</Rect>
+      <Anchor>430,477</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="11">
+  <Animation Name="idle" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>18,18,57,86</Rect>
+      <Anchor>45,91</Anchor>
+      <Rect>77,13,67,95</Rect>
+      <Anchor>110,90</Anchor>
+      <Rect>146,19,66,84</Rect>
+      <Anchor>177,91</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="draw" Looping="true" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>215,12,70,95</Rect>
+      <Anchor>249,95</Anchor>
+      <Rect>274,2,76,105</Rect>
+      <Anchor>317,95</Anchor>
+      <Rect>344,12,78,91</Rect>
+      <Anchor>383,94</Anchor>
+      <Rect>422,8,72,96</Rect>
+      <Anchor>453,91</Anchor>
+      <Rect>495,9,72,97</Rect>
+      <Anchor>526,94</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="idleWeapon" Looping="true" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>14,105,61,103</Rect>
+      <Anchor>44,193</Anchor>
+      <Rect>82,108,60,95</Rect>
+      <Anchor>117,192</Anchor>
+      <Rect>155,109,68,101</Rect>
+      <Anchor>192,191</Anchor>
+      <Rect>226,106,68,98</Rect>
+      <Anchor>257,193</Anchor>
+      <Rect>299,104,64,102</Rect>
+      <Anchor>334,187</Anchor>
+      <Rect>373,107,71,99</Rect>
+      <Anchor>409,190</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="kick" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>114,212,91,92</Rect>
+      <Anchor>165,291</Anchor>
+      <Rect>202,208,98,101</Rect>
+      <Anchor>246,287</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="StaffUppercut" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>37,1255,106,95</Rect>
+      <Anchor>101,1327</Anchor>
+      <Rect>164,1252,102,94</Rect>
+      <Anchor>221,1323</Anchor>
+      <Rect>292,1241,111,102</Rect>
+      <Anchor>344,1326</Anchor>
+      <Rect>440,1232,120,113</Rect>
+      <Anchor>494,1329</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="StaffSpin" Looping="true" FrameCount="7" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>91,316,98,94</Rect>
+      <Anchor>150,400</Anchor>
+      <Rect>199,319,85,89</Rect>
+      <Anchor>248,396</Anchor>
+      <Rect>293,319,145,88</Rect>
+      <Anchor>338,394</Anchor>
+      <Rect>449,316,133,93</Rect>
+      <Anchor>490,395</Anchor>
+      <Rect>10,427,133,95</Rect>
+      <Anchor>46,508</Anchor>
+      <Rect>153,410,109,119</Rect>
+      <Anchor>195,515</Anchor>
+      <Rect>277,414,122,118</Rect>
+      <Anchor>315,516</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="BackFlip" Looping="true" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>35,1385,69,80</Rect>
+      <Anchor>65,1453</Anchor>
+      <Rect>128,1382,120,92</Rect>
+      <Anchor>150,1459</Anchor>
+      <Rect>258,1373,78,98</Rect>
+      <Anchor>304,1456</Anchor>
+      <Rect>345,1370,93,107</Rect>
+      <Anchor>382,1454</Anchor>
+      <Rect>442,1372,106,94</Rect>
+      <Anchor>462,1453</Anchor>
+      <Rect>562,1369,100,107</Rect>
+      <Anchor>608,1457</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="counter" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>5,955,77,88</Rect>
+      <Anchor>49,1025</Anchor>
+      <Rect>98,960,144,81</Rect>
+      <Anchor>145,1025</Anchor>
+      <Rect>249,955,149,86</Rect>
+      <Anchor>295,1022</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="knockBack" Looping="true" FrameCount="9" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>10,1038,64,88</Rect>
+      <Anchor>40,1107</Anchor>
+      <Rect>83,1050,54,65</Rect>
+      <Anchor>111,1104</Anchor>
+      <Rect>147,1044,87,81</Rect>
+      <Anchor>184,1103</Anchor>
+      <Rect>233,1042,133,77</Rect>
+      <Anchor>296,1105</Anchor>
+      <Rect>365,1044,82,73</Rect>
+      <Anchor>405,1107</Anchor>
+      <Rect>443,1048,67,69</Rect>
+      <Anchor>474,1105</Anchor>
+      <Rect>505,1041,91,76</Rect>
+      <Anchor>539,1107</Anchor>
+      <Rect>8,1143,122,75</Rect>
+      <Anchor>62,1204</Anchor>
+      <Rect>129,1147,96,75</Rect>
+      <Anchor>174,1203</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KO" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>94,1481,119,76</Rect>
+      <Anchor>139,1533</Anchor>
+      <Rect>237,1485,135,76</Rect>
+      <Anchor>304,1526</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="jumpAttack" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_DonAnimations.png</SheetName>
+    <TriggerName>xcjcbk</TriggerName>
+    <TriggerType/>
+    <Frames>
+      <Rect>46,647,77,99</Rect>
+      <Anchor>73,731</Anchor>
+      <Rect>135,637,92,108</Rect>
+      <Anchor>181,723</Anchor>
+      <Rect>240,644,105,106</Rect>
+      <Anchor>274,703</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

@@ -174,7 +174,7 @@ void CNinja::AI()
  			SetCurrAnim(4);
 			m_nTotalAttacks = 4;
 			CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
+			//CBattleMap::GetInstance()->NinjaMoveComplete();
 			m_bAttackBool = true; m_bMoving = false;
 		}
 		break;
@@ -210,7 +210,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true; 
 			FindPath(begin, end);
 		}
 		break;
@@ -254,7 +254,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -300,7 +300,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -348,7 +348,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -403,7 +403,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -465,7 +465,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -534,7 +534,7 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true; m_bAttackBool = true;
+			m_bMoving = true;
 			FindPath(begin, end);
 		}
 		break;
@@ -610,7 +610,7 @@ void CNinja::AI()
 			if(mapPt.x > -1 && mapPt.y > -1)
 			{
 				end = mapPt;
-				m_bMoving = true; m_bAttackBool = true;
+				m_bMoving = true;
 				FindPath(begin, end);
 			}
 			else
@@ -756,9 +756,10 @@ void CNinja::Update(float fElapsedTime)
 {
 	bool bTimerDone = m_Timer.Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+
 	if (m_bAttackBool)
 	{
-		if(!m_vAnimations[4].IsAnimationPlaying() && m_Timer.GetElapsed() > 1.0f)
+		if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
 		{
 			CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
 
@@ -769,32 +770,24 @@ void CNinja::Update(float fElapsedTime)
 
 			m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
 
-
 			SetCurrAnim(4);
-			m_Timer.StartTimer(1.5f);
+			//m_Timer.StartTimer(1.5f);
 
 			m_nAttacksSoFar++;
 		}
 		else if(m_nAttacksSoFar >= m_nTotalAttacks)
 		{
 			SetCurrAnim(0);
+			//m_Timer.StartTimer(1.0f);
 			m_bAttackBool = false;
-			m_Timer.StartTimer(1.0f);
+			CBattleMap::GetInstance()->SetTurn(true);
 		}
-	}
-	else if (!m_bAttackBool && bTimerDone)
-	{
-		m_nAttacksSoFar = 0;
-		m_nTotalAttacks = 0;
-		m_bMoving = false;
-		CBattleMap::GetInstance()->SetTurn(true);
-		return;
 	}
 
 	// a ninja needs to be moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
-		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 &&  GetCurrAnim()->GetCurrAnimFrame() != 2)
+		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 && GetCurrAnim()->GetCurrAnimFrame() != 2)
 			GetCurrAnim()->Stop();
 
 		if (m_vPath.size() > 0)
@@ -872,26 +865,25 @@ void CNinja::Update(float fElapsedTime)
 						m_nTotalAttacks = 3;
 					
 					SetCurrAnim(4);
-
 					m_bAttackBool = true;
-
-					m_Timer.StartTimer(1.5f);
+					m_Timer.StartTimer(0.25f);
 				}
 			}
 		}
-		else // movement is done
+		else // movement and attack MUST be done by this point
 		{				
 			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
 				SetCurrAnim(0);
 			
 			SetCurrAP(GetCurrAP());
-			m_bMoving = false;
-
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			SetCurrAnim(0);
-			CBattleMap::GetInstance()->SetTurn(true);
+			m_bMoving = m_bAttackBool = false;
+			if (m_nAttacksSoFar >= m_nTotalAttacks)
+			{
+				CBattleMap::GetInstance()->UpdatePositions();
+				CBattleMap::GetInstance()->NinjaMoveComplete();
+				SetCurrAnim(0);
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
 		}		
 	}
 
@@ -951,7 +943,6 @@ void CNinja::Render()
 		m_pBitmapFont->DrawString(tempDmg,(int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
 
 		m_pBitmapFont->Reset();
-
 	}
 }
 void CNinja::SetLevel(int nLevel)	
@@ -967,6 +958,4 @@ void CNinja::SetLevel(int nLevel)
 	SetAccuracy( (int) ((float)GetAccuracy()  + (1  * nLevel)) );
 	
 	SetHealth((int)GetMaxHealth());
-
-
 }

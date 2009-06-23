@@ -144,6 +144,7 @@ void CBoss::FindPath(POINT begin, POINT end)
 
 void CBoss::AI()
 {
+	m_bAttacking = false;
 	//check distance
 	SetCurrAP(16);
 	
@@ -253,61 +254,13 @@ void CBoss::AI()
 		//on turtle
 	case 0:
 		{
+			int debug = 0;
 		}
 		break;
 		//one tile away from  turtle
 	case 1:
 		{
-			switch(GetCurrAP())
-				{
-					SetCurrAnim(2);
-				case 4:
-					{
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20));	
-					}
-					break;
-				case 6:
-					{
-						//use skill low punch , sweep
-						//do 40+ damage 
-						int damage = Random(30, 50);//damage
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				case 8:
-					{
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 2));
-					}
-					break;
-				case 10:
-					{
-						//use skill punch, kick
-						//do 60+ damage
-						int damage = Random(45, 65);//damage
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				case 12:
-					{
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 3));
-					}
-					break;
-				case 16:
-					{
-						//use skill low punch, sweep then use skill punck, kick
-						int damage = Random(80, 100);
-						turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-					}
-					break;
-				default:
-					{
-					}
-					break;
-				}
-				//end shredder turn
-				CBattleMap::GetInstance()->UpdatePositions();
-				CBattleMap::GetInstance()->NinjaMoveComplete();
-				CBattleMap::GetInstance()->SetTurn(true);
+			m_bAttacking = true;
 		}
 		break;
 		//two tiles away from turtle 1 out of range
@@ -348,15 +301,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin ,end);
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			//attack 3 times (4ap * 3 = 12)
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
-			//end turn
-			
-			//CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 		//three tiles, move in two tiles
@@ -402,15 +346,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/		
-
-			//attack three times(12ap)= 16ap
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - ( 20 * 3));
-			//end turn
-			
 		}
 		break;
 		//four tiles, move in three tiles
@@ -465,15 +400,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-	
-
-			//attack twice(8ap) = 14ap
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
-			//end turn
 		}
 		break;
 		//five tiles, move four
@@ -538,14 +464,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			//attack twice(8ap) = 16ap
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
-			//end turn
 		}
 		break;
 		//six tiles, move five
@@ -621,14 +539,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			//attack one(4ap) = 14ap
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
-			//end turn
 		}
 		break;
 		//7 tiles, move 6
@@ -715,14 +625,6 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-			//attack once(4ap) = 16ap
-			//m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));
-			//end turn
 		}
 		break;
 		//8 tiles, move 7
@@ -821,33 +723,19 @@ void CBoss::AI()
 			end = mapPt;
 			m_bMoving = true;
 			FindPathNew(begin,end);
-			
-
-			/*SetCurrTile(mapPt, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), 
-				CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), 
-				CBattleMap::GetInstance()->GetNumCols(), true);*/
-
-
 		}
 		break;
 	default:
 		{
-			//end turn
-			//SetCurrAP(0);
-			////TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			//CBattleMap::GetInstance()->UpdatePositions();
-			//CBattleMap::GetInstance()->NinjaMoveComplete();
+			// need to do something..like move instead of ending turn
 			CBattleMap::GetInstance()->SetTurn(true);
 		}
 		break;
 	}
-
-
 }
 void CBoss::Update(float fElapsedTime)
 { 
-
-	if(m_bMoving == true)
+	if(m_bMoving)
 	{
 		m_ptStartXY.x = GetPosX();
 		m_ptStartXY.y = GetPosY();
@@ -901,9 +789,7 @@ void CBoss::Update(float fElapsedTime)
 				SetPosPtF(m_ptCurrPos);
 			}
 		}
-
-
-		if( abs(m_ptStartXY.x - m_ptCurrPos.x) >= 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) > 16.0f)
+		if( abs(m_ptStartXY.x - m_ptCurrPos.x) >= 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) >= 16.0f)
 		{
 			SetCurrTile(m_vMoveList[0], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
 			CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
@@ -913,14 +799,77 @@ void CBoss::Update(float fElapsedTime)
 			CBattleMap::GetInstance()->UpdatePositions();
 		}
 
+		// movement is done
 		if(m_vMoveList.size() <= 0)
 		{
 			m_vMoveList.clear();
 			m_bMoving = false;
-			CBattleMap::GetInstance()->SetTurn(true);
+			// if in range and enough AP..attack
+			if (m_nInRange == 1 && GetCurrAP() >= 4)
+			{
+				m_bAttacking = true;
+			}
+			else	// out or range or not enough AP
+			{
+				//end shredder turn
+				m_bAttacking = m_bMoving = false;
+				CBattleMap::GetInstance()->UpdatePositions();
+				CBattleMap::GetInstance()->NinjaMoveComplete();
+				CBattleMap::GetInstance()->SetTurn(true);
+			}
 		}
 	}
-
+	else if (m_bAttacking)
+	{
+		CTurtle** turtles = m_pPlayer->GetTurtles();
+		switch(GetCurrAP())
+		{
+			SetCurrAnim(2);
+		case 4:
+			{
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20));	
+			}
+			break;
+		case 6:
+			{
+				//use skill low punch , sweep
+				//do 40+ damage 
+				int damage = Random(30, 50);//damage
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
+			}
+			break;
+		case 8:
+			{
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 2));
+			}
+			break;
+		case 10:
+			{
+				//use skill punch, kick
+				//do 60+ damage
+				int damage = Random(45, 65);//damage
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
+			}
+			break;
+		case 12:
+			{
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 3));
+			}
+			break;
+		case 16:
+			{
+				//use skill low punch, sweep then use skill punch, kick
+				int damage = Random(80, 100);
+				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
+			}
+			break;
+		default:
+			{
+				int debug = 0;
+			}
+			break;
+		}
+	}
 	//CBase::Update(fElapsedTime);
 	if(!GetCurrAnim()->IsAnimationPlaying())
 		SetCurrAnim(1);
@@ -1745,6 +1694,8 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		// check the adjacent tiles (adjacent to the current), determine which one's best - based on distance? 
 		for (int ind = 0; ind < 4; ++ind)
 		{
+			if (adjTiles[ind]->DestXID() == -1)
+				continue;
 			int tileID = adjTiles[ind]->DestYID() * numCols + adjTiles[ind]->DestXID();
 
 			if (tiles[tileID].Flag() != FLAG_COLLISION && tiles[tileID].Flag() != FLAG_OBJECT_EDGE &&
@@ -1805,43 +1756,3 @@ bool CBoss::IsOnClose(CTile* tile, vector<CTile>& closed)
 	return false;
 }
 
-/////////////////////////////////////////////////////////////////////////////////
-// once the next tile has been chosen, put the current tile on the closed list
-// add the next tile to the move list and set the current tile to the next tile
-// don't want to add the tile to the move list if it's the starting tile
-// 		switch(TileNum)
-// 		{
-// 		case MINUS_X:
-// 			m_vMoveList.push_back(adjTiles[MINUS_X]);
-// 			m_vClosedList.push_back(current);
-// 			current.x = adjTiles[MINUS_X].x;
-// 			current.y = adjTiles[MINUS_X].y;
-// 			SetCurrAP(GetCurrAP()-2);	// 2 will be replaced with tileCost (if implemented)
-// 			break;
-// // i don't think the current AP should actually be updated until the path is found
-// // since a different path may need to be chosen, if, for example, this path ends up
-// // being a dead end...or simply not the best path
-// 		case ADD_X: 
-// 			m_vMoveList.push_back(adjTiles[ADD_X]);
-// 			m_vClosedList.push_back(current);
-// 			current.x = adjTiles[ADD_X].x;
-// 			current.y = adjTiles[ADD_X].y;
-// 			SetCurrAP(GetCurrAP()-2);
-// 			break;
-// 
-// 		case MINUS_Y:
-// 			m_vMoveList.push_back(adjTiles[MINUS_Y]);
-// 			m_vClosedList.push_back(current);
-// 			current.x = adjTiles[MINUS_Y].x;
-// 			current.y = adjTiles[MINUS_Y].y;
-// 			SetCurrAP(GetCurrAP()-2);
-// 			break;
-// 			
-// 		case ADD_Y:
-// 			m_vMoveList.push_back(adjTiles[ADD_Y]);
-// 			m_vClosedList.push_back(current);
-// 			current.x = adjTiles[ADD_Y].x;
-// 			current.y = adjTiles[ADD_Y].y;
-// 			SetCurrAP(GetCurrAP()-2);
-// 			break;
-// 		}

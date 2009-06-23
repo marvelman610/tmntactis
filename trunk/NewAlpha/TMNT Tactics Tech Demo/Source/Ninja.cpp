@@ -64,43 +64,33 @@ void CNinja::AI()
 	//of each turtle then set the m_nInRange to however many tiles apart the closest turtle is
 	SetCurrAP(16);
 	
-	int tempRange1 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
-	int tempRange2 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
-	int tempRange3 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-	int tempRange4 = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-						abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
+	int distToMikey = abs(m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x) + 
+						abs( m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y);
+	int distToLeo = abs( m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x) +
+						abs(m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y - GetMapCoord().y );
+	int distToDon = abs(m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x ) +
+						abs(m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y );
+	int distToRaph = abs(m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ) +
+						abs(m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y );
 
-
-	
 	if( m_pPlayer->GetTurtles()[MIKEY]->GetAlive() == false)
-	{
-		tempRange1 = 100;
-	}
+		distToMikey = 1000;
 	if(m_pPlayer->GetTurtles()[LEONARDO]->GetAlive() == false)
-	{
-		tempRange2 = 100;
-	}
+		distToLeo = 1000;
 	if( m_pPlayer->GetTurtles()[DONATELLO]->GetAlive() == false)
-	{
-		tempRange3 = 100;
-	}
+		distToDon = 1000;
 	if( m_pPlayer->GetTurtles()[RAPHAEL]->GetAlive() == false)
-	{
-		tempRange4 = 100;
-	}
+		distToRaph = 1000;
 
 	if( m_pPlayer->GetTurtles()[MIKEY]->GetAlive() == true)
 	{
-		if(tempRange1 < tempRange2)
+		if(distToMikey < distToLeo)
 		{
-			if(tempRange1 < tempRange3)
+			if(distToMikey < distToDon)
 			{
-				if(tempRange1 <= tempRange4)
+				if(distToMikey <= distToRaph)
 				{
-					m_nInRange = tempRange1;
+					m_nInRange = distToMikey;
 					m_nXChange = m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x;
 					m_nYChange = m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y ; 
 					m_nTurtle = MIKEY;
@@ -111,13 +101,13 @@ void CNinja::AI()
 
 	if( m_pPlayer->GetTurtles()[LEONARDO]->GetAlive() == true)
 	{
-		if(tempRange2 < tempRange1)
+		if(distToLeo < distToMikey)
 		{
-			if(tempRange2 < tempRange3)
+			if(distToLeo < distToDon)
 			{
-				if(tempRange2 <= tempRange4)
+				if(distToLeo <= distToRaph)
 				{
-					m_nInRange = tempRange2;
+					m_nInRange = distToLeo;
 					m_nXChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x;
 					m_nYChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y - GetMapCoord().y;
 					m_nTurtle = LEONARDO;
@@ -126,16 +116,15 @@ void CNinja::AI()
 		}
 	}
 
-
 	if( m_pPlayer->GetTurtles()[DONATELLO]->GetAlive() == true)
 	{
-		if(tempRange3 < tempRange1)
+		if(distToDon < distToMikey)
 		{
-			if(tempRange3 < tempRange2)
+			if(distToDon < distToLeo)
 			{
-				if(tempRange3 <= tempRange4)
+				if(distToDon <= distToRaph)
 				{
-					m_nInRange = tempRange3;
+					m_nInRange = distToDon;
 					m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
 					m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
 					m_nTurtle = DONATELLO;
@@ -144,16 +133,15 @@ void CNinja::AI()
 		}
 	}
 
-
 	if( m_pPlayer->GetTurtles()[RAPHAEL]->GetAlive() == true)
 	{
-		if(tempRange4 < tempRange1)
+		if(distToRaph < distToMikey)
 		{
-			if(tempRange4 < tempRange2)
+			if(distToRaph < distToLeo)
 			{
-				if(tempRange4 <= tempRange3)
+				if(distToRaph <= distToDon)
 				{
-					m_nInRange = tempRange4;
+					m_nInRange = distToRaph;
 					m_nXChange = m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
 					m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
 					m_nTurtle = RAPHAEL;
@@ -162,139 +150,14 @@ void CNinja::AI()
 		}
 	}
 
-	POINT begin = GetMapCoord();
-	if(m_nTurtle <= -1)
-	{
-		m_nTurtle = 0;
-	}
-	POINT end;
-	
-	//for(int i = 0; i < 4; i++)
-	//{
-
-	//	if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-	//		abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-	//		abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
-	//		abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y)  
-	//		)
-	//	{
-	//		if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-	//			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-	//			)
-	//		{
-	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x ) + 
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y) <
-	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
-	//				)
-	//			{
-	//				//set distance to mikey
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x) + 
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y);
-	//				
-	//				m_nXChange =  m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x ;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y ; 
-	//				m_nTurtle = MIKEY;
-	//			}
-	//			else
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-
-	//				m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
-	//				m_nTurtle = DONATELLO;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x ) + 
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y) <
-	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)   
-	//			    )
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
-
-	//				m_nXChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
-	//				m_nTurtle = RAPHAEL;
-	//			}
-	//			else
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-
-	//				m_nXChange = m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x;
-	//				m_nYChange = m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y - GetMapCoord().y; 
-	//				m_nTurtle = DONATELLO;
-	//			}
-	//		}
-	//	}
-	//	else
-	//	{
-	//		if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
-	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
-	//			abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//			abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y)  
-	//		  )
-	//		{
-	//			if(	abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x ) + 
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y) <
-	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-	//			  )
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y );
-
-	//				m_nXChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().x - GetMapCoord().x;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[LEONARDO]->GetMapCoord().y - GetMapCoord().y;
-	//				m_nTurtle = LEONARDO;
-	//			}
-	//			else
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
-
-	//				m_nXChange = m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y; 
-	//				m_nTurtle = RAPHAEL;
-	//			}
-	//		}
-	//		else
-	//		{
-	//			if( abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x ) + 
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y) <
-	//				abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//				abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y)  
-	//			  )
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y);
-
-	//				m_nXChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().x - GetMapCoord().x ;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[DONATELLO]->GetMapCoord().y -	GetMapCoord().y ;
-	//				m_nTurtle = DONATELLO;
-	//			}
-	//			else
-	//			{
-	//				m_nInRange = abs(GetMapCoord().x - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x) +
-	//					abs(GetMapCoord().y - m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y);
-
-	//				m_nXChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().x - GetMapCoord().x ;
-	//				m_nYChange =  m_pPlayer->GetTurtles()[RAPHAEL]->GetMapCoord().y - GetMapCoord().y ;
-	//				m_nTurtle = RAPHAEL;
-	//			}
-	//		}
-	//	}
-	//}
-
 	//map point to set
 	POINT mapPt; 
+	POINT begin = GetMapCoord();
+	POINT end;
+
+	if(m_nTurtle <= -1)
+		m_nTurtle = 0;
+
 	mapPt.x = -1; mapPt.y = -1;
 	switch(m_nInRange)
 	{
@@ -310,18 +173,9 @@ void CNinja::AI()
 		{
  			SetCurrAnim(4);
 			m_nTotalAttacks = 4;
-			//attack four times(4ap * 4 = 16)
-   			/*m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
-			m_nDamage += rand() % (5 - (-4)) -5;
-			
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (m_nDamage * m_nTotalAttacks));*/
-			//end turn
-			//SetCurrAP(0);
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
 			CBattleMap::GetInstance()->UpdatePositions();
 			CBattleMap::GetInstance()->NinjaMoveComplete();
-			//SetCurrAnim(0);
-			m_bAttackBool = true;
+			m_bAttackBool = true; m_bMoving = false;
 		}
 		break;
 		//two tiles away from turtle 1 out of range
@@ -334,13 +188,9 @@ void CNinja::AI()
 				mapPt.x = GetMapCoord().x;
 				//if(x == 0) y == 2
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else 
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 1:
 				mapPt.x = GetMapCoord().x + m_nXChange;
@@ -360,15 +210,13 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-			
 		}
 		break;
 		//three tiles, move in two tiles
 	case 3:
 		{
-			
 			//move in two tiles(4ap)
 			switch(abs(m_nXChange))
 			{
@@ -406,12 +254,8 @@ void CNinja::AI()
 				break;
 			}
 			end = mapPt;
-
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-
-			//attack three times(12ap)= 16ap
-			//end turn
 		}
 		break;
 		//four tiles, move in three tiles
@@ -439,13 +283,9 @@ void CNinja::AI()
 			case 2://if x2 y2
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange >0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else 
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 3://if x3 y1
 				mapPt.x = GetMapCoord().x + m_nXChange;
@@ -453,21 +293,15 @@ void CNinja::AI()
 				break;
 			case 4://if x4 y0
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
 			end = mapPt;
-			
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-			//end turn
 		}
 		break;
 		//five tiles, move four
@@ -478,13 +312,9 @@ void CNinja::AI()
 			{
 			case 0://if x0 y5
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				mapPt.x = GetMapCoord().x;
 				break;
 			case 1://if x1 y4
@@ -494,24 +324,16 @@ void CNinja::AI()
 			case 2://if x2 y3
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 3://if x3 y2
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 4://if x4 y1
 				mapPt.y = GetMapCoord().y;
@@ -519,21 +341,15 @@ void CNinja::AI()
 				break;
 			case 5://if x5 y0
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
 			end = mapPt;
-
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-			//end turn
 		}
 		break;
 		//six tiles, move five
@@ -544,13 +360,9 @@ void CNinja::AI()
 			{
 			case 0://if x0 y6
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				mapPt.x = GetMapCoord().x;
 				break;
 			case 1://if x1 y5
@@ -560,35 +372,23 @@ void CNinja::AI()
 			case 2://if x2 y4
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 3://if x3 y3
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 4://if x4 y2
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 5://if x5 y1
 				mapPt.y = GetMapCoord().y;
@@ -597,20 +397,14 @@ void CNinja::AI()
 			case 6://if x6 y0
 				mapPt.y = GetMapCoord().y;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			}
 			end = mapPt;
-			
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-			//end turn
 		}
 		break;
 		//7 tiles, move 6
@@ -621,13 +415,9 @@ void CNinja::AI()
 			{
 			case 0://if x0 y7
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				mapPt.x = GetMapCoord().x;
 				break;
 			case 1://if x1 y6
@@ -637,46 +427,30 @@ void CNinja::AI()
 			case 2://if x2 y5
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 3://if x3 y4
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 4://if x4 y3
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 5://if x5 y2
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 6://if x6 y1
 				mapPt.y = GetMapCoord().y;
@@ -685,20 +459,14 @@ void CNinja::AI()
 			case 7://if x7 y0
 				mapPt.y = GetMapCoord().y;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			}
 			end = mapPt;
-
-			m_bMoving = true;
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
-			//end turn
 		}
 		break;
 		//8 tiles, move 7
@@ -709,13 +477,9 @@ void CNinja::AI()
 			{
 			case 0://if x0 y8
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				mapPt.x = GetMapCoord().x;
 				break;
 			case 1://if x1 y7
@@ -725,57 +489,37 @@ void CNinja::AI()
 			case 2://if x2 y6
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 3://if x3 y5
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 4://if x4 y4
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange -1);
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y + (m_nYChange +1);
-				}
 				break;
 			case 5://if x5 y3
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 6://if x6 y2
 				mapPt.y = GetMapCoord().y + m_nYChange;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				break;
 			case 7://if x7 y1
 				mapPt.x = GetMapCoord().x + m_nXChange;
@@ -783,149 +527,99 @@ void CNinja::AI()
 				break;
 			case 8://if x8 y0
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange -1);
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x + (m_nXChange +1);
-				}
 				mapPt.y = GetMapCoord().y;
 				break;
 			}
-
 			end = mapPt;
-
-			m_bMoving = true;
-			
+			m_bMoving = true; m_bAttackBool = true;
 			FindPath(begin, end);
 		}
 		break;
 	default:
 		{
 			//end turn
-
 			switch(abs(m_nXChange))
 			{
 			case 0: 
 				mapPt.x = GetMapCoord().x;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 8;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 8;
-				}
 				break;
 			case 1: 
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 7;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 7;
-				}
 				break;
 			case 2: 
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 6;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 6;
-				}
 				break;
 			case 3:
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 5;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 5;
-				}
 				break;
 			case 4:
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 4;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 4;
-				}
 				break;
 			case 5:
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 3;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 3;
-				}
 				break;
 			case 6:
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 2;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 2;
-				}
 				break;
 			case 7:
 				mapPt.x = GetMapCoord().x + m_nXChange;
 				if(m_nYChange > 0)
-				{
 					mapPt.y = GetMapCoord().y + 1;
-				}
 				else
-				{
 					mapPt.y = GetMapCoord().y - 1;
-				}
 				break;
 			case 8:
 				mapPt.y = GetMapCoord().y;
 				if(m_nXChange > 0)
-				{
 					mapPt.x = GetMapCoord().x + 8;
-				}
 				else
-				{
 					mapPt.x = GetMapCoord().x - 8;
-				}
 				break;
 			}
 			if(mapPt.x > -1 && mapPt.y > -1)
 			{
 				end = mapPt;
-				m_bMoving = true;
+				m_bMoving = true; m_bAttackBool = true;
 				FindPath(begin, end);
 			}
 			else
 			{
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
-			
-			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-			/*CBattleMap::GetInstance()->UpdatePositions();
-			CBattleMap::GetInstance()->NinjaMoveComplete();
-			CBattleMap::GetInstance()->SetTurn(true);*/
 		}
 		break;
 	}
-	
 }
 ///////////////////////////////////////////////////////////////////////////////
 // Function: FindPath
@@ -939,7 +633,7 @@ void CNinja::FindPath(POINT begin, POINT end)
 	m_vPath.clear();
 	POINT ptCurr = begin; // begin point
 	POINT ptTarget = end;	// end point
-	int range = GetCurrAP();	// max distance moveable
+	int range = GetCurrAP();	// max distance movable
 	int pathWeight = 0;
 	vector<int> pathX;
 	vector<int> pathY;
@@ -1064,7 +758,7 @@ void CNinja::Update(float fElapsedTime)
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 	if (m_bAttackBool)
 	{
-		if(!m_vAnimations[4].IsAnimationPlaying())
+		if(!m_vAnimations[4].IsAnimationPlaying() && m_Timer.GetElapsed() > 1.0f)
 		{
 			CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
 
@@ -1078,18 +772,23 @@ void CNinja::Update(float fElapsedTime)
 
 			m_nAttacksSoFar++;
 		}
-		if(m_nAttacksSoFar >= m_nTotalAttacks)
+		else if(m_nAttacksSoFar >= m_nTotalAttacks)
 		{
 			SetCurrAnim(0);
 			m_bAttackBool = false;
-			m_nAttacksSoFar = 0;
-			m_nTotalAttacks = 0;
-			CBattleMap::GetInstance()->SetTurn(true);
+			m_Timer.StartTimer(1.0f);
 		}
-		
+	}
+	else if (!m_bAttackBool && bTimerDone)
+	{
+		m_nAttacksSoFar = 0;
+		m_nTotalAttacks = 0;
+		m_bMoving = false;
+		CBattleMap::GetInstance()->SetTurn(true);
+		return;
 	}
 
-	// a ninja has been moved...execute the animation and position change over time
+	// a ninja needs to be moved...execute the animation and position change over time
 	if (m_bMoving)
 	{
 		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 &&  GetCurrAnim()->GetCurrAnimFrame() != 2)
@@ -1171,9 +870,7 @@ void CNinja::Update(float fElapsedTime)
 					
 					SetCurrAnim(4);
 
-
 					m_bAttackBool = true;
-					
 
 					m_Timer.StartTimer(1.5f);
 				}
@@ -1197,10 +894,10 @@ void CNinja::Update(float fElapsedTime)
 
 	if(GetHealth() <= 0)
 	{
-		int type = rand()% 4;
+		int type = rand() % 5;
 
-		if(type < 3)	MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
-		else			MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
+		if(type < 3)		MessageSystem::GetInstance()->SendMsg(new CCreateItem(this));
+		else if (type < 4)	MessageSystem::GetInstance()->SendMsg(new CCreateWeapon(this));
 
 		return;
 	}
@@ -1232,7 +929,7 @@ void CNinja::Render()
 	
 	if(m_bAttackBool)
 	{
-		int offset = (m_Timer.GetElapsed()*20 )-15;
+		int offset = (int)(m_Timer.GetElapsed()*20.0f )-15;
 
 		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
 
@@ -1243,12 +940,12 @@ void CNinja::Render()
 		//ninja xp
 		char tempXP[16];
 		sprintf_s(tempXP, "+%i", nXP);
-		m_pBitmapFont->DrawString(tempXP,this->GetPosX()+5,this->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,255,0));
+		m_pBitmapFont->DrawString(tempXP,(int)GetPosX()+5,(int)GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,255,0));
 
 		//player damage
 		char tempDmg[16];
 		sprintf_s(tempDmg, "-%i", m_nDamage);
-		m_pBitmapFont->DrawString(tempDmg,m_pPlayer->GetTurtles()[m_nTurtle]->GetPosX()+5,m_pPlayer->GetTurtles()[m_nTurtle]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
+		m_pBitmapFont->DrawString(tempDmg,(int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
 
 		m_pBitmapFont->Reset();
 

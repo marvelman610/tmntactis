@@ -33,6 +33,7 @@ private:
 	int		m_nKillCount;	// used for kill 30 achievement
 	string  m_sProfileName;
 	string  m_sFileName;
+	bool	m_bSelectTurtleShown;
 
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CPlayer(Constructor)"
@@ -86,28 +87,26 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////
+	inline bool GetSelectTurtleShown()  { return m_bSelectTurtleShown;}
 	inline int GetCurrStage(void)		{ return m_nCurrStage;		}
-	inline int GetKillCount(void)		{ return m_nKillCount;}
+	inline int GetKillCount(void)		{ return m_nKillCount;		}
 	inline CTurtle** GetTurtles(void)	{ return m_pTurtles;		}
-	inline CAchievements* GetAch()		{ return m_pAcheivements;}
-	inline string GetProfName()			{ return m_sProfileName;}
-	inline string GetFileName()			{ return m_sFileName;}
-	inline bool* GetMapsUnlocked()		{ return m_bMapsUnlocked;}
+	inline CAchievements* GetAch()		{ return m_pAcheivements;	}
+	inline string GetProfName()			{ return m_sProfileName;	}
+	inline string GetFileName()			{ return m_sFileName;		}
+	inline bool* GetMapsUnlocked()		{ return m_bMapsUnlocked;	}
 	inline int GetNumItems()			{ return m_nInventory.size();}
 	vector<CBattleItem>* GetItems()		{ return &m_nInventory;		}
 	void AddItem(CBattleItem a)			{ m_nInventory.push_back(a);}
 
-	void SetProfileName(string name)	{ m_sProfileName = name;}
-	void SetFileName(string name)		{ m_sFileName = name;}
-	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;}
-	void SetStage(int stage)			{ m_nCurrStage = stage;}
+	void SetProfileName(string name)	{ m_sProfileName = name;	}
+	void SetFileName(string name)		{ m_sFileName = name;		}
+	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;	}
+	void SetStage(int stage)			{ m_nCurrStage = stage;		}
 	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true;}
-	void IncrementKillCount()			{ ++m_nKillCount;}
-	void SetKillCount(int count)		{ m_nKillCount = count;}
-	//void SetALLMapsUnlocked(bool mUnlocked) {m_bMapsUnlocked = &mUnlocked;}
-	
+	void IncrementKillCount()			{ ++m_nKillCount;			}
+	void SetKillCount(int count)		{ m_nKillCount = count;		}
+	void SetSelectTurtleShown(bool shown){m_bSelectTurtleShown = shown;}
 	bool RemoveItem(int index);
-
-
 };
 #endif

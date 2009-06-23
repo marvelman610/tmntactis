@@ -512,6 +512,14 @@
 			>
 		</File>
 		<File
+			RelativePath=".\Resources\MapInfo\VG_lvl1.dat"
+			>
+		</File>
+		<File
+			RelativePath=".\Resources\MapInfo\VG_lvl2.dat"
+			>
+		</File>
+		<File
 			RelativePath=".\helpful info\VG_pathfinding.txt"
 			>
 		</File>

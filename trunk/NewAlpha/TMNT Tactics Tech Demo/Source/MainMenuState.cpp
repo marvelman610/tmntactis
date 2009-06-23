@@ -32,9 +32,7 @@ CMainMenuState::CMainMenuState()
 	m_sProfiles = new string[5];
 	m_sProfiles[0] = "LOG IN";
 	for (int i =1; i < 5; ++i)
-	{
 		m_sProfiles[i] = "Create New";
-	}
 	ifstream ifs("Profiles.dat", ios_base::binary);
 
 	m_fTimer = 0.0f;
@@ -73,8 +71,10 @@ void CMainMenuState::Enter()
 				ZeroMemory(buff, 32);
 				int size = 0;
 				ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
-				ifs.read(reinterpret_cast<char*>(&buff), size);
+				ifs.read(buff, size);
 				m_sProfiles[i] = buff;
+				char eat;
+				ifs.read(&eat, 1);
 			}
 			else
 				break;
@@ -168,10 +168,10 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				{
 					int size = m_sProfiles[i].size();
 					ofs.write((char*)(&size), 4);
-					ofs.write((char*)(&m_sProfiles[i]), 4);
+					const char* sz = m_sProfiles[i].c_str();
+					ofs.write(sz/*(char*)(&m_sProfiles[i])*/, size/*sizeof(m_sProfiles[i])*/);
 				}
 				ofs.close();
-
 
 				if (m_bNewGamePressed)
 				{
@@ -365,7 +365,8 @@ void CMainMenuState::Exit()
 		{
 			int size = m_sProfiles[i].size();
 			ofs.write((char*)(&size), 4);
-			ofs.write((char*)(&m_sProfiles[i]), size/*sizeof(m_sProfiles[i])*/);
+			const char* sz = m_sProfiles[i].c_str();
+			ofs.write(sz/*(char*)(&m_sProfiles[i])*/, size/*sizeof(m_sProfiles[i])*/);
 		}
 		ofs.close();
 	}

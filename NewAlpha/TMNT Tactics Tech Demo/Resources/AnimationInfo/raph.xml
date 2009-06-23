@@ -1,0 +1,151 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="10">
+  <Animation Name="idle" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>14,12,57,85</Rect>
+      <Anchor>40,88</Anchor>
+      <Rect>74,13,68,86</Rect>
+      <Anchor>106,84</Anchor>
+      <Rect>140,9,72,90</Rect>
+      <Anchor>181,85</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="draw" Looping="true" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>222,13,54,86</Rect>
+      <Anchor>248,84</Anchor>
+      <Rect>281,13,56,79</Rect>
+      <Anchor>310,81</Anchor>
+      <Rect>342,10,78,85</Rect>
+      <Anchor>381,78</Anchor>
+      <Rect>423,2,83,92</Rect>
+      <Anchor>462,84</Anchor>
+      <Rect>502,7,76,87</Rect>
+      <Anchor>534,84</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="idleWeapon" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>18,101,56,92</Rect>
+      <Anchor>43,176</Anchor>
+      <Rect>86,99,59,95</Rect>
+      <Anchor>112,177</Anchor>
+      <Rect>153,103,71,93</Rect>
+      <Anchor>188,180</Anchor>
+      <Rect>228,102,67,90</Rect>
+      <Anchor>261,177</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="kick" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>295,102,69,88</Rect>
+      <Anchor>325,173</Anchor>
+      <Rect>363,92,104,100</Rect>
+      <Anchor>407,174</Anchor>
+      <Rect>469,94,94,98</Rect>
+      <Anchor>515,178</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="saiFury" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>16,1200,74,103</Rect>
+      <Anchor>58,1283</Anchor>
+      <Rect>132,1192,137,122</Rect>
+      <Anchor>183,1289</Anchor>
+      <Rect>330,1224,100,79</Rect>
+      <Anchor>376,1287</Anchor>
+      <Rect>496,1213,141,103</Rect>
+      <Anchor>548,1288</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="FlyingStab" Looping="true" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>31,596,91,86</Rect>
+      <Anchor>84,665</Anchor>
+      <Rect>134,590,123,94</Rect>
+      <Anchor>178,664</Anchor>
+      <Rect>268,607,134,60</Rect>
+      <Anchor>323,644</Anchor>
+      <Rect>401,607,144,60</Rect>
+      <Anchor>468,642</Anchor>
+      <Rect>0,683,128,84</Rect>
+      <Anchor>58,740</Anchor>
+      <Rect>134,693,144,64</Rect>
+      <Anchor>204,734</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="flipBackStab" Looping="true" FrameCount="7" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>479,494,80,98</Rect>
+      <Anchor>535,576</Anchor>
+      <Rect>383,495,105,102</Rect>
+      <Anchor>463,583</Anchor>
+      <Rect>280,483,107,114</Rect>
+      <Anchor>334,582</Anchor>
+      <Rect>185,491,91,110</Rect>
+      <Anchor>258,580</Anchor>
+      <Rect>169,393,90,102</Rect>
+      <Anchor>196,479</Anchor>
+      <Rect>263,394,81,98</Rect>
+      <Anchor>286,477</Anchor>
+      <Rect>356,390,70,99</Rect>
+      <Anchor>382,476</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="counter" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>428,898,79,92</Rect>
+      <Anchor>463,974</Anchor>
+      <Rect>508,879,90,125</Rect>
+      <Anchor>540,986</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="knockback" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>174,908,64,78</Rect>
+      <Anchor>213,972</Anchor>
+      <Rect>248,897,82,93</Rect>
+      <Anchor>287,972</Anchor>
+      <Rect>325,915,106,71</Rect>
+      <Anchor>360,974</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KO" Looping="true" FrameCount="2" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_RaphAnimations.png</SheetName>
+    <TriggerName>dcdcdc</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>14,1092,99,82</Rect>
+      <Anchor>71,1153</Anchor>
+      <Rect>121,1108,120,67</Rect>
+      <Anchor>178,1155</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

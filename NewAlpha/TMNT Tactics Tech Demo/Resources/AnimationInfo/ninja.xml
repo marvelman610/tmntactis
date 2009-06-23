@@ -1,0 +1,133 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="8">
+  <Animation Name="idle" Looping="false" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>80,233,61,72</Rect>
+      <Anchor>112,291</Anchor>
+      <Rect>155,238,66,70</Rect>
+      <Anchor>197,291</Anchor>
+      <Rect>236,231,70,75</Rect>
+      <Anchor>277,294</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="walking" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>7,1510,54,75</Rect>
+      <Anchor>38,1576</Anchor>
+      <Rect>312,1432,66,78</Rect>
+      <Anchor>353,1496</Anchor>
+      <Rect>74,1435,69,68</Rect>
+      <Anchor>118,1492</Anchor>
+      <Rect>305,1431,75,76</Rect>
+      <Anchor>351,1493</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="walkingUp" Looping="false" FrameCount="8" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>321,1593,57,75</Rect>
+      <Anchor>348,1651</Anchor>
+      <Rect>230,1589,65,75</Rect>
+      <Anchor>268,1654</Anchor>
+      <Rect>154,1587,67,82</Rect>
+      <Anchor>194,1652</Anchor>
+      <Rect>80,1591,64,75</Rect>
+      <Anchor>115,1653</Anchor>
+      <Rect>11,1590,45,79</Rect>
+      <Anchor>36,1652</Anchor>
+      <Rect>317,1511,64,74</Rect>
+      <Anchor>357,1569</Anchor>
+      <Rect>228,1514,74,70</Rect>
+      <Anchor>275,1566</Anchor>
+      <Rect>149,1513,66,76</Rect>
+      <Anchor>188,1572</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="appear" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>245,1695,41,28</Rect>
+      <Anchor>269,1711</Anchor>
+      <Rect>312,1683,66,54</Rect>
+      <Anchor>348,1718</Anchor>
+      <Rect>1,1748,59,84</Rect>
+      <Anchor>28,1803</Anchor>
+      <Rect>75,1739,70,100</Rect>
+      <Anchor>108,1820</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="slash" Looping="false" FrameCount="5" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>151,1188,75,84</Rect>
+      <Anchor>183,1261</Anchor>
+      <Rect>229,1189,69,86</Rect>
+      <Anchor>263,1259</Anchor>
+      <Rect>309,1188,88,75</Rect>
+      <Anchor>362,1251</Anchor>
+      <Rect>2,1271,55,74</Rect>
+      <Anchor>29,1330</Anchor>
+      <Rect>74,1268,62,77</Rect>
+      <Anchor>105,1331</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="stab" Looping="false" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>78,1183,63,86</Rect>
+      <Anchor>108,1252</Anchor>
+      <Rect>1,1181,62,88</Rect>
+      <Anchor>32,1253</Anchor>
+      <Rect>306,1114,111,70</Rect>
+      <Anchor>381,1173</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="roll" Looping="false" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>237,1038,56,58</Rect>
+      <Anchor>265,1076</Anchor>
+      <Rect>158,1036,58,58</Rect>
+      <Anchor>185,1078</Anchor>
+      <Rect>77,1035,60,63</Rect>
+      <Anchor>105,1083</Anchor>
+      <Rect>8,1034,47,62</Rect>
+      <Anchor>28,1076</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="knockBack" Looping="false" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_whiteninja.png</SheetName>
+    <TriggerName>sgsrgsdgsd</TriggerName>
+    <TriggerType>Attack</TriggerType>
+    <Frames>
+      <Rect>0,949,64,80</Rect>
+      <Anchor>21,1012</Anchor>
+      <Rect>320,877,58,70</Rect>
+      <Anchor>348,931</Anchor>
+      <Rect>234,872,66,74</Rect>
+      <Anchor>273,931</Anchor>
+      <Rect>153,872,72,74</Rect>
+      <Anchor>201,933</Anchor>
+      <Rect>70,869,78,88</Rect>
+      <Anchor>107,937</Anchor>
+      <Rect>0,866,66,81</Rect>
+      <Anchor>34,926</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

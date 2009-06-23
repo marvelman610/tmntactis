@@ -1,0 +1,206 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Animations count="13">
+  <Animation Name="idle" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>8,13,56,97</Rect>
+      <Anchor>34,92</Anchor>
+      <Rect>70,25,65,79</Rect>
+      <Anchor>100,95</Anchor>
+      <Rect>135,21,68,83</Rect>
+      <Anchor>166,92</Anchor>
+      <Rect>204,22,65,83</Rect>
+      <Anchor>234,91</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="draw" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>273,8,62,97</Rect>
+      <Anchor>305,93</Anchor>
+      <Rect>332,6,84,102</Rect>
+      <Anchor>372,95</Anchor>
+      <Rect>415,20,72,88</Rect>
+      <Anchor>443,91</Anchor>
+      <Rect>488,5,88,100</Rect>
+      <Anchor>522,92</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="idleswords" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>5,106,56,104</Rect>
+      <Anchor>28,199</Anchor>
+      <Rect>72,108,61,102</Rect>
+      <Anchor>100,199</Anchor>
+      <Rect>139,109,71,102</Rect>
+      <Anchor>173,198</Anchor>
+      <Rect>212,107,74,104</Rect>
+      <Anchor>247,197</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="kick" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>224,223,93,89</Rect>
+      <Anchor>283,297</Anchor>
+      <Rect>324,221,108,96</Rect>
+      <Anchor>379,298</Anchor>
+      <Rect>452,112,113,97</Rect>
+      <Anchor>503,193</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="SwordJab" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>227,216,97,98</Rect>
+      <Anchor>285,298</Anchor>
+      <Rect>317,226,107,87</Rect>
+      <Anchor>379,301</Anchor>
+      <Rect>439,230,143,81</Rect>
+      <Anchor>485,298</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="SwordSpin" Looping="true" FrameCount="8" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>487,538,76,107</Rect>
+      <Anchor>521,627</Anchor>
+      <Rect>5,645,146,106</Rect>
+      <Anchor>71,734</Anchor>
+      <Rect>149,643,175,106</Rect>
+      <Anchor>237,736</Anchor>
+      <Rect>331,649,169,101</Rect>
+      <Anchor>416,736</Anchor>
+      <Rect>504,650,80,107</Rect>
+      <Anchor>542,738</Anchor>
+      <Rect>5,753,151,101</Rect>
+      <Anchor>79,838</Anchor>
+      <Rect>163,754,179,98</Rect>
+      <Anchor>251,843</Anchor>
+      <Rect>344,751,173,104</Rect>
+      <Anchor>427,844</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="FlipStab" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>11,852,126,116</Rect>
+      <Anchor>52,899</Anchor>
+      <Rect>132,853,143,123</Rect>
+      <Anchor>201,902</Anchor>
+      <Rect>274,841,118,145</Rect>
+      <Anchor>352,916</Anchor>
+      <Rect>398,855,186,127</Rect>
+      <Anchor>477,924</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="Counter" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>80,519,75,127</Rect>
+      <Anchor>111,629</Anchor>
+      <Rect>160,533,115,111</Rect>
+      <Anchor>204,630</Anchor>
+      <Rect>272,540,107,109</Rect>
+      <Anchor>309,632</Anchor>
+      <Rect>382,550,98,104</Rect>
+      <Anchor>420,626</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KnockBack" Looping="true" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>467,1180,82,89</Rect>
+      <Anchor>519,1258</Anchor>
+      <Rect>47,1279,91,87</Rect>
+      <Anchor>123,1350</Anchor>
+      <Rect>154,1277,74,100</Rect>
+      <Anchor>186,1356</Anchor>
+      <Rect>232,1289,77,96</Rect>
+      <Anchor>276,1361</Anchor>
+      <Rect>152,1276,75,102</Rect>
+      <Anchor>190,1363</Anchor>
+      <Rect>45,1280,105,86</Rect>
+      <Anchor>120,1351</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="KO" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>659,90,119,79</Rect>
+      <Anchor>723,146</Anchor>
+      <Rect>654,180,132,66</Rect>
+      <Anchor>727,220</Anchor>
+      <Rect>645,249,133,54</Rect>
+      <Anchor>712,279</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="lowAttack" Looping="true" FrameCount="4" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>113,1185,68,86</Rect>
+      <Anchor>155,1258</Anchor>
+      <Rect>190,1193,73,77</Rect>
+      <Anchor>235,1253</Anchor>
+      <Rect>275,1162,91,111</Rect>
+      <Anchor>317,1263</Anchor>
+      <Rect>378,1171,88,98</Rect>
+      <Anchor>411,1259</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="attack" Looping="true" FrameCount="3" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>30,1431,90,112</Rect>
+      <Anchor>83,1526</Anchor>
+      <Rect>137,1421,108,115</Rect>
+      <Anchor>192,1517</Anchor>
+      <Rect>260,1443,131,87</Rect>
+      <Anchor>304,1516</Anchor>
+    </Frames>
+  </Animation>
+  <Animation Name="jumpAttack" Looping="true" FrameCount="6" Duration="0.25">
+    <SheetName>C:\Documents and Settings\Matt\Desktop\VG_LeoAnimations.png</SheetName>
+    <TriggerName>ssss</TriggerName>
+    <TriggerType />
+    <Frames>
+      <Rect>27,1580,64,87</Rect>
+      <Anchor>48,1651</Anchor>
+      <Rect>125,1585,116,96</Rect>
+      <Anchor>162,1660</Anchor>
+      <Rect>246,1589,80,91</Rect>
+      <Anchor>286,1665</Anchor>
+      <Rect>344,1578,72,103</Rect>
+      <Anchor>388,1656</Anchor>
+      <Rect>429,1589,88,98</Rect>
+      <Anchor>463,1667</Anchor>
+      <Rect>516,1591,108,97</Rect>
+      <Anchor>561,1667</Anchor>
+    </Frames>
+  </Animation>
+</Animations>

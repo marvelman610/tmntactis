@@ -140,6 +140,8 @@ CBoss* Factory::CreateBoss()
 	boss->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 7,0.15f);//lose
 	boss->AddAnim(anim);
+	anim.Load("Resources/AnimationInfo/VG_shredder.dat", 8,0.15f, false);//ground special
+	boss->AddAnim(anim);
 
 	boss->SetVelX(100);
 	boss->SetVelY(50);

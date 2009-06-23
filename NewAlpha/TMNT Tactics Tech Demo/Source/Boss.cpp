@@ -15,7 +15,7 @@
 #include "ObjectManager.h"
 #include "Achievements.h"
 
-enum {MINUS_X, MINUS_Y, ADD_X, ADD_Y, };
+//enum {MINUS_X, MINUS_Y, ADD_X, ADD_Y, };
 
 int Random(int min, int max)
 {

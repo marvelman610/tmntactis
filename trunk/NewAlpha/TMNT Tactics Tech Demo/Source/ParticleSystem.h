@@ -111,6 +111,8 @@ public:
 		vertexDecl = NULL;
 		particleBuff = NULL;
 		texture = NULL;
+
+		//InitParticle();
 	}
 
 	///////////////////////////////////////////////////////////////////////////////////////////
@@ -140,7 +142,7 @@ public:
 	{
 		m_nNumParticles = MAX_NUM_PARTS;
 		particles = new PARTICLE[m_nNumParticles];
-		m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Particle.bmp", D3DCOLOR_XRGB(0,0,0));
+		m_nImageID = CSGD_TextureManager::GetInstance()->LoadTexture("Resources/Images/VG_Particle.png", D3DCOLOR_XRGB(0,0,0));
 
 		m_fOffsetX = 10.0f;
 		m_fOffsetY = 10.0f;
@@ -412,8 +414,10 @@ public:
 			if(particles[i].life < m_nMaxLife)
 			{
 				CSGD_TextureManager::GetInstance()->Draw(m_nImageID, (int)(particles[i].pos.x),
-					(int)(particles[i].pos.y), particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x,
-					particles[i].pos.y, m_fRotation, particles[i].color );
+					(int)(particles[i].pos.y), particles[i].m_fScale, particles[i].m_fScale, NULL, particles[i].pos.x + 
+					(CSGD_TextureManager::GetInstance()->GetTextureWidth(m_nImageID)*0.5f),
+					particles[i].pos.y + (CSGD_TextureManager::GetInstance()->GetTextureHeight(m_nImageID)*-0.5f) ,
+					m_fRotation, particles[i].color );
 			}
 		}
 

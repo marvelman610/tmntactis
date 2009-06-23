@@ -87,6 +87,8 @@ public:
 	ASSET aBMqteDownID;
 	ASSET aBMqteUpID;
 	ASSET aBMvictoryID, aBMdefeatID;
+	ASSET aBMstatsID;
+
 	// BATTLE MAP MUSIC
 	ASSET aBMarcadeMusicID;
 	ASSET aBMsimusaMusicID;

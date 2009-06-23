@@ -29,6 +29,13 @@ private:
 	vector<CBase> m_vWeapons;
 	int m_nCurrWeapon;
 
+	int m_nPrevLvl;
+	int m_nPrevStr;
+	int m_nPrevDef;
+	int m_nPrevAcc;
+	int m_nDamageDon;
+	int m_nDamageRec;
+
 public:
 	///////////////////////////////////////////////////////////////////
 	//	Function:	"CTurtle(Constructor)"
@@ -102,6 +109,24 @@ public:
 	void SetWeapons(vector<CBase>& weapons) { m_vWeapons = weapons;}
 	void AddWeapon(CBase a)					{ m_vWeapons.push_back(a);	}
 	void ClearWeapons()						{ m_vWeapons.clear();}
+
+
+	inline int GetPrevLevel()		{return m_nPrevLvl;}
+	inline int GetPrevStrength()	{return m_nPrevStr;}
+	inline int GetPrevDefense()		{return m_nPrevDef;}
+	inline int GetPrevAccuracy()	{return m_nPrevAcc;}
+	inline int GetDamageDone()		{return m_nDamageDon;}
+	inline int GetDamageRecieved()	{return m_nDamageRec;}
+
+	inline void SetPrevLevel(int level)			{m_nPrevLvl = level;}
+	inline void SetPrevStrength(int strength)	{m_nPrevStr = strength;}
+	inline void SetPrevDefense(int defense)		{m_nPrevDef = defense;}
+	inline void SetPrevAccuracy(int accuracy)	{m_nPrevAcc = accuracy;}
+
+	inline void AddDamageDone(int dmg)		{m_nDamageDon += dmg;}
+	inline void AddDamageRecieved(int dmg)	{m_nDamageRec += dmg;}
+	
+
 
 };
 

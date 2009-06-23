@@ -157,7 +157,13 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 
 	m_nNumTurtles = 4;
 	for (int i = 0; i < m_nNumTurtles; ++i)
+	{
+		m_pPlayer->GetTurtles()[i]->SetPrevLevel(m_pPlayer->GetTurtles()[i]->GetLevel());
+		m_pPlayer->GetTurtles()[i]->SetPrevStrength(m_pPlayer->GetTurtles()[i]->GetStrength());
+		m_pPlayer->GetTurtles()[i]->SetPrevDefense(m_pPlayer->GetTurtles()[i]->GetDefense());
+		m_pPlayer->GetTurtles()[i]->SetPrevAccuracy(m_pPlayer->GetTurtles()[i]->GetAccuracy());
 		m_nKillCount[i] = 0;
+	}
 
 	LoadMapInfo();
 	// will be used to set ALL the characters' start positions according to
@@ -267,13 +273,13 @@ void CBattleMap::Render()
 	{
 // 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
 // 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
-		m_pTM->DrawWithZSort(m_pAssets->aBMvictoryID, 256, 175, 0.01f);
+		m_pTM->DrawWithZSort(m_pAssets->aBMvictoryID, 256, 0, 0.01f);
+		RenderStats();		
 	}
 	else if(m_bLose && m_Timer.IsTimerRunning() )
 	{
-// 		CBitmapFont::GetInstance()->DrawString("YOU LOSE", 100, 200, 0.05f, 3.0f);
-// 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
 		m_pTM->DrawWithZSort(m_pAssets->aBMdefeatID, 256, 175, 0.01f);
+		RenderStats();
 	}
 
 	if ((m_nHoverCharacter > -1 || (m_nHoverEnemy > -1 && m_nHoverEnemy < m_nNumEnemiesLeft)) && m_bIsPlayersTurn)
@@ -434,7 +440,8 @@ void CBattleMap::Render()
 	//////////////////////////////////////////////////////////////////////////
 
 	// HUD
-	m_pHUD->Render();
+	if(!m_bWin && !m_bLose)
+		m_pHUD->Render();
 
 	// who's turn it is
 	if (m_bIsPlayersTurn)
@@ -1977,6 +1984,8 @@ void CBattleMap::PerformAttack()
 		int damage =  charStrength * ( m_vCharacters[m_nCurrCharacter].GetAccuracy()/m_vEnemies[m_nCurrTarget]->GetDefense() );
 		damage += rand() % (5 - (-4)) -5;
 
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->AddDamageDone(damage);
+
 		m_bPlayerAttack = true;
 		m_Timer.StartTimer(3.0f);
 	
@@ -2377,7 +2386,7 @@ void CBattleMap::SetEnemyDead()
 		if (m_nMapID < NUM_MAPS)
 			m_pPlayer->SetMapUnlocked(m_nMapID+1);
 		PlaySFX(m_pAssets->aBMvictorySnd);
-		m_Timer.StartTimer(6.0f);
+		m_Timer.StartTimer(14.0f);
 	}
 }
 
@@ -2814,4 +2823,97 @@ void CBattleMap::AddMapSpawnTile(CTile* tile, int numPts)
 		m_pSpawnPts = new CTile[numPts];
 		m_pSpawnPts[0] = *tile;
 	}
+}
+
+void CBattleMap::RenderStats()
+{
+	m_pTM->DrawWithZSort(m_pAssets->aBMstatsID,100,100,0.01f);
+
+	m_pBitmapFont->ChangeBMFont(m_pAssets->aBitmapFontBubblyID,16,15,20);
+	char temp[32];
+	//LEONARDO
+	//level
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[LEONARDO]->GetPrevLevel(), m_pPlayer->GetTurtles()[LEONARDO]->GetLevel());
+	m_pBitmapFont->DrawString(temp,320,180,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+	//strength
+	sprintf_s(temp,"%i    %i",m_pPlayer->GetTurtles()[LEONARDO]->GetPrevStrength(), m_pPlayer->GetTurtles()[LEONARDO]->GetStrength());
+	m_pBitmapFont->DrawString(temp,250,210,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+	//defense
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[LEONARDO]->GetPrevDefense(), m_pPlayer->GetTurtles()[LEONARDO]->GetDefense());
+	m_pBitmapFont->DrawString(temp,250,240,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+	//accuracy
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[LEONARDO]->GetPrevAccuracy(), m_pPlayer->GetTurtles()[LEONARDO]->GetAccuracy());
+	m_pBitmapFont->DrawString(temp,250,270,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+	//damage done
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[LEONARDO]->GetDamageDone());
+	m_pBitmapFont->DrawString(temp,275,320,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+	//damage recieved
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[LEONARDO]->GetDamageRecieved());
+	m_pBitmapFont->DrawString(temp,275,345,0.01f,1.1f,D3DCOLOR_XRGB(0,0,255));
+
+	//MIKEY
+	//level
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[MIKEY]->GetPrevLevel(), m_pPlayer->GetTurtles()[MIKEY]->GetLevel());
+	m_pBitmapFont->DrawString(temp,740,180,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+	//strength
+	sprintf_s(temp,"%i    %i",m_pPlayer->GetTurtles()[MIKEY]->GetPrevStrength(), m_pPlayer->GetTurtles()[MIKEY]->GetStrength());
+	m_pBitmapFont->DrawString(temp,650,210,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+	//defense
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[MIKEY]->GetPrevDefense(), m_pPlayer->GetTurtles()[MIKEY]->GetDefense());
+	m_pBitmapFont->DrawString(temp,650,240,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+	//accuracy
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[MIKEY]->GetPrevAccuracy(), m_pPlayer->GetTurtles()[MIKEY]->GetAccuracy());
+	m_pBitmapFont->DrawString(temp,650,270,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+	//damage done
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[MIKEY]->GetDamageDone());
+	m_pBitmapFont->DrawString(temp,675,320,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+	//damage recieved
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[MIKEY]->GetDamageRecieved());
+	m_pBitmapFont->DrawString(temp,675,345,0.01f,1.1f,D3DCOLOR_XRGB(255,100,0));
+
+
+	//DONATELLO
+	//level
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[DONATELLO]->GetPrevLevel(), m_pPlayer->GetTurtles()[DONATELLO]->GetLevel());
+	m_pBitmapFont->DrawString(temp,315,475,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+	//strength
+	sprintf_s(temp,"%i    %i",m_pPlayer->GetTurtles()[DONATELLO]->GetPrevStrength(), m_pPlayer->GetTurtles()[DONATELLO]->GetStrength());
+	m_pBitmapFont->DrawString(temp,245,510,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+	//defense
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[DONATELLO]->GetPrevDefense(), m_pPlayer->GetTurtles()[DONATELLO]->GetDefense());
+	m_pBitmapFont->DrawString(temp,245,540,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+	//accuracy
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[DONATELLO]->GetPrevAccuracy(), m_pPlayer->GetTurtles()[DONATELLO]->GetAccuracy());
+	m_pBitmapFont->DrawString(temp,245,570,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+	//damage done
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[DONATELLO]->GetDamageDone());
+	m_pBitmapFont->DrawString(temp,275,615,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+	//damage recieved
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[DONATELLO]->GetDamageRecieved());
+	m_pBitmapFont->DrawString(temp,275,640,0.01f,1.1f,D3DCOLOR_XRGB(175,0,255));
+
+	//RAPHAEL
+	//level
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[RAPHAEL]->GetPrevLevel(), m_pPlayer->GetTurtles()[RAPHAEL]->GetLevel());
+	m_pBitmapFont->DrawString(temp,730,475,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+	//strength
+	sprintf_s(temp,"%i    %i",m_pPlayer->GetTurtles()[RAPHAEL]->GetPrevStrength(), m_pPlayer->GetTurtles()[RAPHAEL]->GetStrength());
+	m_pBitmapFont->DrawString(temp,645,505,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+	//defense
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[RAPHAEL]->GetPrevDefense(), m_pPlayer->GetTurtles()[RAPHAEL]->GetDefense());
+	m_pBitmapFont->DrawString(temp,645,535,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+	//accuracy
+	sprintf_s(temp,"%i     %i",m_pPlayer->GetTurtles()[RAPHAEL]->GetPrevAccuracy(), m_pPlayer->GetTurtles()[RAPHAEL]->GetAccuracy());
+	m_pBitmapFont->DrawString(temp,645,565,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+	//damage done
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetDamageDone());
+	m_pBitmapFont->DrawString(temp,675,610,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+	//damage recieved
+	sprintf_s(temp,"%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetDamageRecieved());
+	m_pBitmapFont->DrawString(temp,675,635,0.01f,1.1f,D3DCOLOR_XRGB(255,0,0));
+
+	m_pBitmapFont->Reset();
+
+	m_bxActionBox->SetAlpha(0);
+
 }

@@ -767,6 +767,9 @@ void CNinja::Update(float fElapsedTime)
 
 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
 
+			m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
+
+
 			SetCurrAnim(4);
 			m_Timer.StartTimer(1.5f);
 

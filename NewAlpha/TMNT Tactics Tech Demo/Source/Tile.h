@@ -29,6 +29,10 @@ private:
 	// these two are used for pathfinding
 	int			m_nCost;
 	int			m_nTerrainCost;
+	// a*
+	int			m_nHeuristic;
+	int			m_nFcost;
+	CTile*		m_pParent;
 	//////////////////////////////////////////////////////////////////////////
 
 	int			m_nAlpha;
@@ -49,7 +53,8 @@ public:
 		m_strTrigger = "";
 		m_nCost = -1; m_nTerrainCost = 2;
 		m_rSrc.left = m_rSrc.right = m_rSrc.top = m_rSrc.bottom = 0;
-			
+		m_nFcost = m_nHeuristic = -1;
+		m_pParent = NULL;
 	}
 	~CTile(void){}
 	CTile(int nSourceID, int nImageID, int numCols, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger)
@@ -73,6 +78,8 @@ public:
 		m_nFlag = nFlag;
 		m_strTrigger = strTrigger;
 		m_nCost = -1; m_nTerrainCost = 2;
+		m_nFcost = m_nHeuristic = -1;
+		m_pParent = NULL;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -89,7 +96,10 @@ public:
 	int  Alpha()		const { return m_nAlpha;}
 	int	 Cost()			const { return m_nCost;}
 	int  TerrainCost()	const { return m_nTerrainCost;}
+	int	 H()			const { return m_nHeuristic;}
+	int  F()			const { return m_nFcost;}
 	string Trigger()	const { return m_strTrigger; }
+	CTile* Parent()		const { return m_pParent;}
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
@@ -104,7 +114,11 @@ public:
 	void SetAlpha(int alpha) {m_nAlpha = alpha;}
 	void SetCost(int cost)	 {m_nCost = cost;}
 	void SetTerrainCost(int cost) {m_nTerrainCost = cost;}
-
+	void SetDestX (int x)	{m_nDestXID = x;}
+	void SetDestY (int y)	{m_nDestYID = y;}
+	void SetH(int h)		{m_nHeuristic = h;}
+	void SetF(int f)		{m_nFcost = f;}
+	void SetParent(CTile* parent) {m_pParent = parent;}
 };
 
 // for all freely placed tiles that are NOT put into the grid...mostly the tiles that make it look pretty

@@ -30,7 +30,7 @@ private:
 	int m_nDistance;			//distance from turtle
 	
 	CPlayer* m_pPlayer;			//pointer to player
-	CTile* m_pTile;				//pointer to tile
+	CTile* m_pTilesL1;			//pointer to tile
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	MY_POINT_FLOAT m_ptCurrPos; //current position to check against change
@@ -67,6 +67,8 @@ public:
 	void FindPathX(POINT endPt, vector<POINT>Closed);
 
 	void FindPathNew(POINT begin, POINT end);
+
+	bool IsOnClose(CTile* tile, vector<CTile>& closed);
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”

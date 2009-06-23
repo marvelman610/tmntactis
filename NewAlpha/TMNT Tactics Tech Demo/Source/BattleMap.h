@@ -36,7 +36,7 @@ class CBox;
 class CSkill;
 
  // enum for tile flags
- enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, };
+ enum {FLAG_NONE, FLAG_COLLISION, FLAG_OBJECT_EDGE, FLAG_TURTLE_SPAWN = 4, FLAG_ENEMY_SPAWN, };
  enum {MINUS_Y, MINUS_X, ADD_Y, ADD_X, };
  enum {FIRE, SMOKE, BLOOD, GLOW, GLASS, HEALTH_GLOW};
  enum {BX_ACTION, BX_MSG, BX_SKILL, BX_ITEM, BX_PAUSE, BX_LOAD, BX_SAVE, BX_NULL, };	// all the box types
@@ -166,6 +166,8 @@ class CBattleMap
 
 	CTile* m_pTilesL1;			// all tiles on the map, used for drawing first layer
 	CTile* m_pTilesL2;			// all tiles on the map, used for drawing first layer
+	CTile* m_pSpawnPts;			// holds all available spawn tiles (enemy and player)
+	int    m_nSpawnCnt;
 	//CTile* m_pMoveableTiles;	// the open tiles, used for collision checking
 	CFreeTile* m_pFreeTiles;
 	sTileset m_pTilesets[4];	// keep track of the tileset info (struct)
@@ -362,6 +364,7 @@ class CBattleMap
 	void MoveCamDown(float fElapsedTime);
 	void MoveCamUp(float fElapsedTime);
 	void CenterCam(float fElapsedTime);
+	void ScreenShake(float fElapsedTime);
 
 	CBattleMap(void);
 	~CBattleMap(void);
@@ -474,7 +477,7 @@ public:
 	CBase* GetBoss()	const		{if(m_vEnemies.size() > 0 && m_vEnemies[m_nNumEnemiesLeft-1]->GetType() == OBJECT_BOSS) return m_vEnemies[m_nNumEnemiesLeft-1];else return NULL;}
 	CNinja* GetMovingNinja() const	{return m_pCurrMovingNinja;}
 	CBase* GetCurrEnemyTarget()		{if (m_nCurrTarget < (int)m_vEnemies.size())return m_vEnemies[m_nCurrTarget];else return NULL;}
-	CTile* GetAdjTiles(int x, int y);
+	CTile** GetAdjTiles(int x, int y, CTile* tiles);
 
 	vector<CBase*>* GetEnemies()	{return &m_vEnemies;}
 	CBase* GetCurrChar()			{return &m_vCharacters[m_nCurrCharacter];}
@@ -498,6 +501,7 @@ public:
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();
+	void AddMapSpawnTile(CTile* tile, int numPts);
 
 	void UseItem();
 };

@@ -255,6 +255,9 @@ void CGamePlayState::LoadGame(const char* fileName)
 		int killCount = 0;
 		ifs.read(reinterpret_cast<char*>(&killCount), sizeof(int));
 		player->SetKillCount(killCount);
+		bool shown;
+		ifs.read(reinterpret_cast<char*>(&shown), sizeof(bool));
+		player->SetSelectTurtleShown(shown);
 		ifs.close();
 	}
 }
@@ -336,6 +339,8 @@ void CGamePlayState::SaveGame(const char* fileName)
 		ofs.write((char*)(m_pPlayer->GetMapsUnlocked()), NUM_MAPS*sizeof(bool));
 		int killCount = m_pPlayer->GetKillCount();
 		ofs.write((char*)(&killCount), sizeof(int));
+		bool selectTurtleShown = m_pPlayer->GetSelectTurtleShown();
+		ofs.write((char*)(&selectTurtleShown), 1);
 		ofs.close();
 	}
 }
@@ -360,19 +365,19 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		{
 		case LOC_SIMUSA:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);				// first map
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_SIMUSA, "SIMUSA", 3);
-			break;
-		case LOC_IWAMI:
-			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 1, true);	// boss map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_SIMUSA, "SIMUSA", 4);
 			break;
 		case LOC_SINARO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMDonBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_SINARO, "SINARO", 6);	// second map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_SINARO, "SINARO", 4);	// second map
 			break;
 		case LOC_YAMATO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMMikeBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 5);	// third map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 4);	// third map
+			break;
+		case LOC_IWAMI:
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 4, true);	// boss map
 			break;
 		}
 		break;

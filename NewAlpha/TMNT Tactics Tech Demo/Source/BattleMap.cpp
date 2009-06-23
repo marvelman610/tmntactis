@@ -52,6 +52,7 @@ CBattleMap::CBattleMap(void)
 	godcheat = 0;
 	APbool = false;
 	APcheat = 0;
+	m_pSpawnPts = NULL;
 }
 
 CBattleMap::~CBattleMap(void)
@@ -72,6 +73,8 @@ CBattleMap::~CBattleMap(void)
  		m_pBitmapFont = NULL;
  	if (m_pFMOD)
  		m_pFMOD = NULL;
+	if (m_pSpawnPts)
+	{delete[] m_pSpawnPts; m_pSpawnPts = NULL;}
 }
 
 CBattleMap* CBattleMap::GetInstance()
@@ -94,9 +97,12 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_bxActionBox->SetActive(); 
 	m_bxSkillBox = m_bxItemBox = m_bxPauseBox = m_bxLoadBox = m_bxSaveBox = m_bxMessageBox = NULL;
 
+	// TILES
 	m_pTilesL1 = NULL;
 	m_pTilesL2 = NULL;
 	m_pFreeTiles = NULL;
+	m_pSpawnPts = NULL;
+
 	m_bHaveMoved = false; m_nMoveCost = 0;
 	m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; m_nCurrSkillCost = -1; m_bExecuteSkill = false;
 	m_nCurrBtnSelected = -1;
@@ -178,6 +184,9 @@ void CBattleMap::Reset()
 	delete[] m_pTilesL2; m_pTilesL2 = NULL;
 	delete[] m_pFreeTiles; m_pFreeTiles = NULL;
 	delete[] m_pParticleSystem;
+	if (m_pSpawnPts)
+	{delete[] m_pSpawnPts; m_pSpawnPts = NULL;}
+
 	m_pParticleSystem = NULL;
 
 	if(m_bxItemBox)
@@ -454,17 +463,16 @@ void CBattleMap::Render()
 	}
 	if(m_bPlayerAttack && m_nCurrCharacter > -1 && m_nCurrTarget >-1 && !m_bxPauseBox)
 	{
-		int offset = (m_Timer.GetElapsed()*13 )-15;
+		int offset = (int)(m_Timer.GetElapsed() * 13.0f )-15;
 		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
 		char tempXP[16];
 		sprintf_s(tempXP, "+%i", m_nXP);
-		m_pBitmapFont->DrawString(tempXP,m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5,m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
+		m_pBitmapFont->DrawString(tempXP,(int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
 		char tempDmg[16];
 		sprintf_s(tempDmg, "-%i", m_nDmg);
-		m_pBitmapFont->DrawString(tempDmg,m_vEnemies[m_nCurrTarget]->GetPosX()+5,m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
+		m_pBitmapFont->DrawString(tempDmg,(int)m_vEnemies[m_nCurrTarget]->GetPosX()+5, (int)m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
 
 		m_pBitmapFont->Reset();
-
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -592,6 +600,8 @@ void CBattleMap::Update(float fElapsedTime)
 
 	if(m_bWin || m_bLose)
 		return;
+
+	//CenterCam(fElapsedTime);
 	//////////////////////////////////////////////////////////////////////////
 
 	if(m_bEggBool2 || m_bItemBool2)
@@ -707,6 +717,7 @@ void CBattleMap::Update(float fElapsedTime)
 			m_bHaveMoved = true;
 			CalculateRanges();
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 			m_bMoving = false;
 			m_bPathDisplayed = false;
 			m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
@@ -928,317 +939,6 @@ void CBattleMap::CreateEnemies(bool bBoss)
 	
 }
 
-void CBattleMap::LoadMapInfo()
-{
-	ifstream ifs;
-	ifs.exceptions(~ios_base::goodbit);
-	
-	try
-	{
-		ifs.open(m_szFileName, ios_base::in | ios_base::binary);
-	}
-	catch(ios_base::failure &)
-	{
-		if (!ifs.is_open())
-		{
-			char szBuffer[128];
-			sprintf_s(szBuffer, "Failed to open file: %s", m_szFileName );
-			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
-			m_pGame->ChangeState(CMainMenuState::GetInstance());
-		}
-		if (ifs.eof())
-		{ifs.close();return;}		
-	}
-	//read input from the given binary file
-	string version, eat, name, tilesetName, fileName;
-	char file[256];
-	char buff[256];
-	ZeroMemory(buff, 256);
-	byte size;
-	ifs.read(reinterpret_cast<char*>(&size), 1);
-	ifs.read(buff, size);
-
-	version = buff;
-	try
-	{
-		if (version == m_strCurrVersion)	// make sure we are loading the current version
-		{
-			// Read in basic map info:
-			// Total number of tiles on map
-			// number of columns
-			// number of rows
-			ifs.read(reinterpret_cast<char*>(&m_nTotalNumTiles), 4);
-			ifs.read(reinterpret_cast<char*>(&m_nNumCols), 4);
-			ifs.read(reinterpret_cast<char*>(&m_nNumRows), 4);
-
-			// the exact center of the map's x and y, offset by half height and width
-			m_nTileWidth = 64; m_nTileHeight = 32;	// hard-coded, grid units are 64x32
-			//////////////////////////////////////////////////////////////////////////
-			//	set up the map so that it centers at the beginning
-			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
-
-			m_nIsoCenterLeftY = -/*(m_nTileHeight<<1)+*/(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
-			m_nIsoCenterTopX = 512; // map is always centered on the y
-			m_nMaxScrollX = m_nMaxScrollY = 50;
-			if (m_nMapWidth > m_nScreenWidth)
-				m_nMaxScrollX = (m_nMapWidth>>1) - (m_nScreenWidth>>1);
-			if (m_nMapHeight > m_nScreenHeight)
-				m_nMaxScrollY = (m_nMapHeight>>1) - (m_nScreenHeight>>1);
-
-			// allocate memory for layer 1, 2, and 3(free placed tiles)
-			m_pTilesL1  = new CTile[m_nNumRows*m_nNumCols];
-			m_pTilesL2  = new CTile[m_nNumRows*m_nNumCols];
-			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
-			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
-			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-			SetFTosX(m_nIsoCenterTopX - (m_nMapWidth >> 1));
-			SetFTosY(m_nIsoCenterLeftY - (m_nTileHeight >> 1));
-		}
-		else // didn't have the correct version number...
-		{
-			char szBuffer[128];
-			sprintf_s(szBuffer, "Current version: %s ...does not match loaded version: %s", m_strCurrVersion.c_str(), version.c_str());
-			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
-			m_pGame->ChangeState(CMainMenuState::GetInstance());
-			ifs.close();return;
-		}
-	}
-	catch(ios_base::failure &)
-	{
-		if (!ifs.eof())
-			throw;
-		else
-			ifs.close();
-	}
-
-	int tilesetCount = 0;	// how many tilesets are we going to be drawing from?
-	int numCols = 0;
-	int xID, yID, destID, sourceID, flag, width, height; // tile variables
-	float rotation;
-	string trigger;	// tile trigger string
-	byte red, green, blue; // for tileset key color
-
-	try 
-	{
-		ZeroMemory(buff, 256);
-		ifs.read(reinterpret_cast<char*>(&size), 1);
-		ifs.read(buff, size);
-		name = buff;
-		//////////////////////////////////////////////////////////////////////////
-		// Loading in tilesets
-		// if there's a tileset..load the image with the correct key color
-		while (name == "Tileset")
-		{
-			ZeroMemory(buff, size);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			fileName = buff;
-			strcpy_s(file, fileName.c_str());
-
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			name = buff;
-
-			ifs.read(reinterpret_cast<char*>(&red), 1);
-			ifs.read(reinterpret_cast<char*>(&green), 1);
-			ifs.read(reinterpret_cast<char*>(&blue), 1);
-			// store the tileset information so we can determine where each tile comes from
-			m_pTilesets[tilesetCount].id = m_pTM->LoadTexture(file, D3DCOLOR_ARGB(255,red, green, blue));
-			m_pTilesets[tilesetCount++].name = name;
-
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			name = buff;
-		}
-	}
-	catch (ios_base::failure &)
-	{
-		if (!ifs.eof())
-			throw;
-		else
-			ifs.close();
-	}
-	int imageID; int sPos;
-	sPos = ifs.tellg();
-	try
-	{
-		//////////////////////////////////////////////////////////////////////////
-		// Layer ONE
-		int count = 0;
-		while (name == "Layer1")
-		{
-			// read in tile's tileset name (which tileset it came from)
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			tilesetName = buff;
-			// determine which image id this tile should have
-			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
-			{
-				if (tilesetName == m_pTilesets[tsIndex].name)
-				{
-					imageID = m_pTilesets[tsIndex].id;
-					numCols = m_pTM->GetTextureWidth(imageID) / 64;
-					break;
-				}
-			}
-			ifs.read(reinterpret_cast<char*>(&sourceID), 4);
-			ifs.read(reinterpret_cast<char*>(&xID), 4);
-			ifs.read(reinterpret_cast<char*>(&yID), 4);
-			ifs.read(reinterpret_cast<char*>(&flag), 4);
-			ifs.read(reinterpret_cast<char*>(&width), 4);
-			ifs.read(reinterpret_cast<char*>(&height), 4);
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			trigger = buff;
-
-			// setting up each tile of the first layer
-			destID = yID * m_nNumCols + xID;	// the id of the tile in the 1-d array
-			m_pTilesL1[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
-			rotation = 0;
-			// skip ahead to determine if we have more tiles
-			// or if we move on to layer 2 ("L") or 3 ("F")
-			sPos = ifs.tellg();
-			ifs.seekg(sPos+1);
-			eat = ifs.peek();
-			count++;
-			if (eat == "L" || eat == "F")
-				break;
-			else
-				ifs.seekg(sPos);
-		}
-	}
-	catch(ios_base::failure &)
-	{
-		if (!ifs.eof())
-			throw;
-		else
-			ifs.clear();ifs.close(); return;
-	}
-			
-	try
-	{
-		if (m_pTilesL1[0].DestXID() != -1)
-		{
-			ifs.seekg(sPos);	// set the input stream position back to where it needs to be
-			//////////////////////////////////////////////////////////////////////////
-			// Layer TWO
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			name = buff;
- 		}
-		while (name == "Layer2")
-		{
-			// read in tile's tileset name (which tileset it came from)
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			tilesetName = buff;
-			// determine which image id this tile should have
-			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
-			{
-				if (tilesetName == m_pTilesets[tsIndex].name)
-				{
-					imageID = m_pTilesets[tsIndex].id;
-					numCols = m_pTM->GetTextureWidth(imageID) / 64;
-					break;
-				}
-			}
-			ifs.read(reinterpret_cast<char*>(&sourceID), 4);
-			ifs.read(reinterpret_cast<char*>(&xID), 4);
-			ifs.read(reinterpret_cast<char*>(&yID), 4);
-			ifs.read(reinterpret_cast<char*>(&flag), 4);
-			ifs.read(reinterpret_cast<char*>(&width), 4);
-			ifs.read(reinterpret_cast<char*>(&height), 4);
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			trigger = buff;
-
-			// setting up each tile of the first layer
-			destID = yID * m_nNumCols + xID;
-			m_pTilesL2[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
-			sPos = ifs.tellg();
-			ifs.seekg(sPos+1);
-			eat = ifs.peek();
-			if (eat == "F")
-				break;
-			else
-				ifs.seekg(sPos);
-		}
-
-	}
-	catch (ios_base::failure &)
-	{
-		if (!ifs.eof())
-			throw;
-		else
-			ifs.clear();ifs.close(); return;	
-	}
-
-	try
-	{
-		if (m_pTilesL2[0].DestXID() != -1 && m_pTilesL1[0].DestXID() != -1 || eat[0] == 'F')
-		{
-			ifs.seekg(sPos);
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			name = buff;
-		}
-		//////////////////////////////////////////////////////////////////////////
-		// the Free Placed layer 
-		int srcPosX, srcPosY, destX, destY, count = 0;	// unique variables to load in for CFreeTiles
-		// this is the last layer, so check for end of file
-		while (!ifs.eof())
-		{
-			// read in tile's tileset name (which tileset it came from)
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			tilesetName = buff;
-
-			// determine which image id this tile should have
-			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
-			{
-				if (tilesetName == m_pTilesets[tsIndex].name)
-				{
-					imageID = m_pTilesets[tsIndex].id;
-					break;
-				}
-			}
-
-			ifs.read(reinterpret_cast<char*>(&srcPosX), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&srcPosY), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&flag), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&destX), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&destY), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&width), sizeof(int));
-			ifs.read(reinterpret_cast<char*>(&height), sizeof(int));
-			ZeroMemory(buff, 256);
-			ifs.read(reinterpret_cast<char*>(&size), 1);
-			ifs.read(buff, size);
-			trigger = buff;
-			int rot = 0;
-			ifs.read(reinterpret_cast<char*>(&rot), sizeof(int));
-			rotation = (float)rot / 10.0f;
-
-			m_pFreeTiles[count++] = CFreeTile(srcPosX, srcPosY, imageID, destX, destY, width, height, flag, trigger, rotation);
-			m_nFreeTileCount = count;
-		}
-	}
-	catch(ios_base::failure &)
-	{
-		if (!ifs.eof())
-			throw;
-		else
-			ifs.close(); return;
-	}
-}
 
 float CBattleMap::GetZdepthDraw(int xAnchor, int yAnchor, int currTileID)
 {
@@ -1376,59 +1076,65 @@ void CBattleMap::CalculateRanges()
 	// mark tiles to be drawn with range color	
 	if(!m_bItemBool)	// checking movement range for character
 	{
-		vector<CTile*> open; vector<CTile*> selected;
+		CTile* pTiles = new CTile[m_nTotalNumTiles];
+		for (int i = 0; i < m_nTotalNumTiles; ++i)
+			pTiles[i] = m_pTilesL1[i];
+		vector<CTile> open; vector<CTile> selected;
 		CTile start = m_pTilesL1[GetCurrChar()->GetCurrTile()]; start.SetCost( 0 );
-		open.push_back(&start);
+		open.push_back(start);
+		bool found;
 
 		while (open.size() > 0)
 		{
 			// get the current tile
-			CTile* curr = open[open.size()-1]; open.pop_back();
-			CTile* adjTiles = GetAdjTiles(curr->DestXID(), curr->DestYID());
+			CTile curr = open[open.size()-1]; open.pop_back();
+			CTile** adjTiles = GetAdjTiles(curr.DestXID(), curr.DestYID(), pTiles);
 			for (int i = 3; i >= 0; --i)
 			{
-				CTile adj = adjTiles[i];
+				CTile* adj = adjTiles[i];
 				// make sure it's a valid tile
-				if (adj.TerrainCost() > -1)
+				if (adj && adj->TerrainCost() != 999)
 				{
-					bool found = false;
-					int costs = adj.TerrainCost() + adj.Cost();
-					if (costs < adj.Cost() || adj.Cost() == -1)
+					found = false;
+					int costs = adj->TerrainCost() + curr.Cost();
+					if (costs < adj->Cost() || adj->Cost() == -1)
 					{
-						adj.SetCost(costs);
+						adj->SetCost(costs);
 						for (unsigned int ind = 0; ind < open.size(); ++ind)
 						{
-							if (open[ind]->DestXID() == adj.DestXID() &&
-								open[ind]->DestYID() == adj.DestYID())
+							if (open[ind].DestXID() == adj->DestXID() &&
+								open[ind].DestYID() == adj->DestYID())
 							{found = true; break;}
 						}
 						if (!found)
-							open.push_back(&adj);
+							open.push_back(*adj);
 					}
 					found = false;
-					if (adj.Cost() <= range)
+					if (adj->Cost() <= range)
 					{
 						for (unsigned int ind = 0; ind < selected.size(); ++ind)
 						{
-							if (selected[ind]->DestXID() == adj.DestXID() &&
-								selected[ind]->DestYID() == adj.DestYID())
+							if (selected[ind].DestXID() == adj->DestXID() &&
+								selected[ind].DestYID() == adj->DestYID())
 							{found = true; break;}
 						}
 						if (!found)
-							selected.push_back(&adj);
+							selected.push_back(*adj);
 					}
-					if (adj.Cost() > (int)((float)range * 1.2f))
+					if (adj->Cost() > (int)((float)range * 1.2f))
 						break;
 				}
 			}
-			delete[] adjTiles;
+			delete[] adjTiles;	// leaking memory here?
 		}
 		// found all movable tiles, set alphas
 		for (unsigned int i = 0; i < selected.size(); ++i)
 		{
-			int id = selected[i]->DestYID() * m_nNumCols + selected[i]->DestXID();
+			int id = selected[i].DestYID() * m_nNumCols + selected[i].DestXID();
 			m_pTilesL1[id].SetAlpha(alpha);
 		}
+		delete[] pTiles;
+		open.clear(); selected.clear();
 
 		// scan the neighbors
 // 		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
@@ -1475,38 +1181,39 @@ void CBattleMap::CalculateRanges()
 	}
 }
 
-CTile* CBattleMap::GetAdjTiles(int StartX, int StartY)
+CTile** CBattleMap::GetAdjTiles(int StartX, int StartY, CTile* tiles)
 {
-	CTile* cells = new CTile[4];
+	CTile** cells = new CTile*[4];
 
 	int tileID = StartY * m_nNumCols + StartX;
 
 	if (StartX-1 > 1)
-		cells[MINUS_X] = m_pTilesL1[tileID-1];
+		cells[MINUS_X] = &tiles[tileID-1];
 	else
-		cells[MINUS_X].SetTerrainCost(-1);
+		cells[MINUS_X] = NULL;
 
-	if (StartX+1 <= m_nNumCols)
-		cells[ADD_X] = m_pTilesL1[tileID+1];
+	if (StartX+1 < m_nNumCols)
+		cells[ADD_X] = &tiles[tileID+1];
 	else
-		cells[ADD_X].SetTerrainCost(-1);
+		cells[ADD_X] = NULL;
 
 	if (StartY-1 > 1)
-		cells[MINUS_Y] = m_pTilesL1[tileID-m_nNumCols];
+		cells[MINUS_Y] = &tiles[tileID-m_nNumCols];
 	else
-		cells[MINUS_Y].SetTerrainCost(-1);
+		cells[MINUS_Y] = NULL;
 
-	if (StartY+1 <= m_nNumRows)
-		cells[ADD_Y] = m_pTilesL1[tileID+m_nNumCols];
+	if (StartY+1 < m_nNumRows)
+		cells[ADD_Y] = &tiles[tileID+m_nNumCols];
 	else
-		cells[ADD_Y].SetTerrainCost(-1);
+		cells[ADD_Y] = NULL;
 	for (int i = 0; i < 4; ++i)
 	{
-		if (cells[i].TerrainCost() > -1)
+		if (cells[i])
 		{
-			tileID = cells[i].DestYID() * m_nNumCols + cells[i].DestXID();
-			if (m_pTilesL1[tileID].Flag() == FLAG_COLLISION || m_pTilesL1[tileID].Flag() == FLAG_OBJECT_EDGE)
-				cells[i].SetCost(999);
+			CTile* temp = cells[i];
+			tileID = temp->DestYID() * m_nNumCols + temp->DestXID();
+			if (tiles[tileID].Flag() == FLAG_COLLISION || tiles[tileID].Flag() == FLAG_OBJECT_EDGE)
+				cells[i]->SetTerrainCost(999);
 		}
 	}
 
@@ -1566,36 +1273,34 @@ void CBattleMap::DrawHover()
 
 void CBattleMap::SetStartPositions()
 {
-	// TODO::find the flags on the map where the characters can spawn
-
-	// mapCoordinates represents the grid x=column, y=row
-	POINT mapCoordinate;
-	mapCoordinate.x = 10;
-	mapCoordinate.y = 18;
-	m_pPlayer->GetTurtles()[LEONARDO]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-
-	mapCoordinate.x = 4;
-	mapCoordinate.y = 18;
-	m_pPlayer->GetTurtles()[DONATELLO]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-
-	mapCoordinate.x = 3;
-	mapCoordinate.y = 17;
-	m_pPlayer->GetTurtles()[RAPHAEL]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-
-	mapCoordinate.x = 4;
-	mapCoordinate.y = 17;
-	m_pPlayer->GetTurtles()[MIKEY]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-
 	m_vCharacters.clear();
+	POINT sPt;
+	int* taken = new int[m_nSpawnCnt];
+	for (int i = 0; i < m_nSpawnCnt; ++i)
+		taken[i] = -1;
+	int spawnInd;
+	// find an empty turtle spawn tile
 	for (int i = 0; i < 4; ++i)
+	{
+		spawnInd = 0;
+		for (; spawnInd < m_nSpawnCnt; ++spawnInd)
+			if (m_pSpawnPts[spawnInd].Flag() == FLAG_TURTLE_SPAWN && taken[spawnInd] != spawnInd)
+			{taken[spawnInd] = spawnInd; break;}
+		sPt.x = m_pSpawnPts[spawnInd].DestXID(); sPt.y = m_pSpawnPts[spawnInd].DestYID();
+		m_pPlayer->GetTurtles()[i]->SetCurrTile(sPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 		m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
+	}
 	for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 	{
-		mapCoordinate.x = rand() % (18 - 3) + 2;
-		mapCoordinate.y = rand() % (18 - 3) + 2;
-		m_vEnemies[i]->SetCurrTile(mapCoordinate, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		spawnInd = 0;
+		for (; spawnInd < m_nSpawnCnt; ++spawnInd)
+			if (m_pSpawnPts[spawnInd].Flag() == FLAG_ENEMY_SPAWN && taken[spawnInd] != spawnInd)
+			{taken[spawnInd] = spawnInd; break;}
+		sPt.x = m_pSpawnPts[spawnInd].DestXID(); sPt.y = m_pSpawnPts[spawnInd].DestYID();
+		m_vEnemies[i]->SetCurrTile(sPt, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
 		m_vCharacters.push_back(*m_vEnemies[i]);
 	}
+	delete[] taken;
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
@@ -1880,16 +1585,20 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
 	//////////////////////////////////////////////////////////////////////////
 
-	if((m_pDI->JoystickButtonPressed(2,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
-		(index == -1 && m_nCurrCharacter == -1 && !m_bxMessageBox) )
+	if (!m_pPlayer->GetSelectTurtleShown())
 	{
-		string* message = new string[3];
-		message[0] = "SELECT A TURTLE"; message[1] = "TO BEGIN"; message[2] = "YOUR TURN";
-		m_bxMessageBox = new CBox(3, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
-		m_bxMessageBox->SetType(BOX_WITH_BACK); m_bxMessageBox->SetActive();
-		m_bxActionBox->SetActive(false);
-		m_bxMessageBox->IsMsgBox(true);
-		delete[] message;
+		if((m_pDI->JoystickButtonPressed(2,0) || m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && 
+			(index == -1 && m_nCurrCharacter == -1 && !m_bxMessageBox) )
+		{
+			string* message = new string[3];
+			message[0] = "RIGHT-CLICK A TURTLE"; message[1] = "TO BEGIN"; message[2] = "YOUR TURN";
+			m_bxMessageBox = new CBox(3, message, 320, 300, 0.11f, false, 25, 25, 25, -1, 0.7f);
+			m_bxMessageBox->SetType(BOX_WITH_BACK); m_bxMessageBox->SetActive();
+			m_bxActionBox->SetActive(false);
+			m_bxMessageBox->IsMsgBox(true);
+			delete[] message;
+			m_pPlayer->SetSelectTurtleShown(true);
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -2531,6 +2240,30 @@ void CBattleMap::MoveCamRight(float fElapsedTime)
 }
 void CBattleMap::CenterCam(float fElapsedTime)
 {
+	// center camera on current moving character
+	if (m_bIsPlayersTurn && m_nCurrCharacter > -1)
+	{
+		// get distance between the character and the scroll offsets
+		m_fScrollX = m_vCharacters[m_nCurrCharacter].GetPosX() - (m_nScreenWidth >> 1);
+		m_fScrollY = m_vCharacters[m_nCurrCharacter].GetPosY() - (m_nScreenHeight >> 1);
+		if (m_fScrollX < -m_nMaxScrollX)
+			m_fScrollX = -m_nMaxScrollX;
+		else if (m_fScrollX > m_nMaxScrollX)
+			m_fScrollX = m_nMaxScrollX;
+		if (m_fScrollY < -m_nMaxScrollY)
+			m_fScrollY = -m_nMaxScrollY;
+		else if (m_fScrollY > m_nMaxScrollY)
+			m_fScrollY = m_nMaxScrollY;
+		SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+		SetFTosX((int)m_fScrollX - ((m_nMapWidth >> 1) - (m_nScreenWidth >> 1)) );
+		for (int i = 0; i < m_nNumCharacters; ++i)
+			m_vCharacters[i].SetCurrTile(m_vCharacters[i].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		UpdatePositions();
+	}
+}
+
+void CBattleMap::ScreenShake(float fElapsedTime)
+{
 
 }
 
@@ -2741,5 +2474,344 @@ void CBattleMap::DrawThrowItems()
 		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)-posy);
 
 		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)pt.x,(int)pt.y,0.51f);
+	}
+}
+
+void CBattleMap::LoadMapInfo()
+{
+	ifstream ifs;
+	ifs.exceptions(~ios_base::goodbit);
+
+	try
+	{
+		ifs.open(m_szFileName, ios_base::in | ios_base::binary);
+	}
+	catch(ios_base::failure &)
+	{
+		if (!ifs.is_open())
+		{
+			char szBuffer[128];
+			sprintf_s(szBuffer, "Failed to open file: %s", m_szFileName );
+			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
+			m_pGame->ChangeState(CMainMenuState::GetInstance());
+		}
+		if (ifs.eof())
+		{ifs.close();return;}		
+	}
+	//read input from the given binary file
+	string version, eat, name, tilesetName, fileName;
+	char file[256];
+	char buff[256];
+	ZeroMemory(buff, 256);
+	byte size;
+	ifs.read(reinterpret_cast<char*>(&size), 1);
+	ifs.read(buff, size);
+
+	version = buff;
+	try
+	{
+		if (version == m_strCurrVersion)	// make sure we are loading the current version
+		{
+			// Read in basic map info:
+			// Total number of tiles on map
+			// number of columns
+			// number of rows
+			ifs.read(reinterpret_cast<char*>(&m_nTotalNumTiles), 4);
+			ifs.read(reinterpret_cast<char*>(&m_nNumCols), 4);
+			ifs.read(reinterpret_cast<char*>(&m_nNumRows), 4);
+
+			// the exact center of the map's x and y, offset by half height and width
+			m_nTileWidth = 64; m_nTileHeight = 32;	// hard-coded, grid units are 64x32
+			//////////////////////////////////////////////////////////////////////////
+			//	set up the map so that it centers at the beginning
+			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
+
+			m_nIsoCenterLeftY = -/*(m_nTileHeight<<1)+*/(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
+			m_nIsoCenterTopX = 512; // map is always centered on the y
+			m_nMaxScrollX = m_nMaxScrollY = 50;
+			if (m_nMapWidth > m_nScreenWidth)
+				m_nMaxScrollX = (m_nMapWidth>>1) - (m_nScreenWidth>>1);
+			if (m_nMapHeight > m_nScreenHeight)
+				m_nMaxScrollY = (m_nMapHeight>>1) - (m_nScreenHeight>>1);
+
+			// allocate memory for layer 1, 2, and 3(free placed tiles)
+			m_pTilesL1  = new CTile[m_nNumRows*m_nNumCols];
+			m_pTilesL2  = new CTile[m_nNumRows*m_nNumCols];
+			m_pFreeTiles= new CFreeTile[m_nNumRows*m_nNumCols];
+			SetOffsetX((int)m_fScrollX + m_nIsoCenterTopX - (m_nTileWidth >> 1));
+			SetOffsetY((int)m_fScrollY + m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+			SetFTosX(m_nIsoCenterTopX - (m_nMapWidth >> 1));
+			SetFTosY(m_nIsoCenterLeftY - (m_nTileHeight >> 1));
+		}
+		else // didn't have the correct version number...
+		{
+			char szBuffer[128];
+			sprintf_s(szBuffer, "Current version: %s ...does not match loaded version: %s", m_strCurrVersion.c_str(), version.c_str());
+			MessageBox(0, szBuffer, "Incorrect version.", MB_OK);
+			ifs.close();
+			m_pGame->ChangeState(CMainMenuState::GetInstance());
+		}
+	}
+	catch(ios_base::failure &)
+	{
+		if (!ifs.eof())
+			throw;
+		else
+			ifs.close();
+	}
+
+	int tilesetCount = 0;	// how many tilesets are we going to be drawing from?
+	int numCols = 0;
+	int xID, yID, destID, sourceID, flag, width, height; // tile variables
+	float rotation;
+	string trigger;	// tile trigger string
+	byte red, green, blue; // for tileset key color
+	int spawnTileCount = 0;
+
+	try 
+	{
+		ZeroMemory(buff, 256);
+		ifs.read(reinterpret_cast<char*>(&size), 1);
+		ifs.read(buff, size);
+		name = buff;
+		//////////////////////////////////////////////////////////////////////////
+		// Loading in tilesets
+		// if there's a tileset..load the image with the correct key color
+		while (name == "Tileset")
+		{
+			ZeroMemory(buff, size);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			fileName = buff;
+			strcpy_s(file, fileName.c_str());
+
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			name = buff;
+
+			ifs.read(reinterpret_cast<char*>(&red), 1);
+			ifs.read(reinterpret_cast<char*>(&green), 1);
+			ifs.read(reinterpret_cast<char*>(&blue), 1);
+			// store the tileset information so we can determine where each tile comes from
+			m_pTilesets[tilesetCount].id = m_pTM->LoadTexture(file, D3DCOLOR_ARGB(255,red, green, blue));
+			m_pTilesets[tilesetCount++].name = name;
+
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			name = buff;
+		}
+	}
+	catch (ios_base::failure &)
+	{
+		if (!ifs.eof())
+			throw;
+		else
+			ifs.close();
+	}
+	int imageID; int sPos;
+	sPos = ifs.tellg();
+	try
+	{
+		//////////////////////////////////////////////////////////////////////////
+		// Layer ONE
+		int count = 0;
+		while (name == "Layer1")
+		{
+			// read in tile's tileset name (which tileset it came from)
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			tilesetName = buff;
+			// determine which image id this tile should have
+			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
+			{
+				if (tilesetName == m_pTilesets[tsIndex].name)
+				{
+					imageID = m_pTilesets[tsIndex].id;
+					numCols = m_pTM->GetTextureWidth(imageID) / 64;
+					break;
+				}
+			}
+			ifs.read(reinterpret_cast<char*>(&sourceID), 4);
+			ifs.read(reinterpret_cast<char*>(&xID), 4);
+			ifs.read(reinterpret_cast<char*>(&yID), 4);
+			ifs.read(reinterpret_cast<char*>(&flag), 4);
+			ifs.read(reinterpret_cast<char*>(&width), 4);
+			ifs.read(reinterpret_cast<char*>(&height), 4);
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			trigger = buff;
+
+			// setting up each tile of the first layer
+			destID = yID * m_nNumCols + xID;	// the id of the tile in the 1-d array
+			m_pTilesL1[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
+			if (flag > 3)	// tile is a spawn point
+				AddMapSpawnTile(&m_pTilesL1[destID], ++spawnTileCount);
+			rotation = 0;
+			// skip ahead to determine if we have more tiles
+			// or if we move on to layer 2 ("L") or 3 ("F")
+			sPos = ifs.tellg();
+			ifs.seekg(sPos+1);
+			eat = ifs.peek();
+			count++;
+			if (eat == "L" || eat == "F")
+				break;
+			else
+				ifs.seekg(sPos);
+		}
+	}
+	catch(ios_base::failure &)
+	{
+		if (!ifs.eof())
+			throw;
+		else
+			ifs.clear();ifs.close(); return;
+	}
+	m_nSpawnCnt = spawnTileCount;
+	try
+	{
+		//if (m_pTilesL1[0].DestXID() != -1)
+		//{
+			ifs.seekg(sPos);	// set the input stream position back to where it needs to be
+			//////////////////////////////////////////////////////////////////////////
+			// Layer TWO
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			name = buff;
+		//}
+		while (name == "Layer2")
+		{
+			// read in tile's tileset name (which tileset it came from)
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			tilesetName = buff;
+			if (tilesetName == "FreePlace")
+				break;
+			// determine which image id this tile should have
+			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
+			{
+				if (tilesetName == m_pTilesets[tsIndex].name)
+				{
+					imageID = m_pTilesets[tsIndex].id;
+					numCols = m_pTM->GetTextureWidth(imageID) / 64;
+					break;
+				}
+			}
+			ifs.read(reinterpret_cast<char*>(&sourceID), 4);
+			ifs.read(reinterpret_cast<char*>(&xID), 4);
+			ifs.read(reinterpret_cast<char*>(&yID), 4);
+			ifs.read(reinterpret_cast<char*>(&flag), 4);
+			ifs.read(reinterpret_cast<char*>(&width), 4);
+			ifs.read(reinterpret_cast<char*>(&height), 4);
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			trigger = buff;
+
+			// setting up each tile of the first layer
+			destID = yID * m_nNumCols + xID;
+			m_pTilesL2[destID] = CTile(sourceID, imageID, numCols, xID, yID, width, height, flag, trigger);
+			sPos = ifs.tellg();
+			ifs.seekg(sPos+1);
+			eat = ifs.peek();
+			if (eat == "F")
+				break;
+			else
+				ifs.seekg(sPos);
+		}
+
+	}
+	catch (ios_base::failure &)
+	{
+		if (!ifs.eof())
+			throw;
+		else
+			ifs.clear();ifs.close(); return;	
+	}
+
+	try
+	{
+		if (m_pTilesL2[0].DestXID() != -1 && m_pTilesL1[0].DestXID() != -1 || eat[0] == 'F')
+		{
+			ifs.seekg(sPos);
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			name = buff;
+		}
+		//////////////////////////////////////////////////////////////////////////
+		// the Free Placed layer 
+		int srcPosX, srcPosY, destX, destY, count = 0;	// unique variables to load in for CFreeTiles
+		// this is the last layer, so check for end of file
+		while (!ifs.eof())
+		{
+			// read in tile's tileset name (which tileset it came from)
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			tilesetName = buff;
+
+			// determine which image id this tile should have
+			for (int tsIndex = 0; tsIndex < tilesetCount; ++tsIndex)
+			{
+				if (tilesetName == m_pTilesets[tsIndex].name)
+				{
+					imageID = m_pTilesets[tsIndex].id;
+					break;
+				}
+			}
+
+			ifs.read(reinterpret_cast<char*>(&srcPosX), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&srcPosY), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&flag), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&destX), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&destY), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&width), sizeof(int));
+			ifs.read(reinterpret_cast<char*>(&height), sizeof(int));
+			ZeroMemory(buff, 256);
+			ifs.read(reinterpret_cast<char*>(&size), 1);
+			ifs.read(buff, size);
+			trigger = buff;
+			int rot = 0;
+			ifs.read(reinterpret_cast<char*>(&rot), sizeof(int));
+			rotation = (float)rot / 10.0f;
+
+			m_pFreeTiles[count++] = CFreeTile(srcPosX, srcPosY, imageID, destX, destY, width, height, flag, trigger, rotation);
+			m_nFreeTileCount = count;
+		}
+	}
+	catch(ios_base::failure &)
+	{
+		if (!ifs.eof())
+			throw;
+		else
+			ifs.close(); return;
+	}
+}
+
+void CBattleMap::AddMapSpawnTile(CTile* tile, int numPts)
+{
+	if (m_pSpawnPts)
+	{
+		CTile* tempPts = new CTile[numPts];
+		for (int i = 0; i < numPts-1; ++i)
+			tempPts[i] = m_pSpawnPts[i];
+		delete[] m_pSpawnPts;
+
+		m_pSpawnPts = new CTile[numPts];
+		for (int i = 0; i < numPts-1; ++i)
+			m_pSpawnPts[i] = tempPts[i];
+		m_pSpawnPts[numPts-1] = *tile;
+		delete[] tempPts;
+	}
+	else
+	{
+		m_pSpawnPts = new CTile[numPts];
+		m_pSpawnPts[0] = *tile;
 	}
 }

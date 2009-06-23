@@ -24,6 +24,14 @@ CTurtle::CTurtle(void)
 	m_nCurrWeapon = 0;
 	m_pOwner = NULL;
 	m_nNumType = -1;
+
+	m_nPrevLvl = 0;
+	m_nPrevStr = 0;
+	m_nPrevDef = 0;
+	m_nPrevAcc = 0;
+	m_nDamageDon = 0;
+	m_nDamageRec = 0;
+
 }
 
 CTurtle::~CTurtle(void)

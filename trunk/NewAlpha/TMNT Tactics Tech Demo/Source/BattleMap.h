@@ -241,6 +241,7 @@ class CBattleMap
 	int APcheat;
 
 	void cheat();
+	void RenderStats();
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Reset

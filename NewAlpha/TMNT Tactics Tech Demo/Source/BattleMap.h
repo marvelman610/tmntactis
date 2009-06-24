@@ -502,6 +502,7 @@ public:
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();
+	void SetTurtleDead() {m_nCurrCharacter= -1; m_ncurrTargetTile = -1;}
 	void AddMapSpawnTile(CTile* tile, int numPts);
 
 	void UseItem();

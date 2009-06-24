@@ -210,7 +210,7 @@ void CAssets::LoadAssets()
 	{
 		aStrikeHardSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_strikeHard.mp3");
 		aLessonInPainSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_pain101.mp3");
-		aMegaKill			= m_pFMOD->LoadSound("Resources/Sounds/VG_megaKill.mp3");
+		aMegaKillSnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_megaKill.mp3");
 		aQuickFingersSnd	= m_pFMOD->LoadSound("Resources/Sounds/VG_quickFingers.mp3");
 		//////////////////////////////////////////////////////////////////////////
 		

@@ -33,6 +33,7 @@ private:
 	int			m_nHeuristic;
 	int			m_nFcost;
 	CTile*		m_pParent;
+
 	//////////////////////////////////////////////////////////////////////////
 
 	int			m_nAlpha;

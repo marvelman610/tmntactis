@@ -54,8 +54,8 @@ private:
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	MY_POINT_FLOAT m_ptCurrPos; //current position to check against change
-	vector<POINT>m_vClosedList; //list of the closed tiles
 	vector<POINT>m_vMoveList;	//list of tiles to move through(path)
+	int m_nMoveListIndex;
 	
 	CTimer m_Timer;
 

@@ -51,11 +51,11 @@ private:
 	CBitmapFont* m_pBitmapFont;
 	CBattleMap* m_pBattleMap;
 	CTile* m_pTilesL1;			//pointer to tile
-	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	MY_POINT_FLOAT m_ptCurrPos; //current position to check against change
 	vector<POINT>m_vMoveList;	//list of tiles to move through(path)
 	int m_nMoveListIndex;
+	int changeX, changeY;	// negative or positive change from last tile to this one
 	
 	CTimer m_Timer;
 

@@ -186,6 +186,7 @@ public:
 	ASSET aHealthGlowParticle;
 	ASSET aShredderParticle;
 	ASSET aDustCloudParticle;
+	ASSET aPOWParticle;
 
 
 	//////////////////////////////////////////////////////////////////////////

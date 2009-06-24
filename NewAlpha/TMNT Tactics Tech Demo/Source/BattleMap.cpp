@@ -122,7 +122,7 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_strCurrVersion = "TED-Version-1.0";	// current tile editor's version number
 
 	//particle test
-	m_pParticleSystem = new CParticleSystem[6];
+	m_pParticleSystem = new CParticleSystem[10];
 	m_pParticleSystem[FIRE].Load("Resources/ParticleInfo/VG_Fire.dat");
 	m_pParticleSystem[FIRE].m_bLoop = false;
 	m_pParticleSystem[SMOKE].Load("Resources/ParticleInfo/VG_Cloud.dat");
@@ -135,6 +135,14 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_pParticleSystem[GLASS].m_bLoop = false;
 	m_pParticleSystem[HEALTH_GLOW].Load("Resources/ParticleInfo/VG_HealthGlow.dat");
 	m_pParticleSystem[HEALTH_GLOW].m_bLoop = false;
+	m_pParticleSystem[SHREDDER_SPECIAL].Load("Resources/ParticleInfo/VG_ShredderFlame.dat");
+	m_pParticleSystem[DUST_CLOUD].Load("Resources/ParticleInfo/VG_Dust.dat");
+	m_pParticleSystem[ATTACK].Load("Resources/ParticleInfo/VG_POW.dat");
+	m_pParticleSystem[ATTACK].m_bLoop = false;
+
+	m_pParticleSystem[NINJA_BLOOD].Load("Resources/ParticleInfo/VG_NinjaBlood.dat");
+	m_pParticleSystem[NINJA_BLOOD].m_bLoop = false;
+	m_pParticleSystem[NINJA_BLOOD].m_fRotation = -3.1415f;
 
 	m_nNumEnemiesKilled = 0;
 	m_nNumCharacters = 4+nNumEnemies;
@@ -162,6 +170,7 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 		m_pPlayer->GetTurtles()[i]->SetPrevStrength(m_pPlayer->GetTurtles()[i]->GetStrength());
 		m_pPlayer->GetTurtles()[i]->SetPrevDefense(m_pPlayer->GetTurtles()[i]->GetDefense());
 		m_pPlayer->GetTurtles()[i]->SetPrevAccuracy(m_pPlayer->GetTurtles()[i]->GetAccuracy());
+		m_pPlayer->GetTurtles()[i]->SetAlive(true);
 		m_nKillCount[i] = 0;
 	}
 
@@ -526,6 +535,16 @@ void CBattleMap::Render()
 	{ m_pParticleSystem[GLASS].DrawParticle(m_pAssets->aGlassParticle);	}
 	if(m_pParticleSystem[HEALTH_GLOW].m_bActive == true)
 	{ m_pParticleSystem[HEALTH_GLOW].DrawParticle(m_pAssets->aHealthGlowParticle);	}
+	
+	if(m_pParticleSystem[SHREDDER_SPECIAL].m_bActive == true)
+	{ m_pParticleSystem[SHREDDER_SPECIAL].DrawParticle(m_pAssets->aShredderParticle);	}
+
+	if(m_pParticleSystem[DUST_CLOUD].m_bActive == true)
+	{ m_pParticleSystem[DUST_CLOUD].DrawParticle(m_pAssets->aDustCloudParticle);	}
+	if(m_pParticleSystem[ATTACK].m_bActive == true)
+	{ m_pParticleSystem[ATTACK].DrawParticle(m_pAssets->aPOWParticle);	}
+	if(m_pParticleSystem[NINJA_BLOOD].m_bActive == true)
+	{ m_pParticleSystem[NINJA_BLOOD].DrawParticle(m_pAssets->aBloodParticle);	}
 
 	DrawDebugInfo();
 }
@@ -572,6 +591,10 @@ void CBattleMap::Update(float fElapsedTime)
 		m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[SHREDDER_SPECIAL].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[DUST_CLOUD].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[ATTACK].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[NINJA_BLOOD].UpdateParticle(fElapsedTime);
 	}
 
 	// check for loss, if so start the timer for displaying "Defeat"
@@ -646,6 +669,10 @@ void CBattleMap::Update(float fElapsedTime)
 		
 			
 		
+		m_pParticleSystem[SHREDDER_SPECIAL].DrawParticle(m_pAssets->aShredderParticle);
+		m_pParticleSystem[DUST_CLOUD].DrawParticle(m_pAssets->aDustCloudParticle);
+		m_pParticleSystem[ATTACK].DrawParticle(m_pAssets->aPOWParticle);
+		m_pParticleSystem[NINJA_BLOOD].DrawParticle(m_pAssets->aPOWParticle);
 		if (m_fTimer >= 2.0f)
 		{
 			m_bDrawTimedParticles = false;
@@ -653,6 +680,10 @@ void CBattleMap::Update(float fElapsedTime)
 			m_pParticleSystem[FIRE].m_bActive  = false;
 			m_pParticleSystem[SMOKE].m_bActive = false;
 			//m_pParticleSystem[GLASS].m_bActive = false;
+			m_pParticleSystem[SHREDDER_SPECIAL].m_bActive = false;
+			m_pParticleSystem[DUST_CLOUD].m_bActive = false;
+			m_pParticleSystem[ATTACK].m_bActive = false;
+			m_pParticleSystem[NINJA_BLOOD].m_bActive = false;
 		}
 	}
 	// a turtle has been moved...execute the animation and position change over time
@@ -750,6 +781,11 @@ void CBattleMap::Update(float fElapsedTime)
 	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
 	m_pParticleSystem[HEALTH_GLOW].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[SHREDDER_SPECIAL].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[DUST_CLOUD].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[ATTACK].UpdateParticle(fElapsedTime);
+	m_pParticleSystem[NINJA_BLOOD].UpdateParticle(fElapsedTime);
+
 	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )

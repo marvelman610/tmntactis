@@ -338,7 +338,7 @@ void CBattleMap::Render()
 			if (m_pTilesL1[tileID].Alpha() == 200 && m_bIsPlayersTurn)	// 200 = movement range
 			{
 				m_pTM->DrawWithZSort(m_pTilesL1[tileID].ImageID(), mapPT.x, mapPT.y, depth.GROUND, 1.0f, 1.0f, 
-					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(/*m_pTilesL1[tileID].Alpha()*/255,150,150,255) );
+					m_pTilesL1[tileID].SourceRect(), 0.0f, 0.0f, 0.0f, D3DCOLOR_ARGB(/*m_pTilesL1[tileID].Alpha()*/255,100,100,255) );
 			} 
 			else if (m_pTilesL1[tileID].Alpha() == 199 && m_bIsPlayersTurn)	// 199 = move path
 			{
@@ -752,21 +752,10 @@ void CBattleMap::Update(float fElapsedTime)
 				m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
 				m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
 				m_nMoveListIndex = -1;
+				m_vPath.clear();
 			}
 		}
 	}
-// 	else // movement is done
-// 	{
-// 		m_bHaveMoved = true;
-// 		CalculateRanges();
-// 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-// 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-// 		m_bMoving = false;
-// 		m_bPathDisplayed = false;
-// 		m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
-// 		m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
-// 		m_nMoveListIndex = -1;
-// 	}
 	cheat();
 	if(godbool && m_nCurrCharacter > -1)
 	{
@@ -1436,17 +1425,8 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 			m_bItemBool = false;
 			m_bEggBool = false;
 			m_bEggBool2 = false;
-			for(int nx = 2; nx < m_nNumCols; ++nx)
-				for(int ny = 2; ny < m_nNumRows; ++ny)
-				{
-					int id = ny*m_nNumCols+nx;
-					if (m_pTilesL1[id].Alpha() != 255)
-						m_pTilesL1[id].SetAlpha(255);
-				}
-				CalculateRanges();
 		}
-		else
-			return StartCompTurn();
+		return StartCompTurn();
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
 	{
@@ -2249,7 +2229,7 @@ void CBattleMap::FindPathToTarget( )
 					}
 				}
 			}
-			if(open.size() == 0)
+			if(open.size() == 0 || (int)closed.size() > 50)
 				break;
 			else if (currTile.DestXID() == end.x && currTile.DestYID() == end.y)
 			{pathFound = true; delete[] adjTiles; break;}
@@ -3005,7 +2985,7 @@ bool CBattleMap::StartCompTurn()
 {
 	m_bIsPlayersTurn = false;
 	m_bHaveMoved = false;
-
+	m_vPath.clear();
 	if(m_bItemBool || m_bEggBool)
 	{   
 		m_bItemBool = false;

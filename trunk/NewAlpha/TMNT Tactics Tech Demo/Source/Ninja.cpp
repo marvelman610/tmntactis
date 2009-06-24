@@ -785,8 +785,8 @@ void CNinja::Update(float fElapsedTime)
 	// a ninja needs to be moved...execute the animation and position change over time
 	if (m_bMoving && !m_bMovingDone)
 	{
-// 		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 && GetCurrAnim()->GetCurrAnimFrame() != 2)
-// 			GetCurrAnim()->Stop();
+ 		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 && GetCurrAnim()->GetCurrAnimFrame() != 2)
+ 			GetCurrAnim()->Stop();
 
 		if (m_vPath.size() > 0)
 		{
@@ -906,6 +906,9 @@ void CNinja::Update(float fElapsedTime)
 		{
 			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
 				SetCurrAnim(0);
+			
+			
+			m_bMoving = m_bAttackBool = false;
 			if (m_nAttacksSoFar >= m_nTotalAttacks)
 			{
 				CBattleMap::GetInstance()->UpdatePositions();
@@ -914,8 +917,8 @@ void CNinja::Update(float fElapsedTime)
 				m_bMovingDone = false;
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
-		}
-
+			CBattleMap::GetInstance()->SetTurn(true);
+		}		
 	}	
 // 	//attack check
 // 	if (m_bAttackBool == true)

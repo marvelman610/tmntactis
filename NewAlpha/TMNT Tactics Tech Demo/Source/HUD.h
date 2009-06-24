@@ -21,6 +21,7 @@ class CHUD
 {
 private:
 	int m_nImageID;		//character face image
+	float m_fScale;
 
 	RECT m_rMikeyHP;	//HP bar rect
 	RECT m_rMikeyAP;	//AP bar rect

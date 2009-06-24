@@ -85,6 +85,7 @@ CHUD::CHUD(void)
 	m_rShredderHP.top = 0;
 
 	m_nImageID = -1;
+	m_fScale = 2.0f;
 }
 
 CHUD::~CHUD(void)
@@ -153,13 +154,13 @@ void CHUD::DrawFootClanHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 895, 61, 0.4f, -1.0f,1.0f,&m_rEnemyHP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100, 255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID,	895, 105,0.4f, -1.0f,1.0f,&m_rEnemyAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 923, 140, 0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 923, 140, 0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetExperience());
-	CBitmapFont::GetInstance()->DrawString(szEXP, 999, 140, 0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szEXP, 999, 140, 0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetHealth());
-	CBitmapFont::GetInstance()->DrawString(szHP, 802, 58, 0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szHP, 802, 58, 0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetCurrEnemyTarget()->GetCurrAP());
-	CBitmapFont::GetInstance()->DrawString(szAP, 802, 105, 0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szAP, 802, 105, 0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 }
 void CHUD::DrawMikeyHUD()
 {
@@ -167,13 +168,13 @@ void CHUD::DrawMikeyHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 156, 59, 0.4f,1.0f,1.0f,&m_rMikeyHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID,	156, 113, 0.4f, 1.0f,1.0f,&m_rMikeyAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 52,145,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 52,145,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetExperience());
-	CBitmapFont::GetInstance()->DrawString(szEXP, 138,145,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szEXP, 138,145,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetHealth());
-	CBitmapFont::GetInstance()->DrawString(szHP, 186,60,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szHP, 186,60,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szAP[3]; sprintf_s(szAP, "%i", m_pPlayer->GetTurtles()[MIKEY]->GetCurrAP());
-	CBitmapFont::GetInstance()->DrawString(szAP, 186,115,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szAP, 186,115,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 }
 
 void CHUD::DrawLeoHUD()
@@ -182,13 +183,13 @@ void CHUD::DrawLeoHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 180, 70, 0.4f, 1.0f,1.0f,&m_rLeoHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 180, 125, 0.4f, 1.0f, 1.0f,&m_rLeoAP, 0.0f,0.0f,0.0f, D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 55,155,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 55,155,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetExperience());
-	CBitmapFont::GetInstance()->DrawString(szEXP, 162,155,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szEXP, 162,155,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetHealth());
-	CBitmapFont::GetInstance()->DrawString(szHP, 215,70,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szHP, 215,70,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szAP[3]; sprintf_s(szAP, "%i", m_pPlayer->GetTurtles()[LEONARDO]->GetCurrAP());
-	CBitmapFont::GetInstance()->DrawString(szAP, 215,125,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szAP, 215,125,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 }
 
 void CHUD::DrawDonHUD()
@@ -197,13 +198,13 @@ void CHUD::DrawDonHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 185, 77, 0.4f, 1.0f,1.0f,&m_rDonHP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID, 185, 123, 0.4f,1.0f,1.0f,&m_rDonAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 56,145,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 56,145,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetExperience());
-	CBitmapFont::GetInstance()->DrawString(szEXP, 154,145,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szEXP, 154,145,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetHealth());
-	CBitmapFont::GetInstance()->DrawString(szHP, 215,75,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szHP, 215,75,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szAP[3]; sprintf_s(szAP, "%i", m_pPlayer->GetTurtles()[DONATELLO]->GetCurrAP());
-	CBitmapFont::GetInstance()->DrawString(szAP, 215,122,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szAP, 215,122,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 }
 
 void CHUD::DrawRaphHUD()
@@ -212,17 +213,18 @@ void CHUD::DrawRaphHUD()
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aGreenHealthBarID, 176, 60, 0.4f, 1.0f, 1.0f,&m_rRaphHP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID,  176, 103, 0.4f, 1.0f, 1.0f,&m_rRaphAP,0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 	char szLVL[3]; sprintf_s(szLVL, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetLevel());
-	CBitmapFont::GetInstance()->DrawString(szLVL, 60, 131,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szLVL, 60, 131,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szEXP[8]; sprintf_s(szEXP, "%i",m_pPlayer->GetTurtles()[RAPHAEL]->GetExperience());
-	CBitmapFont::GetInstance()->DrawString(szEXP, 147,131,0.05f,0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szEXP, 147,131,0.05f,1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szHP[8]; sprintf_s(szHP, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetHealth());
-	CBitmapFont::GetInstance()->DrawString(szHP, 200,60,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szHP, 200,60,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 	char szAP[3]; sprintf_s(szAP, "%i", m_pPlayer->GetTurtles()[RAPHAEL]->GetCurrAP());
-	CBitmapFont::GetInstance()->DrawString(szAP, 200,100,0.05f, 0.5f, D3DCOLOR_XRGB(0, 255, 0));
+	CBitmapFont::GetInstance()->DrawString(szAP, 200,100,0.05f, 1.0f, D3DCOLOR_XRGB(0, 255, 0));
 }
 
 void CHUD::Render()
 {
+	CBitmapFont::GetInstance()->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
 	//change alpha to lower when over objects
 	if(CBattleMap::GetInstance()->GetPlayerTurn() == true)
 	{
@@ -267,13 +269,13 @@ void CHUD::Render()
 				m_pTM->DrawWithZSort(CAssets::GetInstance()->aBlueHealthBarID,	862, 124, 0.6f, -1.0f, 1.0f, &m_rEnemyAP, 0.0f,0.0f,0.0f,D3DCOLOR_ARGB(100,255,255,255));
 				//910 , 201 lvl - 982, 201 exp - 	758, 114hp	- 758, 185 ap
 				char szLVL[3]; sprintf_s(szLVL, "%i", CBattleMap::GetInstance()->GetBoss()->GetLevel());
-				CBitmapFont::GetInstance()->DrawString(szLVL, 910,176,0.05f, 0.5f);
+				CBitmapFont::GetInstance()->DrawString(szLVL, 910,176,0.05f, 1.0f);
 				char szEXP[8]; sprintf_s(szEXP, "%i", CBattleMap::GetInstance()->GetBoss()->GetExperience());
-				CBitmapFont::GetInstance()->DrawString(szEXP, 982,176,0.05f, 0.5f);
+				CBitmapFont::GetInstance()->DrawString(szEXP, 982,176,0.05f, 1.0f);
 				char szHP[8]; sprintf_s(szHP, "%i", CBattleMap::GetInstance()->GetBoss()->GetHealth());
-				CBitmapFont::GetInstance()->DrawString(szHP, 793,59,0.05f, 0.5f);
+				CBitmapFont::GetInstance()->DrawString(szHP, 793,59,0.05f, 1.0f);
 				char szAP[3]; sprintf_s(szAP, "%i", CBattleMap::GetInstance()->GetBoss()->GetCurrAP());
-				CBitmapFont::GetInstance()->DrawString(szAP, 793,130,0.05f, 0.5f);
+				CBitmapFont::GetInstance()->DrawString(szAP, 793,130,0.05f, 1.0f);
 			}
 		}
 		else
@@ -319,5 +321,7 @@ void CHUD::Render()
 			}
 		}
 	}
+
+	CBitmapFont::GetInstance()->Reset();
 	
 }

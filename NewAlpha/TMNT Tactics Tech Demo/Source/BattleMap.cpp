@@ -2364,7 +2364,7 @@ int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
 }
 void CBattleMap::UseItem( )
 {
-	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0 || m_nCurrBtnSelected >= (int)m_pPlayer->GetInstance()->GetItems()->size())
+	if((int)m_pPlayer->GetInstance()->GetItems()->size() <= 0 || m_nCurrBtnSelected >= (int)m_pPlayer->GetInstance()->GetItems()->size())
 		return;
 	if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Pizza")
 	{
@@ -2454,7 +2454,7 @@ void CBattleMap::DrawThrowItems()
 		// 		POINT pt; 
 		// 		float posx;
 		// 		float posy;
- 		count += 0.03f;
+		count += 0.03f;
 
 		/*posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x);
 		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y);

@@ -148,6 +148,7 @@ class CBattleMap
 	POINT m_ptEndCoord;			// the grid coords of the clicked tile to move to
 	MY_POINT_FLOAT m_ptStartXY;	// keeps track of the starting position for each tile move
 	vector<POINT> m_vPath;		// the path to take
+	int	m_nMoveListIndex;
 
 	int m_nScreenWidth;
 	int m_nScreenHeight;
@@ -290,7 +291,7 @@ class CBattleMap
 	//
 	//	Purpose		:	Determines the attack and move range of the current character
 	//////////////////////////////////////////////////////////////////////////
-	void CalculateRanges();
+	bool CalculateRanges(int x = -1, int y = -1);
 
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"DrawHover"
@@ -412,6 +413,8 @@ public:
 	//	Purpose		:	Render the Map and all objects on it
 	//////////////////////////////////////////////////////////////////////////
 	void Render();
+
+	bool IsOnClose(CTile* tile, vector<CTile>& closed);
 
 	void DrawThrowItems();
 	//////////////////////////////////////////////////////////////////////////

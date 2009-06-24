@@ -123,6 +123,7 @@ public:
 	inline int		GetNumType()		{return m_nNumType;}
 	vector<CAnimation> GetAnimations()  {return m_vAnimations;}
 	CAnimation*		GetCurrAnim()		{return &(m_vAnimations[m_nCurrAnimation]);}
+	inline int		GetCurrAnimNum()	{return m_nCurrAnimation;}
 	RECT			GetRect();
 
 	//////////////////////////////////////

@@ -163,14 +163,23 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_nDmg = 0;
 	m_bPlayerAttack = false;
 
+
 	m_nNumTurtles = 4;
 	for (int i = 0; i < m_nNumTurtles; ++i)
 	{
+		m_pPlayer->GetTurtles()[i]->SetHealth(m_pPlayer->GetTurtles()[i]->GetMaxHealth());
+		m_pPlayer->GetTurtles()[i]->SetCurrAP(m_pPlayer->GetTurtles()[i]->GetBaseAP());
+		m_pPlayer->GetTurtles()[i]->GetCurrAnim()->SetFacingLeft(false);
+		m_pPlayer->GetTurtles()[i]->SetCurrAnim(0);
+		m_pPlayer->GetTurtles()[i]->SetAlive(true);
+
 		m_pPlayer->GetTurtles()[i]->SetPrevLevel(m_pPlayer->GetTurtles()[i]->GetLevel());
 		m_pPlayer->GetTurtles()[i]->SetPrevStrength(m_pPlayer->GetTurtles()[i]->GetStrength());
 		m_pPlayer->GetTurtles()[i]->SetPrevDefense(m_pPlayer->GetTurtles()[i]->GetDefense());
 		m_pPlayer->GetTurtles()[i]->SetPrevAccuracy(m_pPlayer->GetTurtles()[i]->GetAccuracy());
-		m_pPlayer->GetTurtles()[i]->SetAlive(true);
+		m_pPlayer->GetTurtles()[i]->ResetDamageDone();
+		m_pPlayer->GetTurtles()[i]->ResetDamageRecieved();
+
 		m_nKillCount[i] = 0;
 	}
 
@@ -240,15 +249,7 @@ void CBattleMap::Reset()
 		m_bxMessageBox = NULL;
 	}
 
-	for (int i = 0; i < 4; ++i)
-	{
-		CTurtle* turtle = m_pPlayer->GetTurtles()[i];
-		turtle->SetAlive(true);
-		turtle->SetHealth(turtle->GetMaxHealth());
-		turtle->SetCurrAP(turtle->GetBaseAP());
-		turtle->GetCurrAnim()->SetFacingLeft(false);
-		turtle->SetCurrAnim(0);
-	}
+	
 	ObjectManager::GetInstance()->ClearEnemies();
 	m_vCharacters.clear();
 	m_vEnemies.clear();
@@ -637,7 +638,10 @@ void CBattleMap::Update(float fElapsedTime)
 		if(count >= 1)
 		{
 			if (m_bEggBool2)
+			{
 				m_pFMOD->PlaySound(m_pAssets->aBMeggSmackSnd);
+				m_pParticleSystem[GLASS].m_bActive = true;
+			}
 			if(m_bEggBool2)
 			{
 				count = 0;
@@ -675,7 +679,8 @@ void CBattleMap::Update(float fElapsedTime)
 			m_fTimer = 0.0f;
 			m_pParticleSystem[FIRE].m_bActive  = false;
 			m_pParticleSystem[SMOKE].m_bActive = false;
-			//m_pParticleSystem[GLASS].m_bActive = false;
+			m_pParticleSystem[GLASS].m_bActive = false;
+			m_pParticleSystem[HEALTH_GLOW].m_bActive = false;
 			m_pParticleSystem[SHREDDER_SPECIAL].m_bActive = false;
 			m_pParticleSystem[DUST_CLOUD].m_bActive = false;
 			m_pParticleSystem[ATTACK].m_bActive = false;
@@ -1090,6 +1095,8 @@ bool CBattleMap::CheckTileOccupied(int tileID)
 }
 void CBattleMap::CalculateRanges()
 {
+	if(m_nCurrCharacter < 0 )
+		return;
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
 	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 	int ap	  = m_vCharacters[m_nCurrCharacter].GetCurrAP();
@@ -1100,8 +1107,7 @@ void CBattleMap::CalculateRanges()
 		//grenades
 		//if((*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetName()== "Grenado")
 		ptGridLocation = m_ptMouseMapCoord;
-		nades.x = ptGridLocation.x;
-		nades.y = ptGridLocation.y;
+		
 		range = (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRadius();
 		alpha = 201;
 	}
@@ -1527,8 +1533,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	{
 		if(m_nDistanceToTarget <= (*m_pPlayer->GetInstance()->GetItems())[m_nItemIndex].GetRange() )
 		{
-			nades.x = mouse.y;
-			nades.y = mouse.y;
+			nades.x = mouse.x/2;
+			nades.y = mouse.y/2;
 			 
 			m_bItemBool2 = true;
 			m_pParticleSystem[FIRE].Emit((float)mouse.x, (float)mouse.y);
@@ -1745,6 +1751,14 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 					m_nItemIndex = -1;
 					m_bIsMouseAttack = false;
 					m_bEggBool2 = true;
+
+					m_pParticleSystem[GLASS].Emit(m_vEnemies[m_nCurrTarget]->GetPosX(), m_vEnemies[m_nCurrTarget]->GetPosY());
+
+					m_pParticleSystem[GLASS].SetVelocity(4);
+					m_pParticleSystem[GLASS].m_nMaxLife *= 4;
+					
+					
+
 					if (m_vEnemies[m_nCurrTarget]->GetHealth() <= 0)
 					{
 						m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetExperience(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetExperience()+30);
@@ -2431,7 +2445,7 @@ int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
 }
 void CBattleMap::UseItem( )
 {
-	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0)
+	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0 || m_nCurrBtnSelected >= m_pPlayer->GetInstance()->GetItems()->size())
 		return;
 	if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Pizza")
 	{
@@ -2445,7 +2459,15 @@ void CBattleMap::UseItem( )
 			m_vCharacters[m_nCurrCharacter].SetHealth(m_vCharacters[m_nCurrCharacter].GetMaxHealth());
 			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetHealth(m_vCharacters[m_nCurrCharacter].GetMaxHealth());
 		}
-
+		
+		m_pParticleSystem[HEALTH_GLOW].Emit(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX(),m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30);
+		m_pParticleSystem[HEALTH_GLOW].SetVelocity(4000);
+		m_pParticleSystem[HEALTH_GLOW].m_nMaxLife *=8;
+		m_pParticleSystem[HEALTH_GLOW].m_fRotationVelocity = 0.001f;
+		m_pParticleSystem[HEALTH_GLOW].m_fRotation= 0.0001f;
+		m_pParticleSystem[HEALTH_GLOW].m_bScaling = false;
+		m_pParticleSystem[HEALTH_GLOW].m_bActive = true;
+		
 		m_pPlayer->GetInstance()->RemoveItem(m_nCurrBtnSelected);
 
 	}
@@ -2494,14 +2516,18 @@ void CBattleMap::DrawThrowItems()
 		POINT pt; 
 		float posx;
 		float posy;
-		count += 0.004f;
+		count += 0.008f;
+
+		if( m_nCurrTarget < 0)
+			return;
 
 		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- m_vEnemies[m_nCurrTarget]->GetPosX())*count;
 		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- m_vEnemies[m_nCurrTarget]->GetPosY())*count;
 		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+30)-posx); 
 		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30)-posy);
 
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f,1,1,0,pt.x/2.0f, pt.y/2.0f);
+		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f);
+
 
 	}
 	else if(m_bItemBool2)
@@ -2509,14 +2535,14 @@ void CBattleMap::DrawThrowItems()
 		POINT pt; 
 		float posx;
 		float posy;
-		count += 0.008f;
+		count += 0.03f;
 
-		posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x)*count;
-		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y)*count;
-		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)-posx); 
-		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)-posy);
+		/*posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x);
+		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y);
+		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)+posx); 
+		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)+posy);*/
 
-		m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)pt.x,(int)pt.y,0.51f);
+		//m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)nades.x,(int)nades.y,0.51f);
 	}
 }
 

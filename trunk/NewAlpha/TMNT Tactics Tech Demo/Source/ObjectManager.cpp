@@ -82,6 +82,11 @@ void ObjectManager::Remove(CBase* pObj)
 		{
 			if ((*iter) == pObj)
 			{
+				if ((*iter)->GetType() == OBJECT_BOSS)
+				{
+					for(int j = 0; j < (int)(*iter)->GetAnimations().size(); j++)
+						(*iter)->GetAnimations()[j].Unload();
+				}
 				CBase* temp = m_vObjects[count];
 				delete temp;
 				iter = m_vObjects.erase(iter);
@@ -217,6 +222,11 @@ void ObjectManager::ClearEnemies()
 	{
 		if ((*iter)->GetType() != OBJECT_TURTLE)
 		{
+			if ((*iter)->GetType() == OBJECT_BOSS)
+			{
+				for(int j = 0; j < (int)(*iter)->GetAnimations().size(); j++)
+				(*iter)->GetAnimations()[j].Unload();
+			}
 			CBase* temp = m_vObjects[count--];
 			delete temp;
 			iter = m_vObjects.erase(iter);

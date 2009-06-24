@@ -149,7 +149,6 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_nNumEnemiesLeft = nNumEnemies;
 	m_szFileName = szFileName;
 	m_szMapName  = szMapName;
-	m_bIsPlayersTurn = (rand() % 2) ? true : false; //(bool)(rand() % 2);
 
 	count = 0;
 	m_bItemBool = false;
@@ -162,7 +161,6 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_nXP = 0;
 	m_nDmg = 0;
 	m_bPlayerAttack = false;
-
 
 	m_nNumTurtles = 4;
 	for (int i = 0; i < m_nNumTurtles; ++i)
@@ -966,8 +964,6 @@ void CBattleMap::CreateEnemies(bool bBoss)
 		m_vCharacters.push_back((CBoss)*boss);
 		m_vEnemies.push_back((CBoss*)boss);
 	}
-	int i = 0;
-	
 }
 
 
@@ -1336,6 +1332,9 @@ void CBattleMap::SetStartPositions()
 		m_vCharacters.push_back(*m_vEnemies[i]);
 	}
 	delete[] taken;
+	m_bIsPlayersTurn = (rand() % 2) ? true : false; 
+	if(!m_bIsPlayersTurn)
+		StartCompTurn();
 }
 
 void CBattleMap::UpdatePositions()	// updates the CPlayer's turtles and the enemy characters
@@ -1452,38 +1451,7 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 				CalculateRanges();
 		}
 		else
-		{
-			m_bIsPlayersTurn = false;
-			m_bHaveMoved = false;
-			// reset APs
-			if (m_nCurrCharacter > -1)
-			{
-				m_vCharacters[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
-				if (m_nCurrCharacter > -1)
-					CalculateRanges();
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
-				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";
-				m_nCurrSkillCost = 0;
-			}
-
-			// pick a random enemy to move
-			if (m_vEnemies.size() > 0)
-			{
-				int index = rand()%m_vEnemies.size();
-				if(m_vEnemies[index]->GetType() == OBJECT_BOSS)
-				{
-					((CBoss*)m_vEnemies[index])->AI();
-				}
-				else
-				{
-					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-					m_pCurrMovingNinja->AI();
-				}
-				return true;
-			}
-		}
+			return StartCompTurn();
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
 	{
@@ -1918,46 +1886,7 @@ void CBattleMap::HandleButton()
 		break;
 	case BTN_ENDTURN:
 		{
-			m_bIsPlayersTurn = false;
-			m_bHaveMoved = false;
-			if(m_bItemBool || m_bEggBool)
-			{   
-				m_bItemBool = false;
-				m_bEggBool = false;
-				m_bEggBool2 = false;
-				for(int nx = 2; nx < m_nNumCols; ++nx)
-					for(int ny = 2; ny < m_nNumRows; ++ny)
-					{
-						int id = ny*m_nNumCols+nx;
-						if (m_pTilesL1[id].Alpha() != 255)
-							m_pTilesL1[id].SetAlpha(255);
-					}
-			}
-			if (m_nCurrCharacter > -1)
-			{
-				// reset ap
- 				m_vCharacters[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
-				CalculateRanges();
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
-				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE"; 
-			}
-			// pick a random enemy to move
-			if (m_vEnemies.size() > 0)
-			{
-				int index = rand()%m_vEnemies.size();
-				if(m_vEnemies[index]->GetType() == OBJECT_BOSS)
-				{
-					((CBoss*)m_vEnemies[index])->AI();
-				}
-				else
-				{
-					m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
-					m_pCurrMovingNinja->AI();
-				}
-			}
-
+			StartCompTurn();
 		}
 		break;
 	case BTN_BACK:
@@ -2966,4 +2895,52 @@ void CBattleMap::RenderStats()
 
 	m_bxActionBox->SetAlpha(0);
 
+}
+
+bool CBattleMap::StartCompTurn()
+{
+	m_bIsPlayersTurn = false;
+	m_bHaveMoved = false;
+
+	if(m_bItemBool || m_bEggBool)
+	{   
+		m_bItemBool = false;
+		m_bEggBool = false;
+		m_bEggBool2 = false;
+		for(int nx = 2; nx < m_nNumCols; ++nx)
+			for(int ny = 2; ny < m_nNumRows; ++ny)
+			{
+				int id = ny*m_nNumCols+nx;
+				if (m_pTilesL1[id].Alpha() != 255)
+					m_pTilesL1[id].SetAlpha(255);
+			}
+	}
+	// reset APs
+	if (m_nCurrCharacter > -1)
+	{
+		m_vCharacters[m_nCurrCharacter].SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetBaseAP());
+		if (m_nCurrCharacter > -1)
+			CalculateRanges();
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
+		m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";
+		m_nCurrSkillCost = 0;
+	}
+
+	// pick a random enemy to move
+	if (m_vEnemies.size() > 0)
+	{
+		int index = rand()%m_vEnemies.size();
+		if(m_vEnemies[index]->GetType() == OBJECT_BOSS)
+		{
+			((CBoss*)m_vEnemies[index])->AI();
+		}
+		else
+		{
+			m_pCurrMovingNinja = (CNinja*)m_vEnemies[index];
+			m_pCurrMovingNinja->AI();
+		}
+	}
+	return true;
 }

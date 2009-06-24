@@ -53,6 +53,7 @@ CBattleMap::CBattleMap(void)
 	APbool = false;
 	APcheat = 0;
 	m_pSpawnPts = NULL;
+	m_nMoveListIndex = -1;
 }
 
 CBattleMap::~CBattleMap(void)
@@ -88,6 +89,7 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	SetMousePtr(m_pAssets->aMousePointerID);
 	m_bIsMouseAttack = m_bOutOfRange = false;
 	m_bHasBoss = bBoss;
+	m_nMoveListIndex = -1;
 
 	m_fTimer = 0.0f;
 
@@ -686,79 +688,85 @@ void CBattleMap::Update(float fElapsedTime)
 		}
 	}
 	// a turtle has been moved...execute the animation and position change over time
-	if (m_bMoving)
+	if (m_bMoving && m_nMoveListIndex > -1)
 	{
-		if (m_vPath.size() > 0)
+		// grab the next move and take it out of the vector..if the previous move is complete
+		POINT newPoint = m_vPath[m_nMoveListIndex];
+		// set up variables
+		POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
+		CTurtle* turtle= m_pPlayer->GetTurtles()[m_nCurrCharacter];
+		MY_POINT_FLOAT currPos; 
+		currPos.x = turtle->GetPosX(); currPos.y = turtle->GetPosY();
+
+		// NORTHWEST
+		if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 		{
-			// grab the next move and take it out of the vector..if the previous move is complete
-			POINT newPoint = m_vPath[0];
-			// set up variables
-			POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
-			CTurtle* turtle= m_pPlayer->GetTurtles()[m_nCurrCharacter];
-			MY_POINT_FLOAT currPos; 
-			currPos.x = turtle->GetPosX(); currPos.y = turtle->GetPosY();
-
-			// NORTHWEST
-			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				currPos.x -= turtle->GetVelX() * fElapsedTime;
-				currPos.y -= turtle->GetVelY() * fElapsedTime;
-				turtle->SetPosPtF(currPos);
-				turtle->SetCurrAnimFacing(true);
-			}
-			// SOUTHEAST
-			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				currPos.x += turtle->GetVelX() * fElapsedTime;
-				currPos.y += turtle->GetVelY() * fElapsedTime;
-				turtle->SetPosPtF(currPos);
-				turtle->SetCurrAnimFacing(false);
-
-			}
-			// NORTHEAST
-			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				currPos.y -= turtle->GetVelY() * fElapsedTime;
-				currPos.x += turtle->GetVelX() * fElapsedTime;
-				turtle->SetPosPtF(currPos);
-				turtle->SetCurrAnimFacing(false);
-
-			}
-			// SOUTHWEST
-			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-			{
-				currPos.y += turtle->GetVelY() * fElapsedTime;
-				currPos.x -= turtle->GetVelX() * fElapsedTime;
-				turtle->SetPosPtF(currPos);
-				turtle->SetCurrAnimFacing(true);
-
-			}
-			// check to see if this current tile move is complete
-			if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
-			{
-				vector<POINT>::iterator first = m_vPath.begin();
-				m_vPath.erase(first);
-				m_vCharacters[m_nCurrCharacter].SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-				m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
- 				m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
-				m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
-				m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
-				m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
-			}
+			currPos.x -= turtle->GetVelX() * fElapsedTime;
+			currPos.y -= turtle->GetVelY() * fElapsedTime;
+			turtle->SetPosPtF(currPos);
+			turtle->SetCurrAnimFacing(true);
 		}
-		else // movement is done
+		// SOUTHEAST
+		else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
 		{
-			m_bHaveMoved = true;
-			CalculateRanges();
-			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-			m_bMoving = false;
-			m_bPathDisplayed = false;
-			m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
-			m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
+			currPos.x += turtle->GetVelX() * fElapsedTime;
+			currPos.y += turtle->GetVelY() * fElapsedTime;
+			turtle->SetPosPtF(currPos);
+			turtle->SetCurrAnimFacing(false);
+		}
+		// NORTHEAST
+		if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+		{
+			currPos.y -= turtle->GetVelY() * fElapsedTime;
+			currPos.x += turtle->GetVelX() * fElapsedTime;
+			turtle->SetPosPtF(currPos);
+			turtle->SetCurrAnimFacing(false);
+		}
+		// SOUTHWEST
+		else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+		{
+			currPos.y += turtle->GetVelY() * fElapsedTime;
+			currPos.x -= turtle->GetVelX() * fElapsedTime;
+			turtle->SetPosPtF(currPos);
+			turtle->SetCurrAnimFacing(true);
+		}
+		// check to see if this current tile move is complete
+		if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
+		{
+			m_nMoveListIndex--;
+			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
+			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
+			m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
+			m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+			m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
+			if (m_nMoveListIndex == -1)
+			{
+				m_bHaveMoved = true;
+				CalculateRanges();
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+				m_bMoving = false;
+				m_bPathDisplayed = false;
+				m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
+				m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
+				m_nMoveListIndex = -1;
+			}
 		}
 	}
+// 	else // movement is done
+// 	{
+// 		m_bHaveMoved = true;
+// 		CalculateRanges();
+// 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+// 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+// 		m_bMoving = false;
+// 		m_bPathDisplayed = false;
+// 		m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
+// 		m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
+// 		m_nMoveListIndex = -1;
+// 	}
 	cheat();
 	if(godbool && m_nCurrCharacter > -1)
 	{
@@ -1079,10 +1087,10 @@ bool CBattleMap::CheckTileOccupied(int tileID)
 			return true;
 	return false;
 }
-void CBattleMap::CalculateRanges()
+bool CBattleMap::CalculateRanges(int xID, int yID)
 {
 	if(m_nCurrCharacter < 0 )
-		return;
+		return true;
 	POINT ptGridLocation = m_vCharacters[m_nCurrCharacter].GetMapCoord();
 	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();
 	int ap	  = m_vCharacters[m_nCurrCharacter].GetCurrAP();
@@ -1106,6 +1114,7 @@ void CBattleMap::CalculateRanges()
 			if (m_pTilesL1[id].Alpha() != 255)
 				m_pTilesL1[id].SetAlpha(255);
 		}
+	bool validMove = false;
 	// mark tiles to be drawn with range color	
 	if(!m_bItemBool)	// checking movement range for character
 	{
@@ -1164,29 +1173,12 @@ void CBattleMap::CalculateRanges()
 		for (unsigned int i = 0; i < selected.size(); ++i)
 		{
 			int id = selected[i].DestYID() * m_nNumCols + selected[i].DestXID();
+			if (selected[i].DestXID() == xID && selected[i].DestYID() == yID)
+				validMove = true;
 			m_pTilesL1[id].SetAlpha(alpha);
 		}
 		delete[] pTiles;
 		open.clear(); selected.clear();
-
-		// scan the neighbors
-// 		for(int nx = ptGridLocation.x - range; nx <= ptGridLocation.x + range; ++nx)
-// 		{
-// 			for(int ny = ptGridLocation.y - range; ny <= ptGridLocation.y + range; ++ny)
-// 			{
-// 				//make sure the neighbor is on the map
-// 				if(nx >= 2 && ny >= 2 && nx < m_nNumCols && ny < m_nNumRows
-// 					&& !(nx == ptGridLocation.x && ny == ptGridLocation.y))
-// 				{
-// 					int distance = (DistanceToTarget(nx, ptGridLocation.x, ny, ptGridLocation.y ) << 1);
-// 					int id		 = ny*m_nNumCols+nx;
-// 					if ( distance <= ap && m_pTilesL1[id].Flag() != FLAG_OBJECT_EDGE && m_pTilesL1[id].Flag() != FLAG_COLLISION)
-// 					{
-// 						m_pTilesL1[id].SetAlpha(alpha);
-// 					}
-// 				}
-// 			}
-// 		}
 	}
 	else		// checking distance for an item use (throw grenade)
 	{
@@ -1212,6 +1204,7 @@ void CBattleMap::CalculateRanges()
 		m_nDistanceToTarget = DistanceToTarget(m_vEnemies[m_nCurrTarget]->GetMapCoord().x, m_vCharacters[m_nCurrCharacter].GetMapCoord().x, 
 			m_vEnemies[m_nCurrTarget]->GetMapCoord().y, m_vCharacters[m_nCurrCharacter].GetMapCoord().y);
 	}
+	return validMove;
 }
 
 CTile** CBattleMap::GetAdjTiles(int StartX, int StartY, CTile* tiles)
@@ -1628,6 +1621,7 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 				if (m_vCharacters[i].GetCurrTile() == tileID)
 				{bOccupied = true; return; }
 
+			bool goodpath = false;
 			// the user has clicked for the second time on the same location to move to..moving now
 			if (m_bPathDisplayed && !bOccupied && m_ptEndCoord.x == xID && m_ptEndCoord.y == yID)
 			{	m_bMoving = true; PlaySFX(m_pAssets->aBMfootstepsSnd);}
@@ -1642,12 +1636,19 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 						if (m_pTilesL1[id].Alpha() != 255)
 							m_pTilesL1[id].SetAlpha(255);
 					}
-					CalculateRanges();
+					m_vPath.clear();
+					
 			}
 			// the click was good, find the path
 			m_ptEndCoord.x = xID; m_ptEndCoord.y = yID;
-			FindPathToTarget();
-			m_bPathDisplayed = true;
+			goodpath = CalculateRanges(xID, yID);
+			if(goodpath)
+			{
+				FindPathToTarget();
+				m_bPathDisplayed = true;
+			}
+			else
+				m_bNotEnoughAP = true;
 		}
 		// Handles buttons pressed
 		if (m_nCurrMouseTileTarget != -1 && m_nCurrCharacter > -1 || m_bIsPaused || m_bxMessageBox)
@@ -2050,122 +2051,235 @@ bool CBattleMap::Checkpath(int x, int y, vector<POINT> path)
 	}
 	return false;
 }
-void CBattleMap::FindPathToTarget()
+void CBattleMap::FindPathToTarget( )
 {
-	m_vPath.clear();
-	POINT ptCurr = m_vCharacters[m_nCurrCharacter].GetMapCoord(); // begin point
-	POINT ptTarget = m_ptEndCoord;	// end point
-	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();	// max distance moveable
-	int pathWeight = 0;
-	vector<int> pathX;
-	vector<int> pathY;
-	int oldX = ptCurr.x;
-	int oldY = ptCurr.y;
+// 	m_vPath.clear();
+// 	POINT ptCurr = m_vCharacters[m_nCurrCharacter].GetMapCoord(); // begin point
+// 	POINT ptTarget = m_ptEndCoord;	// end point
+// 	int range = m_vCharacters[m_nCurrCharacter].GetCurrAP();	// max distance moveable
+// 	int pathWeight = 0;
+// 	vector<int> pathX;
+// 	vector<int> pathY;
+// 	int oldX = ptCurr.x;
+// 	int oldY = ptCurr.y;
+// 
+// 	while (true)
+// 	{
+// 		if (pathX.size() > 0 && ptCurr.x == pathX[pathX.size()-1] && ptCurr.y == pathY[pathX.size()-1])
+// 		{ pathWeight = 10000; break; }
+// 		if (pathWeight-4 > -1)
+// 		{
+// 			if ( (ptCurr.x == pathX[pathWeight-4]) && (ptCurr.y == pathY[pathWeight-4]) )
+// 			{ pathWeight = 10000; break; }
+// 		}
+// 		if (pathWeight-1 > -1)
+// 		{
+// 			pathX.push_back(ptCurr.x);
+// 			pathY.push_back(ptCurr.y);
+// 			m_vPath.push_back(ptCurr);
+// 			oldX = pathX[pathWeight-1];
+// 			oldY = pathY[pathWeight-1];
+// 		}
+// 		++pathWeight;
+// 		if (pathWeight*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+// 			break;
+// 		if (ptTarget.x == ptCurr.x && ptTarget.y == ptCurr.y)
+// 			break;
+// 		if (pathWeight > m_nNumCols)
+// 		{pathWeight = 10000; break;}
+// 
+// 		if (pathX.size() > 1)
+// 		{
+// 			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && !Checkpath(ptCurr.x+1, ptCurr.y, m_vPath) &&
+// 				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
+// 			{ ++ptCurr.x; continue; }
+// 			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && !Checkpath(ptCurr.x-1, ptCurr.y, m_vPath) &&
+// 				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
+// 			{ --ptCurr.x; continue; }
+// 			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && !Checkpath(ptCurr.x, ptCurr.y+1, m_vPath) &&
+// 				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+// 			{ ++ptCurr.y; continue; }
+// 			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && !Checkpath(ptCurr.x, ptCurr.y-1, m_vPath) &&
+// 				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+// 			{ --ptCurr.y; continue; }
+// 		}
+// 		else
+// 		{
+// 			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
+// 				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
+// 			{ ++ptCurr.x; continue; }
+// 			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
+// 				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
+// 			{ --ptCurr.x; continue; }
+// 			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
+// 				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+// 			{ ++ptCurr.y; continue; }
+// 			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
+// 				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+// 			{ --ptCurr.y; continue; }
+// 		}
+// 
+// 		if (ptCurr.x == ptTarget.x)
+// 		{
+// 			if (oldX != ptCurr.x+1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x+1].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x+1) )
+// 			{ ++ptCurr.x; continue; }
+// 			if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x-1))
+// 			{ --ptCurr.x; continue; }
+// 		}
+// 		else if (ptCurr.y == ptTarget.y)
+// 		{
+// 			if (oldY != ptCurr.y+1 && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+// 			{ ++ptCurr.y; continue; }
+// 			if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+// 			{ --ptCurr.y; continue; }
+// 		}
+// 		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
+// 			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
+// 		{++ptCurr.x; continue;}
+// 		else if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
+// 			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
+// 		{--ptCurr.x; continue;}
+// 		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 			!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
+// 		{++ptCurr.y; continue;}
+// 		else if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
+// 			!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
+// 		{--ptCurr.y; continue;}
+// 		pathWeight = 10000; break;
+// 	}
+// 	if (m_vPath.size() > 0)
+// 	{
+// 		m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
+// 		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+// 		for (unsigned int i = 0; i < m_vPath.size(); ++i)
+// 			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);
+// 		m_nMoveCost = m_vPath.size() * 2;
+// 	}
+		POINT begin, end;
+		begin.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetMapCoord().x;
+		begin.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetMapCoord().y;
+		end.x = m_ptEndCoord.x; end.y = m_ptEndCoord.y;
+		CBattleMap* bMap = CBattleMap::GetInstance();
+		int numCols = GetNumCols();
+		int numRows = GetNumRows();
+		int totalTiles = numCols * numRows;
+		m_vPath.clear();
+		vector<CTile> open;
+		vector<CTile> closed;
+		bool bFound;
+		m_nMoveCost = 0;
 
-	while (true)
-	{
-		if (pathX.size() > 0 && ptCurr.x == pathX[pathX.size()-1] && ptCurr.y == pathY[pathX.size()-1])
-		{ pathWeight = 10000; break; }
-		if (pathWeight-4 > -1)
-		{
-			if ( (ptCurr.x == pathX[pathWeight-4]) && (ptCurr.y == pathY[pathWeight-4]) )
-			{ pathWeight = 10000; break; }
-		}
-		if (pathWeight-1 > -1)
-		{
-			pathX.push_back(ptCurr.x);
-			pathY.push_back(ptCurr.y);
-			m_vPath.push_back(ptCurr);
-			oldX = pathX[pathWeight-1];
-			oldY = pathY[pathWeight-1];
-		}
-		++pathWeight;
-		if (pathWeight*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
-			break;
-		if (ptTarget.x == ptCurr.x && ptTarget.y == ptCurr.y)
-			break;
-		if (pathWeight > m_nNumCols)
-		{pathWeight = 10000; break;}
+		// setup the grid of all map tiles that will be used during the pathfinding
+		CTile* tiles = new CTile[totalTiles];
+		for (int i = 0; i < totalTiles; ++i)
+			tiles[i] = m_pTilesL1[i];
 
-		if (pathX.size() > 1)
-		{
-			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && !Checkpath(ptCurr.x+1, ptCurr.y, m_vPath) &&
-				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
-			{ ++ptCurr.x; continue; }
-			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && !Checkpath(ptCurr.x-1, ptCurr.y, m_vPath) &&
-				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
-			{ --ptCurr.x; continue; }
-			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && !Checkpath(ptCurr.x, ptCurr.y+1, m_vPath) &&
-				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
-			{ ++ptCurr.y; continue; }
-			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && !Checkpath(ptCurr.x, ptCurr.y-1, m_vPath) &&
-				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
-			{ --ptCurr.y; continue; }
-		}
-		else
-		{
-			if (ptCurr.x < ptTarget.x && (oldX != ptCurr.x + 1) && 
-				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
-			{ ++ptCurr.x; continue; }
-			if (ptCurr.x > ptTarget.x && (oldX != ptCurr.x - 1) && 
-				m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
-			{ --ptCurr.x; continue; }
-			if (ptCurr.y < ptTarget.y && (oldY != ptCurr.y + 1) && 
-				m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
-			{ ++ptCurr.y; continue; }
-			if (ptCurr.y > ptTarget.y && (oldY != ptCurr.y - 1) && 
-				m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
-			{ --ptCurr.y; continue; }
-		}
+		CTile** adjTiles;	// ptr to the array of tiles surrounding the current tile to be checked
+		vector<CTile*> references;
+		//POINT current; current.x = begin.x; current.y = begin.y;
+		int currTileID = begin.y * numCols + begin.x;
+		CTile currTile;
+		currTile = tiles[currTileID];
+		open.push_back(currTile);
 
-		if (ptCurr.x == ptTarget.x)
+		// NOTE: end == 1 tile away from target
+		// while ap > 2 and the distance > 0
+		// GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0;
+		bool pathFound = false;
+		while( !pathFound )	
 		{
-			if (oldX != ptCurr.x+1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x+1].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x+1) )
-			{ ++ptCurr.x; continue; }
-			if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + ptCurr.x-1].Flag() == FLAG_NONE &&
-				!CheckTileOccupied(ptCurr.y * m_nNumCols + ptCurr.x-1))
-			{ --ptCurr.x; continue; }
+			for (unsigned int oInd = 1; oInd < open.size(); ++oInd)
+				if (open[oInd].F() <= currTile.F())
+					currTile = open[oInd];
+			adjTiles = GetAdjTiles(currTile.DestXID(), currTile.DestYID(), tiles);
+			open.pop_back(); closed.push_back(currTile);
+
+			//////////////////////////////////////////////////////////////////////////
+
+			// check the adjacent tiles (adjacent to the current), determine which one's best - based on distance? 
+			for (int ind = 0; ind < 4; ++ind)
+			{
+				if (adjTiles[ind] == NULL)
+					continue;
+				int tileID = adjTiles[ind]->DestYID() * numCols + adjTiles[ind]->DestXID();
+
+				if (tiles[tileID].Flag() != FLAG_COLLISION && tiles[tileID].Flag() != FLAG_OBJECT_EDGE &&
+					!IsOnClose(adjTiles[ind], closed))
+				{
+					bFound = false;
+					for (unsigned int i = 0; i < open.size(); ++i)
+					{
+						if (open[i].DestXID() == adjTiles[ind]->DestXID() && open[i].DestYID() == adjTiles[ind]->DestYID())
+						{bFound = true; break;}
+					}
+					if (!bFound)
+					{
+						CTile* parent = new CTile();
+						*parent = currTile;
+						references.push_back(parent);
+						adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
+						adjTiles[ind]->SetH(2*(abs(end.x - adjTiles[ind]->DestXID())+abs(end.y - adjTiles[ind]->DestYID())));
+						adjTiles[ind]->SetF(adjTiles[ind]->Cost()+adjTiles[ind]->H()); 
+						adjTiles[ind]->SetParent(parent);
+						open.push_back(*adjTiles[ind]);
+					}
+					else // on open list, see if this path is better
+					{
+						if (currTile.Cost() + adjTiles[ind]->TerrainCost() < adjTiles[ind]->Cost())
+						{
+							CTile* parent = new CTile();
+							*parent = currTile;
+							references.push_back(parent);
+							adjTiles[ind]->SetParent(parent);
+							adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
+							adjTiles[ind]->SetF(currTile.Cost()+adjTiles[ind]->H());
+						}
+					}
+				}
+			}
+			if(open.size() == 0)
+				break;
+			else if (currTile.DestXID() == end.x && currTile.DestYID() == end.y)
+			{pathFound = true; delete[] adjTiles; break;}
+			delete[] adjTiles;
+			currTile = open[0];
 		}
-		else if (ptCurr.y == ptTarget.y)
+		while (true)
 		{
-			if (oldY != ptCurr.y+1 && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
-			{ ++ptCurr.y; continue; }
-			if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-				!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
-			{ --ptCurr.y; continue; }
+			POINT pt; pt.x = currTile.DestXID(); pt.y = currTile.DestYID();
+			if (currTile.DestXID() == begin.x && currTile.DestYID() == begin.y)
+				break;
+			if (m_vPath.size()*2 <= m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+			{m_vPath.push_back(pt); m_nMoveCost += 2;}
+			else if (m_vPath.size()*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+				break;
+			if (currTile.Parent() == NULL)
+				break;
+			currTile = *(currTile.Parent());
 		}
-		if ( (ptCurr.x > ptTarget.x) && (oldX != ptCurr.x+1) && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x+1)].Flag() == FLAG_NONE &&
-			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x+1)))
-		{++ptCurr.x; continue;}
-		else if (oldX != ptCurr.x-1 && m_pTilesL1[ptCurr.y * m_nNumCols + (ptCurr.x-1)].Flag() == FLAG_NONE &&
-			!CheckTileOccupied(ptCurr.y * m_nNumCols + (ptCurr.x-1)))
-		{--ptCurr.x; continue;}
-		if ( (ptCurr.y > ptTarget.y) && (oldY != ptCurr.y+1) && m_pTilesL1[(ptCurr.y+1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-			!CheckTileOccupied((ptCurr.y+1) * m_nNumCols + ptCurr.x))
-		{++ptCurr.y; continue;}
-		else if (oldY != ptCurr.y-1 && m_pTilesL1[(ptCurr.y-1) * m_nNumCols + ptCurr.x].Flag() == FLAG_NONE &&
-			!CheckTileOccupied((ptCurr.y-1) * m_nNumCols + ptCurr.x))
-		{--ptCurr.y; continue;}
-		pathWeight = 10000; break;
-	}
-	if (m_vPath.size() > 0)
-	{
-		m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
-		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+		int count = 0;
+		while (count < references.size())
+		{
+			CTile* t = references[count];
+			delete t; count++;
+		}
+		delete[] tiles;
+		m_ptStartXY.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX(); m_ptStartXY.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY();
+		m_nMoveListIndex = m_vPath.size()-1;
 		for (unsigned int i = 0; i < m_vPath.size(); ++i)
 			m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);
-		m_nMoveCost = m_vPath.size() * 2;
-	}
 }
 
 void CBattleMap::MoveCamUp(float fElapsedTime)
@@ -2448,22 +2562,10 @@ void CBattleMap::DrawThrowItems()
 		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+30)-posy);
 
 		m_pTM->DrawWithZSort(CAssets::GetInstance()->aEggID,(int)pt.x,(int)pt.y,0.51f);
-
-
 	}
 	else if(m_bItemBool2)
 	{
-		// 		POINT pt; 
-		// 		float posx;
-		// 		float posy;
 		count += 0.03f;
-
-		/*posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x);
-		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y);
-		pt.x = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+50)+posx); 
-		pt.y = (LONG)((m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()+50)+posy);*/
-
-		//m_pTM->DrawWithZSort(CAssets::GetInstance()->aGrenadoID,(int)nades.x,(int)nades.y,0.51f);
 	}
 }
 
@@ -2945,4 +3047,12 @@ bool CBattleMap::StartCompTurn()
 		}
 	}
 	return true;
+}
+
+bool CBattleMap::IsOnClose(CTile* tile, vector<CTile>& closed)
+{
+	for (unsigned int i = 0; i < closed.size(); ++i)
+		if (closed[i].DestXID() == tile->DestXID() && closed[i].DestYID() == tile->DestYID())
+			return true;
+	return false;
 }

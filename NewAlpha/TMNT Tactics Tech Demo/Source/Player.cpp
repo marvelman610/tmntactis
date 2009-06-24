@@ -26,13 +26,16 @@ CPlayer::CPlayer(void)
 	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
+	//////////////////////////////////////////////////////////////////////////
+	// load animations...play starting idles
 	LoadAnimations();
-	m_sProfileName = "NONE"; m_sFileName = "NONE";
-
 	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
 	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
-	m_pTurtles[MIKEY]->GetCurrAnim()->Play();	 
+	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
+
+
+
 
 	m_nCurrStage = 0; m_nKillCount = 0;
 }
@@ -108,6 +111,7 @@ void CPlayer::NewGame()
 
 	// set stats to starting values
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+
 
 	//////////////////////////////////////////////////////////////////////////
 	// TODO:: remove temp items before final build
@@ -213,7 +217,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 9,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 10,0.5f,true);
+	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 10,1,false);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_leonardo3.dat", 11,0.15f);
 	m_pTurtles[LEONARDO]->AddAnim(anim);
@@ -240,7 +244,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 9,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 10,0.5f,false);
+	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 10,1,false);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_donatello.dat", 11,0.15f);
 	m_pTurtles[DONATELLO]->AddAnim(anim);
@@ -263,7 +267,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 9,0.15f);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 10,0.5f,false);
+	anim.Load("Resources/AnimationInfo/VG_raphael.dat", 10,1,false);
 	m_pTurtles[RAPHAEL]->AddAnim(anim);
 
 	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 1,0.25f);
@@ -284,7 +288,7 @@ void CPlayer::LoadAnimations()
 	m_pTurtles[MIKEY]->AddAnim(anim);
 	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 9,0.15f);
 	m_pTurtles[MIKEY]->AddAnim(anim);
-	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 10,0.5f,false);
+	anim.Load("Resources/AnimationInfo/VG_michelangelo.dat", 10,1,false);
 	m_pTurtles[MIKEY]->AddAnim(anim);
 }
 bool CPlayer::RemoveItem(int index)

@@ -174,9 +174,9 @@ CNinja* Factory::CreateNinja(int level)
 	ninja->AddAnim(anim);
 
 	ninja->SetStrength(16);
-	ninja->SetDefense(5);
+	ninja->SetDefense(4);
 	ninja->SetAccuracy(10);
-	ninja->SetRange(2);
+	ninja->SetRange(1);
 	ninja->SetLevel(level);
 
 

@@ -126,7 +126,9 @@ public:
 	inline void SetPrevDefense(int defense)		{m_nPrevDef = defense;}
 	inline void SetPrevAccuracy(int accuracy)	{m_nPrevAcc = accuracy;}
 
+	inline void ResetDamageDone()			{m_nDamageDon = 0;}
 	inline void AddDamageDone(int dmg)		{m_nDamageDon += dmg;}
+	inline void ResetDamageRecieved(){m_nDamageRec = 0;}
 	inline void AddDamageRecieved(int dmg)	{m_nDamageRec += dmg;}
 	
 

@@ -50,6 +50,7 @@ CBoss::CBoss(void)
 
 CBoss::~CBoss(void)
 {
+	
 }
 
 void CBoss::FindPath(POINT begin, POINT end)

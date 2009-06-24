@@ -953,7 +953,7 @@ void CNinja::Render()
 {
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX, (int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1, m_dwColor);
 	
-	if(m_bAttackBool)
+	if(m_bAttackBool && m_nDamage != 0)
 	{
 		int offset = (int)(m_Timer.GetElapsed()*20.0f )-15;
 
@@ -983,9 +983,9 @@ void CNinja::SetLevel(int nLevel)
 	CBase::SetLevel(nLevel+1);
 	//SetBaseAP( GetBaseAP() + (nLevel*2)-2 );
 	SetBaseAP( 16 );
-	SetHealthMax((int) ((float)GetMaxHealth() + (16 * nLevel)) );
+	SetHealthMax((int) ((float)GetMaxHealth() + (26 * nLevel)) );
 	SetStrength( (int) ((float)GetStrength()  + (1  * nLevel)) );
-	SetDefense(  (int) ((float)GetDefense()   + (1  * nLevel)) );
+	SetDefense(  (int) ((float)GetDefense()   + (0.5f  * nLevel)) );
 	SetAccuracy( (int) ((float)GetAccuracy()  + (1  * nLevel)) );
 	
 	SetHealth((int)GetMaxHealth());

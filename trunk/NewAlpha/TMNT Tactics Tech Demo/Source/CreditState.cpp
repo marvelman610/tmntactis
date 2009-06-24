@@ -87,56 +87,87 @@ void CCreditState::Render()
 	GetBitmapFont()->DrawString("ROB MARTINEZ", GetMenuX(), m_nYPos + GetMenuItemSpacing()*5);
 
 	GetBitmapFont()->DrawString("ENGINEER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*7);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()* 8);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()* 9);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()* 10);
 
-	GetBitmapFont()->DrawString("ART", GetMenuX(), m_nYPos + GetMenuItemSpacing()*9);
-	GetBitmapFont()->DrawString("CHRIS JAHOSKY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*10);
+	GetBitmapFont()->DrawString("ART", GetMenuX(), m_nYPos + GetMenuItemSpacing()*12);
+	GetBitmapFont()->DrawString("CHRIS JAHOSKY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*13);
 
-	GetBitmapFont()->DrawString("ANIMATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*12);
-	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*13);
+	GetBitmapFont()->DrawString("ANIMATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*15);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*16);
 
-	GetBitmapFont()->DrawString("LEVEL DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*15);
-	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*16);
+	GetBitmapFont()->DrawString("LEVEL DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*18);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*19);
 
-	GetBitmapFont()->DrawString("PROJECT LEAD", GetMenuX(), m_nYPos + GetMenuItemSpacing()*18);
+	GetBitmapFont()->DrawString("PROJECT LEAD", GetMenuX(), m_nYPos + GetMenuItemSpacing()*21);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*22);
 
-	GetBitmapFont()->DrawString("TECHNICAL DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*21);
+	GetBitmapFont()->DrawString("TECHNICAL DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*24);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*25);
 
-	GetBitmapFont()->DrawString("AUDIO DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*24);
+	GetBitmapFont()->DrawString("AUDIO DIRECTOR", GetMenuX(), m_nYPos + GetMenuItemSpacing()*27);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*28);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*29);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*30);
 
-	GetBitmapFont()->DrawString("LEAD SOUND DESIGNER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*27);
+	GetBitmapFont()->DrawString("LEAD SOUND DESIGNER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*32);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*33);
 
-	GetBitmapFont()->DrawString("SOUND DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*30);
+	GetBitmapFont()->DrawString("SOUND DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*35);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*36);
 
-	GetBitmapFont()->DrawString("SOUND ASSISTANT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*33);
+	GetBitmapFont()->DrawString("SOUND ASSISTANT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*38);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*39);
 
-	GetBitmapFont()->DrawString("VOICE DIRECTION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*36);
+	GetBitmapFont()->DrawString("VOICE DIRECTION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*41);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*42);
 
-	GetBitmapFont()->DrawString("VOICE TALENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*39);
+	GetBitmapFont()->DrawString("VOICE TALENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*44);
+	GetBitmapFont()->DrawString("TMNT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*45);
 
-	GetBitmapFont()->DrawString("ORIGINAL MUSIC BY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*42);
-	GetBitmapFont()->DrawString("VANILLA ICE", GetMenuX(), m_nYPos + GetMenuItemSpacing()*43);
+	GetBitmapFont()->DrawString("ORIGINAL MUSIC BY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*47);
+	GetBitmapFont()->DrawString("VANILLA ICE", GetMenuX(), m_nYPos + GetMenuItemSpacing()*48);
+	GetBitmapFont()->DrawString("DAVID ROCK", GetMenuX(), m_nYPos + GetMenuItemSpacing()*49);
+	GetBitmapFont()->DrawString("ROBERTO ESPINOSA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*50);
 
-	GetBitmapFont()->DrawString("PROJECT MANAGEMENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*46);
+	GetBitmapFont()->DrawString("PROJECT MANAGEMENT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*52);
+	GetBitmapFont()->DrawString("ROBERT MARTINEZ", GetMenuX(), m_nYPos + GetMenuItemSpacing()*53);
 
-	GetBitmapFont()->DrawString("LEAD TESTER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*49);
+	GetBitmapFont()->DrawString("LEAD TESTER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*55);
+	GetBitmapFont()->DrawString("BARBECUE STUDIOS", GetMenuX(), m_nYPos + GetMenuItemSpacing()*56);
 
-	GetBitmapFont()->DrawString("ART SUPPORT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*52);
+	GetBitmapFont()->DrawString("ART SUPPORT", GetMenuX(), m_nYPos + GetMenuItemSpacing()*58);
+	GetBitmapFont()->DrawString("CHRIS JAHOSKY", GetMenuX(), m_nYPos + GetMenuItemSpacing()*59);
 
-	GetBitmapFont()->DrawString("GENERAL MANAGER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*55);
+	GetBitmapFont()->DrawString("GENERAL MANAGER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*61);
+	GetBitmapFont()->DrawString("ROBERT MARTINEZ", GetMenuX(), m_nYPos + GetMenuItemSpacing()*62);
 
-	GetBitmapFont()->DrawString("DOCUMENTATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*58);
+	GetBitmapFont()->DrawString("DOCUMENTATION", GetMenuX(), m_nYPos + GetMenuItemSpacing()*64);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*65);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*66);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*67);
 
-	GetBitmapFont()->DrawString("PACKAGE DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*61);
+	GetBitmapFont()->DrawString("PACKAGE DESIGN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*69);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*70);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*71);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing()*72);
 
-	GetBitmapFont()->DrawString("TECHNICAL OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*64);
+	GetBitmapFont()->DrawString("TECHNICAL OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*74);
+	GetBitmapFont()->DrawString("MATT DI MATTEO", GetMenuX(), m_nYPos + GetMenuItemSpacing()*75);
 
-	GetBitmapFont()->DrawString("GAMEPLAY OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*67);
+	GetBitmapFont()->DrawString("GAMEPLAY OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing()*77);
+	GetBitmapFont()->DrawString("RAMON JOHANNESSEN", GetMenuX(), m_nYPos + GetMenuItemSpacing()*78);
 
-	GetBitmapFont()->DrawString("INTERFACE OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 70);
+	GetBitmapFont()->DrawString("INTERFACE OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 80);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 81);
 
-	GetBitmapFont()->DrawString("PROJECT OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 73);
+	GetBitmapFont()->DrawString("PROJECT OFFICER", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 83);
+	GetBitmapFont()->DrawString("JOSE SIERRA", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 84);
 
-	GetBitmapFont()->DrawString("SPECIAL THANKS", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 76);
+	GetBitmapFont()->DrawString("SPECIAL THANKS", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 86);
+	GetBitmapFont()->DrawString("TO EVERYONE WHO WAITED", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 87);
+	GetBitmapFont()->DrawString("AND THOSE WHO HELPED", GetMenuX(), m_nYPos + GetMenuItemSpacing() * 88);
 }
 
 void CCreditState::Exit()

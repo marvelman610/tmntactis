@@ -451,56 +451,57 @@ void CBattleMap::Render()
 	if(!m_bWin && !m_bLose)
 		m_pHUD->Render();
 
+	m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID, 16,15,20);
 	// who's turn it is
 	if (m_bIsPlayersTurn)
-		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
+		m_pBitmapFont->DrawStringAutoCenter("PLAYER'S TURN", m_nScreenWidth, 10, 0.09f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
 	else
-		m_pBitmapFont->DrawStringAutoCenter("COMPUTER'S TURN", m_nScreenWidth, 10, 0.09f, 0.6f);
+		m_pBitmapFont->DrawStringAutoCenter("COMPUTER'S TURN", m_nScreenWidth, 10, 0.09f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
 
 	// current skill's AP cost
 	// AND display the current AP cost to attack right above the mouse pointer
 	if (m_bIsPlayersTurn && m_nCurrCharacter > -1 && !m_bxPauseBox)
 	{
-		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 0.5f);
-		m_pBitmapFont->DrawString(m_sCurrSkillName.c_str(), 5, 220, 0.05f, 0.5f);
+		m_pBitmapFont->DrawString("SKILL:", 5, 190, 0.05f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
+		m_pBitmapFont->DrawString(m_sCurrSkillName.c_str(), 5, 220, 0.05f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
 		if (m_nCurrSkillCost > -1)
 		{
 			char temp[32];
 			sprintf_s(temp, "COST: %i", m_nCurrSkillCost);
 			string sCost = temp;
-			m_pBitmapFont->DrawString(sCost.c_str(), 5, 250, 0.05f, 0.5f);
+			m_pBitmapFont->DrawString(sCost.c_str(), 5, 250, 0.05f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
 			char atkCost[8]; sprintf_s(atkCost, "-%i-", m_nCurrSkillCost);
 			if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
-				m_pBitmapFont->DrawString(atkCost, m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 0.5f, D3DCOLOR_XRGB(0,255,255) );
+				m_pBitmapFont->DrawString(atkCost, m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 1.0f, D3DCOLOR_XRGB(0,255,255) );
 		}
 		else if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
-			m_pBitmapFont->DrawString("-4-", m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 0.5f, D3DCOLOR_XRGB(0,255,255));
+			m_pBitmapFont->DrawString("-4-", m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 1.0f, D3DCOLOR_XRGB(0,255,255));
 	}
 	if(m_bPlayerAttack && m_nCurrCharacter > -1 && m_nCurrTarget >-1 && !m_bxPauseBox)
 	{
 		int offset = (int)(m_Timer.GetElapsed() * 13.0f )-15;
-		m_pBitmapFont->ChangeBMFont(m_pAssets->aBitmapFontBubblyID,16,15,20);
+		//m_pBitmapFont->ChangeBMFont(m_pAssets->aBitmapFontBubblyID,16,15,20);
 		char tempXP[16];
 		sprintf_s(tempXP, "+%i", m_nXP);
 		m_pBitmapFont->DrawString(tempXP,(int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
 		char tempDmg[16];
 		sprintf_s(tempDmg, "-%i", m_nDmg);
 		m_pBitmapFont->DrawString(tempDmg,(int)m_vEnemies[m_nCurrTarget]->GetPosX()+5, (int)m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
-		m_pBitmapFont->Reset();
+		//m_pBitmapFont->Reset();
 	}
 
 	//////////////////////////////////////////////////////////////////////////
 	// messages to display top center of screen
 	if (m_bNotEnoughAP && m_fTimer < 3)
 	{
-		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+		m_pBitmapFont->DrawStringAutoCenter("-NOT ENOUGH AP-", m_nScreenWidth, 35, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 	else if (m_bOutOfRange && m_fTimer < 3)
 	{
-		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScreenWidth, 35, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
 	}
 	else if(m_bItemBool || m_bEggBool)
-		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 0.6f, D3DCOLOR_XRGB(255, 0, 0));
+		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
 	if (m_fTimer > 3.0f && (m_bNotEnoughAP || m_bOutOfRange))
 	{
 		m_bNotEnoughAP = m_bOutOfRange = false;
@@ -514,9 +515,10 @@ void CBattleMap::Render()
 		{
 			char distText[64];
 			sprintf_s(distText, "Dist to Target: %i", m_nDistanceToTarget);
-			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScreenWidth, 730, 0.09f, 0.5f);
+			m_pBitmapFont->DrawStringAutoCenter(distText, m_nScreenWidth, 730, 0.09f, 1.0f,D3DCOLOR_ARGB(255,255,255,0));
 		}
 	}
+	m_pBitmapFont->Reset();
 	// draw the current mouse pointer
 	m_pTM->DrawWithZSort(GetMousePtr(), m_ptMouseScreenCoord.x-10, m_ptMouseScreenCoord.y-3, 0.0f);
 

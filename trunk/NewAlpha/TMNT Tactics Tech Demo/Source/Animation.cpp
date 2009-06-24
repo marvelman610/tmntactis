@@ -221,4 +221,5 @@ void CAnimation::Render(int posx, int posy, float posZ, float scale, DWORD dwCol
 void CAnimation::Unload()
 {
 	delete[] m_pFrames;
+	m_pFrames = NULL;
 }

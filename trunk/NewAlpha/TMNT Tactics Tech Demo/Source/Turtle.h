@@ -97,6 +97,8 @@ public:
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
 	inline void ClearInactiveSkills() {m_vInactiveSkills.clear();}
 	inline void ClearActiveSkills() {m_vActiveSkills.clear();}
+	inline void AddInactive(CSkill* skill) {m_vInactiveSkills.push_back(*skill);}
+	inline void AddActive(CSkill* skill) {m_vActiveSkills.push_back(*skill);}
 
 	//////////////////////////////////////////////////////////////////////////
 	inline bool GetAlive(void)				{ return m_bIsAlive; }

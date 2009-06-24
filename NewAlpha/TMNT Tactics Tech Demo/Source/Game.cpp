@@ -239,7 +239,7 @@ void CGame::LoadNewSkills(const char* filename)
 	{MessageBox(0, "Failed to load new skills.", "Error", MB_OK); return;}
 
 	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name; double duration;
-	vector<CSkill> inactiveSkills, activeSkill;
+	//vector<CSkill> inactiveSkills, activeSkill;
 
 	TiXmlElement* pRoot = doc.RootElement();
 	TiXmlElement* pTurtle = pRoot->FirstChildElement("TURTLE");
@@ -263,17 +263,17 @@ void CGame::LoadNewSkills(const char* filename)
 			pSkill->Attribute("Duration", &duration);
 			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, (float)duration);
 			if (i > 0)
-				inactiveSkills.push_back(*Skill);
+				m_pPlayer->GetTurtles()[turtleID]->AddInactive(Skill);
 			else
-				activeSkill.push_back(*Skill);
+				m_pPlayer->GetTurtles()[turtleID]->AddActive(Skill);
 			CGame::GetInstance()->AddSkill(*Skill);
 			pSkill = pSkill->NextSiblingElement();
 			delete Skill;
 		}
-		m_pPlayer->GetTurtles()[turtleID]->SetSkillsActive(activeSkill);
-		m_pPlayer->GetTurtles()[turtleID]->SetSkillsInactive(inactiveSkills);
-		inactiveSkills.clear();
-		activeSkill.clear();
+		//m_pPlayer->GetTurtles()[turtleID]->SetSkillsActive(activeSkill);
+		//m_pPlayer->GetTurtles()[turtleID]->SetSkillsInactive(inactiveSkills);
+		//inactiveSkills.clear();
+		//activeSkill.clear();
 		pTurtle = pTurtle->NextSiblingElement("TURTLE");
 	}
 }

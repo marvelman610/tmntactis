@@ -97,7 +97,7 @@ void ObjectManager::RemoveAll(void)
 {
 	for (unsigned int i=0; i < m_vObjects.size(); i++)
 	{
-		CBase* temp = m_vObjects[i];		
+		CBase* temp = m_vObjects[i];
 		delete temp;
 	}
 	m_vObjects.clear();

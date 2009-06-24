@@ -40,15 +40,16 @@ CPlayer::CPlayer(void)
 void CPlayer::Exit()
 {
 	delete m_pAcheivements; m_pAcheivements = NULL;
-}
-
-CPlayer::~CPlayer(void)
-{
 	for(int i = 0; i < 4; i++)
 	{
 		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();
-	}
+	}	
+}
+
+CPlayer::~CPlayer(void)
+{
+
 }
 
 CPlayer* CPlayer::GetInstance()
@@ -60,7 +61,19 @@ CPlayer* CPlayer::GetInstance()
 void CPlayer::NewGame()
 {
 	m_sProfileName = "NONE"; m_sFileName = "NONE";
+	Exit();
 	ObjectManager::GetInstance()->RemoveAll();
+	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
+	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
+	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
+	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
+	LoadAnimations();
+	m_sProfileName = "NONE"; m_sFileName = "NONE";
+
+	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
+	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
+	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
+	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 	GetItems()->clear();
 
 	m_pAcheivements = new CAchievements();

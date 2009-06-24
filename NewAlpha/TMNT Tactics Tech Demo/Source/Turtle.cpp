@@ -37,7 +37,10 @@ CTurtle::~CTurtle(void)
 {
 	m_vActiveSkills.clear();
 	m_vInactiveSkills.clear();
-	m_vWeapons.clear();
+	m_vWeapons.clear();	
+// 	for(int i = 0; i < 4; i++)
+// 		for(unsigned int j = 0; j < GetAnimations().size(); j++)
+// 			GetAnimations()[j].Unload();
 }
 void CTurtle::Update(float fElapsedTime)
 {

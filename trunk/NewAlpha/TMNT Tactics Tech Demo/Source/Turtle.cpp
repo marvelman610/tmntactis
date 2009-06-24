@@ -31,13 +31,13 @@ CTurtle::CTurtle(void)
 	m_nPrevAcc = 0;
 	m_nDamageDon = 0;
 	m_nDamageRec = 0;
-
 }
 
 CTurtle::~CTurtle(void)
 {
 	m_vActiveSkills.clear();
 	m_vInactiveSkills.clear();
+	m_vWeapons.clear();
 }
 void CTurtle::Update(float fElapsedTime)
 {

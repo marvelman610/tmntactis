@@ -42,6 +42,7 @@ ObjectManager* ObjectManager::GetInstance()
 }
 void ObjectManager::UpdateObjects(float fElapsedTime)
 {
+	CBattleMap* bm = CBattleMap::GetInstance();
 	for (unsigned int i=0; i < m_vObjects.size(); i++)
 	{
 		m_vObjects[i]->Update(fElapsedTime);

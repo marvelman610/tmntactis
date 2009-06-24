@@ -152,9 +152,11 @@ void CGamePlayState::LoadGame(const char* fileName)
 	ifs.open(pathFileName.c_str(), ios_base::binary | ios_base::in);
 	if (ifs.is_open())
 	{
-		CPlayer* player = CPlayer::GetInstance();
-		player->NewGame();
-		CTurtle** turtles = player->GetTurtles();
+		m_pPlayer = CPlayer::GetInstance();
+		CAchievements* achmnts = m_pPlayer->GetAch();
+		achmnts = new CAchievements();
+		m_pPlayer->SetAch(achmnts);
+		CTurtle** turtles = m_pPlayer->GetTurtles();
 		int currState;
 
 		for (int i = 0; i < 4; ++i)
@@ -239,6 +241,7 @@ void CGamePlayState::LoadGame(const char* fileName)
 				ifs.read(reinterpret_cast<char*>(&wID), sizeof(int));
 				CBase* weapon = Factory::GetInstance()->CreateWeapon(wID, pt, false);
 				turtles[i]->AddWeapon(*weapon);
+				delete weapon;
 			}
 		}
 		for (int i2 = 0; i2 < 10; ++i2)
@@ -246,18 +249,18 @@ void CGamePlayState::LoadGame(const char* fileName)
 			bool unlocked;
 			ifs.read(reinterpret_cast<char*>(&unlocked), sizeof(bool));
 			if (unlocked)
-				player->GetAch()->LoadUnlock(i2);
+				m_pPlayer->GetAch()->LoadUnlock(i2);
 		}
 
 		ifs.read(reinterpret_cast<char*>(&currState), sizeof(int));
-		player->SetStage(currState);
-		ifs.read(reinterpret_cast<char*>(player->GetMapsUnlocked()), NUM_MAPS * sizeof(bool));
+		m_pPlayer->SetStage(currState);
+		ifs.read(reinterpret_cast<char*>(m_pPlayer->GetMapsUnlocked()), NUM_MAPS * sizeof(bool));
 		int killCount = 0;
 		ifs.read(reinterpret_cast<char*>(&killCount), sizeof(int));
-		player->SetKillCount(killCount);
+		m_pPlayer->SetKillCount(killCount);
 		bool shown;
 		ifs.read(reinterpret_cast<char*>(&shown), sizeof(bool));
-		player->SetSelectTurtleShown(shown);
+		m_pPlayer->SetSelectTurtleShown(shown);
 		ifs.close();
 	}
 }

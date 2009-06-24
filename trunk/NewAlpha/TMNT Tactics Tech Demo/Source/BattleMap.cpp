@@ -651,9 +651,7 @@ void CBattleMap::Update(float fElapsedTime)
 				m_pParticleSystem[FIRE].m_bActive = true;
 				m_pParticleSystem[SMOKE].m_bActive = true;
 				PlaySFX(m_pAssets->aBMgrenadeSnd);
-
 			}
-
 		}
 		CalculateRanges();
 	}
@@ -666,8 +664,6 @@ void CBattleMap::Update(float fElapsedTime)
 	if (m_bDrawTimedParticles && m_pParticleSystem)
 	{
 		m_fTimer += fElapsedTime;
-		
-			
 		
 		m_pParticleSystem[SHREDDER_SPECIAL].DrawParticle(m_pAssets->aShredderParticle);
 		m_pParticleSystem[DUST_CLOUD].DrawParticle(m_pAssets->aDustCloudParticle);
@@ -974,6 +970,7 @@ void CBattleMap::CreateEnemies(bool bBoss)
 	{
 		++m_nNumEnemiesLeft; ++m_nNumCharacters;
 		CBoss* boss = Factory::GetInstance()->CreateBoss();
+		boss->SetCurrAnim(0);
 		m_vCharacters.push_back((CBoss)*boss);
 		m_vEnemies.push_back((CBoss*)boss);
 	}
@@ -1606,8 +1603,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 		}
 		return;
 	}
-	if (!m_bIsPlayersTurn)
-		return;
 
 	//////////////////////////////////////////////////////////////////////////
 	// BOX INPUT
@@ -1631,6 +1626,8 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	else if (m_bxMessageBox)
 		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
 	//////////////////////////////////////////////////////////////////////////
+	if (!m_bIsPlayersTurn)
+	{HandleButton();return;}
 
 	if (!m_pPlayer->GetSelectTurtleShown())
 	{
@@ -1770,7 +1767,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 							m_vCharacters.push_back((CBase)(*m_pPlayer->GetTurtles()[i]));
 						for (int i = 0; i < m_nNumEnemiesLeft; ++i)
 							m_vCharacters.push_back(*m_vEnemies[i]);
-
 					}
 				}
 			}
@@ -1786,10 +1782,10 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 			else if (m_sCurrSkillName != "NONE" && m_nDistanceToTarget > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrSelectedSkill()->GetRange())
 			{ m_bOutOfRange = true; return; }
 			// check if enough AP for a regular attack
-			if (m_vCharacters[m_nCurrCharacter].GetCurrAP() < 4 && m_sCurrSkillName == "NONE")
+			if (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP() < 4 && m_sCurrSkillName == "NONE")
 			{ m_bNotEnoughAP = true; return; }
 			// check if enough AP for the selected skill
-			else if (m_sCurrSkillName != "NONE" && m_vCharacters[m_nCurrCharacter].GetCurrAP() < m_nCurrSkillCost)
+			else if (m_sCurrSkillName != "NONE" && m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP() < m_nCurrSkillCost)
 			{ m_bNotEnoughAP = true; return; }
 			else
 				PerformAttack();

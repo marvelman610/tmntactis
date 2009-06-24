@@ -26,22 +26,6 @@ CPlayer::CPlayer(void)
 	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
 	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
 	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
-
-	m_pAcheivements = new CAchievements();
-
-	CBase weapon;
-	weapon.SetWeapon("Bokken",6,0,-1,0);
-	m_pTurtles[LEONARDO]->AddWeapon( weapon);
-
-	weapon.SetWeapon("Oak Bo Staff",5,1,-1,7);
-	m_pTurtles[DONATELLO]->AddWeapon( weapon);
-
-	weapon.SetWeapon("Rusty Sais",6,0,-1,10);
-	m_pTurtles[RAPHAEL]->AddWeapon( weapon);
-
-	weapon.SetWeapon("Wooden Nunchaku",3,0,-1,4);
-	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
-
 	LoadAnimations();
 	m_sProfileName = "NONE"; m_sFileName = "NONE";
 
@@ -55,19 +39,16 @@ CPlayer::CPlayer(void)
 
 void CPlayer::Exit()
 {
-	for(int i = 0; i < 4; i++)
-	{
-		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
-			m_pTurtles[i]->GetAnimations()[j].Unload();
-	}
 	delete m_pAcheivements; m_pAcheivements = NULL;
 }
 
 CPlayer::~CPlayer(void)
 {
-	int  i = 0;
-	if (m_pAcheivements)
-	{ delete m_pAcheivements; m_pAcheivements = NULL;}
+	for(int i = 0; i < 4; i++)
+	{
+		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
+			m_pTurtles[i]->GetAnimations()[j].Unload();
+	}
 }
 
 CPlayer* CPlayer::GetInstance()
@@ -81,10 +62,6 @@ void CPlayer::NewGame()
 	m_sProfileName = "NONE"; m_sFileName = "NONE";
 	ObjectManager::GetInstance()->RemoveAll();
 	GetItems()->clear();
-	m_pTurtles[LEONARDO] = Factory::GetInstance()->CreateTurtle("Leonardo");
-	m_pTurtles[DONATELLO]= Factory::GetInstance()->CreateTurtle("Donatello");
-	m_pTurtles[RAPHAEL]	 = Factory::GetInstance()->CreateTurtle("Raphael");
-	m_pTurtles[MIKEY]	 = Factory::GetInstance()->CreateTurtle("Michelangelo");
 
 	m_pAcheivements = new CAchievements();
 	for (int i = 1; i < NUM_MAPS; ++i)		// lock all maps, except first one
@@ -93,33 +70,28 @@ void CPlayer::NewGame()
 
 	//////////////////////////////////////////////////////////////////////////
 	// create and add starting weapons
+	for (int i = 0; i < 4; ++i)
+	{
+		m_pTurtles[i]->ClearWeapons();
+		m_pTurtles[i]->ClearActiveSkills();
+		m_pTurtles[i]->ClearInactiveSkills();
+	}
+	CGame::GetInstance()->LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 	CBase weapon;
 	weapon.SetWeapon("Bokken",6,0,-1,0);
-	m_pTurtles[LEONARDO]->AddWeapon( weapon);
+	m_pTurtles[LEONARDO]->AddWeapon( weapon );
 
 	weapon.SetWeapon("Oak Bo Staff",5,1,-1,7);
-	m_pTurtles[DONATELLO]->AddWeapon( weapon);
+	m_pTurtles[DONATELLO]->AddWeapon( weapon );
 
 	weapon.SetWeapon("Rusty Sais",6,0,-1,10);
-	m_pTurtles[RAPHAEL]->AddWeapon( weapon);
+	m_pTurtles[RAPHAEL]->AddWeapon( weapon );
 
 	weapon.SetWeapon("Wooden Nunchaku",3,0,-1,4);
-	m_pTurtles[MIKEY]->AddWeapon( weapon); 	
+	m_pTurtles[MIKEY]->AddWeapon( weapon ); 	
 	//////////////////////////////////////////////////////////////////////////
-
-	//////////////////////////////////////////////////////////////////////////
-	// load animations...play starting idles
-	LoadAnimations();
-	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
-	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
-	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
-	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 
 	m_nCurrStage = 0;	// current stage starts at the first battle map
-
-	//////////////////////////////////////////////////////////////////////////
-	// load the skills
-	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 
 	// set stats to starting values
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
@@ -132,51 +104,6 @@ void CPlayer::NewGame()
 	Factory::GetInstance()->CreateBattleItem(PIZZA, pt);
 }
 
-void CPlayer::LoadNewSkills(const char* filename)
-{
-	TiXmlDocument doc;
-
-	if (!doc.LoadFile(filename))
-		{MessageBox(0, "Failed to load new skills.", "Error", MB_OK); return;}
-
-	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name; double duration;
-	vector<CSkill> inactiveSkills, activeSkill;
-
-	TiXmlElement* pRoot = doc.RootElement();
-	TiXmlElement* pTurtle = pRoot->FirstChildElement("TURTLE");
-	while (pTurtle)
-	{
-		pTurtle->Attribute("NumberOfSkills", &numSkills);
-		pTurtle->Attribute("TurtleName", &turtleID);
-		TiXmlElement* pSkill;
-		pSkill = pTurtle->FirstChildElement("SKILL");
-		for (int i = 0; i < numSkills; ++i)
-		{
-			char* tempName = (char*)pSkill->Attribute("Name");
-			name = tempName;
-			pSkill->Attribute("ID", &skillID);
-			pSkill->Attribute("Type", &type);
-			pSkill->Attribute("Dmg", &dmg);
-			pSkill->Attribute("Range", &range);
-			pSkill->Attribute("Cost", &cost);
-			pSkill->Attribute("CombAmt", & combAmt);
-			pSkill->Attribute("Duration", &duration);
-			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, (float)duration);
-			if (i > 0)
-				inactiveSkills.push_back(*Skill);
-			else
-				activeSkill.push_back(*Skill);
-			CGame::GetInstance()->AddSkill(*Skill);
-			pSkill = pSkill->NextSiblingElement();
-			delete Skill;
-		}
-		m_pTurtles[turtleID]->SetSkillsActive(activeSkill);
-		m_pTurtles[turtleID]->SetSkillsInactive(inactiveSkills);
-		inactiveSkills.clear();
-		activeSkill.clear();
-		pTurtle = pTurtle->NextSiblingElement("TURTLE");
-	}
-}
 bool CPlayer::LoadTurtleStats(const char* szXmlFileName)
 {
 	TiXmlDocument doc;

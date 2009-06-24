@@ -54,9 +54,11 @@ public:
 		m_nCost = -1; m_nTerrainCost = 2;
 		m_rSrc.left = m_rSrc.right = m_rSrc.top = m_rSrc.bottom = 0;
 		m_nFcost = m_nHeuristic = -1;
+		m_pParent = NULL; 
+	}
+	~CTile(void){
 		m_pParent = NULL;
 	}
-	~CTile(void){}
 	CTile(int nSourceID, int nImageID, int numCols, int nDestX, int nDestY, int nWidth, int nHeight, int nFlag, string strTrigger)
 	{
 		// setup source rect here, once and for all

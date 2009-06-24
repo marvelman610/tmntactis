@@ -14,12 +14,20 @@
 #include "BattleMap.h"
 #include "ObjectManager.h"
 #include "Achievements.h"
+#include "BitmapFont.h"
 #include "Tile.h"
+#include "Assets.h"
+
+enum { IDLE_1, IDLE_2, ATK_HIGH, ATK_LOW, };
 
 int Random(int min, int max)
 {
-	int number = abs(max) - abs(min);
-	return ((rand()%number) + abs(min));
+	int number = 0;
+	number = abs(max) - abs(min);
+	number = ((rand()%number) + abs(min));
+	if(rand() % 2 == 0)
+		number = -number;
+	return number;
 }
 
 CBoss::CBoss(void)
@@ -36,8 +44,8 @@ CBoss::CBoss(void)
 	m_vClosedList.clear();
 	m_vMoveList.clear();
 	m_nDistance = 0;
-	//m_vPath = 0;
-	//m_ptStartXY =0;	
+	m_pBitmapFont = CBitmapFont::GetInstance();
+	m_bAttacking = m_bMoving = false;
 }
 
 CBoss::~CBoss(void)
@@ -144,11 +152,14 @@ void CBoss::FindPath(POINT begin, POINT end)
 
 void CBoss::AI()
 {
+	m_nInRange = 20; // if no turtles are found in range, this signals a random move
 	m_bAttacking = false;
+	m_nCurrAnimInd = -1;
 	//check distance
 	SetCurrAP(16);
 	
 	CTurtle** turtles = m_pPlayer->GetTurtles();
+	CBattleMap* pBM = CBattleMap::GetInstance();
 	//set temporary ranges
 	int distToMikey = abs(turtles[MIKEY]->GetMapCoord().x - GetMapCoord().x) + 
 		abs( turtles[MIKEY]->GetMapCoord().y - GetMapCoord().y);
@@ -725,30 +736,51 @@ void CBoss::AI()
 			FindPathNew(begin,end);
 		}
 		break;
-	default:
+	case 20:
 		{
 			// need to do something..like move instead of ending turn
-			CBattleMap::GetInstance()->SetTurn(true);
+			// find a tile to move to that's valid
+			CTile* tiles = pBM->GetTiles();
+			// loop until a valid tile is found
+			// find a valid map coord
+			while (true)
+			{
+				int change = Random(1, 4);//rand() % 4 - (-4+1) - 4;
+				end.x = begin.x + change;
+				change = Random(1, 4);//rand() % (4 - (-4+1) - 4);
+				end.y = begin.y + change;
+				if (end.x > 1 && end.y > 1 && end.x < pBM->GetNumCols() && end.y < pBM->GetNumRows() && 
+						tiles[end.y*pBM->GetNumCols()+end.x].Flag() == FLAG_NONE
+						&& end.x != begin.x && end.y != begin.y)
+					break;	// found a valid tile
+			}
+			m_bMoving = true;
+			FindPathNew(begin,end);
 		}
 		break;
+	default:
+		{
+
+		}
 	}
 }
 void CBoss::Update(float fElapsedTime)
 { 
-	if(m_bMoving)
+	if(m_nCurrAnimation > -1)
+		m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
+
+	if(m_bMoving && m_vMoveList.size() > 0)
 	{
-		m_ptStartXY.x = GetPosX();
-		m_ptStartXY.y = GetPosY();
+		m_ptCurrPos.x = GetPosX();
+		m_ptCurrPos.y = GetPosY();
 
 		//get start position and next tile
 		if(GetMapCoord().x > m_vMoveList[0].x) //move left one x tile(on screen)
 		{
 			//32 pixels left 16 pixels up
-			m_ptCurrPos.x = GetPosX();
-			m_ptCurrPos.y = GetPosY();
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
-				m_ptCurrPos.x  -= GetVelX() * fElapsedTime;
+				m_ptCurrPos.x -= GetVelX() * fElapsedTime;
 				m_ptCurrPos.y -= GetVelY() * fElapsedTime;
 				SetPosPtF(m_ptCurrPos);
 			}
@@ -756,8 +788,6 @@ void CBoss::Update(float fElapsedTime)
 		else if(GetMapCoord().x < m_vMoveList[0].x)//move right one x tile(on screen)
 		{
 			//32 pixels right  16 pixels down
-			m_ptCurrPos.x = GetPosX();
-			m_ptCurrPos.y = GetPosY();
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
 				m_ptCurrPos.x += GetVelX() * fElapsedTime;
@@ -768,8 +798,6 @@ void CBoss::Update(float fElapsedTime)
 		else if(GetMapCoord().y > m_vMoveList[0].y)//move up one tile y(on screen)
 		{
 			//32 pixels up and 16 pixels right 
-			m_ptCurrPos.x = GetPosX();
-			m_ptCurrPos.y = GetPosY();
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
 				m_ptCurrPos.x += GetVelX() * fElapsedTime;
@@ -780,8 +808,6 @@ void CBoss::Update(float fElapsedTime)
 		else if(GetMapCoord().y < m_vMoveList[0].y)//move down one tile y(on screen)
 		{
 			//32 pixels down and 16 pixels left
-			m_ptCurrPos.x = GetPosX();
-			m_ptCurrPos.y = GetPosY();
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
 				m_ptCurrPos.x -= GetVelX() * fElapsedTime;
@@ -796,13 +822,15 @@ void CBoss::Update(float fElapsedTime)
 			SetCurrAP(GetCurrAP()-2);
 			vector<POINT>::iterator first = m_vMoveList.begin();
 			m_vMoveList.erase(first);
+			if (m_vMoveList.size() > 0)
+			{m_ptCurrPos.x = m_vMoveList[0].x; m_ptCurrPos.y = m_vMoveList[0].y;}
 			CBattleMap::GetInstance()->UpdatePositions();
 		}
 
 		// movement is done
 		if(m_vMoveList.size() <= 0)
 		{
-			m_vMoveList.clear();
+			//m_vMoveList.clear();
 			m_bMoving = false;
 			// if in range and enough AP..attack
 			if (m_nInRange == 1 && GetCurrAP() >= 4)
@@ -813,6 +841,7 @@ void CBoss::Update(float fElapsedTime)
 			{
 				//end shredder turn
 				m_bAttacking = m_bMoving = false;
+				SetCurrAnim(rand() % 2);
 				CBattleMap::GetInstance()->UpdatePositions();
 				CBattleMap::GetInstance()->NinjaMoveComplete();
 				CBattleMap::GetInstance()->SetTurn(true);
@@ -822,185 +851,70 @@ void CBoss::Update(float fElapsedTime)
 	else if (m_bAttacking == true)
 	{
 		CTurtle** turtles = m_pPlayer->GetTurtles();
-		switch(GetCurrAP())
+		if (m_nCurrAnimInd == -1 || !m_vAnimations[m_nCurrAnimInd].IsAnimationPlaying())
 		{
-			SetCurrAnim(2);
-		case 4:
+			switch(GetCurrAP())
 			{
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20));	
+			case 4:
+				{
+					m_nCurrAnimInd = ATK_HIGH;
+					SetCurrAnim(m_nCurrAnimInd);
+					int damage = Random(35, 45);
+					turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);	
+				}
+				break;
+			case 6:
+				{
+					//use skill low punch , sweep
+					//do 40+ damage 
+					m_nCurrAnimInd = ATK_LOW;
+					SetCurrAnim(m_nCurrAnimInd);
+					m_nDamage = Random(50, 60);
+				}
+				break;
+			case 8:
+				{
+					m_nCurrAnimInd = ATK_LOW;
+					SetCurrAnim(m_nCurrAnimInd);
+					m_nDamage = Random(80, 100);
+				}
+				break;
+			case 10:
+				{
+					//use skill punch, kick
+					//do 60+ damage
+					m_nCurrAnimInd = ATK_LOW;
+					SetCurrAnim(m_nCurrAnimInd);
+					m_nDamage = Random(65, 85);
+				}
+				break;
+			case 12:
+				{
+					m_nCurrAnimInd = ATK_HIGH;
+					SetCurrAnim(m_nCurrAnimInd);
+					m_nDamage = Random(35, 45);
+				}
+				break;
+			case 16:
+				{
+					//use skill low punch, sweep then use skill punch, kick
+					m_nCurrAnimInd = ATK_LOW;
+					SetCurrAnim(m_nCurrAnimInd);
+					m_nDamage = Random(80, 100);
+				}
+				break;
+			default:
+				{
+					int debug = 0;
+				}
+				break;
 			}
-			break;
-		case 6:
-			{
-				//use skill low punch , sweep
-				//do 40+ damage 
-				int damage = Random(30, 50);//damage
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-			}
-			break;
-		case 8:
-			{
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 2));
-			}
-			break;
-		case 10:
-			{
-				//use skill punch, kick
-				//do 60+ damage
-				int damage = Random(45, 65);//damage
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-			}
-			break;
-		case 12:
-			{
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - (20 * 3));
-			}
-			break;
-		case 16:
-			{
-				//use skill low punch, sweep then use skill punch, kick
-				int damage = Random(80, 100);
-				turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - damage);
-			}
-			break;
-		default:
-			{
-				int debug = 0;
-			}
-			break;
+			turtles[m_nTurtle]->SetHealth(turtles[m_nTurtle]->GetHealth() - m_nDamage);
 		}
 	}
 	//CBase::Update(fElapsedTime);
-	if(!GetCurrAnim()->IsAnimationPlaying())
+	if(!m_bAttacking && m_nCurrAnimInd > -1 && !GetCurrAnim()->IsAnimationPlaying())
 		SetCurrAnim(1);
-	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
-	// a ninja has been moved...execute the animation and position change over time
-//	if (m_bMoving == true)
-//	{
-//		if (m_vPath.size() > 0)
-//		{
-//			// grab the next move and take it out of the vector..if the previous move is complete
-//			POINT newPoint = m_vPath[0];
-//			// set up variables
-//			POINT currPoint= GetMapCoord();
-//			MY_POINT_FLOAT currPos; 
-//			currPos.x = GetPosX(); currPos.y = GetPosY();
-//
-//			// NORTHWEST
-//			if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-//			{
-//				SetCurrAnimFacing(true);
-//
-//				currPos.x -= GetVelX() * fElapsedTime;
-//				currPos.y -= GetVelY() * fElapsedTime;
-//				SetPosPtF(currPos);
-//			}
-//			// SOUTHEAST
-//			else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-//			{
-//				SetCurrAnimFacing(false);
-//
-//				currPos.x += GetVelX() * fElapsedTime;
-//				currPos.y += GetVelY() * fElapsedTime;
-//				SetPosPtF(currPos);
-//			}
-//			// NORTHEAST
-//			if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-//			{
-//				SetCurrAnimFacing(false);
-//
-//				currPos.y -= GetVelY() * fElapsedTime;
-//				currPos.x += GetVelX() * fElapsedTime;
-//				SetPosPtF(currPos);
-//			}
-//			// SOUTHWEST
-//			else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-//			{
-//				SetCurrAnimFacing(true);
-//
-//				currPos.y += GetVelY() * fElapsedTime;
-//				currPos.x -= GetVelX() * fElapsedTime;
-//				SetPosPtF(currPos);
-//			}
-//			// check to see if this current tile move is complete
-//			if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
-//			{
-//				vector<POINT>::iterator first = m_vPath.begin();
-//				m_vPath.erase(first);
-//				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-//					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-//// 				SetCurrTile(newPoint, CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(), CBattleMap::GetInstance()->GetTileWidth(),
-//// 					CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
-//				
-// 				DecrementCurrAP(2);
-//				m_ptStartXY.x = GetPosX();
-//				m_ptStartXY.y = GetPosY();
-//			}
-//		}
-//		else // movement is done
-//		{
-//			SetCurrAP(GetCurrAP());
-//			m_bMoving = false;
-//			//SetCurrAnim(3);
-//
-//			if(m_nInRange == 1)
-//			{
-//				//skills punch, kick
-//				//skills low punch, sweep
-//				switch(GetCurrAP())
-//				{
-//				case 4:
-//					{
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20));	
-//					}
-//					break;
-//				case 6:
-//					{
-//						//use skill low punch , sweep
-//						//do 40+ damage 
-//						int damage = Random(30, 50);//damage
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-//					}
-//					break;
-//				case 8:
-//					{
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 2));
-//					}
-//					break;
-//				case 10:
-//					{
-//						//use skill punch, kick
-//						//do 60+ damage
-//						int damage = Random(45, 65);//damage
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-//					}
-//					break;
-//				case 12:
-//					{
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - (20 * 3));
-//					}
-//					break;
-//				case 16:
-//					{
-//						//use skill low punch, sweep then use skill punck, kick
-//						int damage = Random(80, 100);
-//						m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - damage);
-//					}
-//					break;
-//				default:
-//					{
-//					}
-//					break;
-//				}
-//				//end shredder turn
-//				CBattleMap::GetInstance()->SetTurn(true);
-//			}
-//			//TODO::wait till attack is done to end the turn? would require actually decrementing AP when the attack animation was played
-//			CBattleMap::GetInstance()->UpdatePositions();
-//			CBattleMap::GetInstance()->NinjaMoveComplete();
-//			CBattleMap::GetInstance()->SetTurn(true);
-//		}
-//	}
 
 	if( GetExperience() >= 100)
 	{
@@ -1022,6 +936,28 @@ void CBoss::Update(float fElapsedTime)
 void CBoss::Render()
 {
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX, (int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1, m_dwColor);
+	if(m_bAttacking)
+	{
+		int offset = (int)(m_Timer.GetElapsed()*20.0f )-15;
+
+		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
+
+		//temp
+		//TODO:: implement xp gain
+		int nXP = 10;
+
+		//ninja xp
+		char tempXP[16];
+		sprintf_s(tempXP, "+%i", nXP);
+		m_pBitmapFont->DrawString(tempXP,(int)GetPosX()+5,(int)GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,255,0));
+
+		//player damage
+		char tempDmg[16];
+		sprintf_s(tempDmg, "-%i", m_nDamage);
+		m_pBitmapFont->DrawString(tempDmg,(int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nTurtle]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
+
+		m_pBitmapFont->Reset();
+	}
 }
 
 
@@ -1661,40 +1597,23 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	
 	//POINT current; current.x = begin.x; current.y = begin.y;
 	int currTileID = begin.y * numCols + begin.x;
-	CTile* currTile = new CTile();
-	currTile = &tiles[currTileID];
-	open.push_back(*currTile);
+	CTile currTile = tiles[currTileID];
+	open.push_back(currTile);
 
 	// NOTE: end == 1 tile away from target
 	// while ap > 2 and the distance > 0
 	// GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0;
- 	while(open.size() > 0 && (currTile->DestXID() != end.x || currTile->DestYID() != end.y) )	
+ 	while(open.size() > 0 && (currTile.DestXID() != end.x || currTile.DestYID() != end.y) )	
 	{
-		adjTiles = bMap->GetAdjTiles(currTile->DestXID(), currTile->DestYID(), tiles);
-		open.pop_back(); closed.push_back(*currTile);
-		// set the tiles, make sure they're valid, if NOT valid, set x to -1
-		//////////////////////////////////////////////////////////////////////////
-		adjTiles[MINUS_X] = &tiles[currTileID-1];
-		if(currTileID - 1 < 2)
-			adjTiles[MINUS_X]->SetDestX(-1);
-		//////////////////////////////////////////////////////////////////////////
-		adjTiles[ADD_X] = &tiles[currTileID+1];
-		if(currTileID + 1 >= numCols)
-			adjTiles[MINUS_X]->SetDestX(-1);
-		//////////////////////////////////////////////////////////////////////////
-		adjTiles[MINUS_Y] = &tiles[currTileID-1];
-		if(currTileID - 1 < 2)
-			adjTiles[MINUS_Y]->SetDestY(-1);
-		//////////////////////////////////////////////////////////////////////////
-		adjTiles[ADD_Y] = &tiles[currTileID+1];
-		if(currTileID + 1 >= numRows)
-			adjTiles[MINUS_Y]->SetDestY(-1);
+		adjTiles = bMap->GetAdjTiles(currTile.DestXID(), currTile.DestYID(), tiles);
+		open.pop_back(); closed.push_back(currTile);
+
 		//////////////////////////////////////////////////////////////////////////
 
 		// check the adjacent tiles (adjacent to the current), determine which one's best - based on distance? 
 		for (int ind = 0; ind < 4; ++ind)
 		{
-			if (adjTiles[ind]->DestXID() == -1)
+			if (adjTiles[ind] == NULL)
 				continue;
 			int tileID = adjTiles[ind]->DestYID() * numCols + adjTiles[ind]->DestXID();
 
@@ -1709,34 +1628,37 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if (!bFound)
 				{
-					adjTiles[ind]->SetCost(currTile->Cost()+currTile->TerrainCost());
-					adjTiles[ind]->SetH((abs(end.x - adjTiles[ind]->DestXID())+abs(end.y - adjTiles[ind]->DestYID())));
+					adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
+					adjTiles[ind]->SetH(2*(abs(end.x - adjTiles[ind]->DestXID())+abs(end.y - adjTiles[ind]->DestYID())));
 					adjTiles[ind]->SetF(adjTiles[ind]->Cost()+adjTiles[ind]->H()); 
-					adjTiles[ind]->SetParent(currTile);
+					//adjTiles[ind]->SetParent(currTile);
 					open.push_back(*adjTiles[ind]);
 				}
 				else // on open list, see if this path is better
 				{
-					if (currTile->Cost() + adjTiles[ind]->TerrainCost() < adjTiles[ind]->Cost())
+					if (currTile.Cost() + adjTiles[ind]->TerrainCost() < adjTiles[ind]->Cost())
 					{
-						adjTiles[ind]->SetParent(currTile);
-						adjTiles[ind]->SetCost(currTile->Cost()+adjTiles[ind]->TerrainCost());
-						adjTiles[ind]->SetF(currTile->Cost()+adjTiles[ind]->H());
+						//adjTiles[ind]->SetParent(currTile);
+						adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
+						adjTiles[ind]->SetF(currTile.Cost()+adjTiles[ind]->H());
 					}
 				}
 			}
 		}
 		// pick the next best tile
-		delete currTile; currTile = NULL;
 		if (open.size() > 0)
-		{currTile = new CTile(); currTile = &open[0];}
+		{currTile = open[0];}
+		CTile tempTile = currTile;
 
 		for (unsigned int oInd = 1; oInd < open.size(); ++oInd)
-			if (open[oInd].F() <= currTile->F())
-				currTile = &open[oInd];
+			if (open[oInd].F() <= currTile.F() && open[oInd].DestXID() != tempTile.DestXID() && open[oInd].DestYID() != tempTile.DestYID())
+				currTile = open[oInd];
 
-		POINT pt; pt.x = currTile->DestXID(); pt.y = currTile->DestYID();
-		m_vMoveList.push_back(pt);
+		POINT pt; pt.x = currTile.DestXID(); pt.y = currTile.DestYID();
+		if (m_vMoveList.size() < 8)
+			m_vMoveList.push_back(pt);
+		else
+			break;
 		delete[] adjTiles;
 	}
 	if(m_vMoveList.size() > 0)
@@ -1744,8 +1666,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	else m_bMoving = false;
 
 	delete[] tiles;
-	if (currTile)
-		delete currTile;
+	m_ptCurrPos.x = begin.x; m_ptCurrPos.y = begin.y;
 }
 
 bool CBoss::IsOnClose(CTile* tile, vector<CTile>& closed)

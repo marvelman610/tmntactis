@@ -46,7 +46,7 @@ CBoss::CBoss(void)
 	m_nDistance = 0;
 	m_pBitmapFont = CBitmapFont::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
-	m_bAttacking = m_bMoving = false;
+	m_bAttacking = m_bMoving = m_bRenderCombText = m_bAttackDone = m_bDoDmg = false;
 }
 
 CBoss::~CBoss(void)

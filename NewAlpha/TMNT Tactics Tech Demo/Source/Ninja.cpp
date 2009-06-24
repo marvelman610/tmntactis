@@ -897,7 +897,7 @@ void CNinja::Update(float fElapsedTime)
 			{
 				SetCurrAnim(0);
 				//m_Timer.StartTimer(1.0f);
-				m_bMoving = m_bAttackBool = false;
+				m_bMoving = m_bAttackBool = m_bMovingDone = false;
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
 			//end of attack
@@ -911,6 +911,7 @@ void CNinja::Update(float fElapsedTime)
 				CBattleMap::GetInstance()->UpdatePositions();
 				CBattleMap::GetInstance()->NinjaMoveComplete();
 				SetCurrAnim(0);
+				m_bMovingDone = false;
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
 		}

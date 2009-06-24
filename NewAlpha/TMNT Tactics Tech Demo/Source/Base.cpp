@@ -100,12 +100,13 @@ void CBase::Colorize(bool bColorize)
 
 void CBase::SetCurrAnim(int animID, bool play)
 {
-	m_vAnimations[m_nCurrAnimation].Stop();
-	m_nCurrAnimation = animID;
-	//if (animID == 0)
-	if (play)
-		m_vAnimations[m_nCurrAnimation].Play();
-
+	if (m_vAnimations.size() > 0)
+	{
+		m_vAnimations[m_nCurrAnimation].Stop();
+		m_nCurrAnimation = animID;
+		if (play)
+			m_vAnimations[m_nCurrAnimation].Play();
+	}
 }
 
 void CBase::SetWeapon(char* name, int attack, int defense, int imageID, int numType)

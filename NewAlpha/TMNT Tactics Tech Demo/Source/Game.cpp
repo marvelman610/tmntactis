@@ -12,7 +12,10 @@
 #include "Battlemap.h"
 #include "CSGD_FModManager.h"
 #include "BitmapFont.h"
+#include "Turtle.h"
 #include <ctime>
+#include <fstream>
+using namespace std;
 
 CGame::CGame()
 {
@@ -73,7 +76,9 @@ void CGame::Initialize(HWND hWnd, HINSTANCE hInstance, int nScreenWidth, int nSc
 
 	SetIsRunning(true);
 
+	// set up player
 	m_pPlayer = CPlayer::GetInstance();
+	LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 
 	ChangeState(CMainMenuState::GetInstance());
 }
@@ -148,7 +153,6 @@ bool CGame::Main(POINT mouse)
 	
 		m_pD3D->Present();
 	}
-
 	return true;
 }
 
@@ -224,5 +228,52 @@ void MessageProc(CBaseMessage* pMsg)
 
 		}
 		break;
+	}
+}
+
+void CGame::LoadNewSkills(const char* filename)
+{
+	TiXmlDocument doc;
+
+	if (!doc.LoadFile(filename))
+	{MessageBox(0, "Failed to load new skills.", "Error", MB_OK); return;}
+
+	int type, dmg, range, cost, combAmt, numSkills, turtleID, skillID; string name; double duration;
+	vector<CSkill> inactiveSkills, activeSkill;
+
+	TiXmlElement* pRoot = doc.RootElement();
+	TiXmlElement* pTurtle = pRoot->FirstChildElement("TURTLE");
+	while (pTurtle)
+	{
+		pTurtle->Attribute("NumberOfSkills", &numSkills);
+		pTurtle->Attribute("TurtleName", &turtleID);
+
+		TiXmlElement* pSkill;
+		pSkill = pTurtle->FirstChildElement("SKILL");
+		for (int i = 0; i < numSkills; ++i)
+		{
+			char* tempName = (char*)pSkill->Attribute("Name");
+			name = tempName;
+			pSkill->Attribute("ID", &skillID);
+			pSkill->Attribute("Type", &type);
+			pSkill->Attribute("Dmg", &dmg);
+			pSkill->Attribute("Range", &range);
+			pSkill->Attribute("Cost", &cost);
+			pSkill->Attribute("CombAmt", & combAmt);
+			pSkill->Attribute("Duration", &duration);
+			CSkill* Skill = new CSkill(name, type, skillID, dmg, range, cost, combAmt, (float)duration);
+			if (i > 0)
+				inactiveSkills.push_back(*Skill);
+			else
+				activeSkill.push_back(*Skill);
+			CGame::GetInstance()->AddSkill(*Skill);
+			pSkill = pSkill->NextSiblingElement();
+			delete Skill;
+		}
+		m_pPlayer->GetTurtles()[turtleID]->SetSkillsActive(activeSkill);
+		m_pPlayer->GetTurtles()[turtleID]->SetSkillsInactive(inactiveSkills);
+		inactiveSkills.clear();
+		activeSkill.clear();
+		pTurtle = pTurtle->NextSiblingElement("TURTLE");
 	}
 }

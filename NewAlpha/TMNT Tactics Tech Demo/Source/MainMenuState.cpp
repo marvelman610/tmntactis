@@ -169,7 +169,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					int size = m_sProfiles[i].size();
 					ofs.write((char*)(&size), 4);
 					const char* sz = m_sProfiles[i].c_str();
-					ofs.write(sz/*(char*)(&m_sProfiles[i])*/, size/*sizeof(m_sProfiles[i])*/);
+					ofs.write(sz, size);
 				}
 				ofs.close();
 
@@ -366,7 +366,7 @@ void CMainMenuState::Exit()
 			int size = m_sProfiles[i].size();
 			ofs.write((char*)(&size), 4);
 			const char* sz = m_sProfiles[i].c_str();
-			ofs.write(sz/*(char*)(&m_sProfiles[i])*/, size/*sizeof(m_sProfiles[i])*/);
+			ofs.write(sz, size);
 		}
 		ofs.close();
 	}

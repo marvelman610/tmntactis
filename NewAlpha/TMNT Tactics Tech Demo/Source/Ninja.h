@@ -34,6 +34,7 @@ private:
 
 	CPlayer* m_pPlayer; //pointer to player
 	CTile* m_pTile; //pointer to tile
+	CBattleMap* m_pBattleMap;
 	vector<POINT> m_vPath; //path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	bool m_bMoving;

@@ -95,6 +95,8 @@ public:
 	inline int GetCurrSelectedSkillIndex() {return m_nCurrSelectedSkill;}
 	inline CSkill* GetCurrSelectedSkill() {return &m_vActiveSkills[m_nCurrSelectedSkill];}
 	inline void SetSelectedSkill(int skill)	{m_nCurrSelectedSkill = skill;}
+	inline void ClearInactiveSkills() {m_vInactiveSkills.clear();}
+	inline void ClearActiveSkills() {m_vActiveSkills.clear();}
 
 	//////////////////////////////////////////////////////////////////////////
 	inline bool GetAlive(void)				{ return m_bIsAlive; }
@@ -109,7 +111,6 @@ public:
 	void SetWeapons(vector<CBase>& weapons) { m_vWeapons = weapons;}
 	void AddWeapon(CBase a)					{ m_vWeapons.push_back(a);	}
 	void ClearWeapons()						{ m_vWeapons.clear();}
-
 
 	inline int GetPrevLevel()		{return m_nPrevLvl;}
 	inline int GetPrevStrength()	{return m_nPrevStr;}

@@ -13,11 +13,11 @@
 #include "Base.h"
 #include <vector>
 #include "Tile.h"
+#include "Timer.h"
 using std::vector;
 
-
 class CPlayer;
-
+class CBitmapFont;
 
 class CBoss : public CBase
 {
@@ -26,11 +26,14 @@ private:
 	int m_nTurtle;				//store the turtle number id
 	int m_nXChange;				//difference in x between turtle and shredder
 	int m_nYChange;				//difference in y between turtle and shredder
+	int m_nCurrAnimInd;
 	bool m_bMoving;				//moving bool
 	bool m_bAttacking;
+	int m_nDamage;
 	int m_nDistance;			//distance from turtle
 	
 	CPlayer* m_pPlayer;			//pointer to player
+	CBitmapFont* m_pBitmapFont;
 	CTile* m_pTilesL1;			//pointer to tile
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
@@ -38,7 +41,7 @@ private:
 	vector<POINT>m_vClosedList; //list of the closed tiles
 	vector<POINT>m_vMoveList;	//list of tiles to move through(path)
 	
-
+	CTimer m_Timer;
 
 public:
 	///////////////////////////////////////////////////////////////////

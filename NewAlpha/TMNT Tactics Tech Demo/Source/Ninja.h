@@ -18,6 +18,7 @@
 
 class CBitmapFont;
 
+
 class CNinja : public CBase
 {
 private:
@@ -52,6 +53,15 @@ private:
 	CBitmapFont* m_pBitmapFont;
 
 
+	int Random(int min, int max)
+	{
+		int number = 0;
+		number = abs(max) - abs(min);
+		number = ((rand()%number) + abs(min));
+		if(rand() % 2 == 0)
+			number = -number;
+		return number;
+	}
 
 public:
 	///////////////////////////////////////////////////////////////////

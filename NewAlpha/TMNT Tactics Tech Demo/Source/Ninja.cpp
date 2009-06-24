@@ -15,6 +15,8 @@
 #include "BattleMap.h"
 #include "BitmapFont.h"
 
+
+
 CNinja::CNinja(void)
 {
 	SetType( OBJECT_NINJA );
@@ -162,14 +164,32 @@ void CNinja::AI()
 		m_nTurtle = 0;
 
 	mapPt.x = -1; mapPt.y = -1;
+	if (m_nInRange > 8)
+		m_nInRange = 20;
 	switch(m_nInRange)
 	{
 		//next to turtle
 	case 20:
 		{
 			// should never get here
-			int debug = 0;
-			CBattleMap::GetInstance()->SetTurn(true);
+			// need to do something..like move instead of ending turn
+			// find a tile to move to that's valid
+			CTile* tiles = m_pBattleMap->GetTiles();
+			// loop until a valid tile is found
+			// find a valid map coord
+			while (true)
+			{
+				int change = Random(1, 4);//rand() % 4 - (-4+1) - 4;
+				end.x = begin.x + change;
+				change = Random(1, 4);//rand() % (4 - (-4+1) - 4);
+				end.y = begin.y + change;
+				if (end.x > 1 && end.y > 1 && end.x < m_pBattleMap->GetNumCols() && end.y < m_pBattleMap->GetNumRows() && 
+					tiles[end.y*m_pBattleMap->GetNumCols()+end.x].Flag() == FLAG_NONE
+					&& end.x != begin.x && end.y != begin.y)
+					break;	// found a valid tile
+			}
+			m_bMoving = true;
+			FindPath(begin,end);
 		}
 		break;
 		//one tile away from turtle

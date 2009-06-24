@@ -37,12 +37,11 @@ CBoss::CBoss(void)
 	m_nTurtle = 0;	
 	m_nXChange = 0;
 	m_nYChange = 0;
+	m_nMoveListIndex = 0;
 	m_bMoving = false;
 	m_pPlayer = CPlayer::GetInstance();
 	m_pTilesL1 = CBattleMap::GetInstance()->GetTiles();
 	m_nType = OBJECT_BOSS;
-	m_vClosedList.clear();
-	m_vMoveList.clear();
 	m_nDistance = 0;
 	m_pBitmapFont = CBitmapFont::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
@@ -689,17 +688,22 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		tiles[i] = m_pTilesL1[i];
 
 	CTile** adjTiles;	// ptr to the array of tiles surrounding the current tile to be checked
-
+	vector<CTile*> references;
 	//POINT current; current.x = begin.x; current.y = begin.y;
 	int currTileID = begin.y * numCols + begin.x;
-	CTile currTile = tiles[currTileID];
+	CTile currTile;
+	currTile = tiles[currTileID];
 	open.push_back(currTile);
 
 	// NOTE: end == 1 tile away from target
 	// while ap > 2 and the distance > 0
 	// GetCurrAP() >=2 && (abs(end.x - current.x)+abs(end.y - current.y)) > 0;
-	while(open.size() > 0 && (currTile.DestXID() != end.x || currTile.DestYID() != end.y) )	
+	bool pathFound = false;
+	while( !pathFound )	
 	{
+		for (unsigned int oInd = 1; oInd < open.size(); ++oInd)
+			if (open[oInd].F() <= currTile.F() /*&& open[oInd].DestXID() != tempTile.DestXID() && open[oInd].DestYID() != tempTile.DestYID()*/)
+				currTile = open[oInd];
 		adjTiles = bMap->GetAdjTiles(currTile.DestXID(), currTile.DestYID(), tiles);
 		open.pop_back(); closed.push_back(currTile);
 
@@ -723,45 +727,63 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 				}
 				if (!bFound)
 				{
+					CTile* parent = new CTile();
+					*parent = currTile;
+					references.push_back(parent);
 					adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
 					adjTiles[ind]->SetH(2*(abs(end.x - adjTiles[ind]->DestXID())+abs(end.y - adjTiles[ind]->DestYID())));
 					adjTiles[ind]->SetF(adjTiles[ind]->Cost()+adjTiles[ind]->H()); 
-					//adjTiles[ind]->SetParent(currTile);
+					adjTiles[ind]->SetParent(parent);
 					open.push_back(*adjTiles[ind]);
 				}
 				else // on open list, see if this path is better
 				{
 					if (currTile.Cost() + adjTiles[ind]->TerrainCost() < adjTiles[ind]->Cost())
 					{
-						//adjTiles[ind]->SetParent(currTile);
+						CTile* parent = new CTile();
+						*parent = currTile;
+						references.push_back(parent);
+						adjTiles[ind]->SetParent(parent);
 						adjTiles[ind]->SetCost(currTile.Cost()+adjTiles[ind]->TerrainCost());
 						adjTiles[ind]->SetF(currTile.Cost()+adjTiles[ind]->H());
 					}
 				}
 			}
 		}
-		// pick the next best tile
-		if (open.size() > 0)
-		{currTile = open[0];}
-		CTile tempTile = currTile;
-
-		for (unsigned int oInd = 1; oInd < open.size(); ++oInd)
-			if (open[oInd].F() <= currTile.F() && open[oInd].DestXID() != tempTile.DestXID() && open[oInd].DestYID() != tempTile.DestYID())
-				currTile = open[oInd];
-
+		if(open.size() == 0)
+			break;
+		else if (currTile.DestXID() == end.x && currTile.DestYID() == end.y)
+		{pathFound = true; delete[] adjTiles; break;}
+		delete[] adjTiles;
+		currTile = open[0];
+	}
+	while (true)
+	{
 		POINT pt; pt.x = currTile.DestXID(); pt.y = currTile.DestYID();
+		if (currTile.DestXID() == begin.x && currTile.DestYID() == begin.y)
+			break;
 		if (m_vMoveList.size() < 8)
 			m_vMoveList.push_back(pt);
-		else
+		else if (m_vMoveList.size() == 8)
 			break;
-		delete[] adjTiles;
+		if (currTile.Parent() == NULL)
+			break;
+		currTile = *(currTile.Parent());
 	}
+	int count = 0;
+	while (count < references.size())
+	{
+		CTile* t = references[count];
+		delete t; count++;
+	}
+
 	if(m_vMoveList.size() > 0)
 		m_bMoving = true;
 	else m_bMoving = false;
 
 	delete[] tiles;
-	m_ptCurrPos.x = (float)begin.x; m_ptCurrPos.y = (float)begin.y;
+	m_ptStartXY.x = GetPosX(); m_ptStartXY.y = GetPosY();
+	m_nMoveListIndex = m_vMoveList.size()-1;
 }
 
 void CBoss::Update(float fElapsedTime)
@@ -802,7 +824,7 @@ void CBoss::Update(float fElapsedTime)
 		m_ptCurrPos.y = GetPosY();
 
 		//get start position and next tile
-		if(GetMapCoord().x > m_vMoveList[0].x) //move left one x tile(on screen)
+		if(GetMapCoord().x > m_vMoveList[m_nMoveListIndex].x) //move left one x tile(on screen)
 		{
 			//32 pixels left 16 pixels up
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
@@ -812,7 +834,7 @@ void CBoss::Update(float fElapsedTime)
 				SetPosPtF(m_ptCurrPos);
 			}
 		}
-		else if(GetMapCoord().x < m_vMoveList[0].x)//move right one x tile(on screen)
+		else if(GetMapCoord().x < m_vMoveList[m_nMoveListIndex].x)//move right one x tile(on screen)
 		{
 			//32 pixels right  16 pixels down
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
@@ -822,7 +844,7 @@ void CBoss::Update(float fElapsedTime)
 				SetPosPtF(m_ptCurrPos);
 			}
 		}
-		else if(GetMapCoord().y > m_vMoveList[0].y)//move up one tile y(on screen)
+		else if(GetMapCoord().y > m_vMoveList[m_nMoveListIndex].y)//move up one tile y(on screen)
 		{
 			//32 pixels up and 16 pixels right 
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
@@ -832,7 +854,7 @@ void CBoss::Update(float fElapsedTime)
 				SetPosPtF(m_ptCurrPos);
 			}
 		}
-		else if(GetMapCoord().y < m_vMoveList[0].y)//move down one tile y(on screen)
+		else if(GetMapCoord().y < m_vMoveList[m_nMoveListIndex].y)//move down one tile y(on screen)
 		{
 			//32 pixels down and 16 pixels left
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
@@ -844,20 +866,22 @@ void CBoss::Update(float fElapsedTime)
 		}
 		if( abs(m_ptStartXY.x - m_ptCurrPos.x) >= 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) >= 16.0f)
 		{
-			SetCurrTile(m_vMoveList[0], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
+			SetCurrTile(m_vMoveList[m_nMoveListIndex], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
 			CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
 			SetCurrAP(GetCurrAP()-2);
-			vector<POINT>::iterator first = m_vMoveList.begin();
-			m_vMoveList.erase(first);
-			if (m_vMoveList.size() > 0)
-			{m_ptCurrPos.x = (float)m_vMoveList[0].x; m_ptCurrPos.y = (float)m_vMoveList[0].y;}
+			if ( m_nMoveListIndex < m_vMoveList.size() )
+			{
+				m_ptCurrPos.x = m_vMoveList[m_nMoveListIndex].x; 
+				m_ptCurrPos.y = m_vMoveList[m_nMoveListIndex].y;
+				++m_nMoveListIndex;
+			}
 			CBattleMap::GetInstance()->UpdatePositions();
 		}
 
 		// movement is done
-		if(m_vMoveList.size() <= 0)
+		if(GetCurrAP() < 2 || m_nMoveListIndex == m_vMoveList.size())
 		{
-			//m_vMoveList.clear();
+			m_vMoveList.clear();
 			m_bMoving = false;
 			// if in range and enough AP..attack
 			if (m_nInRange == 1 && GetCurrAP() >= 4)

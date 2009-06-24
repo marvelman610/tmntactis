@@ -587,11 +587,13 @@ void CBattleMap::Update(float fElapsedTime)
 	//update the particle system
 	if (m_pParticleSystem)
 	{
+		//update the particle system
 		m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
+		m_pParticleSystem[HEALTH_GLOW].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[SHREDDER_SPECIAL].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[DUST_CLOUD].UpdateParticle(fElapsedTime);
 		m_pParticleSystem[ATTACK].UpdateParticle(fElapsedTime);
@@ -669,10 +671,6 @@ void CBattleMap::Update(float fElapsedTime)
 	{
 		m_fTimer += fElapsedTime;
 		
-		m_pParticleSystem[SHREDDER_SPECIAL].DrawParticle(m_pAssets->aShredderParticle);
-		m_pParticleSystem[DUST_CLOUD].DrawParticle(m_pAssets->aDustCloudParticle);
-		m_pParticleSystem[ATTACK].DrawParticle(m_pAssets->aPOWParticle);
-		m_pParticleSystem[NINJA_BLOOD].DrawParticle(m_pAssets->aPOWParticle);
 		if (m_fTimer >= 2.0f)
 		{
 			m_bDrawTimedParticles = false;
@@ -775,17 +773,6 @@ void CBattleMap::Update(float fElapsedTime)
 		APbool = false;
 	}
 
-	//update the particle system
-	m_pParticleSystem[FIRE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLOW].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[SMOKE].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[BLOOD].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[GLASS].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[HEALTH_GLOW].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[SHREDDER_SPECIAL].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[DUST_CLOUD].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[ATTACK].UpdateParticle(fElapsedTime);
-	m_pParticleSystem[NINJA_BLOOD].UpdateParticle(fElapsedTime);
 
 	
 	// if a skill is being executed...
@@ -979,6 +966,7 @@ void CBattleMap::CreateEnemies(bool bBoss)
 		m_vCharacters.push_back((CBoss)*boss);
 		m_vEnemies.push_back((CBoss*)boss);
 	}
+	int i = 0;
 	
 }
 

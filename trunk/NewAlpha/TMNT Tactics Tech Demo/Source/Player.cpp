@@ -34,10 +34,8 @@ CPlayer::CPlayer(void)
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
 	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 
-
-
-
 	m_nCurrStage = 0; m_nKillCount = 0;
+	m_pAcheivements = new CAchievements();
 }
 
 void CPlayer::Exit()
@@ -78,7 +76,8 @@ void CPlayer::NewGame()
 	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
 	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 	GetItems()->clear();
-
+	if(m_pAcheivements)
+		delete m_pAcheivements;
 	m_pAcheivements = new CAchievements();
 	for (int i = 1; i < NUM_MAPS; ++i)		// lock all maps, except first one
 		m_bMapsUnlocked[i] = false;

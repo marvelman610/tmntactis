@@ -773,7 +773,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 		currTile = *(currTile.Parent());
 	}
 	int count = 0;
-	while (count < references.size())
+	while (count < (int)references.size())
 	{
 		CTile* t = references[count];
 		delete t; count++;

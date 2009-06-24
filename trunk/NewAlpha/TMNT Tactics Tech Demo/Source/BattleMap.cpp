@@ -2241,9 +2241,9 @@ void CBattleMap::FindPathToTarget( )
 			POINT pt; pt.x = currTile.DestXID(); pt.y = currTile.DestYID();
 			if (currTile.DestXID() == begin.x && currTile.DestYID() == begin.y)
 				break;
-			if (m_vPath.size()*2 <= m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+			if ((int)m_vPath.size()*2 <= m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
 			{m_vPath.push_back(pt); m_nMoveCost += 2;}
-			else if (m_vPath.size()*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
+			else if ((int)m_vPath.size()*2 > m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrAP())
 				break;
 			if (currTile.Parent() == NULL)
 				break;

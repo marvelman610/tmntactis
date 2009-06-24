@@ -1464,7 +1464,8 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 					CalculateRanges();
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
 				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
-				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";				
+				m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";
+				m_nCurrSkillCost = 0;
 			}
 
 			// pick a random enemy to move
@@ -2088,6 +2089,7 @@ void CBattleMap::PerformAttack()
 			m_bxQTE = new CBox(3, text, 250, 250, 0.1f, false, 30, 30, 25, -1, 0.65f);
 			m_bxQTE->SetType(BOX_NO_BACK);
 			m_bxQTE->SetActive(true); 
+			delete[] text;
 		}
 		else
 		{
@@ -2433,7 +2435,7 @@ int CBattleMap::DistanceToTarget(int destX, int startX, int destY, int startY)
 }
 void CBattleMap::UseItem( )
 {
-	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0 || m_nCurrBtnSelected >= m_pPlayer->GetInstance()->GetItems()->size())
+	if(m_pPlayer->GetInstance()->GetItems()->size() <= 0 || m_nCurrBtnSelected >= (int)m_pPlayer->GetInstance()->GetItems()->size())
 		return;
 	if((*m_pPlayer->GetInstance()->GetItems())[m_nCurrBtnSelected].GetName() == "Pizza")
 	{
@@ -2520,10 +2522,10 @@ void CBattleMap::DrawThrowItems()
 	}
 	else if(m_bItemBool2)
 	{
-		POINT pt; 
-		float posx;
-		float posy;
-		count += 0.03f;
+		// 		POINT pt; 
+		// 		float posx;
+		// 		float posy;
+ 		count += 0.03f;
 
 		/*posx = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()- nades.x);
 		posy = (m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()- nades.y);

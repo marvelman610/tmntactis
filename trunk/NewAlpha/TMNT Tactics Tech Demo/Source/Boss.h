@@ -18,9 +18,20 @@ using std::vector;
 
 class CPlayer;
 class CBitmapFont;
+class CBattleMap;
 
 class CBoss : public CBase
 {
+	struct BossCombo 
+	{
+		int attackID;
+		int damage;
+		BossCombo()
+		{
+			attackID = -1;
+			damage = 0;
+		}
+	};
 private:
 	int m_nInRange;				//range of turtle from enemy
 	int m_nTurtle;				//store the turtle number id
@@ -29,11 +40,16 @@ private:
 	int m_nCurrAnimInd;
 	bool m_bMoving;				//moving bool
 	bool m_bAttacking;
+	bool m_bAttackDone;
+	bool m_bRenderCombText;
+	bool m_bDoDmg;
+	BossCombo m_pComb[4];
 	int m_nDamage;
 	int m_nDistance;			//distance from turtle
 	
 	CPlayer* m_pPlayer;			//pointer to player
 	CBitmapFont* m_pBitmapFont;
+	CBattleMap* m_pBattleMap;
 	CTile* m_pTilesL1;			//pointer to tile
 	vector<POINT> m_vPath;		//path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
@@ -66,10 +82,6 @@ public:
 	//
 	// Purpose : Function to handle the path finding for the ninja
 	/////////////////////////////////////////////////////////////////////
-	void FindPath(POINT begin, POINT end);
-
-	void FindPathX(POINT endPt, vector<POINT>Closed);
-
 	void FindPathNew(POINT begin, POINT end);
 
 	bool IsOnClose(CTile* tile, vector<CTile>& closed);
@@ -87,5 +99,7 @@ public:
 	// Purpose: Draws game objects to the screen.
 	////////////////////////////////////////////////////////////////////
 	virtual void Render();
+
+	void HandleTimerEvent();
 };
 #endif

@@ -39,7 +39,7 @@ private:
 	vector<POINT> m_vPath; //path to take
 	MY_POINT_FLOAT m_ptStartXY; //point for movement
 	bool m_bMoving;
-
+	bool m_bMovingDone;
 	bool m_bAttackBool;
 	//float m_fTimer;
 

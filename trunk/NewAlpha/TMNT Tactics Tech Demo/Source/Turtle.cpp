@@ -38,9 +38,6 @@ CTurtle::~CTurtle(void)
 	m_vActiveSkills.clear();
 	m_vInactiveSkills.clear();
 	m_vWeapons.clear();	
-// 	for(int i = 0; i < 4; i++)
-// 		for(unsigned int j = 0; j < GetAnimations().size(); j++)
-// 			GetAnimations()[j].Unload();
 }
 void CTurtle::Update(float fElapsedTime)
 {
@@ -64,18 +61,14 @@ void CTurtle::Update(float fElapsedTime)
 		{
 			CBattleMap::GetInstance()->DecrementNumChars();
 			CBattleMap::GetInstance()->DecrementNumTurtles();
+			SetCurrAnim(9);
+			SetPosZ(0.9f);
+			SetAlive(false);
 		}
-		SetAlive(false);
 	}
 }
 void CTurtle::Render()
 {
-	if (!m_bIsAlive)
-	{
-		if(GetCurrAnimNum() != 9)
-			SetCurrAnim(9);
-		SetPosZ(0.9f);
-	}
 	m_vAnimations[m_nCurrAnimation].Render((int)GetPosX()+m_vAnimations[0].GetFrames()[0].nAnchorX,(int)GetPosY()+m_vAnimations[0].GetFrames()[0].nAnchorY, GetPosZ(), 1.0f, m_dwColor);
 
 }

@@ -761,7 +761,7 @@ void CBoss::FindPathNew(POINT begin, POINT end)
 	else m_bMoving = false;
 
 	delete[] tiles;
-	m_ptCurrPos.x = begin.x; m_ptCurrPos.y = begin.y;
+	m_ptCurrPos.x = (float)begin.x; m_ptCurrPos.y = (float)begin.y;
 }
 
 void CBoss::Update(float fElapsedTime)
@@ -850,7 +850,7 @@ void CBoss::Update(float fElapsedTime)
 			vector<POINT>::iterator first = m_vMoveList.begin();
 			m_vMoveList.erase(first);
 			if (m_vMoveList.size() > 0)
-			{m_ptCurrPos.x = m_vMoveList[0].x; m_ptCurrPos.y = m_vMoveList[0].y;}
+			{m_ptCurrPos.x = (float)m_vMoveList[0].x; m_ptCurrPos.y = (float)m_vMoveList[0].y;}
 			CBattleMap::GetInstance()->UpdatePositions();
 		}
 

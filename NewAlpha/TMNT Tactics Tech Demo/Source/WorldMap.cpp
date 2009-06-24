@@ -97,8 +97,8 @@ void CWorldMap::Enter()
 		m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
 		m_bxHelp->IsMsgBox(true);
 		m_bxHelp->SetAlpha(200);
-		delete[] text;
 	}
+	delete[] text;
 	text = new string[4];
 	text[0] = "SKILLS"; text[1] = "WEAPONS"; text[2] = "SAVE";  text[3] = "EXIT"; /*text[3] = "LOAD";*/
 	m_bxMenu = new CBox(4, text, 830, 545, 0.11f, false, 35, 25, 15, m_pAssets->aBMactionBoxID, 0.5f);

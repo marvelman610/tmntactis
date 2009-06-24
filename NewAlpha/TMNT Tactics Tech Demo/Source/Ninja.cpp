@@ -68,6 +68,7 @@ void CNinja::AI()
 	m_nInRange = 20;
 	SetCurrAP(16);
 	m_nAttacksSoFar = 0;
+	m_bMovingDone = false;
 	
 	int distToMikey = abs(m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().x - GetMapCoord().x) + 
 						abs( m_pPlayer->GetTurtles()[MIKEY]->GetMapCoord().y - GetMapCoord().y);
@@ -782,10 +783,10 @@ void CNinja::Update(float fElapsedTime)
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 
 	// a ninja needs to be moved...execute the animation and position change over time
-	if (m_bMoving)
+	if (m_bMoving && !m_bMovingDone)
 	{
-		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 && GetCurrAnim()->GetCurrAnimFrame() != 2)
-			GetCurrAnim()->Stop();
+// 		if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 1 && GetCurrAnim()->GetCurrAnimFrame() != 2)
+// 			GetCurrAnim()->Stop();
 
 		if (m_vPath.size() > 0)
 		{
@@ -851,12 +852,12 @@ void CNinja::Update(float fElapsedTime)
 				m_nInRange--;
 				m_ptStartXY.x = GetPosX();
 				m_ptStartXY.y = GetPosY();
-
-				m_nInRange = abs(m_pPlayer->GetTurtles()[m_nTurtle]->GetMapCoord().x - GetMapCoord().x) + 
-						abs( m_pPlayer->GetTurtles()[m_nTurtle]->GetMapCoord().y - GetMapCoord().y);
+				if (m_vPath.size() == 0)
+					m_bMovingDone = true;
 
 				if(m_nInRange == 1 && GetCurrAP() >=4)
 				{
+					m_bMovingDone = true;
 					if( GetCurrAP() == 4)
 						m_nTotalAttacks = 1;
 					else if( GetCurrAP() >= 8 && GetCurrAP() < 12)
@@ -865,47 +866,46 @@ void CNinja::Update(float fElapsedTime)
 						m_nTotalAttacks = 3;
 					
 					SetCurrAnim(4);
-					m_bAttackBool = true;
+					m_bAttackBool = true; m_bMoving = false;
 					m_Timer.StartTimer(0.25f);
 				}
 			}
-		}
-		else // movement and attack MUST be done by this point
-		{	
-			//attack check
-			if (m_bAttackBool == true)
+		}	
+	}
+	else if (m_bMovingDone)// movement and attack MUST be done by this point
+	{	
+		//attack check
+		if (m_bAttackBool == true)
+		{
+			if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
 			{
-				if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
-				{
-					CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
+				CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
 
-					m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
-					m_nDamage += rand() % (5 - (-4)) -5;
+				m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+				m_nDamage += rand() % (5 - (-4)) -5;
 
-					m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
+				m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
 
-					m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
+				m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
 
-					SetCurrAnim(4);
-					//m_Timer.StartTimer(1.5f);
+				SetCurrAnim(4);
+				//m_Timer.StartTimer(1.5f);
 
-					m_nAttacksSoFar++;
-				}
-				else if(m_nAttacksSoFar >= m_nTotalAttacks)
-				{
-					SetCurrAnim(0);
-					//m_Timer.StartTimer(1.0f);
-					m_bAttackBool = false;
-					CBattleMap::GetInstance()->SetTurn(true);
-				}
+				m_nAttacksSoFar++;
+			}
+			else if(m_nAttacksSoFar >= m_nTotalAttacks)
+			{
+				SetCurrAnim(0);
+				//m_Timer.StartTimer(1.0f);
+				m_bMoving = m_bAttackBool = false;
+				CBattleMap::GetInstance()->SetTurn(true);
 			}
 			//end of attack
-
+		}
+		else
+		{
 			if(GetCurrAnim()->IsAnimationPlaying() && GetCurrAnim()->GetCurrAnimFrame() != 4)
 				SetCurrAnim(0);
-			
-			SetCurrAP(GetCurrAP());
-			m_bMoving = m_bAttackBool = false;
 			if (m_nAttacksSoFar >= m_nTotalAttacks)
 			{
 				CBattleMap::GetInstance()->UpdatePositions();
@@ -913,37 +913,36 @@ void CNinja::Update(float fElapsedTime)
 				SetCurrAnim(0);
 				CBattleMap::GetInstance()->SetTurn(true);
 			}
-		}		
-	}
-
-	//attack check
-	if (m_bAttackBool == true)
-	{
-		if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
-		{
-			CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
-
-			m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
-			m_nDamage += rand() % (5 - (-4)) -5;
-
-			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
-
-			m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
-
-			SetCurrAnim(4);
-			//m_Timer.StartTimer(1.5f);
-
-			m_nAttacksSoFar++;
 		}
-		else if(m_nAttacksSoFar >= m_nTotalAttacks)
-		{
-			SetCurrAnim(0);
-			//m_Timer.StartTimer(1.0f);
-			m_bAttackBool = false;
-			CBattleMap::GetInstance()->SetTurn(true);
-		}
-	}
-	//end of attack
+
+	}	
+// 	//attack check
+// 	if (m_bAttackBool == true)
+// 	{
+// 		if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
+// 		{
+// 			CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMninjaAttackSnd);
+// 
+// 			m_nDamage = this->GetStrength() * (this->GetAccuracy()/ (m_pPlayer->GetTurtles()[m_nTurtle]->GetDefense() + m_pPlayer->GetTurtles()[m_nTurtle]->GetCurrWeapon()->GetDefense()));
+// 			m_nDamage += rand() % (5 - (-4)) -5;
+// 
+// 			m_pPlayer->GetTurtles()[m_nTurtle]->SetHealth(m_pPlayer->GetTurtles()[m_nTurtle]->GetHealth() - m_nDamage);
+// 
+// 			m_pPlayer->GetTurtles()[m_nTurtle]->AddDamageRecieved(m_nDamage);
+// 
+// 			SetCurrAnim(4);
+// 			//m_Timer.StartTimer(1.5f);
+// 
+// 			m_nAttacksSoFar++;
+// 		}
+// 		else if(m_nAttacksSoFar >= m_nTotalAttacks)
+// 		{
+// 			SetCurrAnim(0);
+// 			//m_Timer.StartTimer(1.0f);
+// 			m_bAttackBool = false;
+// 			CBattleMap::GetInstance()->SetTurn(true);
+// 		}
+// 	}
 
 	if(GetHealth() <= 0)
 	{

@@ -46,6 +46,7 @@ CBoss::CBoss(void)
 	m_pBitmapFont = CBitmapFont::GetInstance();
 	m_pBattleMap = CBattleMap::GetInstance();
 	m_bAttacking = m_bMoving = m_bRenderCombText = m_bAttackDone = m_bDoDmg = false;
+	changeX = changeY = 0;
 }
 
 CBoss::~CBoss(void)
@@ -55,6 +56,7 @@ CBoss::~CBoss(void)
 
 void CBoss::AI()
 {
+	changeX = changeY = 0;
 	for (int i =0; i < 4; ++i)
 	{m_pComb[i].damage = 0; m_pComb[i].attackID = -1;}
 	
@@ -818,7 +820,7 @@ void CBoss::Update(float fElapsedTime)
 	if(m_nCurrAnimation > -1)
 		m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 
-	if(m_bMoving && m_vMoveList.size() > 0)
+	if(m_bMoving && m_nMoveListIndex > -1)
 	{
 		m_ptCurrPos.x = GetPosX();
 		m_ptCurrPos.y = GetPosY();
@@ -829,6 +831,7 @@ void CBoss::Update(float fElapsedTime)
 			//32 pixels left 16 pixels up
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
+				changeX = MINUS_X; changeY = MINUS_Y;
 				m_ptCurrPos.x -= GetVelX() * fElapsedTime;
 				m_ptCurrPos.y -= GetVelY() * fElapsedTime;
 				SetPosPtF(m_ptCurrPos);
@@ -839,6 +842,7 @@ void CBoss::Update(float fElapsedTime)
 			//32 pixels right  16 pixels down
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
+				changeX = ADD_X; changeY = ADD_Y;
 				m_ptCurrPos.x += GetVelX() * fElapsedTime;
 				m_ptCurrPos.y += GetVelY() * fElapsedTime;
 				SetPosPtF(m_ptCurrPos);
@@ -849,6 +853,7 @@ void CBoss::Update(float fElapsedTime)
 			//32 pixels up and 16 pixels right 
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
+				changeX = ADD_X; changeY = MINUS_Y;
 				m_ptCurrPos.x += GetVelX() * fElapsedTime;
 				m_ptCurrPos.y -= GetVelY() * fElapsedTime;
 				SetPosPtF(m_ptCurrPos);
@@ -859,6 +864,7 @@ void CBoss::Update(float fElapsedTime)
 			//32 pixels down and 16 pixels left
 			if( abs(m_ptStartXY.x - m_ptCurrPos.x) < 32.0f && abs(m_ptStartXY.y - m_ptCurrPos.y) < 16.0f)
 			{
+				changeX = MINUS_X; changeY = ADD_Y;
 				m_ptCurrPos.x -= GetVelX() * fElapsedTime;
 				m_ptCurrPos.y += GetVelY() * fElapsedTime;
 				SetPosPtF(m_ptCurrPos);
@@ -869,17 +875,24 @@ void CBoss::Update(float fElapsedTime)
 			SetCurrTile(m_vMoveList[m_nMoveListIndex], CBattleMap::GetInstance()->GetOffsetX(), CBattleMap::GetInstance()->GetOffsetY(),
 			CBattleMap::GetInstance()->GetTileWidth(), CBattleMap::GetInstance()->GetTileHeight(), CBattleMap::GetInstance()->GetNumCols());
 			SetCurrAP(GetCurrAP()-2);
-			if ( m_nMoveListIndex < m_vMoveList.size() )
+			--m_nMoveListIndex;
+			if ( m_nMoveListIndex > -1 )
 			{
-				m_ptCurrPos.x = m_vMoveList[m_nMoveListIndex].x; 
-				m_ptCurrPos.y = m_vMoveList[m_nMoveListIndex].y;
-				++m_nMoveListIndex;
+				if (changeX == MINUS_X)
+					m_ptStartXY.x -= (m_pBattleMap->GetTileWidth()>>1);
+				else
+					m_ptStartXY.x += (m_pBattleMap->GetTileWidth()>>1); 
+				if (changeY == MINUS_Y)
+					m_ptStartXY.y -= (m_pBattleMap->GetTileHeight()>>1);
+				else
+					m_ptStartXY.y += (m_pBattleMap->GetTileHeight()>>1);
+				changeX = changeY = 0;
 			}
 			CBattleMap::GetInstance()->UpdatePositions();
 		}
 
 		// movement is done
-		if(GetCurrAP() < 2 || m_nMoveListIndex == m_vMoveList.size())
+		if(GetCurrAP() < 2 || m_nMoveListIndex == -1)
 		{
 			m_vMoveList.clear();
 			m_bMoving = false;

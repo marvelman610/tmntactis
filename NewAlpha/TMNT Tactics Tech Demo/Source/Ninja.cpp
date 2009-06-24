@@ -654,7 +654,7 @@ void CNinja::AI()
 void CNinja::FindPath(POINT begin, POINT end)
 {
 	SetCurrAnim(0);
-
+	m_bMovingDone = false;
 	m_vPath.clear();
 	POINT ptCurr = begin; // begin point
 	POINT ptTarget = end;	// end point
@@ -872,7 +872,7 @@ void CNinja::Update(float fElapsedTime)
 			}
 		}	
 	}
-	else if (m_bMovingDone)// movement and attack MUST be done by this point
+	if (m_bMovingDone)// movement and attack MUST be done by this point
 	{	
 		//attack check
 		if (m_bAttackBool == true)

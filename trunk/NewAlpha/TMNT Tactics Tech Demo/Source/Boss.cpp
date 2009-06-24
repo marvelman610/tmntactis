@@ -819,7 +819,7 @@ void CBoss::Update(float fElapsedTime)
 			}
 		}
 	}
-	else if (m_bAttacking)
+	else if (m_bAttacking == true)
 	{
 		CTurtle** turtles = m_pPlayer->GetTurtles();
 		switch(GetCurrAP())

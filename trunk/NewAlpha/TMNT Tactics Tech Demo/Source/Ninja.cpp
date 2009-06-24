@@ -757,7 +757,7 @@ void CNinja::Update(float fElapsedTime)
 	bool bTimerDone = m_Timer.Update(fElapsedTime);
 	m_vAnimations[m_nCurrAnimation].Update(fElapsedTime);
 
-	if (m_bAttackBool)
+	if (m_bAttackBool == true)
 	{
 		if(!m_vAnimations[4].IsAnimationPlaying() /*&& m_Timer.GetElapsed() > 1.0f*/)
 		{
@@ -854,6 +854,9 @@ void CNinja::Update(float fElapsedTime)
 				m_nInRange--;
 				m_ptStartXY.x = GetPosX();
 				m_ptStartXY.y = GetPosY();
+
+				m_nInRange = abs(m_pPlayer->GetTurtles()[m_nTurtle]->GetMapCoord().x - GetMapCoord().x) + 
+						abs( m_pPlayer->GetTurtles()[m_nTurtle]->GetMapCoord().y - GetMapCoord().y);
 
 				if(m_nInRange == 1 && GetCurrAP() >=4)
 				{

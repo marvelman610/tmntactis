@@ -183,7 +183,7 @@ void CAssets::LoadAssets()
 
 	////////////////////////////////////////////////////////////////////////
 	//Particles
-	aGlowParticle = aFireParticle =aHealthGlowParticle = aShredderParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
+	aGlowParticle = aFireParticle =aHealthGlowParticle = aShredderParticle = aPOWParticle = m_pTM->LoadTexture("Resources/Images/VG_Particle.png");
 	aBloodParticle = m_pTM->LoadTexture("Resources/Images/VG_Blood.png");
 	aSmokeParticle = m_pTM->LoadTexture("Resources/Images/VG_Cloud.png");
 	aGlassParticle = m_pTM->LoadTexture("Resources/Images/VG_Glass.png");

@@ -23,6 +23,7 @@ private:
 	bool	m_bDisplayLoadBox;
 	bool	m_bNewGamePressed;
 	bool	m_bGameLoaded;
+	bool    m_bProfilesSaved;
 	int		m_nNumProfiles;
 	int		m_nCurrProfileInd;
 	string*  m_sProfiles;

@@ -28,12 +28,12 @@ enum {SIGNIN, NEWGAME, CONTINUE, OPTIONS, CREDITS, HOWTOPLAY, ACHIEVEMENTS, EXIT
 
 CMainMenuState::CMainMenuState()
 {
+	m_bProfilesSaved = false;
 	m_nNumProfiles = 0;
 	m_sProfiles = new string[5];
 	m_sProfiles[0] = "LOG IN";
 	for (int i =1; i < 5; ++i)
 		m_sProfiles[i] = "Create New";
-	ifstream ifs("Profiles.dat", ios_base::binary);
 
 	m_fTimer = 0.0f;
 	m_bGameLoaded = false;
@@ -60,26 +60,32 @@ void CMainMenuState::Enter()
 	m_nCurrProfileInd = -1;
 	m_fTimer = 0.0f;
 	m_bNewGamePressed = false;
-	ifstream ifs("Profiles.dat", ios_base::binary);
-	if (ifs.is_open())
+	if (!m_bProfilesSaved)
 	{
-		for (int i = 1; i < 5; ++i)
+		m_nNumProfiles = 0;
+		ifstream ifs("Profiles.dat", ios_base::binary);
+		if (ifs.is_open())
 		{
-			if (!ifs.eof())
+			for (int i = 1; i < 5; ++i)
 			{
-				char buff[32];
-				ZeroMemory(buff, 32);
-				int size = 0;
-				ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
-				ifs.read(buff, size);
-				m_sProfiles[i] = buff;
-				char eat;
-				ifs.read(&eat, 1);
+				if (!ifs.eof())
+				{
+					char buff[32];
+					ZeroMemory(buff, 32);
+					int size = 0;
+					ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
+					ifs.read(buff, size);
+					m_sProfiles[i] = buff;
+					char eat;
+					ifs.read(&eat, 1);
+				}
+				else
+					break;
+				if(m_sProfiles[i] != "Create New")
+					++m_nNumProfiles;
 			}
-			else
-				break;
-			if(m_sProfiles[i] != "Create New")
-				++m_nNumProfiles;
+			m_bProfilesSaved = true;
+			ifs.close();
 		}
 	}
 	m_bxMsg = NULL; m_bxProfile = NULL;
@@ -158,20 +164,24 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				string profName = m_sProfiles[index];
 				CGame::GetInstance()->SetProfName(profName);
 				if (m_bxProfile->GetMadeNew())
-					++m_nNumProfiles;
+				{m_bProfilesSaved = false;++m_nNumProfiles;}
 				delete m_bxProfile;
 				m_bxProfile = NULL;
 
 				// save the profile names
-				ofstream ofs("Profiles.dat", ios_base::binary);
-				for (int i= 1; i < m_nNumProfiles+1; ++i)
+				if (!m_bProfilesSaved)
 				{
-					int size = m_sProfiles[i].size();
-					ofs.write((char*)(&size), 4);
-					const char* sz = m_sProfiles[i].c_str();
-					ofs.write(sz, size);
+					ofstream ofs("Profiles.dat", ios_base::binary);
+					for (int i= 1; i < m_nNumProfiles+1; ++i)
+					{
+						int size = m_sProfiles[i].size();
+						ofs.write((char*)(&size), 4);
+						const char* sz = m_sProfiles[i].c_str();
+						ofs.write(sz, size);
+					}
+					m_bProfilesSaved = true;
+					ofs.close();
 				}
-				ofs.close();
 
 				if (m_bNewGamePressed)
 				{

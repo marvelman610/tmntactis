@@ -75,8 +75,8 @@ bool CAchievements::Render()
 			// display achievement image
 			int centerX, centerY;
 			centerX = ((CGame::GetInstance()->GetScreenWidth()>>1)-(m_nImageWidth>>1));
-			centerY = ((CGame::GetInstance()->GetScreenHeight()>>1)-(m_nImageHeight>>1));
-			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, centerX, centerY, 0.0f);
+			//centerY = ((CGame::GetInstance()->GetScreenHeight()>>1)-(m_nImageHeight>>1));
+			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, centerX, 650/*centerY*/, 0.0f);
 			return true;
 		}
 		else

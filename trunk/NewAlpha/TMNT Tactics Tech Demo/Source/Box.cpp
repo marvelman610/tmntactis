@@ -181,7 +181,7 @@ void CBox::CheckMouse(POINT mousePt)
 			m_nCurrSelectedIndex = BTN_ENTER;
 		}
 		else
-			m_nCurrSelectedIndex = -1;
+			m_nCurrSelectedIndex = m_nCurrInputIndex;
 	}
 	else
 	{ 
@@ -293,9 +293,12 @@ void CBox::CheckKeysInputBox()
 			m_sItems[m_nCurrInputIndex].erase(m_sItems[m_nCurrInputIndex].size()-1, 1);
 		}
 		else if (m_sItems[m_nCurrInputIndex].size() < MAX_INPUT_SIZE && !m_pDI->KeyPressed(DIK_ESCAPE) && key != 8)
-			m_sItems[m_nCurrInputIndex] += m_pDI->CheckKeys();
+		{
+			char key = toupper(m_pDI->CheckKeys());
+			m_sItems[m_nCurrInputIndex] += key;
+		}
 	}
-	if (m_pDI->KeyPressed(DIK_ESCAPE) && m_bAcceptInput && m_nCurrInputIndex > -1)
+	if (m_pDI->KeyPressed(DIK_ESCAPE) && m_nCurrInputIndex > -1)
 	{
 		// if they've started to enter text, don't close the box...just reset it to its original value
 		m_sItems[m_nCurrInputIndex] = m_sOriginal[m_nCurrInputIndex];
@@ -310,30 +313,11 @@ void CBox::CheckKeysInputBox()
 		m_nCurrSelectedIndex = BTN_BACK;
 		m_nCurrInputIndex = -1;
 	}
-	if (m_pDI->KeyPressed(DIK_RETURN) && m_sItems[m_nCurrInputIndex].size() > 0)
-	{
-		if (m_bEnterText)
-		{
-			// accept the input...store it, and close the box
-			m_nCurrSelectedIndex = BTN_ENTER;
-		}
-		else
-		{
-			m_sItems[m_nCurrSelectedIndex].clear();
-			m_nCurrInputIndex = m_nCurrSelectedIndex;
-			m_bMadeNew = true;
-			m_bEnterText = true;
-			m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
-			if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
-				MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
-			m_nCurrInputIndex = m_nCurrSelectedIndex;
-		}
-	}
 }
 
 void CBox::CheckKeys()
 {
-	if (m_pDI->KeyPressed(DIK_UPARROW))
+	if (m_pDI->KeyPressed(DIK_UPARROW) && !m_bEnterText)
 	{
 		--m_nCurrSelectedIndex;
 		if (m_bHasTitle)
@@ -345,21 +329,37 @@ void CBox::CheckKeys()
 			if(m_nCurrSelectedIndex < 0) m_nCurrSelectedIndex = 0;
 		}
 	}
-	else if (m_pDI->KeyPressed(DIK_DOWNARROW))
+	else if (m_pDI->KeyPressed(DIK_DOWNARROW) && !m_bEnterText)
 	{
 		++m_nCurrSelectedIndex;
 		if(m_nCurrSelectedIndex == m_nNumItems) m_nCurrSelectedIndex = m_nNumItems-1;
 		if (m_bHasTitle && m_nCurrSelectedIndex < 1) m_nCurrSelectedIndex = 1;
 	}
+	if (m_pDI->KeyPressed(DIK_RETURN) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_sItems[m_nCurrSelectedIndex] != "Create New")
+	{
+		// accept the input...store it, and close the box
+		m_nCurrInputIndex = m_nCurrSelectedIndex;
+		m_nCurrSelectedIndex = BTN_ENTER;
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+	}
+	else if ((m_pDI->KeyPressed(DIK_RETURN) || m_pDI->KeyPressed(DIK_DELETE)) && m_nCurrSelectedIndex > 0 && m_bAcceptInput)
+	{
+		m_sItems[m_nCurrSelectedIndex].clear();
+		m_nCurrInputIndex = m_nCurrSelectedIndex;
+		m_bMadeNew = true;
+		m_bEnterText = true;
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
+	}
 }
 
-void CBox::CenterBox(bool centerBox/* =true */)
+void CBox::CenterBox()
 {
-	if (centerBox)
-	{
-		m_nPosX = ((CGame::GetInstance()->GetScreenWidth()>>1) - (m_nBoxWidth>>1));
-		m_nPosY = ((CGame::GetInstance()->GetScreenHeight()>>1) - (m_nBoxHeight>>1));
-		m_nBoxBottom= m_nPosY + m_nBoxHeight; m_nBoxRight = m_nPosX + m_nBoxWidth;
-		m_nStartTextX = m_nPosX + m_nStartXOriginal; m_nStartTextY = m_nPosY + m_nStartYOriginal;
-	}
+	m_nPosX = ((CGame::GetInstance()->GetScreenWidth()>>1) - (m_nBoxWidth>>1));
+	m_nPosY = ((CGame::GetInstance()->GetScreenHeight()>>1) - (m_nBoxHeight>>1));
+	m_nBoxBottom= m_nPosY + m_nBoxHeight; m_nBoxRight = m_nPosX + m_nBoxWidth;
+	m_nStartTextX = m_nPosX + m_nStartXOriginal; m_nStartTextY = m_nPosY + m_nStartYOriginal;
 }

@@ -92,6 +92,7 @@ class CBox
 	int m_nCurrSelectedIndex;
 	int m_nCurrInputIndex;
 	bool m_bMadeNew;
+	bool m_bOverwrote;
 	bool m_bIsMsgBox;
 	bool m_bIsActive;
 	bool m_bIsMouseInBox;
@@ -185,6 +186,7 @@ class CBox
 	void IsMsgBox(bool val) { m_bIsMsgBox = val; if(val) m_nCurrSelectedIndex = -1;}
 	string* GetItems() {return m_sItems;}
 	bool GetMadeNew() {return m_bMadeNew;}
+	bool GetOverwrote() {return m_bOverwrote;}
 	void CenterText(bool center=true) {m_bCenterText = center;}
 	void CenterBox();
 };

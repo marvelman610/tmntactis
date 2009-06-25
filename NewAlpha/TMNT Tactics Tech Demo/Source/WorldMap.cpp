@@ -75,7 +75,7 @@ void CWorldMap::Enter()
 	m_pPlayer		= CPlayer::GetInstance();
 
 	// TODO::remove this in final build
-	m_pPlayer->SetMapUnlocked(LOC_IWAMI);
+	//m_pPlayer->SetMapUnlocked(LOC_IWAMI);
 
 	m_nMapImageID = m_pAssets->aWMmapID;
 	m_nScreenWidth = CGame::GetInstance()->GetScreenWidth();
@@ -388,24 +388,24 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 	// get boxes input (calls update)
 
 	if(m_bxHelp)
-		m_bxHelp->Input(m_ptMouse);
+		m_bxHelp->Input(m_ptMouse, fElapsedTime);
 	if (m_bxMenu)
-		m_nCurrBtn = m_bxMenu->Input(m_ptMouse);
+		m_nCurrBtn = m_bxMenu->Input(m_ptMouse, fElapsedTime);
 	if(m_nCurrBtn == 4)
 		m_nCurrBtn = MENU_BTN_EXIT;
 
 	if (m_bxChooseTurtle)
-		m_nCurrBtn = m_bxChooseTurtle->Input(m_ptMouse);
+		m_nCurrBtn = m_bxChooseTurtle->Input(m_ptMouse, fElapsedTime);
 	else if (m_bxTrainSkills)
-		m_nCurrBtn = m_bxTrainSkills->Input(m_ptMouse);
+		m_nCurrBtn = m_bxTrainSkills->Input(m_ptMouse, fElapsedTime);
 	else if (m_bxLoad)
-		m_nCurrBtn = m_bxLoad->Input(m_ptMouse);
+		m_nCurrBtn = m_bxLoad->Input(m_ptMouse, fElapsedTime);
 	else if (m_bxSave)
-		m_nCurrBtn = m_bxSave->Input(m_ptMouse);
+		m_nCurrBtn = m_bxSave->Input(m_ptMouse, fElapsedTime);
 	else if(m_bxWeapon)
-		m_nCurrBtn = m_bxWeapon->Input(mouse);
+		m_nCurrBtn = m_bxWeapon->Input(m_ptMouse, fElapsedTime);
 	else if(m_bxWeaponSelect)
-		m_nCurrBtn = m_bxWeaponSelect->Input(mouse);
+		m_nCurrBtn = m_bxWeaponSelect->Input(m_ptMouse, fElapsedTime);
 
 	return true;
 }
@@ -435,7 +435,7 @@ bool CWorldMap::HandleButtons()
 				}
 				m_bxChooseTurtle = new CBox(5, turtles, 100, 250, 0.11f, true, 35, 35,15, -1, 0.75f);
 				m_bxChooseTurtle->SetType(BOX_WITH_BACK);
-				m_bxChooseTurtle->SetActive();
+				m_bxChooseTurtle->SetActive(); m_bxChooseTurtle->CenterBox();
 				delete[] turtles;
 			}
 			break;
@@ -449,8 +449,7 @@ bool CWorldMap::HandleButtons()
 				string* msg = new string[1];
 				msg[0] = "Game Saved";
 				m_bxMsg = new CBox(1, msg, 300, 300, 0.11f, false, 35, 35, 25, -1, 0.8f);
-				m_bxMsg->IsMsgBox(true);
-				m_bxMsg->SetScaleY(0.5f);
+				m_bxMsg->IsMsgBox(true); m_bxMsg->SetScaleY(0.5f); m_bxMsg->CenterText(); m_bxMsg->CenterBox();
 				m_Timer.StartTimer(2.0f);
 				delete[] msg;
 			}
@@ -464,7 +463,7 @@ bool CWorldMap::HandleButtons()
 				
 				m_bxChooseTurtle = new CBox(5, turtles, 100, 250, 0.11f, true, 35, 35,15, -1, 0.75f);
 				m_bxChooseTurtle->SetType(BOX_WITH_BACK);
-				m_bxChooseTurtle->SetActive();
+				m_bxChooseTurtle->SetActive(); m_bxChooseTurtle->CenterBox();
 				delete[] turtles;
 				m_bWeaponBool = true;
 			}
@@ -531,7 +530,7 @@ bool CWorldMap::HandleButtons()
 		//m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
 
 		m_bxWeaponSelect = new CBox(size+1,weapons,150, 270, 0.11f, true, 25, 35, 15, -1, 0.7f);
-		m_bxWeaponSelect->SetType(BOX_WITH_BACK); m_bxWeaponSelect->SetActive();
+		m_bxWeaponSelect->SetType(BOX_WITH_BACK); m_bxWeaponSelect->SetActive(); m_bxWeaponSelect->CenterBox();
 		delete[] weapons;
 		m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
 		
@@ -573,7 +572,7 @@ bool CWorldMap::HandleButtons()
 			skills[numTrainedSkills+i+1] += cost; 
 		}
 		m_bxTrainSkills = new CBox(numUntrainedSkills+numTrainedSkills+1, skills, 150, 270, 0.11f, true, 25, 35, 15, -1, 0.7f);
-		m_bxTrainSkills->SetType(BOX_WITH_BACK); m_bxTrainSkills->SetActive();
+		m_bxTrainSkills->SetType(BOX_WITH_BACK); m_bxTrainSkills->SetActive(); m_bxTrainSkills->CenterBox();
 		delete[] skills;
 		m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
 	}
@@ -607,7 +606,7 @@ bool CWorldMap::HandleButtons()
 				m_bTrained = true;
 				string* msg = new string[1]; msg[0] = "SKILL TRAINED!";
 				m_bxMsg = new CBox(1, msg, 250, 300, 0.11f, false, 25, 35, 25, -1, 0.7f);
-				m_bxMsg->IsMsgBox(true);
+				m_bxMsg->IsMsgBox(true); m_bxMsg->CenterBox(); m_bxMsg->CenterText();
 			}
 			else
 			{
@@ -615,7 +614,7 @@ bool CWorldMap::HandleButtons()
 				m_bTrained = true;
 				string* msg = new string[1]; msg[0] = "NOT ENOUGH SKILL PTS!";
 				m_bxMsg = new CBox(1, msg, 250, 300, 0.11f, false, 25, 35, 25, -1, 0.7f);
-				m_bxMsg->IsMsgBox(true);
+				m_bxMsg->IsMsgBox(true); m_bxMsg->CenterBox(); m_bxMsg->CenterText();
 			}
 		}
 	}

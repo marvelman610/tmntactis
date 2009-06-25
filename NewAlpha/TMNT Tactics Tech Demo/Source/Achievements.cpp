@@ -3,6 +3,7 @@
 #include "Assets.h"
 #include "CSGD_Direct3D.h"
 #include "BattleMap.h"
+#include "Game.h"
 #include "CSGD_FModManager.h"
 
 CAchievements::CAchievements()
@@ -12,6 +13,7 @@ CAchievements::CAchievements()
 	m_pD3D = CSGD_Direct3D::GetInstance();
 	m_fTimer = 0.0f;
 	SetToLocked();
+	m_nImageWidth = 422; m_nImageHeight = 68;
 	m_pAcheivements[ACH_NEWGAME].imageID =			m_pAssets->aPartyTime;		// DONE
 	m_pAcheivements[ACH_LVLUP].imageID =			m_pAssets->aCowabunga;		// DONE
 	m_pAcheivements[ACH_TURTLESDEAD].imageID =		m_pAssets->aFlipNow;		// DONE
@@ -71,7 +73,10 @@ bool CAchievements::Render()
 		if (m_fTimer < 3.0f)
 		{
 			// display achievement image
-			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, 350, 450, 0.0f);
+			int centerX, centerY;
+			centerX = ((CGame::GetInstance()->GetScreenWidth()>>1)-(m_nImageWidth>>1));
+			centerY = ((CGame::GetInstance()->GetScreenHeight()>>1)-(m_nImageHeight>>1));
+			m_pTM->DrawWithZSort(m_pAcheivements[m_nCurrUnlocked].imageID, centerX, centerY, 0.0f);
 			return true;
 		}
 		else

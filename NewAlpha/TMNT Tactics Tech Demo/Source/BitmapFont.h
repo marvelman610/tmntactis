@@ -74,6 +74,13 @@ public:
 	void DrawStringAutoCenter (const char* szString, int ScreenWidth, int yPos, float zPos = 0.09f, float fScale = 1.0f, DWORD dwColor = D3DCOLOR_XRGB(255,255,255));
 
 	//////////////////////////////////////////////////////////////////////////
+	// Function		:		DrawStringAutoCenterBox
+	//
+	// Purpose		:		Same as DrawString, except it auto centers horizontally(good for scrolling)
+	//////////////////////////////////////////////////////////////////////////
+	void DrawStringAutoCenterBox (const char* szString, int boxWidth, int startX, int yPos, float zPos = 0.09f, float fScale = 1.0f, DWORD dwColor = D3DCOLOR_XRGB(255,255,255));
+
+	//////////////////////////////////////////////////////////////////////////
 	//	Mutators
 	//////////////////////////////////////////////////////////////////////////
 	void SetNewID(int imageID) {m_nImageID = imageID;}

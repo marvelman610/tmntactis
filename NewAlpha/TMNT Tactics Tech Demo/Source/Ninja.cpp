@@ -892,6 +892,7 @@ void CNinja::Update(float fElapsedTime)
 				//m_Timer.StartTimer(1.5f);
 
 				m_nAttacksSoFar++;
+				m_pBattleMap->PlaySFX(CAssets::GetInstance()->aBMpainSnd);
 			}
 			else if(m_nAttacksSoFar >= m_nTotalAttacks)
 			{
@@ -982,8 +983,6 @@ void CNinja::Render()
 
 		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
 
-		//temp
-		//TODO:: implement xp gain
 		int nXP = 10;
 
 		//ninja xp

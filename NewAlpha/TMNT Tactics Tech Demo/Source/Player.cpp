@@ -111,13 +111,12 @@ void CPlayer::NewGame()
 	// set stats to starting values
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
 
-
 	//////////////////////////////////////////////////////////////////////////
 	// TODO:: remove temp items before final build
-	POINT pt; pt.x = 3; pt.y = 17;
-	Factory::GetInstance()->CreateBattleItem(BLACK_EGGS, pt);
-	Factory::GetInstance()->CreateBattleItem(GRENADO, pt);
-	Factory::GetInstance()->CreateBattleItem(PIZZA, pt);
+// 	POINT pt; pt.x = 3; pt.y = 17;
+// 	Factory::GetInstance()->CreateBattleItem(BLACK_EGGS, pt);
+// 	Factory::GetInstance()->CreateBattleItem(GRENADO, pt);
+// 	Factory::GetInstance()->CreateBattleItem(PIZZA, pt);
 }
 
 bool CPlayer::LoadTurtleStats(const char* szXmlFileName)

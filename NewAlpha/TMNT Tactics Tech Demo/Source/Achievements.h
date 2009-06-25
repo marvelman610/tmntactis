@@ -44,6 +44,8 @@ struct Acheivement
 };
 class CAchievements
 {
+	int m_nImageWidth;
+	int m_nImageHeight;
 	CSGD_TextureManager* m_pTM;
 	CAssets*			 m_pAssets;
 	CSGD_Direct3D*		 m_pD3D;

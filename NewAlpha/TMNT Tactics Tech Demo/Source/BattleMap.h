@@ -234,6 +234,10 @@ class CBattleMap
 	CSGD_FModManager*	m_pFMOD;
 	//////////////////////////////////////////////////////////////////////////
 
+	CBattleMap(void);
+	~CBattleMap(void);
+	CBattleMap(const CBattleMap&);
+	CBattleMap& operator= (const CBattleMap&);
 	//////////////////////////////////////////////////////////
 	//cheats
 	bool godbool;
@@ -369,10 +373,6 @@ class CBattleMap
 	void CenterCam(float fElapsedTime);
 	void ScreenShake(float fElapsedTime);
 
-	CBattleMap(void);
-	~CBattleMap(void);
-	CBattleMap(const CBattleMap&);
-	CBattleMap& operator= (const CBattleMap&);
 public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	"DrawBoxes"

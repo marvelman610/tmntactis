@@ -189,8 +189,25 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	CreateEnemies(bBoss);
 	SetStartPositions();
 
-	m_pFMOD->PlaySound(m_pAssets->aBMarcadeMusicID);
-	m_pFMOD->SetVolume(m_pAssets->aBMarcadeMusicID, m_pGame->GetMusicVolume());
+	switch (m_nMapID)
+	{
+	case LOC_SIMUSA:
+		m_pFMOD->PlaySound(m_pAssets->aBMarcadeMusicID);
+		m_pFMOD->SetVolume(m_pAssets->aBMarcadeMusicID, m_pGame->GetMusicVolume());
+		break;
+	case LOC_IWAMI:
+		m_pFMOD->PlaySound(m_pAssets->aBMiwamiMusicID);
+		m_pFMOD->SetVolume(m_pAssets->aBMiwamiMusicID, m_pGame->GetMusicVolume());
+		break;
+	case LOC_SINARO:
+		m_pFMOD->PlaySound(m_pAssets->aBMsinaroMusicID);
+		m_pFMOD->SetVolume(m_pAssets->aBMsinaroMusicID, m_pGame->GetMusicVolume());
+		break;
+	case LOC_YAMATO:
+		m_pFMOD->PlaySound(m_pAssets->aBMyamatoMusicID);
+		m_pFMOD->SetVolume(m_pAssets->aBMyamatoMusicID, m_pGame->GetMusicVolume());
+		break;
+	}
 }
 void CBattleMap::Exit()
 {
@@ -281,8 +298,6 @@ void CBattleMap::Render()
 
 	if(m_bWin && m_Timer.IsTimerRunning() )
 	{
-// 		CBitmapFont::GetInstance()->DrawString("VICTORY", 100, 200, 0.05f, 3.0f);
-// 		CBitmapFont::GetInstance()->DrawString("PRESS ESCAPE TO EXIT", 75, 300, 0.05f, 1.0f);
 		m_pTM->DrawWithZSort(m_pAssets->aBMvictoryID, 256, 0, 0.01f);
 		RenderStats();		
 	}
@@ -322,7 +337,7 @@ void CBattleMap::Render()
 	// draw layer one & two
 	MY_POINT mapPT;	int moveTileID = -1;
 	if (m_vPath.size() > 0)
-	{moveTileID = m_vPath[m_vPath.size()-1].y * m_nNumCols + m_vPath[m_vPath.size()-1].x;}
+	{moveTileID = m_vPath[0].y * m_nNumCols + m_vPath[0].x;}
 
 	for (int x = 2; x < m_nNumCols; ++x)
 	{
@@ -358,9 +373,11 @@ void CBattleMap::Render()
 			// draw movement cost on last tile in the move path
 			if (moveTileID == tileID && !m_bxPauseBox && !m_bxSkillBox && !m_bxMessageBox && !m_bxItemBox && !m_bxQTE)
 			{
+				m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID, 16,15,20);
 				char cost[8];
 				sprintf_s(cost, "-%i-", m_nMoveCost);
-				m_pBitmapFont->DrawString(cost, mapPT.x, mapPT.y, 0.01f, 0.6f, 0xffff0000);
+				m_pBitmapFont->DrawString(cost, mapPT.x, mapPT.y, 0.01f, 1.0f, 0xffffffff);
+				m_pBitmapFont->Reset();
 			}
 			// Layer two
 			if (m_pTilesL2[tileID].DestXID() != -1)
@@ -385,7 +402,7 @@ void CBattleMap::Render()
 							continue;
 					m_pTM->DrawWithZSort(m_pAssets->aBMcursorID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
-				else if (m_nHoverCharacter > -1 /*&& m_nHoverCharacter < 4*/ && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
+				else if (m_nHoverCharacter > -1 && m_vCharacters[m_nHoverCharacter].GetCurrTile() == tileID)
 				{
 					m_pTM->DrawWithZSort(m_pAssets->aBMgreenSquareID, mapPT.x, mapPT.y, depth.SELECTION, 1.0f, 1.0f);
 				}
@@ -476,20 +493,18 @@ void CBattleMap::Render()
 			if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
 				m_pBitmapFont->DrawString(atkCost, m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 1.0f, D3DCOLOR_XRGB(0,255,255) );
 		}
-		else if (m_nCurrTarget > -1 && m_nHoverEnemy > -1)
+		else if (m_nCurrTarget > -1 && m_nHoverEnemy > -1 && m_nCurrTarget == m_nHoverEnemy)
 			m_pBitmapFont->DrawString("-4-", m_ptMouseScreenCoord.x-20, m_ptMouseScreenCoord.y-20, 0.00f, 1.0f, D3DCOLOR_XRGB(0,255,255));
 	}
 	if(m_bPlayerAttack && m_nCurrCharacter > -1 && m_nCurrTarget >-1 && !m_bxPauseBox)
 	{
 		int offset = (int)(m_Timer.GetElapsed() * 13.0f )-15;
-		//m_pBitmapFont->ChangeBMFont(m_pAssets->aBitmapFontBubblyID,16,15,20);
 		char tempXP[16];
 		sprintf_s(tempXP, "+%i", m_nXP);
 		m_pBitmapFont->DrawString(tempXP,(int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX()+5, (int)m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY()-offset,0.3f,0.9f,D3DCOLOR_XRGB(255,255,0));
 		char tempDmg[16];
 		sprintf_s(tempDmg, "-%i", m_nDmg);
 		m_pBitmapFont->DrawString(tempDmg,(int)m_vEnemies[m_nCurrTarget]->GetPosX()+5, (int)m_vEnemies[m_nCurrTarget]->GetPosY()-offset,0.4f,0.9f,D3DCOLOR_XRGB(255,0,0));
-		//m_pBitmapFont->Reset();
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -895,8 +910,8 @@ bool CBattleMap::Input(float fElapsedTime, POINT mouse)
 		}
 
 		// transform the mouse into map coordinates
-		xID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+16)) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
-		yID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+16)) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		xID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+(m_nTileHeight))) + (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
+		yID = ((m_nTileWidth * (mouse.y - m_nIsoCenterLeftY+(m_nTileHeight))) - (m_nTileHeight * (mouse.x - m_nIsoCenterTopX ))) / (m_nTileWidth * m_nTileHeight);
 		// these check for the mouse being off the map
 		// if it is, it is reset to the lowest row/column
 		if (xID >= m_nNumCols && yID >= m_nNumRows)
@@ -1448,7 +1463,6 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 }
 void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int yID)
 {
-
 	int index = IsMousePosValid(mouse);	// find turtle indexes
 	if (index != -1)
 		m_nHoverCharacter = index;
@@ -1547,22 +1561,22 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 	// is the mouse over a box button?
 	if ((m_bIsPlayersTurn || m_bIsPaused) && m_nCurrCharacter > -1)
 	{
-		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord);
+		m_nCurrBtnSelected = m_bxActionBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 		if (m_bxSkillBox)
-			m_nCurrBtnSelected = m_bxSkillBox->Input(m_ptMouseScreenCoord);
+			m_nCurrBtnSelected = m_bxSkillBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 		if (m_bxItemBox)
-			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord);
+			m_nCurrBtnSelected = m_bxItemBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 		if (m_nCurrBtnSelected > -1)
 			SetMousePtr(m_pAssets->aMousePointerID);
 	}
 	if (m_bxPauseBox)
-		m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord);
+		m_nCurrBtnSelected = m_bxPauseBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 	else if (m_bxLoadBox)
-		m_nCurrBtnSelected = m_bxLoadBox->Input(m_ptMouseScreenCoord);
+		m_nCurrBtnSelected = m_bxLoadBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 	else if(m_bxSaveBox)
-		m_nCurrBtnSelected = m_bxSaveBox->Input(m_ptMouseScreenCoord);
+		m_nCurrBtnSelected = m_bxSaveBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 	else if (m_bxMessageBox)
-		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord);
+		m_nCurrBtnSelected = m_bxMessageBox->Input(m_ptMouseScreenCoord, fElapsedTime);
 	//////////////////////////////////////////////////////////////////////////
 	if (!m_bIsPlayersTurn)
 	{HandleButton();return;}
@@ -2229,7 +2243,7 @@ void CBattleMap::FindPathToTarget( )
 					}
 				}
 			}
-			if(open.size() == 0 || (int)closed.size() > 50)
+			if(open.size() == 0 || (int)closed.size() > 50 /*<--shouldn't need this...*/)
 				break;
 			else if (currTile.DestXID() == end.x && currTile.DestYID() == end.y)
 			{pathFound = true; delete[] adjTiles; break;}
@@ -2250,7 +2264,7 @@ void CBattleMap::FindPathToTarget( )
 			currTile = *(currTile.Parent());
 		}
 		int count = 0;
-		while (count < references.size())
+		while (count < (int)references.size())
 		{
 			CTile* t = references[count];
 			delete t; count++;
@@ -2597,8 +2611,9 @@ void CBattleMap::LoadMapInfo()
 			//////////////////////////////////////////////////////////////////////////
 			//	set up the map so that it centers at the beginning
 			m_nMapWidth = m_nTileWidth * m_nNumCols; m_nMapHeight = m_nTileHeight * m_nNumRows;
-
-			m_nIsoCenterLeftY = -/*(m_nTileHeight<<1)+*/(m_nTileHeight>>1) - ((m_nMapHeight >> 1) - (m_nScreenHeight >> 1));
+		
+			//int temp = (m_nMapHeight >> 1) - (m_nScreenHeight >> 1);
+			m_nIsoCenterLeftY = -((m_nMapHeight >> 1) - (m_nScreenHeight >> 1)) + m_nTileHeight;
 			m_nIsoCenterTopX = 512; // map is always centered on the y
 			m_nMaxScrollX = m_nMaxScrollY = 50;
 			if (m_nMapWidth > m_nScreenWidth)

@@ -10,6 +10,7 @@
 #define CMAINMENU_H
 
 #include "BaseMenuState.h"
+#include "Timer.h"
 #include <string>
 using std::string;
 
@@ -24,10 +25,12 @@ private:
 	bool	m_bNewGamePressed;
 	bool	m_bGameLoaded;
 	bool    m_bProfilesSaved;
+	bool	m_bProfileSelected;
 	int		m_nNumProfiles;
 	int		m_nCurrProfileInd;
 	string*  m_sProfiles;
 	float	m_fTimer;
+	CTimer  m_Timer;
 
 	CMainMenuState();
 	~CMainMenuState();

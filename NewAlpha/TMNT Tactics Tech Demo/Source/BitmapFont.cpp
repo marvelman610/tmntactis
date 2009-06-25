@@ -143,6 +143,44 @@ void CBitmapFont::DrawStringAutoCenter (const char* szString, int ScreenWidth, i
 	}
 }
 
+void CBitmapFont::DrawStringAutoCenterBox (const char* szString, int width, int startX, int yPos, float zPos, float fScale, DWORD dwColor)
+{
+	m_cStartChar = 32;
+	CSGD_TextureManager* pTM = CSGD_TextureManager::GetInstance ();
+	int nOffsetX = startX + (width >> 1);
+	int nOffsetY = yPos;
+	char ch;
+
+	//	find length of string
+	int len = strlen(szString);
+	nOffsetX -= ((int)(len * (m_nCharWidth + 10) * fScale) >> 1);
+	// 	loop through string	
+	for (int i = 0; i < len; i++)
+	{
+		//	do cell algorithm for each character
+		ch = szString[i];
+		ch = toupper(ch);
+		if (ch == ' ')
+		{
+			nOffsetX += (int)((m_nCharWidth + 10) * fScale);
+			continue;
+		}
+		else if(ch == '\n')
+		{
+			//nPosX = nPosX;
+			yPos += m_nCharHeight + 15;	
+			continue;
+		}
+		//	convert ascii value into an id off the sheet
+		int nID = (int)(ch  - m_cStartChar);
+		RECT rCell = CellAlgorithm(nID);
+
+		pTM->DrawWithZSort(m_nImageID, nOffsetX, nOffsetY, zPos, fScale, fScale, &rCell, 0.0f, 0.0f, 0.0f, dwColor);
+
+		nOffsetX += (int)((m_nCharWidth + 10) * fScale);
+	}
+}
+
 void CBitmapFont::Reset() // back to original BM font
 {
 	m_nCharWidth = 32;

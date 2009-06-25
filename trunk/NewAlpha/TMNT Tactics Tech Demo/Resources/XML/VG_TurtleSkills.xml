@@ -2,36 +2,36 @@
 <!-- Types: 0=SKILL_DAMAGE, 1=SKILL_HEAL, 2=SKILL_CREATE, 3=SKILL_DEFENSE-->
 <!-- TurtleName: 0=LEO, 1=DON, 2=RAPH, 3=MIKEY-->
 <Skills>
-        <TURTLE NumberOfSkills="5" TurtleName="0">
+        <TURTLE NumberOfSkills="4" TurtleName="0">
                   <SKILL Name="SWORD JAB"           ID="1" Type="0" Dmg="15" Range="1" Cost="10" CombAmt="5" Duration="2"/>
                   <SKILL Name="SWORD SPIN"          ID="0" Type="0" Dmg="10" Range="1" Cost="14" CombAmt="7" Duration="3"/>
                   <SKILL Name="FLIP BACKSTAB"       ID="2" Type="0" Dmg="20" Range="1" Cost="15" CombAmt="7" Duration="3"/>
-                  <SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="10" Range="1" Cost="8" CombAmt="3" Duration="3"/>
+                  <!--<SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="10" Range="1" Cost="8" CombAmt="3" Duration="3"/>-->
                   <SKILL Name="KNOCK BACK"          ID="4" Type="0" Dmg="5"  Range="1" Cost="5"  CombAmt="4" Duration="3"/>
         </TURTLE>
         
-        <TURTLE NumberOfSkills="6" TurtleName="1">
+        <TURTLE NumberOfSkills="3" TurtleName="1">
                   <SKILL Name="STAFF UPPERCUT"      ID="6" Type="0" Dmg="11" Range="1" Cost="10" CombAmt="5" Duration="3"/>
                   <SKILL Name="STAFF SPIN"          ID="5" Type="0" Dmg="8"  Range="1" Cost="15" CombAmt="7" Duration="3"/>
-                  <SKILL Name="BACKFLIP AWAY"       ID="7" Type="3" Dmg="0"  Range="2" Cost="8" CombAmt="6" Duration="3"/>
-                  <SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="9"  Range="1" Cost="8" CombAmt="3" Duration="3"/>
+                  <!--<SKILL Name="BACKFLIP AWAY"       ID="7" Type="3" Dmg="0"  Range="2" Cost="8" CombAmt="6" Duration="3"/>-->
+                  <!--<SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="9"  Range="1" Cost="8" CombAmt="3" Duration="3"/>-->
                   <SKILL Name="KNOCK BACK"          ID="4" Type="0" Dmg="5"  Range="1" Cost="5"  CombAmt="4" Duration="3"/>
-                  <SKILL Name="CREATE BOMB"         ID="8" Type="2" Dmg="0"  Range="0" Cost="11" CombAmt="6" Duration="3"/>
+                  <!--<SKILL Name="CREATE BOMB"         ID="8" Type="2" Dmg="0"  Range="0" Cost="11" CombAmt="6" Duration="3"/>-->
         </TURTLE>
         
-        <TURTLE NumberOfSkills="5" TurtleName="2">
+        <TURTLE NumberOfSkills="4" TurtleName="2">
                   <SKILL Name="SAI FURY"            ID="10" Type="0" Dmg="15" Range="1" Cost="12" CombAmt="6" Duration="3"/>
                   <SKILL Name="FLYING SAI STAB"     ID="9" Type="0" Dmg="10" Range="2" Cost="15" CombAmt="8" Duration="3"/>
                   <SKILL Name="FLIP BACKSTAB"       ID="2" Type="0" Dmg="17" Range="1" Cost="15" CombAmt="6" Duration="3"/>
-                  <SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="11" Range="1" Cost="8" CombAmt="4" Duration="3"/>
+                  <!--<SKILL Name="COUNTER-ATTACK"      ID="3" Type="0" Dmg="11" Range="1" Cost="8" CombAmt="4" Duration="3"/>-->
                   <SKILL Name="KNOCK BACK"          ID="4" Type="0" Dmg="8"  Range="1" Cost="5"  CombAmt="4" Duration="3"/>
         </TURTLE>
         
-        <TURTLE NumberOfSkills="5" TurtleName="3">
+        <TURTLE NumberOfSkills="3" TurtleName="3">
                   <SKILL Name="SKULL-SPLITTER"      ID="11" Type="0" Dmg="13" Range="1" Cost="12" CombAmt="6" Duration="3"/>
                   <SKILL Name="NUNCHUCK SPIN"       ID="12" Type="0" Dmg="9"  Range="1" Cost="15" CombAmt="7" Duration="3"/>
-                  <SKILL Name="ROLL AWAY"           ID="13" Type="3" Dmg="0"  Range="2" Cost="10" CombAmt="6" Duration="3"/>
-                  <SKILL Name="COUNTER-ATTACK"      ID="3"  Type="0" Dmg="10" Range="1" Cost="8" CombAmt="3" Duration="3"/>
+                  <!--<SKILL Name="ROLL AWAY"           ID="13" Type="3" Dmg="0"  Range="2" Cost="10" CombAmt="6" Duration="3"/>-->
+                  <!--<SKILL Name="COUNTER-ATTACK"      ID="3"  Type="0" Dmg="10" Range="1" Cost="8" CombAmt="3" Duration="3"/>-->
                   <SKILL Name="KNOCK BACK"          ID="4"  Type="0" Dmg="5"  Range="1" Cost="5"  CombAmt="4" Duration="3"/>
         </TURTLE>
 </Skills>

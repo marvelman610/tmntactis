@@ -11,6 +11,7 @@
 
 #include <windows.h>
 #include <string>
+#include "Timer.h"
 using std::string;
 
 class CBitmapFont;
@@ -24,10 +25,36 @@ enum {BTN_SPECIAL, BTN_ITEM, BTN_ENDTURN, BTN_ENTER = 99, BTN_BACK = 100, };	// 
 
 class CBox
 {
+	struct MY_POINT_FLOAT
+	{
+		float x;
+		float y;
+		MY_POINT_FLOAT& operator= (MY_POINT_FLOAT& pt)
+		{
+			x = pt.x; 
+			y = pt.y;
+			return *this;
+		}
+		MY_POINT_FLOAT& operator= (POINT& pt)
+		{
+			x = (float)pt.x; 
+			y = (float)pt.y;
+			return *this;
+		}
+		bool operator != (POINT& pt)
+		{
+			if ((float)pt.x != x || (float)pt.y != y)
+				return true;
+			return false;
+		}
+	};
+
 // 	// which image is currently being used for the BG
 	int m_nCurrImage;
 	int m_BoxType;
 	bool m_bAcceptInput;
+	bool m_bCenterText;
+	bool m_bCenterBox;
 
 	// size/position variables
 	int m_nLongestString;
@@ -39,6 +66,8 @@ class CBox
 	int m_nPosY;
 	float m_fPosZ;
 	int m_nSpacing;
+	int m_nStartXOriginal;
+	int m_nStartYOriginal;
 	int m_nStartTextY;
 	int m_nStartTextX;
 	float m_fScaleX;
@@ -67,11 +96,12 @@ class CBox
 	bool m_bIsActive;
 	bool m_bIsMouseInBox;
 	int m_nBackType;
+	MY_POINT_FLOAT m_ptOldMouse;
 
 	// input (keys)
 	string m_sInput;
 
-
+	CTimer m_Timer;
 	CSGD_TextureManager*	m_pTM;
 	CBitmapFont*			m_pBM;
  	CAssets*				m_pAssets;
@@ -87,10 +117,15 @@ class CBox
 	//////////////////////////////////////////////////////////////////////////
 	void CheckMouse(POINT mousePt);
 	//////////////////////////////////////////////////////////////////////////
-	//	Function	:	"CheckMouse"
+	//	Function	:	"CheckKeysInputBox"
 	//
-	//	Purpose		:	Determine if the mouse is over the box, if so, which
-	//					index (button) is it over?
+	//	Purpose		:	Handle keyboard input for an input box
+	//////////////////////////////////////////////////////////////////////////
+	void CheckKeysInputBox();
+	//////////////////////////////////////////////////////////////////////////
+	//	Function	:	"CheckKeys"
+	//
+	//	Purpose		:	Handle keyboard input for menu selection
 	//////////////////////////////////////////////////////////////////////////
 	void CheckKeys();
 
@@ -114,7 +149,7 @@ class CBox
 	//
 	//	Purpose		:	Handles user input, selections and such
 	//////////////////////////////////////////////////////////////////////////
-	int Input(POINT mousePt);
+	int Input(POINT mousePt, float felapsed);
  
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors / Mutators
@@ -150,6 +185,8 @@ class CBox
 	void IsMsgBox(bool val) { m_bIsMsgBox = val; }
 	string* GetItems() {return m_sItems;}
 	bool GetMadeNew() {return m_bMadeNew;}
+	void CenterText(bool center=true) {m_bCenterText = center;}
+	void CenterBox(bool center=true);
 };
 
 #endif

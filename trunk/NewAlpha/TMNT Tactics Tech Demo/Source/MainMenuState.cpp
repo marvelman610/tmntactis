@@ -59,7 +59,7 @@ void CMainMenuState::Enter()
 {
 	m_nCurrProfileInd = -1;
 	m_fTimer = 0.0f;
-	m_bNewGamePressed = false;
+	m_bNewGamePressed = m_bProfileSelected = false;
 	if (!m_bProfilesSaved)
 	{
 		m_nNumProfiles = 0;
@@ -109,6 +109,7 @@ void CMainMenuState::Enter()
 		m_bxProfile->SetActive();
 		m_bxProfile->SetType(BOX_WITH_BACK);
 		m_bxProfile->AcceptInput();
+		m_bxProfile->CenterBox();
 	}
 }
 
@@ -149,22 +150,30 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 	// entering a profile name
 	if (m_bxProfile)
 	{
-		if (GetDI()->KeyPressed(DIK_ESCAPE))
+		// canceled
+		if (GetDI()->KeyPressed(DIK_ESCAPE) && m_bxProfile->GetInputIndex() == -1)
 		{delete m_bxProfile; m_bxProfile = NULL;return true;}
 
-		int input = m_bxProfile->Input(mousePt);
-		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[m_bxProfile->GetInputIndex()].size() > 0))
+		int input = m_bxProfile->Input(mousePt, fElapsedTime);
+		int index = m_bxProfile->GetInputIndex();
+		
+		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[index].size() > 0))
 		{
-			int index = m_bxProfile->GetInputIndex();
+			// have signed in to a profile
 			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "Create New"
 				&& m_bxProfile->GetItems()[index].size() > 0)
 			{
+				m_bProfileSelected = true;
+				m_Timer.StartTimer(2.5f);
 				// set the profile name
 				m_sProfiles[index] = m_bxProfile->GetItems()[index];
 				string profName = m_sProfiles[index];
 				CGame::GetInstance()->SetProfName(profName);
 				if (m_bxProfile->GetMadeNew())
-				{m_bProfilesSaved = false;++m_nNumProfiles;}
+				{
+					m_bProfilesSaved = false;
+					++m_nNumProfiles;
+				}
 				delete m_bxProfile;
 				m_bxProfile = NULL;
 
@@ -184,13 +193,8 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				}
 
 				if (m_bNewGamePressed)
-				{
-					CPlayer::GetInstance()->NewGame();
-					CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
-				}
-				m_nCurrProfileInd = index;
-
-				if ( !m_bNewGamePressed )	// they have simply selected a profile to sign in with
+					return true;
+				else	// they have simply selected a profile to sign in with
 				{
 					// load the profile's saved game if one exists
 					string fileName = CGame::GetInstance()->GetProfName() + ".dat";
@@ -206,8 +210,24 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					else
 						m_bGameLoaded = false;
 				}
+				m_nCurrProfileInd = index;
+				string* items;
+				if (!m_bGameLoaded)
+				{
+					items = new string[2];
+					items[0] = "SIGNED IN TO"; items[1] = "-" + profName + "-";
+					m_bxMsg = new CBox(2, items, 300, 300, 0.11f, true);
+					m_bxMsg->IsMsgBox(true); m_bxMsg->CenterText(); m_bxMsg->CenterBox();
+				} 
+				else
+				{
+					items = new string[3];
+					items[0] = "SIGNED IN TO"; items[1] = "-" + profName + "-"; items[2] = "GAME LOADED";
+					m_bxMsg = new CBox(3, items, 300, 300, 0.11f, true);
+					m_bxMsg->IsMsgBox(true); m_bxMsg->CenterText(); m_bxMsg->CenterBox();
+				}
 			}
-			else if (input == BTN_BACK) // save nothing
+			else if (input == BTN_BACK) // save nothing, load nothing
 			{
 				delete m_bxProfile; 
 				m_bxProfile = NULL;
@@ -261,6 +281,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_bxProfile->SetActive();
 				m_bxProfile->SetType(BOX_WITH_BACK);
 				m_bxProfile->AcceptInput();
+				m_bxProfile->CenterBox();
 			}
 			break;
 		case NEWGAME:
@@ -273,6 +294,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					m_bxProfile->SetActive();
 					m_bxProfile->SetType(BOX_WITH_BACK);
 					m_bxProfile->AcceptInput();
+					m_bxProfile->CenterBox();
 					break;
 				}
 				else
@@ -301,6 +323,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					m_bxProfile->SetActive();
 					m_bxProfile->SetType(BOX_WITH_BACK);
 					m_bxProfile->AcceptInput();
+					m_bxProfile->CenterBox();
 				}
 				else if (m_bGameLoaded)
 				{
@@ -358,6 +381,19 @@ void CMainMenuState::Render()
 void CMainMenuState::Update(float fElapsedTime)
 {
 	m_fTimer += fElapsedTime;
+	bool timerEvents = m_Timer.Update(fElapsedTime);
+	
+	if (timerEvents)
+	{
+		if (m_bProfileSelected)
+		{ delete m_bxMsg; m_bxMsg = NULL; }
+		if (m_bNewGamePressed)
+		{
+			CPlayer::GetInstance()->NewGame();
+			CGame::GetInstance()->ChangeState(CGamePlayState::GetInstance());
+		}
+		m_Timer.ResetTimer();
+	}
 }	
 
 

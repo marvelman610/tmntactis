@@ -57,8 +57,6 @@ void CAssets::LoadAssets()
 	// globally used IDs
 	aBitmapFontID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont.png", D3DCOLOR_XRGB(0,0,0));
 	aBitmapFontBubblyID	= m_pTM->LoadTexture("Resources/Images/VG_FontBubbly.png", D3DCOLOR_XRGB(0,0,0));
-	//aBitmapFont2ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont2.png", D3DCOLOR_XRGB(0,0,0));
-	//aBitmapFont3ID		= m_pTM->LoadTexture("Resources/Images/VG_BitmapFont3.png", D3DCOLOR_XRGB(0,0,0));
 	aMenuCursorImageID	= m_pTM->LoadTexture("Resources/Images/VG_menuCursor.bmp", D3DCOLOR_XRGB(255,255,255));
 	aMouseMagGlassID	= m_pTM->LoadTexture("Resources/Images/VG_cursorMagGlass.png", D3DCOLOR_XRGB(255,255,255));
 	aMouseAttackID		= m_pTM->LoadTexture("Resources/Images/VG_cursorAttack.png", D3DCOLOR_XRGB(255,255,255));
@@ -216,10 +214,10 @@ void CAssets::LoadAssets()
 		
 		aBMvictorySnd		= m_pFMOD->LoadSound("Resources/Sounds/VG_allClear.mp3");
 		aBMarcadeMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicArcade.mp3", FMOD_LOOP_NORMAL);
-// 		aBMsimusaMusicID;
-// 		aBMsinaroMusicID;
-// 		aBMiwamiMusicID;
-// 		aBMyamatoMusicID;
+		//aBMsimusaMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicSimusa.mp3", FMOD_LOOP_NORMAL);
+		aBMsinaroMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicSinaro.mp3", FMOD_LOOP_NORMAL);;
+		aBMiwamiMusicID		= m_pFMOD->LoadSound("Resources/Sounds/VG_musicIwami.mp3", FMOD_LOOP_NORMAL);;
+		aBMyamatoMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_musicYamato.mp3", FMOD_LOOP_NORMAL);;
 		aMMmusicID			= m_pFMOD->LoadSound("Resources/Sounds/VG_themeSong.mp3", FMOD_LOOP_NORMAL);
 		aWMworldMapMusicID	= m_pFMOD->LoadSound("Resources/Sounds/VG_worldMapMusic.mp3", FMOD_LOOP_NORMAL);
 		aOMmusicSnd			= m_pFMOD->LoadSound("Resources/Sounds/VG_musicCredits.mp3", FMOD_LOOP_NORMAL);

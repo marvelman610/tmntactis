@@ -97,7 +97,7 @@ void CMainMenuState::Enter()
 	CenterBGImage();
 
 	SetCurrMenuSelection( NEWGAME );
-	SetMenuX(350); SetMenuY(350);
+	SetMenuX(410); SetMenuY(350);
 	SetCursorX(GetMenuX()-80); SetCursorY(GetMenuY()-15);
 
 	GetFMOD()->PlaySound(GetAssets()->aMMmusicID);
@@ -164,7 +164,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				&& m_bxProfile->GetItems()[index].size() > 0)
 			{
 				m_bProfileSelected = true;
-				m_Timer.StartTimer(2.5f);
+				m_Timer.StartTimer(1.5f);
 				// set the profile name
 				m_sProfiles[index] = m_bxProfile->GetItems()[index];
 				string profName = m_sProfiles[index];
@@ -214,9 +214,9 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				string* items;
 				if (!m_bGameLoaded)
 				{
-					items = new string[2];
-					items[0] = "SIGNED IN TO"; items[1] = "-" + profName + "-";
-					m_bxMsg = new CBox(2, items, 300, 300, 0.11f, true);
+					items = new string[3];
+					items[0] = "SIGNED IN TO"; items[1] = "-" + profName + "-"; items[2] = "NO SAVED GAME";
+					m_bxMsg = new CBox(3, items, 300, 300, 0.11f, true);
 					m_bxMsg->IsMsgBox(true); m_bxMsg->CenterText(); m_bxMsg->CenterBox();
 				} 
 				else
@@ -352,30 +352,34 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 void CMainMenuState::Render()
 {
 	CBaseMenuState::Render();
+	float scaleTitle = 2.5f;
+	float scaleOptions = 1.75f;
 	DWORD color = D3DCOLOR_XRGB(0, 255, 0);	// draw bitmap font text green!!
 	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
-	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, 1.5f, D3DCOLOR_ARGB(255,0,255,0));
-	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth()+6, 26, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
-	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, 1.5f, D3DCOLOR_ARGB(255,0,255,0));
-	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth()+6, 106, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID, 16,15,20);
+	GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth(), 20, 0.09f, scaleTitle, D3DCOLOR_ARGB(255,0,255,0));
+	//GetBitmapFont()->DrawStringAutoCenter("TMNT",		GetScreenWidth()+6, 26, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
+	GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth(), 100, 0.09f, scaleTitle, D3DCOLOR_ARGB(255,0,255,0));
+	//GetBitmapFont()->DrawStringAutoCenter("TACTICS",	GetScreenWidth()+6, 106, 0.091f, 1.5f, D3DCOLOR_ARGB(255,255,0,0));
+	if (!m_bxProfile && !m_bxMsg)
+	{
+		// Draw menu item text
+		GetBitmapFont()->DrawString("SIGN IN",		GetMenuX(), GetMenuY(), 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("NEW GAME",		GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("CONTINUE",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("OPTIONS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("CREDITS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("TUTORIAL",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, scaleOptions, color);
+		GetBitmapFont()->DrawString("EXIT",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, scaleOptions, color);
+		// Draw menu cursor
+		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
+	}
+	GetBitmapFont()->Reset();
 	if (m_bxProfile)
 		m_bxProfile->Render();
 	else if (m_bxMsg)
 		m_bxMsg->Render();
-	else
-	{
-		// Draw menu item text
-		GetBitmapFont()->DrawString("SIGN IN",		GetMenuX(), GetMenuY(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("NEW GAME",		GetMenuX(), GetMenuY()+GetMenuItemSpacing(), 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("CONTINUE",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 2, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("OPTIONS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 3, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("CREDITS",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 4, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("TUTORIAL",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, 1.0f, color);
-		GetBitmapFont()->DrawString("EXIT",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, 1.0f, color);
-		// Draw menu cursor
-		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
-	}
 }
 
 void CMainMenuState::Update(float fElapsedTime)

@@ -182,11 +182,11 @@ class CBox
 	bool IsMouseInBox() const { if (this != NULL)return m_bIsMouseInBox; else return 0;}
 	void IsMouseInBox(bool val) { m_bIsMouseInBox = val; }
 	bool IsMsgBox() const { return m_bIsMsgBox; }
-	void IsMsgBox(bool val) { m_bIsMsgBox = val; }
+	void IsMsgBox(bool val) { m_bIsMsgBox = val; if(val) m_nCurrSelectedIndex = -1;}
 	string* GetItems() {return m_sItems;}
 	bool GetMadeNew() {return m_bMadeNew;}
 	void CenterText(bool center=true) {m_bCenterText = center;}
-	void CenterBox(bool center=true);
+	void CenterBox();
 };
 
 #endif

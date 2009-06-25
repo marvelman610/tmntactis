@@ -94,8 +94,8 @@ void CWorldMap::Enter()
 	if (!m_bHelpShown)
 	{
 		text[0] = "Double Click"; text[1] = "On a location"; text[2] = "To explore it";
-		m_bxHelp = new CBox(3, text, -5, 645, 0.11f, false, 15, 15, 30, -1, 0.5f);
-		m_bxHelp->IsMsgBox(true);
+		m_bxHelp = new CBox(3, text, -5, 50, 0.11f, false, 15, 15, 30, -1, 0.5f);
+		m_bxHelp->IsMsgBox(true); m_bxHelp->CenterBox();
 		m_bxHelp->SetAlpha(200);
 	}
 	delete[] text;
@@ -114,7 +114,7 @@ void CWorldMap::Enter()
 	m_fTimer = 0.0f;
 	m_bWeaponBool = false;
 	CSGD_FModManager::GetInstance()->PlaySound(m_pAssets->aWMworldMapMusicID);
-	m_Timer.StartTimer(5.0f);
+	m_Timer.StartTimer(3.5f);
 }
 
 void CWorldMap::Exit()
@@ -182,7 +182,7 @@ void CWorldMap::Render()
 			string name = "CURRENT LOCATION - " + m_Locations[i].name;
 			m_pBitmapFont->DrawStringAutoCenter(name.c_str(), m_nScreenWidth, 65, 0.09f, 0.5f);
 		}
-		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect && !m_pPlayer->GetAch()->Render())
+		if (!m_bxSave && !m_bxLoad && !m_bxTrainSkills && !m_bxChooseTurtle && !m_bxMsg && !m_bxWeapon && !m_bxWeaponSelect && !m_pPlayer->GetAch()->Render() && !m_bxHelp)
 			m_pBitmapFont->DrawString(m_Locations[i].name.c_str(), m_Locations[i].mapXY.x - 45-m_nMapOSx, m_Locations[i].mapXY.y - 20-m_nMapOSy, 
 				0.0f, 0.5f, m_Locations[i].color);
 		if (m_pPlayer->GetMapsUnlocked()[i] == false)
@@ -309,7 +309,7 @@ bool CWorldMap::Input(float fElapsedTime, POINT mouse)
 				else if (m_Locations[i].bSelected)	// the map is locked
 				{
 					string* msg = new string[3];
-					msg[0] = "You must achieve"; msg[1] = "Victory in " + m_Locations[i-1].name; msg[2] = "to unlock this map";
+					msg[0] = "You must achieve"; msg[1] = "Victory in " + m_Locations[i-1].name; msg[2] = "to unlock " + m_Locations[i].name;
 					m_bxMsg = new CBox(3, msg, 150, 300, 0.11f, false, 35, 35, 25, -1, 0.8f);
 					m_bxMsg->IsMsgBox(true);
 					m_bxMsg->SetScaleY(0.8f);

@@ -68,23 +68,18 @@ void CMainMenuState::Enter()
 		{
 			for (int i = 1; i < 5; ++i)
 			{
-				if (!ifs.eof())
-				{
-					char buff[32];
-					ZeroMemory(buff, 32);
-					int size = 0;
-					ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
-					ifs.read(buff, size);
-					m_sProfiles[i] = buff;
-					char eat;
-					ifs.read(&eat, 1);
-				}
-				else
-					break;
+				char buff[32];
+				ZeroMemory(buff, 32);
+				int size = 0;
+				ifs.read(reinterpret_cast<char*>(&size), sizeof(int));
+				ifs.read(buff, size);
+				m_sProfiles[i] = buff;
+				char next = ifs.peek();
 				if(m_sProfiles[i] != "Create New")
 					++m_nNumProfiles;
+				if (next == -1)
+					break;
 			}
-			m_bProfilesSaved = true;
 			ifs.close();
 		}
 	}
@@ -169,7 +164,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 				m_sProfiles[index] = m_bxProfile->GetItems()[index];
 				string profName = m_sProfiles[index];
 				CGame::GetInstance()->SetProfName(profName);
-				if (m_bxProfile->GetMadeNew())
+				if (m_bxProfile->GetMadeNew() && !m_bxProfile->GetOverwrote())
 				{
 					m_bProfilesSaved = false;
 					++m_nNumProfiles;

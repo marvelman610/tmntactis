@@ -199,8 +199,7 @@ void CNinja::AI()
  			SetCurrAnim(4);
 			m_nTotalAttacks = 4;
 			CBattleMap::GetInstance()->UpdatePositions();
-			//CBattleMap::GetInstance()->NinjaMoveComplete();
-			m_bAttackBool = true; m_bMoving = false;
+			m_bAttackBool = true; m_bMoving = false; m_bMovingDone = true;
 		}
 		break;
 		//two tiles away from turtle 1 out of range
@@ -959,7 +958,7 @@ void CNinja::Update(float fElapsedTime)
 		return;
 	}
 
-	if( GetExperience() >= (100 * GetLevel()) )
+	if( GetExperience() >= (100 * GetLevel()) )	// each level requires lvl * 100 xp
 	{
 		SetExperience( GetExperience() - (100* GetLevel()) );
 		CBase::SetLevel(GetLevel()+1);

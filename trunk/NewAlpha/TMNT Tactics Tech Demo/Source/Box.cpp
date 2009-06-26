@@ -155,7 +155,7 @@ void CBox::CheckMouse(POINT mousePt)
 			{m_nCurrSelectedIndex = -1;}
 		}
 		// making a selection
-		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_sItems[m_nCurrSelectedIndex] != "Create New")
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_nCurrSelectedIndex < 5 && m_sItems[m_nCurrSelectedIndex] != "Create New")
 		{
 			m_nCurrInputIndex = m_nCurrSelectedIndex;
 			m_nCurrSelectedIndex = BTN_ENTER;
@@ -167,7 +167,7 @@ void CBox::CheckMouse(POINT mousePt)
 			return;
 		}
 		// changing a selection
-		else if ((m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && m_bAcceptInput && m_nCurrSelectedIndex > 0)
+		else if ((m_pDI->MouseButtonPressed(MOUSE_LEFT) || m_pDI->MouseButtonPressed(MOUSE_RIGHT)) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_nCurrSelectedIndex < 5 )
 		{
 			if (m_pDI->MouseButtonPressed(MOUSE_RIGHT))
 				m_bOverwrote = true;

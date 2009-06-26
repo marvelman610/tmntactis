@@ -152,7 +152,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		int input = m_bxProfile->Input(mousePt, fElapsedTime);
 		int index = m_bxProfile->GetInputIndex();
 		
-		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[index].size() > 0))
+		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[index].size() > 0) && index < 100)
 		{
 			// have signed in to a profile
 			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "Create New"

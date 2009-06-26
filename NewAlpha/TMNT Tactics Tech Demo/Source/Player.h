@@ -15,6 +15,7 @@ enum { WORLD_MAP, BATTLE_MAP, NUM_MAPS = 4, };
 #include "Turtle.h"
 #include "Base.h"
 #include "BattleItem.h"
+#include "WorldMap.h"
 #include <vector>
 using std::vector;
 
@@ -96,7 +97,7 @@ public:
 	void SetFileName(string name)		{ m_sFileName = name;		}
 	void SetAch(CAchievements* ach)		{ m_pAcheivements = ach;	}
 	void SetStage(int stage)			{ m_nCurrStage = stage;		}
-	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true;}
+	void SetMapUnlocked(int mapID)		{ m_bMapsUnlocked[mapID] = true; CWorldMap::GetInstance()->SetLatestUnlocked(mapID-1);}
 	void IncrementKillCount()			{ ++m_nKillCount;			}
 	void SetKillCount(int count)		{ m_nKillCount = count;		}
 	void SetSelectTurtleShown(bool shown){m_bSelectTurtleShown = shown;}

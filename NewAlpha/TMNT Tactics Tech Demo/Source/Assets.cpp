@@ -115,6 +115,9 @@ void CAssets::LoadAssets()
 	aWMmapID			= m_pTM->LoadTexture("Resources/Images/VG_worldMap.png", D3DCOLOR_XRGB(255,255,255));
 	aWMtempleID			= m_pTM->LoadTexture("Resources/Images/VG_templeIcon.png", D3DCOLOR_XRGB(255,255,255));
 	aWMlockID			= m_pTM->LoadTexture("Resources/Images/VG_lock.png", D3DCOLOR_XRGB(255,255,255));
+	aWMpath1			= m_pTM->LoadTexture("Resources/Images/VG_path1.png");
+	aWMpath2			= m_pTM->LoadTexture("Resources/Images/VG_path2.png");
+	aWMpath3			= m_pTM->LoadTexture("Resources/Images/VG_path3.png");
 	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////

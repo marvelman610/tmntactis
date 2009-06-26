@@ -34,7 +34,6 @@
 #define BOUNDING_BOXES 0
 #define CAM_EDGE_DIST_TO_MOVE 20	// how close to edge of the screen the mouse has to get to start scrolling
 #define SCROLLSPEED 150.0f
-enum {LOC_SIMUSA, LOC_SINARO, LOC_YAMATO, LOC_IWAMI, NUM_LOCATIONS, };
 
 CBattleMap::CBattleMap(void)
 {
@@ -2356,11 +2355,11 @@ void CBattleMap::SetEnemyDead()
 	m_bIsMouseAttack = false;
 	PlaySFX(m_pAssets->aBMdeathSnd);
 
-	// winning condition
+	// winning condition : handle winning events
 	if(m_nNumEnemiesLeft <= 0)
 	{
 		m_bWin = true;
-		if (m_nMapID < NUM_MAPS)
+		if (m_nMapID < NUM_MAPS-1)
 			m_pPlayer->SetMapUnlocked(m_nMapID+1);
 		PlaySFX(m_pAssets->aBMvictorySnd);
 		m_Timer.StartTimer(14.0f);

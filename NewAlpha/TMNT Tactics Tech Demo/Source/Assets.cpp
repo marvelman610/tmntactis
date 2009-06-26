@@ -78,7 +78,6 @@ void CAssets::LoadAssets()
 	aBMcurrSelectedArrowID=m_pTM->LoadTexture("Resources/Images/VG_currArrow.png", D3DCOLOR_XRGB(255,255,255));
 	aBMcurrTargetArrowID= m_pTM->LoadTexture("Resources/Images/VG_currTargetArrow.png", D3DCOLOR_XRGB(255,255,255));
 	aBMactionBoxID		= m_pTM->LoadTexture("Resources/Images/VG_actionBox.png", D3DCOLOR_XRGB(255,255,255));
-	aBMskillBoxID		= m_pTM->LoadTexture("Resources/Images/VG_skillBoxBG.png", D3DCOLOR_XRGB(255,255,255));
 	aBMvictoryID		= m_pTM->LoadTexture("Resources/Images/VG_victory.png", D3DCOLOR_XRGB(255,255,255));
 	aBMdefeatID			= m_pTM->LoadTexture("Resources/Images/VG_defeat.png", D3DCOLOR_XRGB(255,255,255));
 	aBMstatsID			= m_pTM->LoadTexture("Resources/Images/VG_MatchStats.png");

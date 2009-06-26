@@ -50,9 +50,10 @@ void ObjectManager::UpdateObjects(float fElapsedTime)
 }
 void ObjectManager::RenderObjects(void)
 {
-	static CCodeProfiler cp("ObjManRender");
+	static CCodeProfiler cp("ObjMainRender");
 	cp.Start();
-	//Z-Sorted
+	//Z-Sorted ... seems to be a small problem with ninjas rendering on top of another 
+	//				(perhaps when they're being put in front when they need to be in front of a map object?)
 	priority_queue<CBase *, vector<CBase *>, cmp> objects;
 	for (unsigned int i=0; i < m_vObjects.size(); i++)
 	{

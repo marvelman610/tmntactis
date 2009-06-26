@@ -152,7 +152,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		int input = m_bxProfile->Input(mousePt, fElapsedTime);
 		int index = m_bxProfile->GetInputIndex();
 		
-		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[index].size() > 0) && index < 100)
+		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && index < 100 && m_bxProfile->GetItems()[index].size() > 0))
 		{
 			// have signed in to a profile
 			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "CREATE NEW"
@@ -368,6 +368,15 @@ void CMainMenuState::Render()
 		GetBitmapFont()->DrawString("TUTORIAL",		GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 5, 0.09f, scaleOptions, color);
 		GetBitmapFont()->DrawString("ACHIEVEMENTS", GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 6, 0.09f, scaleOptions, color);
 		GetBitmapFont()->DrawString("EXIT",			GetMenuX(), GetMenuY()+GetMenuItemSpacing() * 7, 0.09f, scaleOptions, color);
+
+		// render the signed-in profile name, if none, then display "NONE"
+		string s = "SIGNED IN WITH: ";
+		if (GetGame()->GetProfName() == "NONE")
+			s = "NOT SIGNED IN";
+		else
+			s += GetGame()->GetProfName();
+		GetBitmapFont()->DrawString(s.c_str(), 10, 730, 0.05f, 0.8f);
+
 		// Draw menu cursor
 		GetTM()->DrawWithZSort(GetAssets()->aMenuCursorImageID, GetCursorX(), GetCursorY() + (GetCurrMenuSelection()*GetMenuItemSpacing()), 0.01f);
 	}

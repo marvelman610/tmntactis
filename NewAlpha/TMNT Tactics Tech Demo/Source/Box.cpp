@@ -155,7 +155,7 @@ void CBox::CheckMouse(POINT mousePt)
 			{m_nCurrSelectedIndex = -1;}
 		}
 		// making a selection
-		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_nCurrSelectedIndex < 5 && m_sItems[m_nCurrSelectedIndex] != "Create New")
+		if (m_pDI->MouseButtonPressed(MOUSE_LEFT) && m_bAcceptInput && m_nCurrSelectedIndex > 0 && m_nCurrSelectedIndex < 5 && m_sItems[m_nCurrSelectedIndex] != "CREATE NEW")
 		{
 			m_nCurrInputIndex = m_nCurrSelectedIndex;
 			m_nCurrSelectedIndex = BTN_ENTER;
@@ -347,7 +347,7 @@ void CBox::CheckKeys()
 		if (m_bHasTitle && m_nCurrSelectedIndex < 1) m_nCurrSelectedIndex = 1;
 	}
 	if ((m_pDI->KeyPressed(DIK_RETURN) || m_pDI->KeyPressed(DIK_NUMPADENTER)) && m_bAcceptInput && 
-			m_nCurrSelectedIndex > 0 && m_sItems[m_nCurrSelectedIndex] != "Create New")
+			m_nCurrSelectedIndex > 0 && m_sItems[m_nCurrSelectedIndex] != "CREATE NEW")
 	{
 		// accept the input...store it, and close the box
 		m_nCurrInputIndex = m_nCurrSelectedIndex;

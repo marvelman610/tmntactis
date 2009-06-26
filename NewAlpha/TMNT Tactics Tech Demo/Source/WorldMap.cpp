@@ -259,7 +259,7 @@ void CWorldMap::Update(float fElapsedTime)
 	}
 	if (m_bTrained)
 		m_fTimer += fElapsedTime;
-	if (m_bTrained && m_fTimer >= 2.0f)
+	if (m_bTrained && m_fTimer >= 1.5f)
 	{
 		m_bTrained = false;
 		delete m_bxMsg; m_bxMsg = NULL;
@@ -526,9 +526,6 @@ bool CWorldMap::HandleButtons()
 				weapons[i] += " -X";
 		}
 
-		
-		//m_nTurtleSkillTrainIndex = m_nCurrBtn-1;
-
 		m_bxWeaponSelect = new CBox(size+1,weapons,150, 270, 0.11f, true, 25, 35, 15, -1, 0.7f);
 		m_bxWeaponSelect->SetType(BOX_WITH_BACK); m_bxWeaponSelect->SetActive(); m_bxWeaponSelect->CenterBox();
 		delete[] weapons;
@@ -581,15 +578,18 @@ bool CWorldMap::HandleButtons()
 		// only valid if it's an untrained skill
 		if (m_nFirstTrainable <= m_nCurrBtn)
 		{
-			CSkill chosenSkill = (*m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetInactiveSkills())[m_nCurrBtn-m_nFirstTrainable];
-			if (chosenSkill.GetSkillCost() <= m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetSkillXP())
+			CTurtle* turtle = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex];
+			CSkill chosenSkill = (*turtle->GetInactiveSkills())[m_nCurrBtn-m_nFirstTrainable];
+			if (chosenSkill.GetSkillCost() <= turtle->GetSkillXP())
 			{
 				// trained skills
-				vector<CSkill>* vskills = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetSkills();
+				vector<CSkill>* vskills = turtle->GetSkills();
 				vskills->push_back(chosenSkill);
+				// decrement skillXP according to the chosen skill
+				turtle->SetSkillXP(turtle->GetSkillXP()-chosenSkill.GetSkillCost());
 	
 				// untrained skills
-				vector<CSkill>* vskillsPtr = m_pPlayer->GetTurtles()[m_nTurtleSkillTrainIndex]->GetInactiveSkills();
+				vector<CSkill>* vskillsPtr = turtle->GetInactiveSkills();
 				vector<CSkill>::iterator iter = vskillsPtr->begin();
 				for (unsigned int i = 0; i < vskillsPtr->size(); ++i)
 				{
@@ -616,6 +616,7 @@ bool CWorldMap::HandleButtons()
 				m_bxMsg = new CBox(1, msg, 250, 300, 0.11f, false, 25, 35, 25, -1, 0.7f);
 				m_bxMsg->IsMsgBox(true); m_bxMsg->CenterBox(); m_bxMsg->CenterText();
 			}
+			m_Timer.StartTimer(1.5f);
 		}
 	}
 	else if (m_bxLoad && m_nCurrBtn > -1)

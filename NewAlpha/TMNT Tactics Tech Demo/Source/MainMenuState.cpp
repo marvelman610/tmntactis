@@ -33,7 +33,7 @@ CMainMenuState::CMainMenuState()
 	m_sProfiles = new string[5];
 	m_sProfiles[0] = "LOG IN";
 	for (int i =1; i < 5; ++i)
-		m_sProfiles[i] = "Create New";
+		m_sProfiles[i] = "CREATE NEW";
 
 	m_fTimer = 0.0f;
 	m_bGameLoaded = false;
@@ -75,7 +75,7 @@ void CMainMenuState::Enter()
 				ifs.read(buff, size);
 				m_sProfiles[i] = buff;
 				char next = ifs.peek();
-				if(m_sProfiles[i] != "Create New")
+				if(m_sProfiles[i] != "CREATE NEW")
 					++m_nNumProfiles;
 				if (next == -1)
 					break;
@@ -155,7 +155,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 		if ((GetDI()->MouseButtonPressed(MOUSE_LEFT) || (GetDI()->KeyPressed(DIK_RETURN)) && m_bxProfile->GetItems()[index].size() > 0) && index < 100)
 		{
 			// have signed in to a profile
-			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "Create New"
+			if (input == BTN_ENTER && index > -1 && m_bxProfile->GetItems()[index] != "CREATE NEW"
 				&& m_bxProfile->GetItems()[index].size() > 0)
 			{
 				m_bProfileSelected = true;

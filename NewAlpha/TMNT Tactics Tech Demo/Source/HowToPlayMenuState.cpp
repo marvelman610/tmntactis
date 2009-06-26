@@ -19,6 +19,7 @@
 // if we have any menu options in this menu, 
 //	add to this enum
 enum {BACK, NULL_END};
+enum {BG_SELECT, BG_MOVE, BG_ATTACK, BG_SPECIAL, BG_ITEM, NUM_BGS, };
 
 CHowToPlayMenuState* CHowToPlayMenuState::GetInstance()
 {
@@ -28,11 +29,19 @@ CHowToPlayMenuState* CHowToPlayMenuState::GetInstance()
 void CHowToPlayMenuState::Enter()
 {
 	CBaseMenuState::Enter();
+
+	// setup the bgs 
+	m_pBGids = new int[NUM_BGS];
+	m_pBGids[BG_SELECT] = GetAssets()->aHTPMSelectID;
+	m_pBGids[BG_MOVE] = GetAssets()->aHTPMMoveID;
+	m_pBGids[BG_ATTACK] = GetAssets()->aHTPMAttackID;
+	m_pBGids[BG_SPECIAL] = GetAssets()->aHTPMSpecialID;
+	m_pBGids[BG_ITEM] = GetAssets()->aHTPMItemID;
+
 	m_bMouseOverEsc = false;
-	SetBGImageID(GetAssets()->aHTPMSelectID);
- 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aHTPMSelectID));
- 	SetBGHeight(GetTM()->GetTextureHeight(GetAssets()->aHTPMSelectID));
-	//CenterBGImage();
+	SetBGImageID(m_pBGids[BG_SELECT]);	// starts out on select bg
+ 	SetBGWidth(GetTM()->GetTextureWidth(m_pBGids[BG_SELECT]));
+ 	SetBGHeight(GetTM()->GetTextureHeight(m_pBGids[BG_SELECT]));
 
 	SetCurrMenuSelection( BACK );
 	SetCursorX(350);
@@ -44,6 +53,8 @@ void CHowToPlayMenuState::Enter()
 
 void CHowToPlayMenuState::Exit()
 {
+	delete[] m_pBGids;
+	m_pBGids = NULL;
 	GetFMOD()->StopSound(GetAssets()->aHTPsound);
 	GetFMOD()->ResetSound(GetAssets()->aHTPsound);
 	CBaseMenuState::Exit();
@@ -53,37 +64,28 @@ bool CHowToPlayMenuState::Input(float fElapsedTime, POINT mousePT)
 {
 	m_nMouseX = mousePT.x;
 	m_nMouseY = mousePT.y;
-	if(GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_LEFT) || GetDI()->JoystickButtonPressed(0,0))
-	{
-		if(GetBGImageID() == GetAssets()->aHTPMSelectID)
-		{
-			SetBGImageID(GetAssets()->aHTPMMoveID);
-		}
-		else if(GetBGImageID() == GetAssets()->aHTPMMoveID)
-		{
-			SetBGImageID(GetAssets()->aHTPMAttackID);
-		}
-		else if(GetBGImageID() == GetAssets()->aHTPMAttackID)
-		{
-			SetBGImageID(GetAssets()->aHTPMSpecialID);
-		}
-		else if(GetBGImageID() == GetAssets()->aHTPMSpecialID)
-		{
-			SetBGImageID(GetAssets()->aHTPMItemID);
-		}
-		else if(GetBGImageID() == GetAssets()->aHTPMItemID)
-		{
-			SetBGImageID(GetAssets()->aHTPMSelectID);
-		}
-	}
-	if (mousePT.x > 500 && mousePT.x < 600 && mousePT.y > 720 && mousePT.y < 750)
-		m_bMouseOverEsc = true;
+	if (mousePT.x > 500 && mousePT.x < 625 && mousePT.y > 720 && mousePT.y < 768)
+		m_bMouseOverEsc = true;	// get out now!
 	else
 		m_bMouseOverEsc = false;
 	if (GetDI()->KeyPressed(DIK_ESCAPE) || (m_bMouseOverEsc && GetDI()->MouseButtonPressed(MOUSE_LEFT)) || GetDI()->JoystickButtonPressed(1,0))
-	{
 		CGame::GetInstance()->ChangeState(CMainMenuState::GetInstance());
+
+	if(GetDI()->KeyPressed(DIK_RETURN) || GetDI()->MouseButtonPressed(MOUSE_RIGHT) || GetDI()->JoystickButtonPressed(0,0))
+	{
+		m_nCurrBG++;
+		if (m_nCurrBG == NUM_BGS)	//wrap around to first one
+			m_nCurrBG = 0;
+		SetBGImageID(m_pBGids[m_nCurrBG]);
 	}
+	else if (GetDI()->MouseButtonPressed(MOUSE_LEFT) /*TODO::what is joystick btn for this?*/)
+	{
+		m_nCurrBG--;
+		if (m_nCurrBG < 0)			// wrap around to last one
+			m_nCurrBG = NUM_BGS-1;
+		SetBGImageID(m_pBGids[m_nCurrBG]);
+	}
+
 	return true;
 }
 
@@ -92,7 +94,8 @@ void CHowToPlayMenuState::Render()
 	CBaseMenuState::Render();
 	GetTM()->DrawWithZSort(GetAssets()->aMousePointerID, m_nMouseX-10, m_nMouseY-3, 0.0f);
 
-	CBitmapFont::GetInstance()->DrawString("CLICK TO MOVE ON", 350, 680);
+	CBitmapFont::GetInstance()->DrawString("NEXT PAGE R-click", 720, 720, 0.05f, 0.4f);
+	CBitmapFont::GetInstance()->DrawString("PREV PAGE L-click", 720, 740, 0.05f, 0.4f);
 
 	// TODO:: add the how to play info here
 	if (m_bMouseOverEsc)

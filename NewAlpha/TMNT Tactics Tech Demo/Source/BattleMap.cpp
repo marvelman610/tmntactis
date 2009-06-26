@@ -2090,7 +2090,7 @@ void CBattleMap::FindPathToTarget( )
 				if (open[oInd].F() <= currTile.F())
 				{ currTile = open[oInd]; iterCount = oInd;}
 				++oInd;
-				if (oInd == open.size()/*-1*/)
+				if (oInd == open.size())
 					break;
 			}
 		}
@@ -2924,7 +2924,7 @@ bool CBattleMap::StartCompTurn()
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetBaseAP());
 		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetSelectedSkill(-1);
 		m_sCurrSkillDisplay = m_sCurrSkillName = "NONE";
-		m_nCurrSkillCost = 0;
+		m_nCurrSkillCost = -1;
 	}
 
 	// pick a random enemy to move

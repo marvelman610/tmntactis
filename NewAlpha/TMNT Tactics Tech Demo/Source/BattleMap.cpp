@@ -1242,7 +1242,7 @@ CTile** CBattleMap::GetAdjTiles(int StartX, int StartY, CTile* tiles)
 		{
 			CTile* temp = cells[i];
 			tileID = temp->DestYID() * m_nNumCols + temp->DestXID();
-			if (tiles[tileID].Flag() == FLAG_COLLISION || tiles[tileID].Flag() == FLAG_OBJECT_EDGE)
+			if (tiles[tileID].Flag() == FLAG_COLLISION || tiles[tileID].Flag() == FLAG_OBJECT_EDGE || CheckTileOccupied(tileID))
 				cells[i]->SetTerrainCost(999);
 		}
 	}
@@ -2080,11 +2080,26 @@ void CBattleMap::FindPathToTarget( )
 	bool pathFound = false;
 	while( !pathFound )	
 	{
-		for (unsigned int oInd = 1; oInd < open.size(); ++oInd)
-			if (open[oInd].F() <= currTile.F())
-				currTile = open[oInd];
+		unsigned int oInd = 1;	// if the open vector has more than 1, start at open[1], otherwise, we keep open[0] as currTile
+		vector<CTile>::iterator iter = open.begin();	// start at the beginning (currTile[0]), iter to erase = index of currTile
+		int iterCount = 0;
+		if (open.size() > 1)
+		{
+			for ( ; ; )
+			{
+				if (open[oInd].F() <= currTile.F())
+				{ currTile = open[oInd]; iterCount = oInd;}
+				++oInd;
+				if (oInd == open.size()/*-1*/)
+					break;
+			}
+		}
+		while (iterCount > 0)
+		{
+			++iter;
+			--iterCount;
+		}
 		adjTiles = GetAdjTiles(currTile.DestXID(), currTile.DestYID(), tiles);
-		vector<CTile>::iterator iter = open.begin();
 		open.erase(iter); closed.push_back(currTile);
 
 		// check the adjacent tiles (adjacent to the current), determine which one's best - based on distance? 
@@ -2095,7 +2110,7 @@ void CBattleMap::FindPathToTarget( )
 			int tileID = adjTiles[ind]->DestYID() * numCols + adjTiles[ind]->DestXID();
 
 			if (tiles[tileID].Flag() != FLAG_COLLISION && tiles[tileID].Flag() != FLAG_OBJECT_EDGE &&
-				!IsOnClose(adjTiles[ind], closed))
+				!IsOnClose(adjTiles[ind], closed) && !CheckTileOccupied(tileID))
 			{
 				bFound = false;
 				for (unsigned int i = 0; i < open.size(); ++i)

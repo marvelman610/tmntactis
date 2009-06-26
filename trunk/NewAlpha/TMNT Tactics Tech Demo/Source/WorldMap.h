@@ -84,8 +84,8 @@ class CWorldMap
 		{ color = D3DCOLOR_XRGB(255,255,255); bSelected = false; bHovering = false;}
 		bool MouseInRect(POINT mouse, int osx, int osy)
 		{
-			if (mouse.x >= mapXY.x-osx && mouse.x <= mapXY.x+32-osx &&
-				mouse.y >= mapXY.y-osy && mouse.y <= mapXY.y+32-osy)
+			if (mouse.x >= mapXY.x-osx-32 && mouse.x <= mapXY.x+64-osx &&
+				mouse.y >= mapXY.y-osy-32 && mouse.y <= mapXY.y+64-osy)
 			{
 				return true;
 			}

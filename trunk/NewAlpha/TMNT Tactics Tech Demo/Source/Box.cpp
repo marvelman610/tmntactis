@@ -126,9 +126,6 @@ void CBox::CheckMouse(POINT mousePt)
 				mousePt.y >= m_nBoxBottom - (45.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
 			{
 				m_nCurrSelectedIndex = BTN_BACK;
-				m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
-				if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
-					MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 				m_ptOldMouse = mousePt;
 				return;
 			}
@@ -139,9 +136,6 @@ void CBox::CheckMouse(POINT mousePt)
 				mousePt.y >= m_nBoxBottom - (45.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)
 			{
 				m_nCurrSelectedIndex = BTN_ENTER;
-				m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
-				if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
-					MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 				m_ptOldMouse = mousePt;
 				return;
 			}
@@ -337,6 +331,9 @@ void CBox::CheckKeys()
 		{
 			if(m_nCurrSelectedIndex < 0) m_nCurrSelectedIndex = 0;
 		}
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 	}
 	else if (m_pDI->KeyPressed(DIK_DOWNARROW) && !m_bEnterText)
 	{
@@ -345,6 +342,9 @@ void CBox::CheckKeys()
 		++m_nCurrSelectedIndex;
 		if(m_nCurrSelectedIndex == m_nNumItems) m_nCurrSelectedIndex = m_nNumItems-1;
 		if (m_bHasTitle && m_nCurrSelectedIndex < 1) m_nCurrSelectedIndex = 1;
+		m_pFMOD->PlaySound(m_pAssets->aMMmenuClickSnd);
+		if(!m_pFMOD->SetVolume(m_pAssets->aMMmenuClickSnd, CGame::GetInstance()->GetSFXVolume()))
+			MessageBox(0, "VOLUME NOT SET", "ERROR", MB_OK);
 	}
 	if ((m_pDI->KeyPressed(DIK_RETURN) || m_pDI->KeyPressed(DIK_NUMPADENTER)) && m_bAcceptInput && 
 			m_nCurrSelectedIndex > 0 && m_sItems[m_nCurrSelectedIndex] != "CREATE NEW")

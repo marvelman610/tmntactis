@@ -213,6 +213,7 @@ bool CMainMenuState::Input(float fElapsedTime, POINT mousePt)
 					items[0] = "SIGNED IN TO"; items[1] = "-" + profName + "-"; items[2] = "NO SAVED GAME";
 					m_bxMsg = new CBox(3, items, 300, 300, 0.11f, true);
 					m_bxMsg->IsMsgBox(true); m_bxMsg->CenterText(); m_bxMsg->CenterBox();
+					delete[] items;
 				} 
 				else
 				{

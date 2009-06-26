@@ -44,7 +44,7 @@ void CCreditState::Enter()
 	SetBGWidth(GetTM()->GetTextureWidth(GetAssets()->aCMbgID));
 	CenterBGImage();
 	m_nYPos = 700;
-	m_fYVelocity = -80.0f;
+	m_fYVelocity = -70.0f;
 	m_nAlpha = 150;
 	m_fTimer = 0.0f;
 	SetMenuX(100);
@@ -57,12 +57,16 @@ bool CCreditState::Input(float fElapsedTimes, POINT mousePT)
 	if(GetDI()->JoystickDPadPressed(2,0) || GetDI()->KeyDown(DIK_UP))//up
 	{
 		//move text slower
-		m_fYVelocity -= (50.0f * fElapsedTimes);
+		m_fYVelocity -= (100.0f * fElapsedTimes);
+		if (m_fYVelocity < -250.0f)
+			m_fYVelocity = -250.0f;
 	}
 	else if(GetDI()->JoystickDPadPressed(3,0) || GetDI()->KeyDown(DIK_DOWN))//down
 	{
 		//move text faster
-		m_fYVelocity += (50.0f * fElapsedTimes);
+		m_fYVelocity += (100.0f * fElapsedTimes);
+		if (m_fYVelocity > 250.0f)
+			m_fYVelocity = 250.0f;
 	}
 	if(GetDI()->KeyPressed(DIK_ESCAPE) || GetDI()->JoystickButtonPressed(1,0))
 	{
@@ -219,6 +223,13 @@ void CCreditState::Update(float fElapsedtime)
 			SetBGImageID(GetAssets()->aCMbgID6);
 			SetBGHeight(280);
 			SetBGWidth(400);
+			CenterBGImage();
+		}
+		else if(GetBGImageID() == GetAssets()->aCMbgID6)
+		{
+			SetBGImageID(GetAssets()->aCMbgID);
+			SetBGHeight(207);
+			SetBGWidth(480);
 			CenterBGImage();
 		}
 		m_fTimer = 0.0f;

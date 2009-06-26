@@ -93,8 +93,24 @@ class CWorldMap
 				return false;
 		}
 	};
-	sLocation m_Locations[4];
-	sLocation* m_pCurrLoc;
+	sLocation	m_Locations[4];
+	sLocation*	m_pCurrLoc;
+	// array of path ids, [0] is the path to the second location
+	struct Path
+	{
+		int			m_nPathID;	
+		int			width;
+		MAP_POINT	m_ptMapXY;
+		RECT		m_rSrc;
+		Path()
+		{
+			m_nPathID = -1;
+			m_ptMapXY = MAP_POINT(0,0);
+			m_rSrc.left = -1;
+		}
+	};
+	Path*	m_pPaths;
+	int		m_nLatestUnlocked;
 
 	CAssets*				m_pAssets;
 	CBitmapFont*			m_pBitmapFont;
@@ -124,6 +140,13 @@ public:
 	bool Input(float, POINT);
 
 	bool HandleButtons();
+
+	//////////////////////////////////////////////////////////////////////////
+	//	Accessors/Mutators
+	//////////////////////////////////////////////////////////////////////////
+	Path* GetPaths()	{return m_pPaths;}
+	void  SetLatestUnlocked(int index) {m_nLatestUnlocked = index;}
+
 };
 
 

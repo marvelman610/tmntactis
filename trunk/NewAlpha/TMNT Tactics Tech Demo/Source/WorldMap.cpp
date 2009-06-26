@@ -3,8 +3,7 @@
 //
 //	Author		:	Ramon Johannessen (RJ)
 //
-//	Purpose		:	To execute the individual battles that take place,
-//					drawing the isometric tile map, updating, getting input, etc...
+//	Purpose		:	To draw the world map, handle skill training, weapon equiping, and location selection
 //////////////////////////////////////////////////////////////////////////
 #include "WorldMap.h"
 #include "Assets.h"
@@ -51,6 +50,20 @@ CWorldMap::CWorldMap(void)
 	
 	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
 	m_bHelpShown = false;
+
+	// setup the paths
+	m_pPaths = new Path[NUM_LOCATIONS-1];
+	m_pPaths[LOC_SINARO-1].m_nPathID= m_pAssets->aWMpath1; m_pPaths[LOC_SINARO-1].m_ptMapXY = MAP_POINT(0,0); 
+	m_pPaths[LOC_YAMATO-1].m_nPathID= m_pAssets->aWMpath2; m_pPaths[LOC_YAMATO-1].m_ptMapXY = MAP_POINT(0,0);	
+	m_pPaths[LOC_IWAMI-1].m_nPathID	= m_pAssets->aWMpath3; m_pPaths[LOC_IWAMI-1].m_ptMapXY  = MAP_POINT(0,0);
+	// when a map is unlocked, the corresponding path to that map will start at the width location and work it's way left until the edge is reached
+	m_pPaths[LOC_SINARO-1].m_rSrc.right = 328; m_pPaths[LOC_SINARO-1].width = 328;
+	m_pPaths[LOC_YAMATO-1].m_rSrc.right = 224; m_pPaths[LOC_YAMATO-1].width = 224;
+	m_pPaths[LOC_IWAMI-1].m_rSrc.right  = 475; m_pPaths[LOC_IWAMI-1].width  = 475;	  
+
+	m_pPaths[LOC_SINARO-1].m_rSrc.bottom = 100; m_pPaths[LOC_SINARO-1].m_rSrc.top = 0; 
+	m_pPaths[LOC_YAMATO-1].m_rSrc.bottom = 218; m_pPaths[LOC_YAMATO-1].m_rSrc.top = 0; 
+	m_pPaths[LOC_IWAMI-1].m_rSrc.bottom  = 219; m_pPaths[LOC_IWAMI-1].m_rSrc.top  = 0;   
 }
 
 CWorldMap::~CWorldMap(void)
@@ -189,6 +202,16 @@ void CWorldMap::Render()
 		{
 			m_pTM->DrawWithZSort(m_pAssets->aWMlockID, m_Locations[i].mapXY.x - m_nMapOSx - 5, m_Locations[i].mapXY.y - m_nMapOSy - 30, 0.2f, 0.6f, 0.6f);
 		}
+// 		if (i > 0 && m_pPlayer->GetMapsUnlocked()[i])
+// 		{
+// 			// drawing the animated path to the location, if the left is valid (signifies that the location this path goes to has been unlocked)
+// 			if (m_pPaths[i-1].m_rSrc.left > -1/*i-1 == m_nLatestUnlocked*/)
+// 			{
+// 				m_pTM->DrawWithZSort(m_pPaths[i-1].m_nPathID, m_pPaths[i-1].m_ptMapXY.x, m_pPaths[i-1].m_ptMapXY.y, 0.9f, 1.0f, 1.0f, &m_pPaths[i-1].m_rSrc);
+// 			}
+// 			else
+// 				m_pTM->DrawWithZSort(m_pPaths[i-1].m_nPathID, m_pPaths[i-1].m_ptMapXY.x, m_pPaths[i-1].m_ptMapXY.y, 0.9f, 1.0f, 1.0f, &m_pPaths[i-1].m_rSrc);
+// 		}
 	}
 	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouse.x-10, m_ptMouse.y-3, 0.0f);
 
@@ -257,6 +280,17 @@ void CWorldMap::Update(float fElapsedTime)
 			m_Locations[i].bHovering = false;
 		}
 	}
+	// a location was just unlocked, animate the path from the previous location to the next
+	if (m_nLatestUnlocked > -1)
+	{
+		m_pPaths[m_nLatestUnlocked].m_rSrc.left -= 100.0f * fElapsedTime;
+		if (m_pPaths[m_nLatestUnlocked].m_rSrc.left <= 0)
+		{
+			m_nLatestUnlocked = -1;
+			m_pPaths[m_nLatestUnlocked].m_rSrc.left = 0;
+		}
+	}
+
 	if (m_bTrained)
 		m_fTimer += fElapsedTime;
 	if (m_bTrained && m_fTimer >= 1.5f)

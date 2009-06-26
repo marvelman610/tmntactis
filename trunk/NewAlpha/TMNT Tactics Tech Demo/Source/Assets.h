@@ -121,6 +121,9 @@ public:
 	ASSET aWMtempleID;
 	ASSET aWMlockID;
 	ASSET aWMworldMapMusicID;
+	ASSET aWMpath1;
+	ASSET aWMpath2;
+	ASSET aWMpath3;
 
 	// Main Menu IDs
 	ASSET aMMBGimageID;

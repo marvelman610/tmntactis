@@ -1,0 +1,13 @@
+damage to turtles doesn't display when the ninja is on it's last 4 AP (a move then ONE attack),
+might not display any of the damage for a last attack actually...
+
+damage to turtles also displays way off on the y sometimes when ninjas attack
+
+ninja movement seems to cause them to attack from more than one range
+
+when shredder attacked he kept doing the attack animation and damage was shown on screen (was doing neg neg (adding)),
+but the damage never was added to the character's health. this didn't stop until he moved to somewhere else.
+
+determine why mouse cursor seems a bit off
+
+ninja position doesn't seem to be updating into the m_vCharacters vector sometimes after they move (something to do with the pathfinding?)

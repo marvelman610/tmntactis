@@ -14,6 +14,7 @@
 #include "CSGD_DirectInput.h"
 #include "CSGD_Direct3D.h"
 #include "CSGD_TextureManager.h"
+#include "BitmapFont.h"
 #include "Achievements.h"
 #include "Assets.h"
 #include "Box.h"
@@ -74,13 +75,14 @@ CSkill::CSkill()
 	m_nSkillID	= -1;
 	m_nCurrAmountSuccessful = 0;
 	m_nMaxCombinationAmount = -1;
+	m_bAttacking = m_bTrigger = m_bQTEfailed = false;
 	m_pCombination  = NULL;
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pBattleMap	= CBattleMap::GetInstance();
+	m_pBitmapFont	= CBitmapFont::GetInstance();
 	m_pDI			= CSGD_DirectInput::GetInstance();
 	m_pD3D			= CSGD_Direct3D::GetInstance();
 	m_pTM			= CSGD_TextureManager::GetInstance();
-
 }
 
 CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost, int combAmt, float duration)
@@ -93,15 +95,15 @@ CSkill::CSkill(string name, int type, int skillID, int dmg, int range, int cost,
 	m_nSkillID	= skillID;
 	m_nCurrAmountSuccessful = 0;
 	m_nMaxCombinationAmount = combAmt;
+	m_bAttacking = m_bTrigger = m_bQTEfailed = m_bRenderDmg = false;
 	m_pCombination = NULL;
 	m_pPlayer		= CPlayer::GetInstance();
 	m_pBattleMap	= CBattleMap::GetInstance();
+	m_pBitmapFont	= CBitmapFont::GetInstance();
 	m_pDI			= CSGD_DirectInput::GetInstance();
 	m_pD3D			= CSGD_Direct3D::GetInstance();
 	m_pTM			= CSGD_TextureManager::GetInstance();
 	
-	m_fTimer = 0.0f;
-	m_fDuration = duration;
 	SetFunctions(skillID);
 }
 
@@ -170,31 +172,72 @@ void CSkill::SetFunctions(int skillID)
 
 void CSkill::Update(float fElapsedTime, CSkill* skill, CParticleSystem* ps)
 {
-	if (m_fTimer == 0.0f)
+	bool timerEvent = m_Timer.Update(fElapsedTime);
+
+	// either the time is up, the combination has been done successfully, or they entered a wrong key
+	if (timerEvent || m_nCurrAmountSuccessful == m_nMaxCombinationAmount || m_bQTEfailed)
 	{
-		m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(4);
+		if (m_nCurrAmountSuccessful == m_nMaxCombinationAmount && !m_bAttacking)	// the skill was finished correctly
+		{
+			m_Timer.ResetTimer();
+			skill->SetCurrAmtSuccessful(0);
+			skill->ClearComb();
+			m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(4);	// now start the first attack animation
+			m_bAttacking = true;
+			m_Timer.StartTimer();	//TODO::ask matt which animations to set to NOT looping, so i can check for when they're done, instead of a timer
+		}
+		else if (m_bQTEfailed)	// the skill was not finished correctly
+		{
+			m_Timer.ResetTimer();
+			m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(2);
+			skill->ClearComb();
+			skill->SetCurrAmtSuccessful(0);
+			delete[] m_pCombination;
+			m_bComplete = true; 
+			m_bTrigger = m_bAttacking = false;
+			return;
+		}
+		// TODO:: acts as signal that skill is finished (for now), change it to trigger at end of the animations that will be executed for each specific skill
+		if (m_bRenderDmg)	
+		{
+			m_bRenderDmg = m_bAttacking = false;
+			m_bComplete = true;	 // TODO:: move this when i can stop the animations from looping
+			if (!m_pPlayer->GetAch()->GetLocked(ACH_QUICKFINGERS))
+				m_pPlayer->GetAch()->Unlock(ACH_QUICKFINGERS);
+			m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(2);
+			m_Timer.ResetTimer();
+			m_QTEtimer.ResetTimer();
+			return;
+		}
 	}
-	m_pUpdatePtr(fElapsedTime, skill, ps);
-	m_fTimer += fElapsedTime;
+	if (m_bAttacking)	// the attack is currently underway - that means animate, draw particles, and do damage accordingly
+	{
+		if (m_Timer.GetElapsed() > 1.0f/*!m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->GetCurrAnim()->IsAnimationPlaying()*/)
+		{
+			m_Timer.ResetTimer();
+			m_bTrigger = true;	// notify the skill that one attack has been executed
+			m_bRenderDmg = true;
+			m_Timer.StartTimer(0.5f);	// damage render timer
+		}
+	}
 	
-	// if the attack is done, set stats and gain experience and skill
-	// if target is dead...remove 
-	if (m_fTimer > (float)m_nMaxCombinationAmount)
+	m_pUpdatePtr(fElapsedTime, skill, ps);
+
+	if (!m_QTEtimer.IsTimerRunning())	// starting the skill (the very beginning)
 	{
-		if (m_nCurrAmountSuccessful == m_nMaxCombinationAmount && !m_pPlayer->GetAch()->GetLocked(ACH_QUICKFINGERS))
-			m_pPlayer->GetAch()->Unlock(ACH_QUICKFINGERS);
-		m_bComplete = true; 
-		m_pUpdatePtr(fElapsedTime, skill, ps);
-		m_fTimer = 0.0f;
-		m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->SetCurrAnim(2);
-		delete[] m_pCombination;
+		m_bComplete = false;
+		m_QTEtimer.StartTimer((float)m_nMaxCombinationAmount);
+		SetComb(m_nMaxCombinationAmount);
+		m_bQTEfailed = m_bRenderDmg = false;
 	}
+	else if (m_QTEtimer.GetElapsed() > (float)m_nMaxCombinationAmount && !m_bAttacking)
+		m_bQTEfailed = true;
 }
 
 void CSkill::Render()
 {
 	// there is still time to input a direction
-	if (m_fTimer <= (float)m_nMaxCombinationAmount && m_fTimer > 0.0f)
+	if (m_QTEtimer.GetElapsed() <= (float)m_nMaxCombinationAmount && m_QTEtimer.IsTimerRunning() && !m_bAttacking)
 	{
 		switch (GetComb()[GetCurrAmtSuccessful()])
 		{
@@ -204,9 +247,10 @@ void CSkill::Render()
 				if (m_pDI->KeyPressed(DIK_UP))
 				{
 					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
+					m_pBattleMap->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 				}
 				else if (m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_RIGHT))
-					m_bComplete = true;
+					m_bQTEfailed = true;
 			}
 			break;
 		case DOWN:
@@ -215,9 +259,10 @@ void CSkill::Render()
 				if (m_pDI->KeyPressed(DIK_DOWN))
 				{
 					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
+					m_pBattleMap->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_RIGHT))
-					m_bComplete = true;
+					m_bQTEfailed = true;
 			}
 			break;
 		case LEFT:
@@ -226,9 +271,10 @@ void CSkill::Render()
 				if (m_pDI->KeyPressed(DIK_LEFT))
 				{
 					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
+					m_pBattleMap->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_DOWN) || m_pDI->KeyPressed(DIK_RIGHT))
-					m_bComplete = true;
+					m_bQTEfailed = true;
 			}
 			break;
 		case RIGHT:
@@ -237,12 +283,36 @@ void CSkill::Render()
 				if (m_pDI->KeyPressed(DIK_RIGHT))
 				{
 					SetCurrAmtSuccessful(GetCurrAmtSuccessful()+1);
+					m_pBattleMap->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
 				}
 				else if (m_pDI->KeyPressed(DIK_UP) || m_pDI->KeyPressed(DIK_LEFT) || m_pDI->KeyPressed(DIK_DOWN))
-					m_bComplete = true;
+					m_bQTEfailed = true;
 			}
 			break;
 		}
+	}
+	if (m_bRenderDmg)
+	{
+		int offset = (int)(m_Timer.GetElapsed()*20.0f )-15;
+
+		m_pBitmapFont->ChangeBMFont(CAssets::GetInstance()->aBitmapFontBubblyID,16,15,20);
+
+		//player xp gain
+		int nXP = 20;
+		char tempXP[16];
+		sprintf_s(tempXP, "+%i", nXP);
+		m_pBitmapFont->DrawString(tempXP,(int)m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->GetPosX()+5, 
+										 (int)m_pPlayer->GetTurtles()[m_pBattleMap->GetCurrActive()]->GetPosY()-offset,
+										 0.3f,0.9f,D3DCOLOR_XRGB(255,0,0));
+
+		// damage to target
+		char tempDmg[16];
+		sprintf_s(tempDmg, "-%i", m_nDmgToRender);
+		m_pBitmapFont->DrawString(tempXP,(int)m_pBattleMap->GetCurrEnemyTarget()->GetPosX()+5,
+										 (int)m_pBattleMap->GetCurrEnemyTarget()->GetPosY()-offset,
+										 0.4f,0.9f,D3DCOLOR_XRGB(255,255,0));
+
+		m_pBitmapFont->Reset();
 	}
 }
 
@@ -284,22 +354,19 @@ void UpdateSwordSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
-	}
-	if (skill->IsComplete())
-	{
+
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-		target->SetHealth(target->GetHealth() - damage);
+		skill->DmgToRender((int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5));
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -319,26 +386,19 @@ void UpdateSwordJab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender((int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5));
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -358,26 +418,18 @@ void UpdateFlipBackstab( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -398,26 +450,18 @@ void UpdateCounterAttack( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender((int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -438,26 +482,18 @@ void UpdateKnockBack( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -477,26 +513,18 @@ void UpdateStaffSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -516,26 +544,18 @@ void UpdateStaffUppercut( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -555,26 +575,18 @@ void UpdateBackflipAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
-		/*ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
-		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;*/
-		skill->SetComb(skill->GetMaxCombAmt());
+		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
-		//ps[BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
+		ps[NINJA_BLOOD].m_bActive = false;
+		skill->Trigger(false);
 	}
 	/*ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);*/
@@ -594,26 +606,18 @@ void UpdateCreateBomb( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -633,26 +637,18 @@ void UpdateFlyingSaiStab( float elapsedTime, CSkill* skill, CParticleSystem* ps 
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -672,25 +668,18 @@ void UpdateSaiFury( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
-	}
-	if (skill->IsComplete())
-	{
+
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -710,25 +699,18 @@ void UpdateNunchuckSkullSplitter( float elapsedTime, CSkill* skill, CParticleSys
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
-	}
-	if (skill->IsComplete())
-	{
+
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -748,26 +730,18 @@ void UpdateNunchuckSpin( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
 		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
 		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
-		skill->SetComb(skill->GetMaxCombAmt());
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
 		ps[NINJA_BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->Trigger(false);
 	}
 	ps[NINJA_BLOOD].UpdateParticle(elapsedTime);
 	ps[NINJA_BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);
@@ -787,26 +761,18 @@ void UpdateRollAway( float elapsedTime, CSkill* skill, CParticleSystem* ps )
 	CBattleMap* pBattleMap	= CBattleMap::GetInstance();
 	CBase* character		= pBattleMap->GetCurrChar();
 	CBase* target			= pBattleMap->GetCurrEnemyTarget();
-	// init particles...
-	if (skill->GetTimer() == 0.0f)
+	//	if the skill consists of more than one animation, this needs to happen when each one is finished
+	if (skill->Trigger()) 
 	{
-		/*ps[BLOOD].Emit(target->GetPosX(), target->GetPosY());
-		ps[BLOOD].m_bActive = true; ps[BLOOD].m_bLoop = false;*/
-		skill->SetComb(skill->GetMaxCombAmt());
+		ps[NINJA_BLOOD].Emit(target->GetPosX(), target->GetPosY());
+		ps[NINJA_BLOOD].m_bActive = true; ps[NINJA_BLOOD].m_bLoop = false;
 
-	}
-	if (skill->IsComplete())
-	{
 		// FORMULA: str - def + dmg + accuracy * 1.5 + random(-5 to 5) + (QTE amt successful * 5)
-		if (skill->GetCurrAmtSuccessful() > 0)
-		{
-			int damage = (int)((float)(character->GetStrength() - target->GetDefense() + 
-				skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 4) + (skill->GetCurrAmtSuccessful() * 5);
-			target->SetHealth(target->GetHealth() - damage);
-		}
-		//ps[BLOOD].m_bActive = false;
-		skill->ClearComb();
-		skill->SetCurrAmtSuccessful(0);
+		skill->DmgToRender( (int)((float)(character->GetStrength() - target->GetDefense() + 
+			skill->GetDmg() + character->GetAccuracy()) * 1.5f + rand() % (5 + 4) - 5) + (skill->GetCurrAmtSuccessful() * 5) );
+		target->SetHealth(target->GetHealth() - skill->DmgToRender());
+		ps[NINJA_BLOOD].m_bActive = false;
+		skill->Trigger(false);
 	}
 	/*ps[BLOOD].UpdateParticle(elapsedTime);
 	ps[BLOOD].DrawParticle(CAssets::GetInstance()->aBloodParticle);*/

@@ -14,6 +14,7 @@
 
 #include "tinyxml/tinyxml.h"
 #include "CSGD_TextureManager.h"
+#include "Timer.h"
 #include <string>
 using std::string;
 
@@ -26,6 +27,7 @@ class CSGD_DirectInput;
 class CSGD_Direct3D;
 class CSGD_TextureManager;
 class CBox;
+class CBitmapFont;
 
 enum {SKILL_DAMAGE, SKILL_HEAL, SKILL_CREATE, SKILL_DEFENSE, };	//types
 enum {LEFT, RIGHT, UP, DOWN, INCORRECT = -1};
@@ -55,27 +57,30 @@ class CSkill
 {
 private:
 	//int m_nSkillID;
-	 string m_strName;		// The name of the skill
-	 int	m_nType;		// what type of skill: e.g. Damage, Healing, Creation
-	 int	m_nDamage;
-	 int	m_nRange;
-	 int	m_nSkillCost;
-	 int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
-	 int	m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
-	 int	m_nSkillID;					// enum for which skill this is
-	 int*	m_pCombination;				// the combination of random directions
-	 bool	m_bComplete;				// is execution of the skill complete?
-	 
+	string m_strName;		// The name of the skill
+	int	m_nType;		// what type of skill: e.g. Damage, Healing, Creation
+	int	m_nDamage;
+	int	m_nRange;
+	int	m_nSkillCost;
+	int	m_nCurrAmountSuccessful;	// quick-time event, how many have they got right so far?
+	int	m_nMaxCombinationAmount;	// how many buttons need to be pressed for a perfect?
+	int	m_nSkillID;					// enum for which skill this is
+	int*	m_pCombination;				// the combination of random directions
+	bool	m_bComplete;				// is execution of the skill complete?
+	bool	m_bAttacking;
+	bool    m_bTrigger;				// signals when damage needs to be done
+	bool	m_bQTEfailed;
+	bool    m_bRenderDmg;
+	int		m_nDmgToRender;
+	CTimer m_Timer;
+	CTimer m_QTEtimer;
 
-	 float m_fTimer;
-	 float m_fDuration;
-
-
-	 CPlayer*			m_pPlayer;
-	 CBattleMap*		m_pBattleMap;
-	 CSGD_DirectInput*  m_pDI;
-	 CSGD_Direct3D*		m_pD3D;
-	 CSGD_TextureManager* m_pTM;
+	CPlayer*			m_pPlayer;
+	CBattleMap*			m_pBattleMap;
+	CBitmapFont*		m_pBitmapFont;
+	CSGD_DirectInput*	m_pDI;
+	CSGD_Direct3D*		m_pD3D;
+	CSGD_TextureManager* m_pTM;
 
 	rendPtr m_pRenderPtr;			// the function pointer to the appropriate Render()
 	updPtr  m_pUpdatePtr;			// the function pointer to the appropriate Update()
@@ -101,24 +106,28 @@ public:
 	//////////////////////////////////////////////////////////////////////////
 	//	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////
-	string GetSkillName()			{return m_strName;}
-	int GetSkillCost()				{return m_nSkillCost;}
-	int GetDmg()					{return m_nDamage;}
-	int GetRange()					{return m_nRange;}
-	int GetCurrAmtSuccessful()		{return m_nCurrAmountSuccessful;}
-	int GetID()						{return m_nSkillID;}
-	void SetCurrAmtSuccessful(int amt){m_nCurrAmountSuccessful = amt;}
-	int GetMaxCombAmt()				{return m_nMaxCombinationAmount;}
+	bool	IsAttacking()			{ return m_bAttacking;}
+	bool Trigger() const			{ return m_bTrigger; }
+	void Trigger(bool val)			{ m_bTrigger = val; }
+	string GetSkillName()			{ return m_strName;}
+	int GetSkillCost()				{ return m_nSkillCost;}
+	int GetDmg()					{ return m_nDamage;}
+	int GetRange()					{ return m_nRange;}
+	int GetCurrAmtSuccessful()		{ return m_nCurrAmountSuccessful;}
+	int GetID()						{ return m_nSkillID;}
+	void SetCurrAmtSuccessful(int amt){ m_nCurrAmountSuccessful = amt;}
+	int GetMaxCombAmt()				{ return m_nMaxCombinationAmount;}
 	void SetComb(int num);
-	int* GetComb()					{return m_pCombination;}
-	void ClearComb()				{if (m_pCombination) delete[] m_pCombination; m_pCombination = NULL;}
-	float GetDur()					{return m_fDuration;}
-	float GetTimer()				{return m_fTimer;}
-	CPlayer* GetPlayer()			{return m_pPlayer;}
-	CBattleMap* GetBattleMap()		{return m_pBattleMap;}
+	int* GetComb()					{ return m_pCombination;}
+	void ClearComb()				{ if (m_pCombination) delete[] m_pCombination; m_pCombination = NULL;}
+	int DmgToRender() const			{ return m_nDmgToRender; }
+	void DmgToRender(int val)		{ m_nDmgToRender = val; }
+	CTimer& GetTimer()				{ return m_QTEtimer;}
+	CPlayer* GetPlayer()			{ return m_pPlayer;}
+	CBattleMap* GetBattleMap()		{ return m_pBattleMap;}
 
-	bool IsComplete()				{return m_bComplete;}
-	void IsComplete(bool bComplete)	{m_bComplete = bComplete;}
+	bool IsComplete()				{ return m_bComplete;}
+	void IsComplete(bool bComplete)	{ m_bComplete = bComplete;}
 
 	~CSkill();
 	CSkill();

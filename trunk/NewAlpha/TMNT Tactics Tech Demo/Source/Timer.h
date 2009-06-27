@@ -21,13 +21,13 @@ public:
 
 	CTimer()
 	{
-		ResetTimer(false);
+		ResetTimer();
 	}
 
 	void ResetTimer(bool bStop = true)
 	{
 		m_fTotalTime = m_fEndTime = m_fPauseDur = 0.0f;
-		m_bIsOn = bStop;
+		m_bIsOn = !bStop;
 	}
 
 	//////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ public:
 		{
 			m_fTotalTime += fElapsedTime;
 			if (m_fEndTime > 0.0f && m_fTotalTime >= m_fEndTime)
-				return true;
+			{ m_fEndTime = m_fTotalTime = 0.0f; return true; }
 		}
 		if (m_fPauseDur > 0.0f)
 		{

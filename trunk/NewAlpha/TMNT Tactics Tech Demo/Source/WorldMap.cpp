@@ -92,7 +92,7 @@ void CWorldMap::Enter()
 	//m_pPlayer->SetMapUnlocked(LOC_IWAMI);
 	//m_pPlayer->SetMapUnlocked(LOC_YAMATO);
 	//m_pPlayer->SetMapUnlocked(LOC_SINARO);
-	//m_nLatestUnlocked = 0;
+	//m_nLatestUnlocked = 2;
 
 	string* text = new string[3];
 	if (!m_bHelpShown)

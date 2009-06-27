@@ -88,6 +88,7 @@ void CBattleMap::Enter(char* szFileName, int nMapID, char* szMapName, int nNumEn
 	m_nMapID = nMapID;
 	SetMousePtr(m_pAssets->aMousePointerID);
 	m_bIsMouseAttack = m_bOutOfRange = false;
+	m_bWeaponPickedUp = false;
 	m_bHasBoss = bBoss;
 	m_nMoveListIndex = -1;
 
@@ -517,8 +518,14 @@ void CBattleMap::Render()
 	{
 		m_pBitmapFont->DrawStringAutoCenter("-OUT OF RANGE-", m_nScreenWidth, 35, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
 	}
-	else if(m_bItemBool || m_bEggBool)
+	else if (m_bItemBool || m_bEggBool)
 		m_pBitmapFont->DrawStringAutoCenter("-SELECT A TARGET-", m_nScreenWidth, 35, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
+	else if (m_bWeaponPickedUp)
+	{
+		string name = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrWeapon()->GetName();
+		string wpn = "ATTAINED " + name;
+		m_pBitmapFont->DrawStringAutoCenter(wpn.c_str(), m_nScreenWidth, 325, 0.09f, 1.0f, D3DCOLOR_XRGB(255, 0, 0));
+	}
 	if (m_fTimer > 3.0f && (m_bNotEnoughAP || m_bOutOfRange))
 	{
 		m_bNotEnoughAP = m_bOutOfRange = false;
@@ -617,17 +624,8 @@ void CBattleMap::Update(float fElapsedTime)
 		m_pParticleSystem[NINJA_BLOOD].UpdateParticle(fElapsedTime);
 	}
 
-	// check for loss, if so start the timer for displaying "Defeat"
-	if(m_nNumTurtles <= 0)
-	{
-		m_bLose = true;
-		m_Timer.StartTimer(4.0f);
-		if (!m_pPlayer->GetAch()->GetLocked(ACH_TURTLESDEAD))
-			m_pPlayer->GetAch()->Unlock(ACH_TURTLESDEAD);
-	}
 	if (bTimerDone)	// catch all events that are m_Timer related
 	{
-		
 		// exit to the main menu if all turtles are dead, else to the world map
 		if (m_bWin)
 		{	
@@ -644,10 +642,21 @@ void CBattleMap::Update(float fElapsedTime)
 			m_nDmg = 0;
 			m_nXP = 0;
 		}
+		else if (m_bWeaponPickedUp)
+			m_bWeaponPickedUp = false;
 	}
 
 	if(m_bWin || m_bLose)
 		return;
+
+	// check for loss, if so start the timer for displaying "Defeat"
+	if(m_nNumTurtles <= 0)
+	{
+		m_bLose = true;
+		m_Timer.StartTimer(4.0f);
+		if (!m_pPlayer->GetAch()->GetLocked(ACH_TURTLESDEAD))
+			m_pPlayer->GetAch()->Unlock(ACH_TURTLESDEAD);
+	}
 
 	//CenterCam(fElapsedTime);
 	//////////////////////////////////////////////////////////////////////////
@@ -705,71 +714,7 @@ void CBattleMap::Update(float fElapsedTime)
 	// a turtle has been moved...execute the animation and position change over time
 	if (m_bMoving && m_nMoveListIndex > -1)
 	{
-		// grab the next move and take it out of the vector..if the previous move is complete
-		POINT newPoint = m_vPath[m_nMoveListIndex];
-		// set up variables
-		POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
-		CTurtle* turtle= m_pPlayer->GetTurtles()[m_nCurrCharacter];
-		MY_POINT_FLOAT currPos; 
-		currPos.x = turtle->GetPosX(); currPos.y = turtle->GetPosY();
-
-		// NORTHWEST
-		if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-		{
-			currPos.x -= turtle->GetVelX() * fElapsedTime;
-			currPos.y -= turtle->GetVelY() * fElapsedTime;
-			turtle->SetPosPtF(currPos);
-			turtle->SetCurrAnimFacing(true);
-		}
-		// SOUTHEAST
-		else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-		{
-			currPos.x += turtle->GetVelX() * fElapsedTime;
-			currPos.y += turtle->GetVelY() * fElapsedTime;
-			turtle->SetPosPtF(currPos);
-			turtle->SetCurrAnimFacing(false);
-		}
-		// NORTHEAST
-		if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-		{
-			currPos.y -= turtle->GetVelY() * fElapsedTime;
-			currPos.x += turtle->GetVelX() * fElapsedTime;
-			turtle->SetPosPtF(currPos);
-			turtle->SetCurrAnimFacing(false);
-		}
-		// SOUTHWEST
-		else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
-		{
-			currPos.y += turtle->GetVelY() * fElapsedTime;
-			currPos.x -= turtle->GetVelX() * fElapsedTime;
-			turtle->SetPosPtF(currPos);
-			turtle->SetCurrAnimFacing(true);
-		}
-		// check to see if this current tile move is complete
-		if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
-		{
-			m_nMoveListIndex--;
-			m_vCharacters[m_nCurrCharacter].SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-			m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
-			m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
-			m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
-			m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
-			m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
-			if (m_nMoveListIndex == -1)
-			{
-				m_bHaveMoved = true;
-				CalculateRanges();
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
-				m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
-				m_bMoving = false;
-				m_bPathDisplayed = false;
-				m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
-				m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
-				m_nMoveListIndex = -1;
-				m_vPath.clear();
-			}
-		}
+		PerformMove(fElapsedTime);
 	}
 	cheat();
 	if(godbool && m_nCurrCharacter > -1)
@@ -785,8 +730,6 @@ void CBattleMap::Update(float fElapsedTime)
 		APbool = false;
 	}
 
-
-	
 	// if a skill is being executed...
 	if ( m_bExecuteSkill )
 	{
@@ -1442,12 +1385,6 @@ bool CBattleMap::HandleKeyBoardInput(float fElapsedTime)
 	// TODO::make sure the player can't press space when it's not their turn
 	if (m_pDI->KeyPressed(DIK_SPACE) || m_pDI->JoystickButtonPressed(6,0))
 	{
-		if(m_bItemBool || m_bEggBool)
-		{
-			m_bItemBool = false;
-			m_bEggBool = false;
-			m_bEggBool2 = false;
-		}
 		return StartCompTurn();
 	}
 	if (m_pDI->KeyPressed(DIK_ESCAPE) && !m_bxItemBox && !m_bxSkillBox && !m_bIsPaused)
@@ -2147,7 +2084,7 @@ void CBattleMap::FindPathToTarget( )
 				}
 			}
 		}
-		if(open.size() == 0 || (int)closed.size() > 50 /*<--shouldn't need this...*/)
+		if(open.size() == 0 /*|| (int)closed.size() > 50*/)
 			break;
 		else if (currTile.DestXID() == end.x && currTile.DestYID() == end.y)
 		{pathFound = true; delete[] adjTiles; break;}
@@ -2177,7 +2114,7 @@ void CBattleMap::FindPathToTarget( )
 	m_ptStartXY.x = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosX(); m_ptStartXY.y = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetPosY();
 	m_nMoveListIndex = m_vPath.size()-1;
 	for (unsigned int i = 0; i < m_vPath.size(); ++i)
-		m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);
+		m_pTilesL1[m_vPath[i].y * m_nNumCols + m_vPath[i].x].SetAlpha(199);	// show the path
 }
 
 void CBattleMap::MoveCamUp(float fElapsedTime)
@@ -2961,4 +2898,73 @@ bool CBattleMap::IsOnClose(CTile* tile, vector<CTile>& closed)
 		if (closed[i].DestXID() == tile->DestXID() && closed[i].DestYID() == tile->DestYID())
 			return true;
 	return false;
+}
+
+void CBattleMap::PerformMove( float fElapsedTime )
+{
+	// grab the next move and take it out of the vector..if the previous move is complete
+	POINT newPoint = m_vPath[m_nMoveListIndex];
+	// set up variables
+	POINT currPoint= m_vCharacters[m_nCurrCharacter].GetMapCoord();
+	CTurtle* turtle= m_pPlayer->GetTurtles()[m_nCurrCharacter];
+	MY_POINT_FLOAT currPos; 
+	currPos.x = turtle->GetPosX(); currPos.y = turtle->GetPosY();
+
+	// NORTHWEST
+	if ( newPoint.x < currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+	{
+		currPos.x -= turtle->GetVelX() * fElapsedTime;
+		currPos.y -= turtle->GetVelY() * fElapsedTime;
+		turtle->SetPosPtF(currPos);
+		turtle->SetCurrAnimFacing(true);
+	}
+	// SOUTHEAST
+	else if ( newPoint.x > currPoint.x && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+	{
+		currPos.x += turtle->GetVelX() * fElapsedTime;
+		currPos.y += turtle->GetVelY() * fElapsedTime;
+		turtle->SetPosPtF(currPos);
+		turtle->SetCurrAnimFacing(false);
+	}
+	// NORTHEAST
+	if ( newPoint.y < currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+	{
+		currPos.y -= turtle->GetVelY() * fElapsedTime;
+		currPos.x += turtle->GetVelX() * fElapsedTime;
+		turtle->SetPosPtF(currPos);
+		turtle->SetCurrAnimFacing(false);
+	}
+	// SOUTHWEST
+	else if ( newPoint.y > currPoint.y && abs(m_ptStartXY.x - currPos.x) < 32 && abs(m_ptStartXY.y - currPos.y) < 16)
+	{
+		currPos.y += turtle->GetVelY() * fElapsedTime;
+		currPos.x -= turtle->GetVelX() * fElapsedTime;
+		turtle->SetPosPtF(currPos);
+		turtle->SetCurrAnimFacing(true);
+	}
+	// check to see if this current tile move is complete
+	if ( abs(m_ptStartXY.x - currPos.x) >= 32 && abs(m_ptStartXY.y - currPos.y) >= 16)
+	{
+		m_nMoveListIndex--;
+		m_vCharacters[m_nCurrCharacter].SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(newPoint, GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+		m_nCurrCharacterTile = m_pPlayer->GetTurtles()[m_nCurrCharacter]->GetCurrTile();
+		m_vCharacters[m_nCurrCharacter].DecrementCurrAP(2);
+		m_ptStartXY.x = m_vCharacters[m_nCurrCharacter].GetPosX();
+		m_ptStartXY.y = m_vCharacters[m_nCurrCharacter].GetPosY();
+		m_pTilesL1[currPoint.y * m_nNumCols + currPoint.x].SetAlpha(200);
+		if (m_nMoveListIndex == -1)
+		{
+			m_bHaveMoved = true;
+			CalculateRanges();
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrAP(m_vCharacters[m_nCurrCharacter].GetCurrAP());
+			m_pPlayer->GetTurtles()[m_nCurrCharacter]->SetCurrTile(m_vCharacters[m_nCurrCharacter].GetMapCoord(), GetOffsetX(), GetOffsetY(), m_nTileWidth, m_nTileHeight, m_nNumCols);
+			m_bMoving = false;
+			m_bPathDisplayed = false;
+			m_pFMOD->StopSound(m_pAssets->aBMfootstepsSnd);
+			m_pFMOD->ResetSound(m_pAssets->aBMfootstepsSnd);
+			m_nMoveListIndex = -1;
+			m_vPath.clear();
+		}
+	}
 }

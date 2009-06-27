@@ -53,17 +53,18 @@ CWorldMap::CWorldMap(void)
 
 	// setup the paths
 	m_pPaths = new Path[NUM_LOCATIONS-1];
-	m_pPaths[LOC_SINARO-1].m_nPathID= m_pAssets->aWMpath1; m_pPaths[LOC_SINARO-1].m_ptMapXY = MAP_POINT(0,0); 
-	m_pPaths[LOC_YAMATO-1].m_nPathID= m_pAssets->aWMpath2; m_pPaths[LOC_YAMATO-1].m_ptMapXY = MAP_POINT(0,0);	
-	m_pPaths[LOC_IWAMI-1].m_nPathID	= m_pAssets->aWMpath3; m_pPaths[LOC_IWAMI-1].m_ptMapXY  = MAP_POINT(0,0);
+	m_pPaths[LOC_SINARO-1].nPathID= m_pAssets->aWMpath1;   m_pPaths[LOC_SINARO-1].ptMapXY = MAP_POINT( 1201, 790  );  m_pPaths[LOC_SINARO-1].nOriginalX = 1201; 
+	m_pPaths[LOC_YAMATO-1].nPathID= m_pAssets->aWMpath2;   m_pPaths[LOC_YAMATO-1].ptMapXY = MAP_POINT( 1005,  855  ); m_pPaths[LOC_YAMATO-1].nOriginalX = 1005;	
+	m_pPaths[LOC_IWAMI-1].nPathID	= m_pAssets->aWMpath3; m_pPaths[LOC_IWAMI-1].ptMapXY  = MAP_POINT( 535,  905 );	  m_pPaths[LOC_IWAMI-1].nOriginalX  = 535;
 	// when a map is unlocked, the corresponding path to that map will start at the width location and work it's way left until the edge is reached
-	m_pPaths[LOC_SINARO-1].m_rSrc.right = 328; m_pPaths[LOC_SINARO-1].width = 328;
-	m_pPaths[LOC_YAMATO-1].m_rSrc.right = 224; m_pPaths[LOC_YAMATO-1].width = 224;
-	m_pPaths[LOC_IWAMI-1].m_rSrc.right  = 475; m_pPaths[LOC_IWAMI-1].width  = 475;	  
+	m_pPaths[LOC_SINARO-1].rSrc.right = 328; m_pPaths[LOC_SINARO-1].width = 328; m_pPaths[LOC_SINARO-1].rSrc.left = 328+1;
+	m_pPaths[LOC_YAMATO-1].rSrc.right = 224; m_pPaths[LOC_YAMATO-1].width = 224; m_pPaths[LOC_YAMATO-1].rSrc.left = 224+1;
+	m_pPaths[LOC_IWAMI-1].rSrc.right  = 475; m_pPaths[LOC_IWAMI-1].width  = 475; m_pPaths[LOC_IWAMI-1].rSrc.left  = 475+1;		  
 
-	m_pPaths[LOC_SINARO-1].m_rSrc.bottom = 100; m_pPaths[LOC_SINARO-1].m_rSrc.top = 0; 
-	m_pPaths[LOC_YAMATO-1].m_rSrc.bottom = 218; m_pPaths[LOC_YAMATO-1].m_rSrc.top = 0; 
-	m_pPaths[LOC_IWAMI-1].m_rSrc.bottom  = 219; m_pPaths[LOC_IWAMI-1].m_rSrc.top  = 0;   
+	m_pPaths[LOC_SINARO-1].rSrc.bottom = 100; m_pPaths[LOC_SINARO-1].rSrc.top = 0; 
+	m_pPaths[LOC_YAMATO-1].rSrc.bottom = 218; m_pPaths[LOC_YAMATO-1].rSrc.top = 0; 
+	m_pPaths[LOC_IWAMI-1].rSrc.bottom  = 219; m_pPaths[LOC_IWAMI-1].rSrc.top  = 0;   
+	m_nLatestUnlocked = -1;
 }
 
 CWorldMap::~CWorldMap(void)
@@ -89,19 +90,9 @@ void CWorldMap::Enter()
 
 	// TODO::remove this in final build
 	//m_pPlayer->SetMapUnlocked(LOC_IWAMI);
-
-	m_nMapImageID = m_pAssets->aWMmapID;
-	m_nScreenWidth = CGame::GetInstance()->GetScreenWidth();
-	m_nScreenHeight = CGame::GetInstance()->GetScreenHeight();
-	m_nMapWidth = 1875;
-	m_nMapHeight = 1610;
-
-	m_Locations[LOC_SIMUSA].name = "Simusa"; m_Locations[LOC_SIMUSA].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SIMUSA].mapXY = MAP_POINT(1516,804);
-	m_Locations[LOC_SINARO].name = "Sinaro"; m_Locations[LOC_SINARO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_SINARO].mapXY = MAP_POINT(1191,857);
-	m_Locations[LOC_IWAMI].name  = "Iwami";	 m_Locations[LOC_IWAMI].imageID  = m_pAssets->aWMtempleID; m_Locations[LOC_IWAMI].mapXY  = MAP_POINT(530,910);
-	m_Locations[LOC_YAMATO].name = "Yamato"; m_Locations[LOC_YAMATO].imageID = m_pAssets->aWMtempleID; m_Locations[LOC_YAMATO].mapXY = MAP_POINT(998,1064);
-
-	m_pCurrLoc = &m_Locations[LOC_SIMUSA];
+	//m_pPlayer->SetMapUnlocked(LOC_YAMATO);
+	//m_pPlayer->SetMapUnlocked(LOC_SINARO);
+	//m_nLatestUnlocked = 0;
 
 	string* text = new string[3];
 	if (!m_bHelpShown)
@@ -202,16 +193,14 @@ void CWorldMap::Render()
 		{
 			m_pTM->DrawWithZSort(m_pAssets->aWMlockID, m_Locations[i].mapXY.x - m_nMapOSx - 5, m_Locations[i].mapXY.y - m_nMapOSy - 30, 0.2f, 0.6f, 0.6f);
 		}
-// 		if (i > 0 && m_pPlayer->GetMapsUnlocked()[i])
-// 		{
-// 			// drawing the animated path to the location, if the left is valid (signifies that the location this path goes to has been unlocked)
-// 			if (m_pPaths[i-1].m_rSrc.left > -1/*i-1 == m_nLatestUnlocked*/)
-// 			{
-// 				m_pTM->DrawWithZSort(m_pPaths[i-1].m_nPathID, m_pPaths[i-1].m_ptMapXY.x, m_pPaths[i-1].m_ptMapXY.y, 0.9f, 1.0f, 1.0f, &m_pPaths[i-1].m_rSrc);
-// 			}
-// 			else
-// 				m_pTM->DrawWithZSort(m_pPaths[i-1].m_nPathID, m_pPaths[i-1].m_ptMapXY.x, m_pPaths[i-1].m_ptMapXY.y, 0.9f, 1.0f, 1.0f, &m_pPaths[i-1].m_rSrc);
-// 		}
+		if (i > 0 && m_pPlayer->GetMapsUnlocked()[i])
+		{
+			// drawing the animated path to the location, if the left is valid..less than its width(signifies that the location this path goes to has been unlocked)
+			if (m_pPaths[i-1].rSrc.left < m_pPaths[i-1].width)
+			{
+				m_pTM->DrawWithZSort(m_pPaths[i-1].nPathID, m_pPaths[i-1].ptMapXY.x-m_nMapOSx, m_pPaths[i-1].ptMapXY.y-m_nMapOSy, 0.91f, 1.0f, 1.0f, &m_pPaths[i-1].rSrc);
+			}
+		}
 	}
 	m_pTM->DrawWithZSort(m_pAssets->aMousePointerID, m_ptMouse.x-10, m_ptMouse.y-3, 0.0f);
 
@@ -281,13 +270,17 @@ void CWorldMap::Update(float fElapsedTime)
 		}
 	}
 	// a location was just unlocked, animate the path from the previous location to the next
-	if (m_nLatestUnlocked > -1)
+	if (m_nLatestUnlocked > -1)	// latest unlocked starts at 0 (LOC_SINARO)
 	{
-		m_pPaths[m_nLatestUnlocked].m_rSrc.left -= 100.0f * fElapsedTime;
-		if (m_pPaths[m_nLatestUnlocked].m_rSrc.left <= 0)
+		LONG move = (LONG)(85.0f * fElapsedTime);
+		m_pPaths[m_nLatestUnlocked].rSrc.left -= move;
+		int offset = m_pPaths[m_nLatestUnlocked].nOriginalX + m_pPaths[m_nLatestUnlocked].rSrc.left;
+		m_pPaths[m_nLatestUnlocked].ptMapXY.x = offset;
+		if (m_pPaths[m_nLatestUnlocked].rSrc.left <= 0)
 		{
+			m_pPaths[m_nLatestUnlocked].ptMapXY.x = m_pPaths[m_nLatestUnlocked].nOriginalX;
+			m_pPaths[m_nLatestUnlocked].rSrc.left = 0;
 			m_nLatestUnlocked = -1;
-			m_pPaths[m_nLatestUnlocked].m_rSrc.left = 0;
 		}
 	}
 

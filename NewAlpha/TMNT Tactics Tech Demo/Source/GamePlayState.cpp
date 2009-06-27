@@ -179,6 +179,10 @@ void CGamePlayState::LoadGame(const char* fileName)
 			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
 			turtles[i]->SetStrength(binIn);
 			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetRange(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
+			turtles[i]->SetHealthMax(binIn);
+			ifs.read(reinterpret_cast<char*>(&binIn), sizeof(int));
 			turtles[i]->SetType(binIn);
 
 			// get the number of skills - active and ALLSKILLS - 
@@ -297,6 +301,10 @@ void CGamePlayState::SaveGame(const char* fileName)
 			ofs.write((char*)&sXP, sizeof(int));
 			int str = turtles[i]->GetStrength();
 			ofs.write((char*)&str, sizeof(int));
+			int range=turtles[i]->GetRange();
+			ofs.write((char*)&range, sizeof(int));
+			int hpMax=turtles[i]->GetMaxHealth();
+			ofs.write((char*)&range, sizeof(int));
 			int type = turtles[i]->GetType();
 			ofs.write((char*)&type, sizeof(int));
 

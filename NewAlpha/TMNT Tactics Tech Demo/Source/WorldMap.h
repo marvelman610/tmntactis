@@ -98,15 +98,15 @@ class CWorldMap
 	// array of path ids, [0] is the path to the second location
 	struct Path
 	{
-		int			m_nPathID;	
+		int			nPathID;	
 		int			width;
-		MAP_POINT	m_ptMapXY;
-		RECT		m_rSrc;
+		int			nOriginalX;
+		MAP_POINT	ptMapXY;
+		RECT		rSrc;
 		Path()
 		{
-			m_nPathID = -1;
-			m_ptMapXY = MAP_POINT(0,0);
-			m_rSrc.left = -1;
+			nPathID = -1;
+			ptMapXY = MAP_POINT(0,0);
 		}
 	};
 	Path*	m_pPaths;

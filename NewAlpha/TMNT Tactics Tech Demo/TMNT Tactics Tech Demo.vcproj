@@ -503,26 +503,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\Source\FModSDK\lib\fmodexL_vc.lib"
-			>
-		</File>
-		<File
-			RelativePath=".\helpful info\VG_findMoveArea.txt"
-			>
-		</File>
-		<File
-			RelativePath=".\Resources\MapInfo\VG_lvl1.dat"
-			>
-		</File>
-		<File
-			RelativePath=".\Resources\MapInfo\VG_lvl2.dat"
-			>
-		</File>
-		<File
-			RelativePath=".\helpful info\VG_pathfinding.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -42,10 +42,8 @@ void CPlayer::Exit()
 {
 	delete m_pAcheivements; m_pAcheivements = NULL;
 	for(int i = 0; i < 4; i++)
-	{
 		for(unsigned int j = 0; j < m_pTurtles[i]->GetAnimations().size(); j++)
 			m_pTurtles[i]->GetAnimations()[j].Unload();
-	}	
 }
 
 CPlayer::~CPlayer(void)
@@ -71,10 +69,6 @@ void CPlayer::NewGame()
 	LoadAnimations();
 	m_sProfileName = "NONE"; m_sFileName = "NONE";
 
-	m_pTurtles[LEONARDO]->GetCurrAnim()->Play();
-	m_pTurtles[DONATELLO]->GetCurrAnim()->Play();
-	m_pTurtles[RAPHAEL]->GetCurrAnim()->Play();
-	m_pTurtles[MIKEY]->GetCurrAnim()->Play();
 	GetItems()->clear();
 	if(m_pAcheivements)
 		delete m_pAcheivements;
@@ -90,8 +84,8 @@ void CPlayer::NewGame()
 		m_pTurtles[i]->ClearWeapons();
 		m_pTurtles[i]->ClearActiveSkills();
 		m_pTurtles[i]->ClearInactiveSkills();
+		m_pTurtles[i]->GetCurrAnim()->Play();
 	}
-	CGame::GetInstance()->LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 	CBase weapon;
 	weapon.SetWeapon("Bokken",6,0,-1,0);
 	m_pTurtles[LEONARDO]->AddWeapon( weapon );
@@ -110,6 +104,7 @@ void CPlayer::NewGame()
 
 	// set stats to starting values
 	LoadTurtleStats("Resources/XML/VG_TurtleStats.xml");
+	CGame::GetInstance()->LoadNewSkills("Resources/XML/VG_TurtleSkills.xml");
 
 	//////////////////////////////////////////////////////////////////////////
 	// TODO:: remove temp items before final build

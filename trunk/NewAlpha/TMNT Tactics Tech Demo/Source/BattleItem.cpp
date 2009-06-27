@@ -13,7 +13,6 @@
 
 CBattleItem::CBattleItem(void):CBase()
 {
-	
 	m_nHeal = 0;
 	m_nDamage = 0;
 	m_nDamageRadius = 1;
@@ -22,8 +21,6 @@ CBattleItem::CBattleItem(void):CBase()
 
 	SetWidth(32);
 	SetHeight(32);
-
-	
 }
 CBattleItem::~CBattleItem(void)
 {

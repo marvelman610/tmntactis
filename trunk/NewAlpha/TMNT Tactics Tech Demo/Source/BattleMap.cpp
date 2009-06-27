@@ -28,6 +28,7 @@
 #include "Box.h"
 #include "Boss.h"
 #include "Achievements.h"
+#include "WorldMap.h"
 #include <fstream>
 #include <exception>
 
@@ -563,7 +564,7 @@ void CBattleMap::Render()
 	if(m_pParticleSystem[NINJA_BLOOD].m_bActive == true)
 	{ m_pParticleSystem[NINJA_BLOOD].DrawParticle(m_pAssets->aBloodParticle);	}
 
-	DrawDebugInfo();
+	//DrawDebugInfo();
 }
 void CBattleMap::SetPaused(bool IsPaused)
 {
@@ -1013,6 +1014,13 @@ void CBattleMap::DrawDebugInfo()
 	//sprintf_s(szAnchorPt, "A-PT X:%i, Y:%i", turtleX, turtleY);
 	//CSGD_Direct3D::GetInstance()->DrawText(szAnchorPt, 5, 5);	
 
+	if (m_nCurrCharacter > -1)
+	{
+		char szRange[8];
+		sprintf_s(szRange, "R=%i", m_vCharacters[m_nCurrCharacter].GetRange());
+		CSGD_Direct3D::GetInstance()->DrawText(szRange, 10, 320, 255,255,255);
+	}
+	
 	char szMousePt[64];
 	sprintf_s(szMousePt, "M-PT X:%i, Y:%i", m_ptMouseScreenCoord.x, m_ptMouseScreenCoord.y);
 	CSGD_Direct3D::GetInstance()->DrawText(szMousePt, 10, 540, 0, 0, 0);	
@@ -1291,7 +1299,7 @@ void CBattleMap::DrawHover()
 					m_vEnemies[i]->Colorize(false);
 		}
 	
-		if (m_nHoverEnemy == m_nCurrTarget && m_bIsMouseAttack)
+		if (m_nHoverEnemy > -1 && m_nHoverEnemy == m_nCurrTarget && m_bIsMouseAttack)
 			SetMousePtr(m_pAssets->aMouseAttackID);
 		else if (m_nHoverEnemy > -1)
 			SetMousePtr(m_pAssets->aMouseMagGlassID);
@@ -1738,9 +1746,6 @@ void CBattleMap::HandleMouseInput(float fElapsedTime, POINT mouse, int xID, int 
 					}
 				}
 			}
-
-
-
 		}
 		else if (m_nCurrTarget > -1 && m_bIsMouseAttack && m_nCurrCharacter > -1 && m_nHoverEnemy > -1)	// otherwise, attempting to attack
 		{
@@ -2360,7 +2365,13 @@ void CBattleMap::SetEnemyDead()
 	{
 		m_bWin = true;
 		if (m_nMapID < NUM_MAPS-1)
+		{
+			if (!m_pPlayer->GetMapsUnlocked()[m_nMapID+1])
+			{
+				CWorldMap::GetInstance()->SetLatestUnlocked(m_nMapID);
+			}
 			m_pPlayer->SetMapUnlocked(m_nMapID+1);
+		}
 		PlaySFX(m_pAssets->aBMvictorySnd);
 		m_Timer.StartTimer(14.0f);
 	}
@@ -2900,6 +2911,7 @@ bool CBattleMap::StartCompTurn()
 	m_bIsPlayersTurn = false;
 	m_bHaveMoved = false;
 	m_vPath.clear();
+	m_nCurrTarget = m_nHoverCharacter = m_nHoverEnemy = -1;
 	if(m_bItemBool || m_bEggBool)
 	{   
 		m_bItemBool = false;

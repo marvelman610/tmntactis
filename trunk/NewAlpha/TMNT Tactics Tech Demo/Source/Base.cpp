@@ -25,7 +25,7 @@ CBase::CBase(void)
 	m_nDefense = 0;
 	m_nAccuracy = 0;
 	m_nSpeed = 0;
-	m_nRange = 0;
+	//m_nRange = 1;
 
 	m_fPosZ = 0.0f;	// draw in front of everything by default
 	m_nCurrAnimation = 0;

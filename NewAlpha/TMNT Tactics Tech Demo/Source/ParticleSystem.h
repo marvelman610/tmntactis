@@ -239,10 +239,7 @@ public:
 	//////////////////////////////////////////////////////////////////////////////
 	void UpdateParticle(float fElapsedTime)
 	{
-		if(m_bActive == false)
-		{
-		}
-		else
+		if(m_bActive)
 		{
 			//emitter position = emitpt
 			//m_vEmitterPos = D3DXVECTOR(emitPt.x, emitPt.y, 0.0f);

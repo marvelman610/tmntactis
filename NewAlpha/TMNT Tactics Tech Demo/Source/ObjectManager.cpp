@@ -200,12 +200,14 @@ void ObjectManager::CheckCollisions(void)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[j]));
 						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
+						CBattleMap::GetInstance()->SetWpnPickedUp();
 						return;
 					}
 					else if(m_vObjects[i]->GetType() == OBJECT_WEAPON)
 					{
 						MessageSystem::GetInstance()->SendMsg( new CDestroyWeapon(m_vObjects[i]));
 						CBattleMap::GetInstance()->PlaySFX(CAssets::GetInstance()->aBMpickupSnd);
+						CBattleMap::GetInstance()->SetWpnPickedUp();
 						return;
 					}
 				}

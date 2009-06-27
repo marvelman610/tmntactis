@@ -194,6 +194,7 @@ class CBattleMap
 	vector<CBase> m_vCharacters; // all player characters that are on the current battle map
 	vector<CBase*> m_vEnemies;	 // all enemy characters that are on the current battle map
 	CSkill* m_pSkillToExecute;
+	bool m_bWeaponPickedUp;
 	int m_nNumTurtles;
 	int m_nKillCount[4];
 
@@ -408,6 +409,8 @@ public:
 	//	Purpose		:	Update the Battle Map
 	//////////////////////////////////////////////////////////////////////////
 	void Update(float fElapsedTime);
+
+	void PerformMove( float fElapsedTime );
 	//////////////////////////////////////////////////////////////////////////
 	//	Function	:	Render
 	//
@@ -504,13 +507,14 @@ public:
 	void DecrementNumChars()						{m_nNumCharacters--;}
 	void DecrementNumTurtles()						{m_nNumTurtles--;}
 	void SetBGimageID(int id)						{m_nBGimageID = id;}
+	void SetTurtleDead()							{m_nCurrCharacter= -1; m_ncurrTargetTile = -1;}
+	void SetWpnPickedUp(bool pu = true)				{m_bWeaponPickedUp = pu; m_Timer.StartTimer(3.0f);}
 	void SetPaused(bool IsPaused);
 	void SetStartPositions();
 	void SetEnemyDead();
-	void SetTurtleDead() {m_nCurrCharacter= -1; m_ncurrTargetTile = -1;}
-	void AddMapSpawnTile(CTile* tile, int numPts);
 
 	void UseItem();
+	void AddMapSpawnTile(CTile* tile, int numPts);
 };
 
 #endif

@@ -150,6 +150,7 @@ public:
 	inline void DecrementCurrAP(int nDecrem){m_nCurrPoints -= nDecrem;}
 	inline void SetHealthMax(int nHealthMax){m_nHealthMax = nHealthMax;}
 	inline void SetHealth(int nHealth)		{m_nHealth = nHealth;}
+	inline void DecrementHealth(int nHealth){m_nHealth -= nHealth;}
 	inline void SetStrength(int nStrength)	{m_nStrength = nStrength;}
 	inline void SetDefense(int nDefense)	{m_nDefense = nDefense;}
 	inline void SetAccuracy(int nAccuracy)	{m_nAccuracy = nAccuracy;}

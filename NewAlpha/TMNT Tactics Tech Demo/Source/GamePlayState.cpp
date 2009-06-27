@@ -375,20 +375,20 @@ void CGamePlayState::ChangeMap(bool bWorldMap, int mapID) // if no parameter sen
 		switch (mapID)		// which battle map file to load?
 		{
 		case LOC_SIMUSA:
-			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);				// first map
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_SIMUSA, "SIMUSA", 4);
+			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMLeoBGID);					
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_SIMUSA, "SIMUSA", 4);		// first map
 			break;
 		case LOC_SINARO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMDonBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_SINARO, "SINARO", 4);	// second map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_SINARO, "SINARO", 4);		// second map
 			break;
 		case LOC_YAMATO:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMMikeBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 4);	// third map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl1.dat", LOC_YAMATO, "YAMATO", 4);		// third map
 			break;
 		case LOC_IWAMI:
 			m_pBattleMap->SetBGimageID(CAssets::GetInstance()->aBMRaphBGID);
-			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 3, true);	// boss map
+			m_pBattleMap->Enter("Resources/MapInfo/VG_lvl2.dat", LOC_IWAMI, "IWAMI", 0, true);	// boss map
 			break;
 		}
 		break;

@@ -51,9 +51,9 @@ CBox::CBox(int numItems, string* sItems,
 	m_fScaleX = (float)(m_nLongestString + (34.0f * fTextScale) + startX*2/* * 4.0f*/) / DEFAULT_SIZE; 
 	int yAdds;
 	if (!bHasTitle)
-		yAdds = 34.0f * (fTextScale*0.7f) + spacing;	// just add for the buttons on bottom (back/OK)
+		yAdds = (int)(34.0f * (fTextScale*0.7f) + spacing);	// just add for the buttons on bottom (back/OK)
 	else
-		yAdds = (34.0f * (fTextScale*0.7f) + (40 * fTextScale) + spacing);	// add for the bottom buttons AND the title
+		yAdds = (int)(34.0f * (fTextScale*0.7f) + (40 * fTextScale) + spacing);	// add for the bottom buttons AND the title
 	m_fScaleY = ((float)((numItems * (34.0f * fTextScale)) + ((float)spacing * 2.0f) + startY*2) + yAdds) / DEFAULT_SIZE;
 	
 	m_nBoxWidth = (int)(DEFAULT_SIZE * m_fScaleX);
@@ -130,7 +130,7 @@ void CBox::CheckMouse(POINT mousePt)
 				return;
 			}
 			if (!m_bIsMsgBox)
-				m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.5f);
+				m_nCurrSelectedIndex = (mousePt.y - m_nStartTextY) / (int)((float)m_nSpacing*1.3f);
 			// it has an enter button?
 			if (mousePt.x >= m_nPosX && mousePt.x <= (m_nPosX+(int)(200.0f*m_fTextScale)) && 
 				mousePt.y >= m_nBoxBottom - (45.0f*m_fTextScale) && mousePt.y <= m_nBoxBottom)

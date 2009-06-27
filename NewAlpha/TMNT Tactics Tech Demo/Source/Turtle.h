@@ -86,6 +86,8 @@ public:
 	//Function:	Accessors / Mutators
 	//////////////////////////////////////////////////////////////////////////////
 	inline bool GetActive(void) { return m_bIsActive; }
+	inline bool GetAlive(void)				{ return m_bIsAlive; }
+	inline void SetAlive(bool set)			{ m_bIsAlive = set; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// SKILLS
@@ -101,19 +103,18 @@ public:
 	inline void AddActive(CSkill* skill) {m_vActiveSkills.push_back(*skill);}
 
 	//////////////////////////////////////////////////////////////////////////
-	inline bool GetAlive(void)				{ return m_bIsAlive; }
-	inline void SetAlive(bool set)			{ m_bIsAlive = set; }
-
+	// WEAPONS
 	inline int GetCurrWeaponIndex()			{ return m_nCurrWeapon;}
 	inline void SetCurrWeaponIndex(int i)	{ m_nCurrWeapon = i;}
 	inline CBase* GetCurrWeapon() {return &(m_vWeapons[m_nCurrWeapon]);}
-
-
 	vector<CBase>* GetWeapons()				{ return &m_vWeapons;		}
 	void SetWeapons(vector<CBase>& weapons) { m_vWeapons = weapons;}
 	void AddWeapon(CBase a)					{ m_vWeapons.push_back(a);	}
 	void ClearWeapons()						{ m_vWeapons.clear();}
+	//////////////////////////////////////////////////////////////////////////
 
+	//////////////////////////////////////////////////////////////////////////
+	// BATTLE SUMMARY
 	inline int GetPrevLevel()		{return m_nPrevLvl;}
 	inline int GetPrevStrength()	{return m_nPrevStr;}
 	inline int GetPrevDefense()		{return m_nPrevDef;}
@@ -130,8 +131,7 @@ public:
 	inline void AddDamageDone(int dmg)		{m_nDamageDon += dmg;}
 	inline void ResetDamageRecieved(){m_nDamageRec = 0;}
 	inline void AddDamageRecieved(int dmg)	{m_nDamageRec += dmg;}
-	
-
+	//////////////////////////////////////////////////////////////////////////
 
 };
 

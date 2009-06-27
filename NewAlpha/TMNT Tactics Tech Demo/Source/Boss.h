@@ -26,8 +26,10 @@ class CBoss : public CBase
 	{
 		int attackID;
 		int damage;
+		int apCost;
 		BossCombo()
 		{
+			apCost = 0;
 			attackID = -1;
 			damage = 0;
 		}
@@ -43,9 +45,10 @@ private:
 	bool m_bAttackDone;
 	bool m_bRenderCombText;
 	bool m_bDoDmg;
-	BossCombo m_pComb[4];
 	int m_nDamage;
 	int m_nDistance;			//distance from turtle
+	int m_nCurrAttackInd;
+	BossCombo m_pComb[4];
 	
 	CPlayer* m_pPlayer;			//pointer to player
 	CBitmapFont* m_pBitmapFont;
@@ -55,7 +58,6 @@ private:
 	MY_POINT_FLOAT m_ptCurrPos; //current position to check against change
 	vector<POINT>m_vMoveList;	//list of tiles to move through(path)
 	int m_nMoveListIndex;
-	int changeX, changeY;	// negative or positive change from last tile to this one
 	
 	CTimer m_Timer;
 
@@ -77,6 +79,7 @@ public:
 	////////////////////////////////////////////////////////////////////
 	void AI();
 
+	void DetermineMove( POINT &begin, CBattleMap* pBM );
 	/////////////////////////////////////////////////////////////////////
 	// Function : "FindPath"
 	//
@@ -84,7 +87,7 @@ public:
 	/////////////////////////////////////////////////////////////////////
 	void FindPathNew(POINT begin, POINT end);
 
-	bool IsOnClose(CTile* tile, vector<CTile>& closed);
+	bool IsOnCloseList(CTile* tile, vector<CTile>& closed);
 
 	////////////////////////////////////////////////////////////////////
 	// Function: “Update”
@@ -92,7 +95,10 @@ public:
 	// Purpose: Updates game objects based on time.
 	////////////////////////////////////////////////////////////////////
 	virtual void Update(float fElapsedTime);
-	
+
+	void PerformMove( float fElapsedTime );
+	void DetermineAttack();
+
 	////////////////////////////////////////////////////////////////////
 	// Function: “Render”
 	//

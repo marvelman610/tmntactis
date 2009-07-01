@@ -227,7 +227,7 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = false;
 
-            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1, 0);
+            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1);
             SetClearStrings();
             NewMapTileArray();
         }
@@ -250,7 +250,7 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = bisometric;
 
-            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1, 0);
+            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1);
             SetClearStrings();
             NewMapTileArray();
         }
@@ -263,7 +263,6 @@ namespace map
             mD3d = ManagedDirect3D.Instance;
             m_nMapWidth = isoWidth * numCols;
             m_nMapHeight = isoHeight * numRows;
-            int centerY = ((clientHeight - m_nMapHeight) >> 1) - isoHeight;
 
             // TODO:: how to do zoom with iso?
 /*            nCellSize = cellSize;*/
@@ -277,7 +276,8 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = bisometric;
 
-            m_gMapGrid = new CGrid(isoWidth, isoHeight, m_nNumRows, m_nNumCols, 0, nZoomIncrement, yOffset, yOffset, true, type, centerY);
+            m_gMapGrid = new CGrid(isoWidth, isoHeight, m_nNumRows, m_nNumCols, 0, nZoomIncrement, yOffset, yOffset, true, type);
+            m_gMapGrid.CenterOnY(clientHeight, m_nMapHeight);
             SetClearStrings();
             NewMapTileArray();
         }

@@ -210,7 +210,7 @@ namespace test
             m_nNumRows        = m_nImageHeight / cellHeight;
             m_nTotalNumTiles  = m_nNumCols * m_nNumRows;
 
-            m_gTilesetGrid = new CGrid(cellWidth, cellHeight, m_nNumCols, m_nNumRows, 0, 0, nOffsetX, nOffsetY, false);
+            m_gTilesetGrid = new CGrid(cellWidth, cellHeight, m_nNumCols, m_nNumRows, 0, 0, nOffsetX, nOffsetY, false, -1, 0);
             m_gTilesetGrid.NImageHeight = m_nImageHeight;
             m_gTilesetGrid.NImageWidth = m_nImageWidth;
             m_strFilePath = filepath;
@@ -255,7 +255,7 @@ namespace test
         public void DrawTSGrid()
         {
             //if (m_bShowGrid)
-                m_gTilesetGrid.DrawGrid();
+                m_gTilesetGrid.DrawGrid(false);
         }
         public void DrawSelectionRect(bool bScroll)
         {

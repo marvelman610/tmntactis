@@ -31,11 +31,11 @@ namespace map
         #region DECLS 1
         const int MAX_NUM_FREETILES = 500;
         const int MAX_NUM_TILESETS = 4;
-        int m_nAnchorOffset = 0/*100*/;
+        int yOffset = 0/*100*/;
 	    public  int AnchorOffset
 	    {
-		    get { return m_nAnchorOffset; }
-		    set { m_nAnchorOffset = value; }
+		    get { return yOffset; }
+		    set { yOffset = value; }
 	    }
         // clear layer strings
         string[] m_strClearLayerText = new string[3];
@@ -85,7 +85,7 @@ namespace map
             set { m_gMapGrid = value; }
         }
 
-        // each individual cell (always multiples of 2)
+        // each individual cell (always multiples of 2 for non-iso maps)
         int m_nCellSize;
         public int NCellSize
         {
@@ -201,6 +201,9 @@ namespace map
             get { return m_nCurrTileEdit; }
             set { m_nCurrTileEdit = value; }
         }
+        int m_nType;     //diamond, staggered, slide
+
+        // singletons
         ManagedTextureManager mTM;
         ManagedDirect3D mD3d;
         #endregion
@@ -224,7 +227,7 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = false;
 
-            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false);
+            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1, 0);
             SetClearStrings();
             NewMapTileArray();
         }
@@ -247,12 +250,12 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = bisometric;
 
-            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false);
+            m_gMapGrid = new CGrid(m_nCellSize, m_nCellSize, m_nNumRows, m_nNumCols, 0, nZoomIncrement, 0, 0, false, -1, 0);
             SetClearStrings();
             NewMapTileArray();
         }
         // isometric Map constructor
-        public CMap(int isoWidth, int isoHeight, int numCols, int numRows, int zoomIncrement, bool bisometric)
+        public CMap(int isoWidth, int isoHeight, int numCols, int numRows, int zoomIncrement, bool bisometric, int type, int clientHeight)
         {
             m_nCurrLayer = (int)LAYER.LAYER_ONE;
             m_nLayerMode = (int)LAYER_MODE.SHOW_L1;
@@ -260,12 +263,13 @@ namespace map
             mD3d = ManagedDirect3D.Instance;
             m_nMapWidth = isoWidth * numCols;
             m_nMapHeight = isoHeight * numRows;
+            int centerY = ((clientHeight - m_nMapHeight) >> 1) - isoHeight;
 
             // TODO:: how to do zoom with iso?
 /*            nCellSize = cellSize;*/
             m_nCellWidth = isoWidth;
             m_nCellHeight = isoHeight;
-
+            m_nType = type;
             m_nNumCols = numCols;
             m_nNumRows = numRows;
             m_nZoom = 1.0f;
@@ -273,7 +277,7 @@ namespace map
             m_nTotalNumTiles = numCols * numRows;
             m_bIsIsometric = bisometric;
 
-            m_gMapGrid = new CGrid(isoWidth, isoHeight, m_nNumRows, m_nNumCols, 0, nZoomIncrement, m_nAnchorOffset, m_nAnchorOffset, true);
+            m_gMapGrid = new CGrid(isoWidth, isoHeight, m_nNumRows, m_nNumCols, 0, nZoomIncrement, yOffset, yOffset, true, type, centerY);
             SetClearStrings();
             NewMapTileArray();
         }
@@ -544,8 +548,8 @@ namespace map
         Point IsoTilePlot(Point pt, int xOffset, int yOffset)
         {
             Point newPt = new Point();
-            newPt.X = (pt.X - pt.Y) * (m_nCellWidth / 2) + xOffset + nScrollOSx;
-            newPt.Y = (pt.X + pt.Y) * (m_nCellHeight / 2) + yOffset + nScrollOSy;
+            newPt.X = (pt.X - pt.Y) * (m_nCellWidth >> 1) + xOffset + nScrollOSx;
+            newPt.Y = (pt.X + pt.Y) * (m_nCellHeight >> 1) + yOffset + nScrollOSy;
             return newPt;
         }
         public void DrawMapIso()
@@ -554,8 +558,8 @@ namespace map
 
             // scale the image with the zoom
             float scale = m_nZoom;
-            int xOffset = m_gMapGrid.NIsoCenterTopX - (m_nCellWidth >> 1) + m_nAnchorOffset;
-            //int yOffset = m_gMapGrid.NIsoCenterLeftY - (m_nCellHeight >> 1) + m_nAnchorOffset;
+            int xOffset = m_gMapGrid.NIsoCenterTopX - (m_nCellWidth >> 1);
+            int yOffset = m_gMapGrid.NIsoCenterLeftY/* - (m_nCellHeight >> 1) + yOffset*/;
 
             switch (m_nLayerMode)
             {
@@ -565,7 +569,7 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x )
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, m_nAnchorOffset);
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
 
                             if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
@@ -585,7 +589,7 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, m_nAnchorOffset);
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
 
                             if (m_tMapTilesLayer2[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
@@ -605,7 +609,7 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, m_nAnchorOffset);
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
 
                             if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
@@ -637,7 +641,7 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, m_nAnchorOffset);
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
 
                             if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
@@ -664,38 +668,36 @@ namespace map
                     }
                     for (int i = 0; i < MAX_NUM_FREETILES; ++i)
                     {
-                        if (m_tFreePlaced[i] != null)
+                        if (m_tFreePlaced[i] == null)
+                            break;
+                        if (m_nCurrTileEdit == i)
                         {
-                            if (m_nCurrTileEdit == i)
-                            {
-                                Color selectTile = Color.FromArgb(150, Color.Red);
-                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
-                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
-                            }
-                            else
-                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y,
-                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
-                            if (m_bShowFlags)
-	                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+                            Color selectTile = Color.FromArgb(150, Color.Red);
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
                         }
+                        else
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
+                        if (m_bShowFlags)
+                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
                     }
                     break;
                 case (int)LAYER_MODE.SHOW_FREE:
                     for (int i = 0; i < MAX_NUM_FREETILES; ++i)
                     {
-                        if (m_tFreePlaced[i] != null)
+                        if (m_tFreePlaced[i] == null)
+                            break;
+                        if (m_nCurrTileEdit == i)
                         {
-                            if (m_nCurrTileEdit == i)
-                            {
-                                Color selectTile = Color.FromArgb(150, Color.Red);
-                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
-                                    1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
-                            }
-                            else
-                                mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
-                            if (m_bShowFlags) 
-                                mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+                            Color selectTile = Color.FromArgb(150, Color.Red);
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                                1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
                         }
+                        else
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
+                        if (m_bShowFlags) 
+                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
                     }
                     break;
             }

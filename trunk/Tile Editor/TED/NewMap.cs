@@ -13,6 +13,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
+enum IsoType {ISO_DIAMOND, ISO_STAG, ISO_SLIDE, }
+
 namespace test
 {
     public partial class NewMap : Form
@@ -58,7 +60,12 @@ namespace test
             get { return nIsoHeight; }
             set { nIsoHeight = value; }
         }
-
+        int nIsoType;
+        public int NIsoType
+        {
+            get { return nIsoType; }
+            set { nIsoType = value; }
+        }
         public event EventHandler createPushed;
 
         private void btnCreate_Click(object sender, EventArgs e)
@@ -90,6 +97,7 @@ namespace test
 	                nColumns    = int.Parse(tbColumns.Text);
 	                nRows       = int.Parse(tbRows.Text);
 	                bIsIsometric= cbIsometric.Checked;
+                    nIsoType    = cbIsoType.SelectedIndex;
 	
 	                if (createPushed != null)
 	                    createPushed(this, new EventArgs());
@@ -111,6 +119,7 @@ namespace test
             tbIsoHeight.Enabled = !tbIsoHeight.Enabled;
             tbIsoWidth.Enabled  = !tbIsoWidth.Enabled;
             tbCellsize.Enabled = !tbCellsize.Enabled;
+            cbIsoType.Enabled = !cbIsoType.Enabled;
         }
 
 

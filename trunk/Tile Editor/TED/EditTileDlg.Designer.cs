@@ -214,10 +214,15 @@
             65536});
             this.nudRot.Location = new System.Drawing.Point(26, 68);
             this.nudRot.Maximum = new decimal(new int[] {
-            10000,
+            63,
             0,
             0,
-            0});
+            65536});
+            this.nudRot.Minimum = new decimal(new int[] {
+            63,
+            0,
+            0,
+            -2147418112});
             this.nudRot.Name = "nudRot";
             this.nudRot.Size = new System.Drawing.Size(55, 20);
             this.nudRot.TabIndex = 8;
@@ -425,7 +430,7 @@
             this.btnAccept.Location = new System.Drawing.Point(69, 271);
             this.btnAccept.Name = "btnAccept";
             this.btnAccept.Size = new System.Drawing.Size(95, 23);
-            this.btnAccept.TabIndex = 10;
+            this.btnAccept.TabIndex = 0;
             this.btnAccept.Text = "Accept (close)";
             this.btnAccept.UseVisualStyleBackColor = true;
             this.btnAccept.Click += new System.EventHandler(this.btnAccept_Click);

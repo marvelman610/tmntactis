@@ -151,7 +151,10 @@ namespace test
         {
             SaveFileDialog sfd = new SaveFileDialog();
             DialogResult dr = new DialogResult();
-            sfd.FileName = m_strSaveFileName + ".xml";
+            if (!m_strSaveFileName.EndsWith("xml"))
+            {
+                sfd.FileName = m_strSaveFileName + ".xml";
+            }
             sfd.Filter = "XML Files|*.xml";
             if (!bHaveSaved)
             {
@@ -165,14 +168,15 @@ namespace test
             {
                 m_bChangesMade = false;
                 m_bHaveSaved = true;
-                m_strSaveFileName = Path.GetFileName(sfd.FileName);
+                if(!bHaveSaved)
+                    m_strSaveFileName = Path.GetFileName(sfd.FileName);
                 this.Text = "TED - " + Path.GetFileNameWithoutExtension(m_strSaveFileName);
 
                 XmlWriterSettings settings = new XmlWriterSettings();
                 settings.ConformanceLevel = ConformanceLevel.Document;
                 settings.Indent = true;
 
-                using (XmlWriter xml = XmlWriter.Create(sfd.FileName, settings))
+                using (XmlWriter xml = XmlWriter.Create(m_strSaveFileName, settings))
                 {
                     xml.WriteStartElement(m_strVersionNumber);
                     xml.WriteStartElement("Map");
@@ -571,7 +575,7 @@ namespace test
                             {
                                 this.Text = "TED - " + Path.GetFileNameWithoutExtension(ofd.FileName);
                                 m_mMap = null;
-                                for (int i = 0; m_tsTileset[i] != null; ++i)
+                                for (int i = 0; i < MAX_NUM_TILESETS && m_tsTileset[i] != null; ++i)
                                 {
                                     m_tsTileset[i] = null;
                                     m_tsComponents[i] = null;
@@ -613,7 +617,7 @@ namespace test
                                             // set up the map
                                             if (bIsometric)
                                             {
-                                                m_mMap = new CMap(nCellWidth, nCellHeight, nNumCols, nNumRows, m_nZoomIncrement, true);
+                                                m_mMap = new CMap(nCellWidth, nCellHeight, nNumCols, nNumRows, m_nZoomIncrement, true, 0, splitContainer1.Panel2.ClientSize.Height);
                                                 nudMapCellSize.Enabled = false;
                                             }
                                             else
@@ -689,6 +693,7 @@ namespace test
                                         reader.ReadToFollowing("Layer1");
 
                                         reader.Read();
+                                        m_mMap.ContainsTile[(int)LAYER.LAYER_ONE] = true;
                                         while (reader.Name == "TILE")
                                         {
                                             reader.Read();
@@ -757,6 +762,8 @@ namespace test
                                         }
                                         reader.Read();
                                         int posX, posY, count = 0;
+                                        if (reader.Name == "FREETILE")
+                                            m_mMap.ContainsTile[(int)LAYER.LAYER_FREE] = true;
                                         while (reader.Name == "FREETILE")
                                         {
                                             reader.Read();

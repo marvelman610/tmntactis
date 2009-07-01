@@ -44,12 +44,13 @@
             this.tbIsoWidth = new System.Windows.Forms.TextBox();
             this.tbIsoHeight = new System.Windows.Forms.TextBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.cbIsoType = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tbColumns
             // 
-            this.tbColumns.Location = new System.Drawing.Point(21, 31);
+            this.tbColumns.Location = new System.Drawing.Point(9, 31);
             this.tbColumns.Name = "tbColumns";
             this.tbColumns.Size = new System.Drawing.Size(47, 20);
             this.tbColumns.TabIndex = 0;
@@ -58,7 +59,7 @@
             // 
             // tbRows
             // 
-            this.tbRows.Location = new System.Drawing.Point(77, 31);
+            this.tbRows.Location = new System.Drawing.Point(65, 31);
             this.tbRows.Name = "tbRows";
             this.tbRows.Size = new System.Drawing.Size(43, 20);
             this.tbRows.TabIndex = 1;
@@ -68,7 +69,7 @@
             // cbIsometric
             // 
             this.cbIsometric.AutoSize = true;
-            this.cbIsometric.Location = new System.Drawing.Point(11, 27);
+            this.cbIsometric.Location = new System.Drawing.Point(11, 21);
             this.cbIsometric.Name = "cbIsometric";
             this.cbIsometric.Size = new System.Drawing.Size(68, 17);
             this.cbIsometric.TabIndex = 2;
@@ -79,7 +80,7 @@
             // 
             // tbCellsize
             // 
-            this.tbCellsize.Location = new System.Drawing.Point(143, 31);
+            this.tbCellsize.Location = new System.Drawing.Point(197, 31);
             this.tbCellsize.Name = "tbCellsize";
             this.tbCellsize.Size = new System.Drawing.Size(47, 20);
             this.tbCellsize.TabIndex = 3;
@@ -89,7 +90,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(21, 12);
+            this.label1.Location = new System.Drawing.Point(9, 12);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(47, 13);
             this.label1.TabIndex = 4;
@@ -98,7 +99,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(74, 12);
+            this.label2.Location = new System.Drawing.Point(62, 12);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(34, 13);
             this.label2.TabIndex = 5;
@@ -107,7 +108,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(143, 12);
+            this.label4.Location = new System.Drawing.Point(197, 12);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(47, 13);
             this.label4.TabIndex = 7;
@@ -116,7 +117,7 @@
             // 
             // btnCreate
             // 
-            this.btnCreate.Location = new System.Drawing.Point(21, 129);
+            this.btnCreate.Location = new System.Drawing.Point(33, 148);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(75, 23);
             this.btnCreate.TabIndex = 8;
@@ -127,7 +128,7 @@
             // btnCancel
             // 
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Location = new System.Drawing.Point(115, 129);
+            this.btnCancel.Location = new System.Drawing.Point(149, 148);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
             this.btnCancel.TabIndex = 9;
@@ -138,7 +139,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(82, 43);
+            this.label3.Location = new System.Drawing.Point(134, 49);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(55, 13);
             this.label3.TabIndex = 10;
@@ -147,7 +148,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(82, 17);
+            this.label5.Location = new System.Drawing.Point(134, 23);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(58, 13);
             this.label5.TabIndex = 11;
@@ -156,7 +157,7 @@
             // tbIsoWidth
             // 
             this.tbIsoWidth.Enabled = false;
-            this.tbIsoWidth.Location = new System.Drawing.Point(142, 40);
+            this.tbIsoWidth.Location = new System.Drawing.Point(194, 46);
             this.tbIsoWidth.Name = "tbIsoWidth";
             this.tbIsoWidth.Size = new System.Drawing.Size(49, 20);
             this.tbIsoWidth.TabIndex = 2;
@@ -166,7 +167,7 @@
             // tbIsoHeight
             // 
             this.tbIsoHeight.Enabled = false;
-            this.tbIsoHeight.Location = new System.Drawing.Point(142, 14);
+            this.tbIsoHeight.Location = new System.Drawing.Point(194, 20);
             this.tbIsoHeight.Name = "tbIsoHeight";
             this.tbIsoHeight.Size = new System.Drawing.Size(49, 20);
             this.tbIsoHeight.TabIndex = 1;
@@ -175,6 +176,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.cbIsoType);
             this.groupBox1.Controls.Add(this.tbIsoHeight);
             this.groupBox1.Controls.Add(this.tbIsoWidth);
             this.groupBox1.Controls.Add(this.label5);
@@ -182,10 +184,24 @@
             this.groupBox1.Controls.Add(this.cbIsometric);
             this.groupBox1.Location = new System.Drawing.Point(1, 57);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(202, 66);
+            this.groupBox1.Size = new System.Drawing.Size(252, 81);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Isometric";
+            // 
+            // cbIsoType
+            // 
+            this.cbIsoType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbIsoType.Enabled = false;
+            this.cbIsoType.FormattingEnabled = true;
+            this.cbIsoType.Items.AddRange(new object[] {
+            "Diamond",
+            "Staggered",
+            "Slide"});
+            this.cbIsoType.Location = new System.Drawing.Point(11, 44);
+            this.cbIsoType.Name = "cbIsoType";
+            this.cbIsoType.Size = new System.Drawing.Size(96, 21);
+            this.cbIsoType.TabIndex = 12;
             // 
             // NewMap
             // 
@@ -193,7 +209,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(206, 174);
+            this.ClientSize = new System.Drawing.Size(256, 182);
             this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.btnCreate);
             this.Controls.Add(this.label4);
@@ -233,5 +249,6 @@
         private System.Windows.Forms.TextBox tbIsoWidth;
         private System.Windows.Forms.TextBox tbIsoHeight;
         private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.ComboBox cbIsoType;
     }
 }

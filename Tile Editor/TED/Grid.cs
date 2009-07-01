@@ -48,8 +48,8 @@ namespace grid
             set { m_nZoomIncrement = value; }
         }
 
-        int offsetX;
-        int offsetY;
+        int m_nOffsetX;
+        int m_nOffsetY;
 
         int m_nCellWidth;
         public int NCellWidth
@@ -100,15 +100,22 @@ namespace grid
         Point[] ptGridLinesHoriz;   
         Point[] ptGridLinesHorizEnd;
 
+        Point[] tilePoints;
+        int m_nNumRows;
+        int m_nNumCols;
+        int m_nTotalTiles;
+        int m_nType;
+
         ManagedDirect3D mD3d;
         ManagedTextureManager mTM;
         int m_nDotID;
 
-        public CGrid(int cellWidth, int cellHeight, int numVertical, int numHorizontal, int gridZoom, int zoomIncrement, int xOff, int yOff, bool bIsIso)
+        public CGrid(int cellWidth, int cellHeight, int numVertical, int numHorizontal,
+            int gridZoom, int zoomIncrement, int xOff, int yOff, bool bIsIso, int type, int centerY)
         {
             // where to start drawing the grid
-            offsetX = xOff;
-            offsetY = yOff;
+            m_nOffsetX = xOff;
+            m_nOffsetY = yOff;
 
             // line color
             clrGridLines = Color.Black;
@@ -116,6 +123,9 @@ namespace grid
             // dimensions
             m_nCellWidth        = cellWidth;
             m_nCellHeight       = cellHeight;
+            m_nNumRows          = numHorizontal;
+            m_nNumCols          = numVertical;
+            m_nTotalTiles       = m_nNumCols * m_nNumRows;
             NNumVertLines       = numVertical   + 1;  //always one more line than there are tiles
             NNumHorizontalLines = numHorizontal + 1;
             m_nZoomIncrement    = zoomIncrement;
@@ -127,76 +137,139 @@ namespace grid
             ptGridLinesHorizEnd = new Point[NNumHorizontalLines];
             ptGridLinesHoriz    = new Point[NNumHorizontalLines];
 
+            tilePoints = new Point[m_nTotalTiles];
+
             m_bIsIsometric = bIsIso;
             if (m_bIsIsometric)
             {
-                m_nIsoCenterLeftY = (int)((((float)(NNumHorizontalLines-1)) * 0.5f) * cellHeight);
-                m_nIsoCenterTopX  = (int)((((float)(NNumVertLines-1))       * 0.5f) * cellWidth);
+                m_nType = type;
+                m_nIsoCenterLeftY = centerY;
+                m_nIsoCenterTopX  = (m_nNumCols >> 1) * cellWidth;
             }
             // the d3d device to draw lines
             mD3d = ManagedDirect3D.Instance;
             mTM = ManagedTextureManager.Instance;
             m_nDotID = mTM.LoadTexture("dot.png", 0);
-            SetGridLines();
+            SetGridPts();
         }
+
+        //  Instead of using lines to draw the grid, 
+        //  I will use dots to represent the top center of the tile
+        
+        //  This will require different plotting functions depending
+        //  on what method is used to for drawing the map (diamond, staggered, or slide)
+        //  for selection purposes, a "rect" will be drawn around the currently
+        //  hovered-over tile to notify the user where they are in the grid
+
+        //  an option could also be given to turn on the outside grid lines so they
+        //  know where the boundaries of the map are..
+        private Point PlotPointDiamond(Point pt, int xOffset, int yOffset)
+        {
+            Point newPt = new Point();
+            newPt.X = (pt.X - pt.Y) * (m_nCellWidth >> 1) + xOffset;
+            newPt.Y = (pt.X + pt.Y) * (m_nCellHeight >> 1) + yOffset;
+            return newPt;
+        }
+        private Point PlotPointSlide(Point pt, int xOffset, int yOffset)
+        {
+            Point newPt = new Point();
+            newPt.X = pt.X * m_nCellWidth + newPt.Y * (m_nCellWidth >> 1) + xOffset;
+            newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset;
+            return newPt;
+        }
+        private Point PlotPointStag(Point pt, int xOffset, int yOffset)
+        {
+            Point newPt = new Point();
+            newPt.X = pt.X * m_nCellWidth + (newPt.Y&1) * (m_nCellWidth >> 1) + xOffset;
+            newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset;
+            return newPt;
+        }
+
+        private void SetGridPts()
+        {
+            if (m_bIsIsometric)
+            {
+                for (int y = 0; y < m_nNumRows; ++y)
+                {
+                    for (int x = 0; x < m_nNumCols; ++x)
+                    {
+                        switch (m_nType)
+                        {
+                            case (int)IsoType.ISO_DIAMOND:
+                                tilePoints[y * m_nNumCols + x] = PlotPointDiamond(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                break;
+                            case (int)IsoType.ISO_SLIDE:
+                                tilePoints[y * m_nNumCols + x] = PlotPointSlide(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                break;
+                            case (int)IsoType.ISO_STAG:
+                                tilePoints[y * m_nNumCols + x] = PlotPointStag(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+
         private void SetGridLines( )
         {
             if (!m_bIsIsometric)
             {
 	            for (int i = 0; i < m_nGridNumVertLines; ++i)
 	            {
-	                ptGridLinesVert[i].X = (i * (NCellWidth + m_nGridZoom)) + offsetX;
-	                ptGridLinesVert[i].Y = offsetY;
+	                ptGridLinesVert[i].X = (i * (NCellWidth + m_nGridZoom)) + m_nOffsetX;
+	                ptGridLinesVert[i].Y = m_nOffsetY;
 	                ptGridLinesVertEnd[i].X = ptGridLinesVert[i].X;
-	                ptGridLinesVertEnd[i].Y = ((m_nCellHeight + m_nGridZoom) * m_nGridNumHorLines - (m_nCellHeight + m_nGridZoom)) + offsetY;
+	                ptGridLinesVertEnd[i].Y = ((m_nCellHeight + m_nGridZoom) * m_nGridNumHorLines - (m_nCellHeight + m_nGridZoom)) + m_nOffsetY;
 	            }
 	            for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2)
 	            {
-	                ptGridLinesHoriz[i2].X = offsetX;
-	                ptGridLinesHoriz[i2].Y = (i2 * (m_nCellHeight + m_nGridZoom)) + offsetY;
-	                ptGridLinesHorizEnd[i2].X = ((NCellWidth + m_nGridZoom) * m_nGridNumVertLines - (NCellWidth + m_nGridZoom)) + offsetX;
+	                ptGridLinesHoriz[i2].X = m_nOffsetX;
+	                ptGridLinesHoriz[i2].Y = (i2 * (m_nCellHeight + m_nGridZoom)) + m_nOffsetY;
+	                ptGridLinesHorizEnd[i2].X = ((NCellWidth + m_nGridZoom) * m_nGridNumVertLines - (NCellWidth + m_nGridZoom)) + m_nOffsetX;
 	                ptGridLinesHorizEnd[i2].Y = ptGridLinesHoriz[i2].Y;
 	            }
             } 
             else
             {
-                for (int i = 0; i < m_nGridNumVertLines; ++i )
-                {
-                    // lines start from left corner and go northeast
-                    // they progress to the southeast
-                    ptGridLinesVert[i].X = i * ((m_nCellWidth >> 1) + m_nGridZoom) + offsetX;
-                    ptGridLinesVertEnd[i].X = m_nIsoCenterTopX + (i * ((m_nCellWidth >> 1) + m_nGridZoom)) + offsetX;
-                    ptGridLinesVert[i].Y    = m_nIsoCenterLeftY + (i * (m_nCellHeight >> 1)) + offsetY;
-                    ptGridLinesVertEnd[i].Y = i * (m_nCellHeight >> 1) + offsetY;
-                }
-                for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2 )
-                {
-                    // lines start from top corner and go southeast
-                    // they progress southwest
-                    ptGridLinesHoriz[i2].X = m_nIsoCenterTopX - (i2 * ((m_nCellWidth >> 1) + m_nGridZoom)) + offsetX;
-                    ptGridLinesHorizEnd[i2].X = (m_nCellWidth + m_nGridZoom) * (NNumVertLines - 1) - (i2 * ((m_nCellWidth >> 1) + m_nGridZoom)) + offsetX;
-                    ptGridLinesHoriz[i2].Y = i2 * (m_nCellHeight >> 1) + offsetY;
-                    ptGridLinesHorizEnd[i2].Y = m_nIsoCenterLeftY + (i2 * (m_nCellHeight >> 1)) + offsetY;
-                }
+
             }
         }
 
-        public void DrawGrid()
+        public void DrawGrid(bool iso)
         {
-            for (int i = 0; i < m_nGridNumHorLines; ++i)
+            if (iso)
+                for (int i = 0; i < m_nTotalTiles; ++i )
+                    mTM.Draw(m_nDotID, tilePoints[i].X, tilePoints[i].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
+            else
             {
-                mD3d.DrawLine(ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y,
-                                ptGridLinesHorizEnd[i].X, ptGridLinesHorizEnd[i].Y,
-                                clrGridLines.R, clrGridLines.G, clrGridLines.B);
-                //mTM.Draw(m_nDotID, ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
+                for (int i = 0; i < m_nGridNumHorLines; ++i)
+                {
+                       mD3d.DrawLine(ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y,
+                                       ptGridLinesHorizEnd[i].X, ptGridLinesHorizEnd[i].Y,
+                                       clrGridLines.R, clrGridLines.G, clrGridLines.B);
+                }
+                for (int i2 = 0; i2 < m_nGridNumVertLines; ++i2)
+                {
+                       mD3d.DrawLine(ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y,
+                                       ptGridLinesVertEnd[i2].X, ptGridLinesVertEnd[i2].Y,
+                                        clrGridLines.R, clrGridLines.G, clrGridLines.B);
+                }
             }
-            for (int i2 = 0; i2 < m_nGridNumVertLines; ++i2)
-            {
-                mD3d.DrawLine(ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y,
-                                ptGridLinesVertEnd[i2].X, ptGridLinesVertEnd[i2].Y,
-                                 clrGridLines.R, clrGridLines.G, clrGridLines.B);
-                //mTM.Draw(m_nDotID, ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
-            }
+        }
+        public void DrawSelectionRect(int xID, int yID)
+        {
+            Point topPt = PlotPointDiamond(new Point(xID, yID), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+            Point btmPt = topPt; btmPt.Y = topPt.Y + m_nCellHeight;
+            int halfWidth = (m_nCellWidth >> 1);
+            int halfHeight = (m_nCellHeight >> 1);
+            // top to left
+            mD3d.DrawLine(topPt.X, topPt.Y, topPt.X - halfWidth, topPt.Y + halfHeight, 255, 255, 255);
+            // top to right
+            mD3d.DrawLine(topPt.X, topPt.Y, topPt.X + halfWidth, topPt.Y + halfHeight, 255, 255, 255);
+            // btm to left
+            mD3d.DrawLine(btmPt.X, btmPt.Y, btmPt.X - halfWidth, btmPt.Y - halfHeight, 255, 255, 255);
+            // btm to right
+            mD3d.DrawLine(btmPt.X, btmPt.Y, btmPt.X + halfWidth, btmPt.Y - halfHeight, 255, 255, 255);
         }
         public void GridAdjust(int vertLines, int horizontalLines)
         {
@@ -241,10 +314,10 @@ namespace grid
             m_nGridNumVertLines = m_nImageWidth / cellWidth + 1;
             for (int i = 0; i < m_nGridNumVertLines; ++i)
             {
-                ptGridLinesVert[i].X = (i * (NCellWidth + m_nGridZoom)) + offsetX;
-                ptGridLinesVert[i].Y = offsetY;
+                ptGridLinesVert[i].X = (i * (NCellWidth + m_nGridZoom)) + m_nOffsetX;
+                ptGridLinesVert[i].Y = m_nOffsetY;
                 ptGridLinesVertEnd[i].X = ptGridLinesVert[i].X;
-                ptGridLinesVertEnd[i].Y = ((m_nCellHeight + m_nGridZoom) * m_nGridNumHorLines - (m_nCellHeight + m_nGridZoom)) + offsetY;
+                ptGridLinesVertEnd[i].Y = ((m_nCellHeight + m_nGridZoom) * m_nGridNumHorLines - (m_nCellHeight + m_nGridZoom)) + m_nOffsetY;
             }
             return m_nCellWidth;
         }
@@ -260,9 +333,9 @@ namespace grid
             m_nGridNumHorLines = m_nImageHeight / cellHeight + 1;
             for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2)
             {
-                ptGridLinesHoriz[i2].X = offsetX;
-                ptGridLinesHoriz[i2].Y = (i2 * (m_nCellHeight + m_nGridZoom)) + offsetY;
-                ptGridLinesHorizEnd[i2].X = ((NCellWidth + m_nGridZoom) * m_nGridNumVertLines - (NCellWidth + m_nGridZoom)) + offsetX;
+                ptGridLinesHoriz[i2].X = m_nOffsetX;
+                ptGridLinesHoriz[i2].Y = (i2 * (m_nCellHeight + m_nGridZoom)) + m_nOffsetY;
+                ptGridLinesHorizEnd[i2].X = ((NCellWidth + m_nGridZoom) * m_nGridNumVertLines - (NCellWidth + m_nGridZoom)) + m_nOffsetX;
                 ptGridLinesHorizEnd[i2].Y = ptGridLinesHoriz[i2].Y;
             }
             return m_nCellHeight;
@@ -306,10 +379,10 @@ namespace grid
         }
         public float ABS (float nIN)
         {
-            float result = 1.0f - nIN;
-            if (result < 0)
-                return -result;
-            return result;
+            //float result = 1.0f - nIN;
+            if (nIN < 0)
+                return -nIN;
+            return nIN;
         }
     }
 }

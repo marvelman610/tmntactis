@@ -111,7 +111,7 @@ namespace grid
         int m_nDotID;
 
         public CGrid(int cellWidth, int cellHeight, int numVertical, int numHorizontal,
-            int gridZoom, int zoomIncrement, int xOff, int yOff, bool bIsIso, int type, int centerY)
+            int gridZoom, int zoomIncrement, int xOff, int yOff, bool bIsIso, int type)
         {
             // where to start drawing the grid
             m_nOffsetX = xOff;
@@ -143,14 +143,12 @@ namespace grid
             if (m_bIsIsometric)
             {
                 m_nType = type;
-                m_nIsoCenterLeftY = centerY;
-                m_nIsoCenterTopX  = (m_nNumCols >> 1) * cellWidth;
+                m_nIsoCenterTopX  = (m_nNumCols >> 1) * cellWidth + (cellWidth >> 1);
             }
             // the d3d device to draw lines
             mD3d = ManagedDirect3D.Instance;
             mTM = ManagedTextureManager.Instance;
             m_nDotID = mTM.LoadTexture("dot.png", 0);
-            SetGridPts();
         }
 
         //  Instead of using lines to draw the grid, 
@@ -185,7 +183,7 @@ namespace grid
             return newPt;
         }
 
-        private void SetGridPts()
+        public void SetGridPts()
         {
             if (m_bIsIsometric)
             {
@@ -233,6 +231,17 @@ namespace grid
             {
 
             }
+        }
+
+        public void CenterOnY(int windowHeight, int mapHeight)
+        {
+            m_nIsoCenterLeftY = ((windowHeight - mapHeight) >> 1) - m_nCellHeight;
+            SetGridPts();
+        }
+        public void CenterOnX(int windowWidth)
+        {
+            m_nIsoCenterTopX = windowWidth >> 1;
+            SetGridPts();
         }
 
         public void DrawGrid(bool iso)

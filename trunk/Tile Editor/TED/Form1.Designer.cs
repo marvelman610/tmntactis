@@ -250,7 +250,7 @@
             // 
             // splitContainer1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
             this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Name = "splitContainer1";
@@ -277,9 +277,8 @@
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer1.Panel2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseUp);
             this.splitContainer1.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel2_DragEnter);
-            this.splitContainer1.Panel2.ClientSizeChanged += new System.EventHandler(this.splitContainer1_Panel2_ClientSizeChanged);
             this.splitContainer1.Panel2MinSize = 50;
-            this.splitContainer1.Size = new System.Drawing.Size(1295, 850);
+            this.splitContainer1.Size = new System.Drawing.Size(1295, 750);
             this.splitContainer1.SplitterDistance = 346;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 5;
@@ -1074,6 +1073,8 @@
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "TED";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+            this.ClientSizeChanged += new System.EventHandler(this.Form1_ClientSizeChanged);
+            this.Shown += new System.EventHandler(this.Form1_Shown);
             this.Activated += new System.EventHandler(this.Form1_Activated);
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.LocationChanged += new System.EventHandler(this.Form1_LocationChanged);

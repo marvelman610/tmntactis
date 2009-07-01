@@ -175,7 +175,6 @@ namespace test
             //////////////////////////////////////////////////////////////////////////
             lbCurrentLayer.Text = m_strLayerLabel + "Layer 1";
             splitContainer1.Panel2.AutoScrollMinSize = new Size((int)nudMapCellSize.Value * (int)nudMapNumCols.Value, ((int)nudMapCellSize.Value >> 1) * (int)nudMapNumRows.Value);
-            LoadDefault();
         }
 
         void timer_Tick(object sender, EventArgs e)
@@ -234,7 +233,6 @@ namespace test
 	                m_mD3d.LineEnd();
                 }
             }
-
             m_mD3d.DeviceEnd();
             m_mD3d.Present();
         }
@@ -312,7 +310,8 @@ namespace test
             lblTileID.Text += ID.ToString();
 
             // set up default Map
-            m_mMap = new CMap(64, 32, (int)nudMapNumCols.Value, (int)nudMapNumRows.Value, m_nZoomIncrement, true, 0, splitContainer1.Panel2.Height);
+
+            m_mMap = new CMap(64, 32, (int)nudMapNumCols.Value, (int)nudMapNumRows.Value, m_nZoomIncrement, true, 0, this.Height);
             m_mMap.NPanelWidth = m_mMap.NNumCols * (m_mMap.NCellWidth/2 )+ m_mMap.GMapGrid.NIsoCenterTopX + 100;
             m_mMap.NPanelHeight = m_mMap.NNumRows * (m_mMap.NCellHeight/2) + m_mMap.GMapGrid.NIsoCenterLeftY + 100;
             splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth, m_mMap.NPanelHeight);
@@ -2467,11 +2466,20 @@ namespace test
         {
             //e.Effect = DragDropEffects.Copy;
         }
-        private void splitContainer1_Panel2_ClientSizeChanged(object sender, EventArgs e)
+
+        private void Form1_Shown(object sender, EventArgs e)
         {
-            Size t = splitContainer1.Panel2.ClientSize;
-            t.Height = this.Height;
-            splitContainer1.Panel2.ClientSize = t;
+            LoadDefault();
         }
+
+        private void Form1_ClientSizeChanged(object sender, EventArgs e)
+        {
+            if (m_mMap != null)
+            {
+                m_mMap.GMapGrid.CenterOnY(this.Height, m_mMap.NMapHeight);
+                m_mMap.GMapGrid.CenterOnX(this.Width);
+            }
+        }
+
     }
 }

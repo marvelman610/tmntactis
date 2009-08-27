@@ -255,7 +255,7 @@ namespace map
             NewMapTileArray();
         }
         // isometric Map constructor
-        public CMap(int isoWidth, int isoHeight, int numCols, int numRows, int zoomIncrement, bool bisometric, int type, int clientHeight)
+        public CMap(int isoWidth, int isoHeight, int numCols, int numRows, int zoomIncrement, bool bisometric, int type, int clientHeight, int clientWidth)
         {
             m_nCurrLayer = (int)LAYER.LAYER_ONE;
             m_nLayerMode = (int)LAYER_MODE.SHOW_L1;
@@ -277,7 +277,17 @@ namespace map
             m_bIsIsometric = bisometric;
 
             m_gMapGrid = new CGrid(isoWidth, isoHeight, m_nNumRows, m_nNumCols, 0, nZoomIncrement, yOffset, yOffset, true, type);
-            m_gMapGrid.CenterOnY(clientHeight, m_nMapHeight);
+            if (type == (int)IsoType.ISO_DIAMOND)
+                m_gMapGrid.CenterOnY(clientHeight, m_nMapHeight);
+            else if (type == (int)IsoType.ISO_STAG)
+            {
+                m_nMapHeight = (isoHeight >> 1) * numRows;
+                if (m_nMapHeight < clientHeight-100)
+                    m_gMapGrid.CenterOnY(clientHeight-100, m_nMapHeight);
+                else
+                    m_gMapGrid.SetMapY(m_nCellHeight);
+                m_gMapGrid.CenterOnX(clientWidth, m_nMapWidth);
+            }
             SetClearStrings();
             NewMapTileArray();
         }
@@ -293,7 +303,7 @@ namespace map
             // they will render top to bottom (lowest y first)
             ++m_nTotNumFreeTiles;
             m_bContainsTile[m_nCurrLayer] = true;
-            CFREETILE tNewFree = new CFREETILE(posX, posY, tile.SourceRect, tile.NTileFlag, tile.ImageID, rotation);
+            CFREETILE tNewFree = new CFREETILE(posX, posY, tile.SourceRect, tile.NTileFlag, tile.ImageID, rotation, tile.FileName);
             if (m_nTotNumFreeTiles - 1 == 0)
             {
                 m_tFreePlaced[0] = tNewFree;
@@ -328,7 +338,7 @@ namespace map
             {
                 if (m_tFreePlaced[i] == null)
                 {
-                    CFREETILE tNewFree = new CFREETILE(posX, posY, srcRect, tile.NTileFlag, tile.ImageID);
+                    CFREETILE tNewFree = new CFREETILE(posX, posY, srcRect, tile.NTileFlag, tile.ImageID, tile.FileName);
                     m_tFreePlaced[i] = tNewFree;
                     m_bContainsTile[m_nCurrLayer] = true;
                     return;
@@ -366,7 +376,6 @@ namespace map
             }
             --m_nTotNumFreeTiles;
         }
-
         public void NewMapTileArray()
         {
             int i = 0;
@@ -382,7 +391,7 @@ namespace map
                 if (lengthNew > lengthOld)
                 {
                     for (i = lengthOld; i < lengthNew; ++i)
-                        m_tMapTilesLayer1[i] = new CTILE();
+                        m_tMapTilesLayer1[i] = null;// new CTILE();
                     for (i = 0; i < lengthOld; ++i)
                         m_tMapTilesLayer1[i] = tempIDs[i];
                 }
@@ -390,7 +399,7 @@ namespace map
                 {
                     int length = m_tMapTilesLayer1.GetLength(0);
                     for (i = 0; i < lengthNew; ++i)
-                        m_tMapTilesLayer1[i] = new CTILE();
+                        m_tMapTilesLayer1[i] = null;// new CTILE();
                     for (i = 0; i < m_nTotalNumTiles; ++i)
                         m_tMapTilesLayer1[i] = tempIDs[i];
                 }
@@ -420,11 +429,11 @@ namespace map
                 // First layer
                 m_tMapTilesLayer1 = new CTILE[m_nTotalNumTiles];
                 for ( i = 0; i < m_nTotalNumTiles; ++i)
-                    m_tMapTilesLayer1[i] = new CTILE();
+                    m_tMapTilesLayer1[i] = null;// new CTILE();
                 // Second layer
                 m_tMapTilesLayer2 = new CTILE[m_nTotalNumTiles];
                 for (i = 0; i < m_nTotalNumTiles; ++i)
-                    m_tMapTilesLayer2[i] = new CTILE();
+                    m_tMapTilesLayer2[i] = null;
             }
         }
         public void DrawMap()
@@ -441,7 +450,7 @@ namespace map
                         x = id % m_nNumCols * m_nCellSize + nScrollOSx;
                         y = id / m_nNumCols * m_nCellSize + nScrollOSy;
 
-                        if (m_tMapTilesLayer1[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer1[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer1[id].ImageID, x, y,
                                  scale, scale,
@@ -457,7 +466,7 @@ namespace map
                         x = id % m_nNumCols * m_nCellSize + nScrollOSy;
                         y = id / m_nNumCols * m_nCellSize + nScrollOSx;
 
-                        if (m_tMapTilesLayer2[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer2[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer2[id].ImageID, x, y,
                                  scale, scale,
@@ -473,7 +482,7 @@ namespace map
                         x = id % m_nNumCols * m_nCellSize + nScrollOSx;
                         y = id / m_nNumCols * m_nCellSize + nScrollOSy;
 
-                        if (m_tMapTilesLayer1[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer1[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer1[id].ImageID, x, y,
                                  scale, scale,
@@ -481,7 +490,7 @@ namespace map
                             if (m_bShowFlags && m_tMapTilesLayer1[id].NSourceID != -1)
                                 mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), x + 2, y + 2, 0, 255, 0);
                         }
-                        if (m_tMapTilesLayer2[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer2[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer2[id].ImageID, x, y,
                                  scale, scale,
@@ -501,7 +510,7 @@ namespace map
                         x = id % m_nNumCols * m_nCellSize + nScrollOSx;
                         y = id / m_nNumCols * m_nCellSize + nScrollOSy;
 
-                        if (m_tMapTilesLayer1[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer1[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer1[id].ImageID, x, y,
                                  scale, scale,
@@ -509,7 +518,7 @@ namespace map
                             if (m_bShowFlags && m_tMapTilesLayer1[id].NSourceID != -1)
                                 mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), x + 2, y + 2, 0, 255, 0);
                         }
-                        if (m_tMapTilesLayer2[id].NSourceID != -1 && x < m_nPanelWidth && y < m_nPanelHeight)
+                        if (m_tMapTilesLayer2[id] != null && x < m_nPanelWidth && y < m_nPanelHeight)
                         {
                             mTM.Draw(m_tMapTilesLayer2[id].ImageID, x, y,
                                  scale, scale,
@@ -548,9 +557,72 @@ namespace map
         Point IsoTilePlot(Point pt, int xOffset, int yOffset)
         {
             Point newPt = new Point();
-            newPt.X = (pt.X - pt.Y) * (m_nCellWidth >> 1) + xOffset + nScrollOSx;
-            newPt.Y = (pt.X + pt.Y) * (m_nCellHeight >> 1) + yOffset + nScrollOSy;
+            switch (m_nType)
+            {
+                case (int)IsoType.ISO_DIAMOND:
+                    newPt.X = (pt.X - pt.Y) * (m_nCellWidth >> 1) + xOffset + nScrollOSx;
+                    newPt.Y = (pt.X + pt.Y) * (m_nCellHeight >> 1) + yOffset + nScrollOSy;
+                    break;
+                case (int)IsoType.ISO_STAG:
+                    newPt.X = pt.X * m_nCellWidth + (pt.Y & 1) * (m_nCellWidth >> 1) + xOffset + (m_nCellWidth >> 1) + nScrollOSx;
+                    newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset + nScrollOSy;
+                    break;
+                case (int)IsoType.ISO_SLIDE:
+                    newPt.X = pt.X * m_nCellWidth + pt.Y * (m_nCellWidth >> 1) + xOffset + nScrollOSx;
+                    newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset + nScrollOSy;
+                    break;
+            }
             return newPt;
+        }
+        private void DrawFlags(int x, int y, int id, int layer)
+        {
+            switch (m_nType)
+            {
+                case (int)IsoType.ISO_DIAMOND:
+                    switch (layer)
+                    {
+                        case (int)LAYER.LAYER_ONE:
+                            mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), x + 14, y + 8, 0, 255, 0);
+                            break;
+                        case (int)LAYER.LAYER_TWO:
+                            mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), x + m_nCellWidth - 20, y + 8, 255, 0, 0);
+                            break;
+                        case (int)LAYER.LAYER_FREE:
+                            mD3d.DrawText(m_tFreePlaced[id].NTileFlag.ToString(), m_tFreePlaced[id].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[id].MapPt.Y, 0, 0, 255);
+                            break;
+                    }
+                    break;
+                case (int)IsoType.ISO_STAG:
+                    switch (layer)
+                    {
+                        case (int)LAYER.LAYER_ONE:
+                            mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), x + (m_nCellWidth >> 1) - 3, y + 8, 0, 255, 0);
+                            break;
+                        case (int)LAYER.LAYER_TWO:
+                            mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), x + (m_nCellWidth >> 1) - 3, y + m_nCellHeight - 20, 255, 0, 0);
+                            break;
+                        case (int)LAYER.LAYER_FREE:
+                            mD3d.DrawText(m_tFreePlaced[id].NTileFlag.ToString(),
+                                m_tFreePlaced[id].MapPt.X + (m_nCellWidth >> 1) - 3 + nScrollOSx, m_tFreePlaced[id].MapPt.Y + 8 + nScrollOSy, 0, 0, 255);
+                            break;
+                    }
+                    break;
+                case (int)IsoType.ISO_SLIDE:
+                    switch (layer)
+                    {
+                        case (int)LAYER.LAYER_ONE:
+                            mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), x + (m_nCellWidth>>1)-3, y + 8, 0, 255, 0);
+                            break;
+                        case (int)LAYER.LAYER_TWO:
+                            mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), x + (m_nCellWidth>>1)-3, y + m_nCellHeight - 20, 255, 0, 0);
+                            break;
+                        case (int)LAYER.LAYER_FREE:
+                            mD3d.DrawText(m_tFreePlaced[id].NTileFlag.ToString(), 
+                                m_tFreePlaced[id].MapPt.X + (m_nCellWidth>>1)-3 + nScrollOSx, m_tFreePlaced[id].MapPt.Y + 8 + nScrollOSy, 0, 0, 255);
+                            break;
+                    }
+                    break;
+            }
         }
         public void DrawMapIso()
         {
@@ -558,8 +630,8 @@ namespace map
 
             // scale the image with the zoom
             float scale = m_nZoom;
-            int xOffset = m_gMapGrid.NIsoCenterTopX - (m_nCellWidth >> 1);
-            int yOffset = m_gMapGrid.NIsoCenterLeftY/* - (m_nCellHeight >> 1) + yOffset*/;
+            int xOffset = m_gMapGrid.NIsoCenterX - (m_nCellWidth >> 1);
+            int yOffset = m_gMapGrid.NIsoTopY;
 
             switch (m_nLayerMode)
             {
@@ -569,16 +641,17 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x )
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
-
-                            if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            if (m_tMapTilesLayer1[id] == null)
+                                continue;
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
+                            if (mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer1[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer1[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags)
-                                    mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), mapPt.X + 14, mapPt.Y + 8, 0, 255, 0);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_ONE);
                             }
                         }
                     }
@@ -589,16 +662,17 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
-
-                            if (m_tMapTilesLayer2[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            if (m_tMapTilesLayer2[id] == null)
+                                continue;
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
+                            if (mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer2[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer2[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags)
-                                    mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), mapPt.X + m_nCellWidth - 20, mapPt.Y + 8, 255, 0, 0);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_TWO);
                             }
                         }
                     }
@@ -609,27 +683,27 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
 
-                            if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            if (m_tMapTilesLayer1[id] != null && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer1[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer1[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags && m_tMapTilesLayer1[id].NSourceID != -1)
-                                    mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), mapPt.X + 14, mapPt.Y + 8, 0, 255, 0);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_ONE);
                             }
-                            if (m_tMapTilesLayer2[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            if (m_tMapTilesLayer2[id] != null && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer2[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer2[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags)
                                 {
-                                    if (m_tMapTilesLayer1[id].NSourceID != -1)
-                                        mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), mapPt.X + 14, mapPt.Y + 8, 0, 255, 0);
-                                    mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), mapPt.X + m_nCellWidth - 20, mapPt.Y + 8, 255, 0, 0);
+                                    //if (m_tMapTilesLayer1[id].NSourceID != -1)
+                                      //  DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_ONE);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_TWO);
                                 }
                             }
                         }
@@ -641,27 +715,27 @@ namespace map
                         for (x = 0; x < m_nNumCols; ++x)
                         {
                             Point mapPt = new Point(x, y);
-                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
                             id = y * m_nNumCols + x;
 
-                            if (m_tMapTilesLayer1[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            mapPt = IsoTilePlot(mapPt, xOffset, yOffset);
+                            if (m_tMapTilesLayer1[id] != null && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer1[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer1[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags && m_tMapTilesLayer1[id].NSourceID != -1)
-                                    mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), mapPt.X + 14, mapPt.Y + 8, 0, 255, 0);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_ONE);
                             }
-                            if (m_tMapTilesLayer2[id].NSourceID != -1 && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
+                            if (m_tMapTilesLayer2[id] != null && mapPt.X < m_nPanelWidth && mapPt.Y < m_nPanelHeight)
                             {
                                 mTM.Draw(m_tMapTilesLayer2[id].ImageID, mapPt.X, mapPt.Y,
                                      scale, scale,
                                      m_tMapTilesLayer2[id].SourceRect, 0, 0, 0.0f, m_clrTilesetKey.ToArgb());
                                 if (m_bShowFlags)
                                 {
-                                    if (m_tMapTilesLayer1[id].NSourceID != -1)
-                                        mD3d.DrawText(m_tMapTilesLayer1[id].NTileFlag.ToString(), mapPt.X + 14, mapPt.Y + 8, 0, 255, 0);
-                                    mD3d.DrawText(m_tMapTilesLayer2[id].NTileFlag.ToString(), mapPt.X + m_nCellWidth - 20, mapPt.Y + 8, 255, 0, 0);
+                                    //if (m_tMapTilesLayer1[id].NSourceID != -1)
+                                      //  DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_ONE);
+                                    DrawFlags(mapPt.X, mapPt.Y, id, (int)LAYER.LAYER_TWO);
                                 }
                             }
                         }
@@ -673,14 +747,14 @@ namespace map
                         if (m_nCurrTileEdit == i)
                         {
                             Color selectTile = Color.FromArgb(150, Color.Red);
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y + nScrollOSy,
                                 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
                         }
                         else
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y + nScrollOSy,
                                 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
                         if (m_bShowFlags)
-                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+                            DrawFlags(0, 0, i, (int)LAYER.LAYER_FREE);
                     }
                     break;
                 case (int)LAYER_MODE.SHOW_FREE:
@@ -691,13 +765,14 @@ namespace map
                         if (m_nCurrTileEdit == i)
                         {
                             Color selectTile = Color.FromArgb(150, Color.Red);
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y,
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y + nScrollOSy,
                                 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, selectTile.ToArgb());
                         }
                         else
-                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X+nScrollOSx, m_tFreePlaced[i].MapPt.Y, 1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
-                        if (m_bShowFlags) 
-                            mD3d.DrawText(m_tFreePlaced[i].NTileFlag.ToString(), m_tFreePlaced[i].MapPt.X + 1 + nScrollOSx, m_tFreePlaced[i].MapPt.Y, 0, 0, 255);
+                            mTM.Draw(m_tFreePlaced[i].ImageID, m_tFreePlaced[i].MapPt.X + nScrollOSx, m_tFreePlaced[i].MapPt.Y + nScrollOSy,
+                                1.0f, 1.0f, m_tFreePlaced[i].SourceRect, 0, 0, m_tFreePlaced[i].Rotation, m_clrTilesetKey.ToArgb());
+                        if (m_bShowFlags)
+                            DrawFlags(0, 0, i, (int)LAYER.LAYER_FREE);
                     }
                     break;
             }
@@ -710,13 +785,15 @@ namespace map
                 if (m_nCurrLayer == (int)LAYER.LAYER_ONE)
                 {
                     for (int id = 0; id < m_nTotalNumTiles; ++id)
-                        m_tMapTilesLayer1[id].NSourceID = -1;
+                        if (m_tMapTilesLayer1[id] != null)
+                            m_tMapTilesLayer1[id] = null;
                     m_bContainsTile[m_nCurrLayer] = false;
                 }
                 else if (m_nCurrLayer == (int)LAYER.LAYER_TWO)
                 {
                     for (int id = 0; id < m_nTotalNumTiles; ++id)
-                        m_tMapTilesLayer2[id].NSourceID = -1;
+                        if (m_tMapTilesLayer2[id] != null)
+                            m_tMapTilesLayer2[id] = null;
                     m_bContainsTile[m_nCurrLayer] = false;
                 }
                 else

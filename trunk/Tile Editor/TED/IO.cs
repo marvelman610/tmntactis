@@ -85,8 +85,7 @@ namespace test
             {
                 case (int)SAVE_TYPE.BINARY:
                     {
-                        SaveBinary(bHaveSaved);
-                        if (saveXMLWithToolStripMenuItem.Checked)
+                        if (SaveBinary(bHaveSaved) && saveXMLWithToolStripMenuItem.Checked)
                             SaveXMLAuto();
                     }
                     break;
@@ -180,6 +179,7 @@ namespace test
                 {
                     xml.WriteStartElement(m_strVersionNumber);
                     xml.WriteStartElement("Map");
+                    xml.WriteAttributeString("Type", m_mMap.GMapGrid.Type.ToString());
                     xml.WriteAttributeString("Name", m_strSaveFileName);
                     xml.WriteAttributeString("Isometric", m_bIsIsometric.ToString());
                     xml.WriteAttributeString("TotalTiles", m_mMap.NTotalNumTiles.ToString());
@@ -207,11 +207,12 @@ namespace test
                     xml.WriteStartElement("Layer1");
                     for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                     {
-                        if (m_mMap.TMapTiles[i].NSourceID != -1)
+                        if (m_mMap.TMapTiles[i] != null && m_mMap.TMapTiles[i].ImageID > -1)
                         {
                             xml.WriteStartElement("TILE");
                             xml.WriteElementString("MapID", i.ToString());
-                            xml.WriteElementString("ImageID", m_mMap.TMapTiles[i].ImageID.ToString());
+                            xml.WriteElementString("TSName", m_mMap.TMapTiles[i].FileName);//m_strTilesetFilenames[m_mMap.TMapTilesLayer2[i].ImageID].ToString());
+                            //xml.WriteElementString("ImageID", m_mMap.TMapTiles[i].ImageID.ToString());
                             xml.WriteElementString("ID", m_mMap.TMapTiles[i].NSourceID.ToString());
                             xml.WriteElementString("Flag", m_mMap.TMapTiles[i].NTileFlag.ToString());
                             xml.WriteElementString("SourceX", m_mMap.TMapTiles[i].SourceRect.X.ToString());
@@ -219,6 +220,7 @@ namespace test
                             xml.WriteElementString("Width", m_mMap.TMapTiles[i].SourceRect.Width.ToString());
                             xml.WriteElementString("Height", m_mMap.TMapTiles[i].SourceRect.Height.ToString());
                             xml.WriteElementString("Trigger", m_mMap.TMapTiles[i].Trigger);
+                            xml.WriteElementString("Cost", m_mMap.TMapTiles[i].Cost.ToString());
                             xml.WriteEndElement();
                         }
                     }
@@ -227,11 +229,12 @@ namespace test
                     xml.WriteStartElement("Layer2");
                     for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                     {
-                        if (m_mMap.TMapTilesLayer2[i].NSourceID != -1)
+                        if (m_mMap.TMapTilesLayer2[i] != null && m_mMap.TMapTilesLayer2[i].ImageID > -1)
                         {
                             xml.WriteStartElement("TILE");
                             xml.WriteElementString("MapID", i.ToString());
-                            xml.WriteElementString("ImageID", m_mMap.TMapTilesLayer2[i].ImageID.ToString());
+                            xml.WriteElementString("TSName", m_mMap.TMapTilesLayer2[i].FileName);//m_strTilesetFilenames[m_mMap.TMapTilesLayer2[i].ImageID].ToString());
+                            //xml.WriteElementString("ImageID", m_mMap.TMapTilesLayer2[i].ImageID.ToString());
                             xml.WriteElementString("ID", m_mMap.TMapTilesLayer2[i].NSourceID.ToString());
                             xml.WriteElementString("Flag", m_mMap.TMapTilesLayer2[i].NTileFlag.ToString());
                             xml.WriteElementString("SourceX", m_mMap.TMapTilesLayer2[i].SourceRect.X.ToString());
@@ -239,6 +242,7 @@ namespace test
                             xml.WriteElementString("Width", m_mMap.TMapTilesLayer2[i].SourceRect.Width.ToString());
                             xml.WriteElementString("Height", m_mMap.TMapTilesLayer2[i].SourceRect.Height.ToString());
                             xml.WriteElementString("Trigger", m_mMap.TMapTilesLayer2[i].Trigger.ToString());
+                            xml.WriteElementString("Cost", m_mMap.TMapTilesLayer2[i].Cost.ToString());
                             xml.WriteEndElement();
                         }
                     }
@@ -250,7 +254,8 @@ namespace test
                         if (m_mMap.FreePlaced[i] != null)
                         {
                             xml.WriteStartElement("FREETILE");
-                            xml.WriteElementString("ImageID", m_mMap.FreePlaced[i].ImageID.ToString());
+                            xml.WriteElementString("TSName", m_mMap.FreePlaced[i].Filename);//m_strTilesetFilenames[m_mMap.TMapTilesLayer2[i].ImageID].ToString());
+                            //xml.WriteElementString("ImageID", m_mMap.FreePlaced[i].ImageID.ToString());
                             xml.WriteElementString("SourceX", m_mMap.FreePlaced[i].SourceRect.X.ToString());
                             xml.WriteElementString("SourceY", m_mMap.FreePlaced[i].SourceRect.Y.ToString());
                             xml.WriteElementString("Flag", m_mMap.FreePlaced[i].NTileFlag.ToString());
@@ -279,7 +284,6 @@ namespace test
                 strAutoSaveString = strAutoSaveString.Replace("dat", "xml");
             }
 
-
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.ConformanceLevel = ConformanceLevel.Document;
             settings.Indent = true;
@@ -288,6 +292,7 @@ namespace test
             {
                 xml.WriteStartElement(m_strVersionNumber);
                 xml.WriteStartElement("Map");
+                xml.WriteAttributeString("Type", m_mMap.GMapGrid.Type.ToString());
                 xml.WriteAttributeString("Name", strAutoSaveString);
                 xml.WriteAttributeString("Isometric", m_bIsIsometric.ToString());
                 xml.WriteAttributeString("TotalTiles", m_mMap.NTotalNumTiles.ToString());
@@ -315,18 +320,19 @@ namespace test
                 xml.WriteStartElement("Layer1");
                 for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                 {
-                    if (m_mMap.TMapTiles[i].NSourceID != -1)
+                    if (m_mMap.TMapTiles[i] != null && m_mMap.TMapTiles[i].ImageID > -1)
                     {
                         xml.WriteStartElement("TILE");
-                        xml.WriteElementString("MapID", i.ToString());
-                        xml.WriteElementString("ImageID", m_mMap.TMapTiles[i].ImageID.ToString());
-                        xml.WriteElementString("ID", m_mMap.TMapTiles[i].NSourceID.ToString());
-                        xml.WriteElementString("Flag", m_mMap.TMapTiles[i].NTileFlag.ToString());
-                        xml.WriteElementString("SourceX", m_mMap.TMapTiles[i].SourceRect.X.ToString());
-                        xml.WriteElementString("SourceY", m_mMap.TMapTiles[i].SourceRect.Y.ToString());
-                        xml.WriteElementString("Width", m_mMap.TMapTiles[i].SourceRect.Width.ToString());
-                        xml.WriteElementString("Height", m_mMap.TMapTiles[i].SourceRect.Height.ToString());
-                        xml.WriteElementString("Trigger", m_mMap.TMapTiles[i].Trigger);
+                        xml.WriteElementString("MapID",     i.ToString());
+                        xml.WriteElementString("TSName",    m_mMap.TMapTiles[i].FileName);//m_strTilesetFilenames[m_mMap.TMapTiles[i].ImageID].ToString());
+                        xml.WriteElementString("ID",        m_mMap.TMapTiles[i].NSourceID.ToString());
+                        xml.WriteElementString("Flag",      m_mMap.TMapTiles[i].NTileFlag.ToString());
+                        xml.WriteElementString("SourceX",   m_mMap.TMapTiles[i].SourceRect.X.ToString());
+                        xml.WriteElementString("SourceY",   m_mMap.TMapTiles[i].SourceRect.Y.ToString());
+                        xml.WriteElementString("Width",     m_mMap.TMapTiles[i].SourceRect.Width.ToString());
+                        xml.WriteElementString("Height",    m_mMap.TMapTiles[i].SourceRect.Height.ToString());
+                        xml.WriteElementString("Trigger",   m_mMap.TMapTiles[i].Trigger);
+                        xml.WriteElementString("Cost",      m_mMap.TMapTiles[i].Cost.ToString());
                         xml.WriteEndElement();
                     }
                 }
@@ -335,11 +341,11 @@ namespace test
                 xml.WriteStartElement("Layer2");
                 for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                 {
-                    if (m_mMap.TMapTilesLayer2[i].NSourceID != -1)
+                    if (m_mMap.TMapTilesLayer2[i] != null && m_mMap.TMapTilesLayer2[i].ImageID > -1)
                     {
                         xml.WriteStartElement("TILE");
                         xml.WriteElementString("MapID", i.ToString());
-                        xml.WriteElementString("ImageID", m_mMap.TMapTilesLayer2[i].ImageID.ToString());
+                        xml.WriteElementString("TSName", m_mMap.TMapTilesLayer2[i].FileName);//m_strTilesetFilenames[m_mMap.TMapTilesLayer2[i].ImageID].ToString());
                         xml.WriteElementString("ID", m_mMap.TMapTilesLayer2[i].NSourceID.ToString());
                         xml.WriteElementString("Flag", m_mMap.TMapTilesLayer2[i].NTileFlag.ToString());
                         xml.WriteElementString("SourceX", m_mMap.TMapTilesLayer2[i].SourceRect.X.ToString());
@@ -347,6 +353,7 @@ namespace test
                         xml.WriteElementString("Width", m_mMap.TMapTilesLayer2[i].SourceRect.Width.ToString());
                         xml.WriteElementString("Height", m_mMap.TMapTilesLayer2[i].SourceRect.Height.ToString());
                         xml.WriteElementString("Trigger", m_mMap.TMapTilesLayer2[i].Trigger.ToString());
+                        xml.WriteElementString("Cost", m_mMap.TMapTilesLayer2[i].Cost.ToString());
                         xml.WriteEndElement();
                     }
                 }
@@ -358,7 +365,7 @@ namespace test
                     if (m_mMap.FreePlaced[i] != null)
                     {
                         xml.WriteStartElement("FREETILE");
-                        xml.WriteElementString("ImageID", m_mMap.FreePlaced[i].ImageID.ToString());
+                        xml.WriteElementString("TSName", m_mMap.FreePlaced[i].Filename);//m_strTilesetFilenames[m_mMap.FreePlaced[i].ImageID].ToString());
                         xml.WriteElementString("SourceX", m_mMap.FreePlaced[i].SourceRect.X.ToString());
                         xml.WriteElementString("SourceY", m_mMap.FreePlaced[i].SourceRect.Y.ToString());
                         xml.WriteElementString("Flag", m_mMap.FreePlaced[i].NTileFlag.ToString());
@@ -411,31 +418,27 @@ namespace test
                     {
                         bw.Write("Tileset");
                         tempFileName[i] = Path.GetFileName(m_strTilesetFilenames[i]);
-                        if (tempFileName[i][0] != 'V' || tempFileName[i][1] != 'G' || tempFileName[i][2] != '_')
-                        {
-                            tempFileName[i] = tempFileName[i].Insert(0, "VG_");
-                        }
-                        bw.Write("Resources/Images/" + tempFileName[i]); // full file path
+//                         if (tempFileName[i][0] != 'V' || tempFileName[i][1] != 'G' || tempFileName[i][2] != '_')
+//                         {
+//                             tempFileName[i] = tempFileName[i].Insert(0, "VG_");
+//                         }
+                        bw.Write("Resources/Map/" + tempFileName[i]); // full file path
                         bw.Write(tempFileName[i]); // tileset name, to compare each tile's source tileset
                         bw.Write(m_clrKey[i].R);
                         bw.Write(m_clrKey[i].G);
                         bw.Write(m_clrKey[i].B);
-                        //bw.Write("Width=" + m_tsTileset[i].NTilesetWidth);
-                        //bw.Write("Height=" + m_tsTileset[i].NTilesetHeight);
-                        //bw.Write("CellWidth=" + m_tsTileset[i].NCellWidth);
-                        //bw.Write("CellHeight=" + m_tsTileset[i].NCellHeight);
                     }
                     if (m_mMap.ContainsTile[(int)LAYER.LAYER_ONE])
                     {
                         bw.Write("Layer1");
                         for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                         {
-                            if (m_mMap.TMapTiles != null && m_mMap.TMapTiles[i].NSourceID != -1)
+                            if (m_mMap.TMapTiles != null && m_mMap.TMapTiles[i] != null)
                             {
                                 for (int id = 0; id < tabControl1.TabCount - 1; ++id)
                                 {
                                     if (m_mMap.TMapTiles[i].ImageID == m_nCurrImageID[id])
-                                        bw.Write(tempFileName[id]);
+                                    { bw.Write(tempFileName[id]); break; }
                                 }
                                 bw.Write(m_mMap.TMapTiles[i].NSourceID);
                                 bw.Write(x);
@@ -444,6 +447,7 @@ namespace test
                                 bw.Write(m_mMap.TMapTiles[i].SourceRect.Width);
                                 bw.Write(m_mMap.TMapTiles[i].SourceRect.Height);
                                 bw.Write(m_mMap.TMapTiles[i].Trigger);
+                                bw.Write(m_mMap.TMapTiles[i].Cost);
                             }
                             x++;
                             if (x == m_mMap.NNumCols)
@@ -461,12 +465,12 @@ namespace test
                             bw.Write("Layer2");
                             for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                             {
-                                if (m_mMap.TMapTilesLayer2[i].NSourceID != -1)
+                                if (m_mMap.TMapTilesLayer2[i] != null)
                                 {
                                     for (int id = 0; id < tabControl1.TabCount - 1; ++id)
                                     {
                                         if (m_mMap.TMapTilesLayer2[i].ImageID == m_nCurrImageID[id])
-                                            bw.Write(tempFileName[id]);
+                                        { bw.Write(tempFileName[id]); break; }
                                     }
                                     bw.Write(m_mMap.TMapTilesLayer2[i].NSourceID);
                                     bw.Write(x);
@@ -475,6 +479,7 @@ namespace test
                                     bw.Write(m_mMap.TMapTilesLayer2[i].SourceRect.Width);
                                     bw.Write(m_mMap.TMapTilesLayer2[i].SourceRect.Height);
                                     bw.Write(m_mMap.TMapTilesLayer2[i].Trigger);
+                                    bw.Write(m_mMap.TMapTilesLayer2[i].Cost);
                                 }
                                 x++;
                                 if (x == m_mMap.NNumCols)
@@ -494,7 +499,7 @@ namespace test
                                     for (int id = 0; id < tabControl1.TabCount - 1; ++id)
                                     {
                                         if (m_mMap.FreePlaced[i].ImageID == m_nCurrImageID[id])
-                                            bw.Write(tempFileName[id]);
+                                        { bw.Write(tempFileName[id]); break; }
                                     }
                                     bw.Write(m_mMap.FreePlaced[i].SourceRect.X);
                                     bw.Write(m_mMap.FreePlaced[i].SourceRect.Y);
@@ -594,19 +599,19 @@ namespace test
                                     reader.MoveToContent();
                                     if (reader.Name == m_strVersionNumber)
                                     {
-                                        bool bIsometric;
                                         int nNumTiles;
                                         int nNumCols;
                                         int nNumRows;
                                         int nCellWidth;
                                         int nCellHeight;
                                         int nNumTilesets = 0;
+                                        int type;
                                         reader.ReadStartElement();
                                         if (reader.Name == "Map")
                                         {
                                             m_strSaveFileName = reader.GetAttribute("Name");
-
-                                            bIsometric   = Convert.ToBoolean(reader.GetAttribute("Isometric"));
+                                            type         = Convert.ToInt32(reader.GetAttribute("Type"));
+                                            m_bIsIsometric = Convert.ToBoolean(reader.GetAttribute("Isometric"));
                                             nNumTiles    = Convert.ToInt32(reader.GetAttribute("TotalTiles"));
                                             nNumCols     = Convert.ToInt32(reader.GetAttribute("Columns"));
                                             nNumRows     = Convert.ToInt32(reader.GetAttribute("Rows"));
@@ -615,31 +620,66 @@ namespace test
                                             nNumTilesets = Convert.ToInt32(reader.GetAttribute("NumTilesets"));
 
                                             // set up the map
-                                            if (bIsometric)
+                                            if (m_bIsIsometric)
                                             {
-                                                m_mMap = new CMap(nCellWidth, nCellHeight, nNumCols, nNumRows, m_nZoomIncrement, true, 0, splitContainer1.Panel2.ClientSize.Height);
+                                                m_mMap = new CMap(nCellWidth, nCellHeight, nNumCols, nNumRows, m_nZoomIncrement, true, type, this.Height, Width);
                                                 nudMapCellSize.Enabled = false;
+
+                                                nudMapNumCols.Enabled = false;
+                                                nudMapNumRows.Enabled = false;
+                                                nudMapCellSize.Enabled = false;
+                                                nudMapZoom.Enabled = false;
+                                                m_bIsIsometric = true;
+
+                                                switch (type)
+                                                {
+                                                    case (int)IsoType.ISO_DIAMOND:
+                                                        m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth;
+                                                        m_mMap.NPanelHeight = m_mMap.NNumRows * m_mMap.NCellHeight + m_mMap.NCellHeight;
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth, m_mMap.NPanelHeight);
+                                                        break;
+                                                    case (int)IsoType.ISO_SLIDE:
+                                                        m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth;
+                                                        m_mMap.NPanelHeight = (m_mMap.NNumRows >> 1) * m_mMap.NCellHeight + m_mMap.NCellHeight;
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth + 100, m_mMap.NPanelHeight + 100);
+                                                        break;
+                                                    case (int)IsoType.ISO_STAG:
+                                                        int tempWidth, tempHeight;
+                                                        tempWidth = m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth + 100;
+                                                        tempHeight = m_mMap.NPanelHeight = (m_mMap.NNumRows >> 1) * m_mMap.NCellHeight + m_mMap.NCellHeight + m_mMap.GMapGrid.NIsoTopY;
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                                                        splitContainer1.Panel2.AutoScrollMinSize = new Size(tempWidth, m_mMap.NPanelHeight);
+
+                                                        if (tempWidth > splitContainer1.Panel2.ClientSize.Width)
+                                                            m_mMap.NPanelWidth = tempWidth;
+                                                        if (tempHeight > splitContainer1.Panel2.ClientSize.Height)
+                                                            m_mMap.NPanelHeight = tempHeight;
+
+                                                        break;
+                                                }
                                             }
                                             else
                                             {
                                                 m_mMap = new CMap(nCellWidth, nNumCols, nNumRows, m_nZoomIncrement, false);
                                                 nudMapCellSize.Value = nCellWidth;
                                                 nudMapCellSize.Enabled = true;
+                                                splitContainer1.Panel2.AutoScrollMinSize = new Size(nNumCols * nCellWidth, nNumRows * nCellHeight);
+                                                m_mMap.NPanelWidth = splitContainer1.Panel2.Width;
+                                                m_mMap.NPanelHeight = splitContainer1.Panel2.Height;
+                                                nudMapNumCols.Value = nNumCols;
+                                                nudMapNumRows.Value = nNumRows;
                                             }
-                                            splitContainer1.Panel2.AutoScrollMinSize = new Size(nNumCols * nCellWidth, nNumRows * nCellHeight);
-                                            m_mMap.NPanelWidth = splitContainer1.Panel2.Width;
-                                            m_mMap.NPanelHeight = splitContainer1.Panel2.Height;
                                             m_mMap.NZoom = (int)nudMapZoom.Value;
                                             m_mMap.ClrTilesetKey = Color.White;
-                                            nudMapNumCols.Value = nNumCols;
-                                            nudMapNumRows.Value = nNumRows;
                                         }
 
                                         m_nCurrTilesetIndex = 0;
 
                                         // set up all the tilesets
                                         {
-                                            string filename;
+                                            string filename = "";
                                             int imageID;
                                             int red, green, blue;
                                             Color clrKey = Color.White;
@@ -657,7 +697,7 @@ namespace test
                                                 if (reader.Name == "Tileset")
                                                 {
                                                     filename = reader.GetAttribute("FileName");
-                                                    m_strTilesetFilenames[i] = (filename);
+                                                    m_strTilesetFilenames[i] = filename;
                                                     red = Convert.ToInt32(reader.GetAttribute("ColorKeyRed"));
                                                     green = Convert.ToInt32(reader.GetAttribute("ColorKeyGreen"));
                                                     blue = Convert.ToInt32(reader.GetAttribute("ColorKeyBlue"));
@@ -675,7 +715,7 @@ namespace test
                                                 }
                                             }
                                             Rectangle SourceRect = new Rectangle(0, 0, cellwidth, cellheight);
-                                            m_tCurrTile = new CTILE(0, SourceRect, m_nCurrTileFlag, m_nCurrImageID[m_nCurrTilesetIndex]);
+                                            m_tCurrTile = new CTILE(0, SourceRect, m_nCurrTileFlag, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", filename);
                                         }
                                         // set up the map tiles
                                         int mapID = 0;
@@ -686,8 +726,10 @@ namespace test
                                         int tileY = 0;
                                         int tileWidth = 0;
                                         int tileHeight = 0;
+                                        int cost = 0;
                                         float rotation = 0.0f;
                                         string trigger = "";
+                                        string fileName = "";
                                         Rectangle srcRect;
                                         m_mMap.NCurrLayer = (int)LAYER.LAYER_ONE;
                                         reader.ReadToFollowing("Layer1");
@@ -699,7 +741,8 @@ namespace test
                                             reader.Read();
                                             mapID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
-                                            tileImageID = Convert.ToInt32(reader.ReadString());
+                                            fileName = reader.ReadString();
+                                            //tileImageID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             sourceID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
@@ -714,9 +757,18 @@ namespace test
                                             tileHeight = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             trigger = reader.ReadString();
+                                            reader.Read();
+                                            cost = Convert.ToInt32(reader.ReadString());
+
+                                            // find the imageId of the tile's texture
+                                            for (int i = 1; i < nNumTilesets + 1; ++i)
+                                            {
+                                                if (fileName == m_mTM.GetTextureFilename(i))
+                                                { tileImageID = i; break; }
+                                            }
 
                                             srcRect = new Rectangle(tileX, tileY, tileWidth, tileHeight);
-                                            CTILE tempTile = new CTILE(sourceID, srcRect, flag, tileImageID);
+                                            CTILE tempTile = new CTILE(sourceID, srcRect, flag, tileImageID, cost, trigger, fileName);
                                             tempTile.Trigger = trigger;
 
                                             m_mMap.AddTile(tempTile, mapID);
@@ -731,7 +783,8 @@ namespace test
                                             reader.Read();
                                             mapID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
-                                            tileImageID = Convert.ToInt32(reader.ReadString());
+                                            fileName = reader.ReadString();
+                                            //tileImageID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             sourceID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
@@ -746,16 +799,24 @@ namespace test
                                             tileHeight = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             trigger = reader.ReadString();
+                                            reader.Read();
+                                            cost = Convert.ToInt32(reader.ReadString());
 
+                                            // find the imageId of the tile's texture, start at [1] (dot is [0]
+                                            for (int i = 1; i < nNumTilesets+1; ++i)
+                                            {
+                                                if (fileName == m_mTM.GetTextureFilename(i))
+                                                { tileImageID = i; break; }
+                                            }
                                             srcRect = new Rectangle(tileX, tileY, tileWidth, tileHeight);
-                                            CTILE tempTile = new CTILE(sourceID, srcRect, flag, tileImageID);
+                                            CTILE tempTile = new CTILE(sourceID, srcRect, flag, tileImageID, cost, trigger, fileName);
                                             tempTile.Trigger = trigger;
 
                                             m_mMap.AddTile(tempTile, mapID);
                                             reader.Read();
                                             reader.Read();
                                         }
-                                        m_mMap.NCurrLayer = (int)LAYER.LAYER_FREE;
+                                        m_mMap.NCurrLayer = (int)LAYER.LAYER_ONE;
                                         if (reader.Name != "FreePlace")
                                         {
 	                                        reader.ReadToFollowing("FreePlace");
@@ -767,7 +828,8 @@ namespace test
                                         while (reader.Name == "FREETILE")
                                         {
                                             reader.Read();
-                                            tileImageID = Convert.ToInt32(reader.ReadString());
+                                            fileName = reader.ReadString();
+                                            //tileImageID = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
                                             tileX = Convert.ToInt32(reader.ReadString());
                                             reader.Read();
@@ -788,8 +850,14 @@ namespace test
                                             rotation = (float)Convert.ToDouble(reader.ReadString());
                                             reader.Read();
 
+                                            // find the imageId of the tile's texture
+                                            for (int i = 0; i < nNumTilesets; ++i)
+                                            {
+                                                if (fileName == m_strTilesetFilenames[i])
+                                                { tileImageID = i; break; }
+                                            }
                                             srcRect = new Rectangle(tileX, tileY, tileWidth, tileHeight);
-                                            CFREETILE tempFree = new CFREETILE(posX, posY, srcRect, flag, tileImageID, rotation);
+                                            CFREETILE tempFree = new CFREETILE(posX, posY, srcRect, flag, tileImageID, rotation, fileName);
                                             tempFree.Trigger = trigger;
                                             // TODO:: save and load rotation
                                             m_mMap.LoadFreePlacedTiles(tempFree, count++);
@@ -798,6 +866,9 @@ namespace test
                                         }
                                     }
                                 }
+                                m_bDontDraw = false;
+                                m_bInPanelTwo = true;
+                                m_bInPanelOne = false;
                                 return;
                             }
                             else // try again

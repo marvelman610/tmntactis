@@ -26,6 +26,8 @@ namespace test
     enum LAYER {LAYER_ONE, LAYER_TWO, LAYER_FREE, };
     enum LAYER_MODE {SHOW_L1, SHOW_L2, SHOW_FREE, SHOW_BOTH, SHOW_ALL};
     enum SAVE_TYPE {TEXT, BINARY, XML};
+    enum QUADRANT { TOP_LEFT, TOP_RIGHT, BTM_LEFT, BTM_RIGHT }
+
     /// <summary>
     /// The main form.
     /// Saving and loading done in a separate IO.cs partial class
@@ -33,11 +35,12 @@ namespace test
     public partial class Form1 : Form
     {
     #region DECLS 1
+
         // acts as a Focus variable for the splitcontainer1's panels
         bool m_bPanel2HasFocus = true;
         bool m_bEditingFreeTile = false;
-        const string m_strVersionNumber = "TED-Version-1.0";
-        const int MAX_NUM_TILESETS = 4;
+        const string m_strVersionNumber = "TED-Version-1.1";
+        const int MAX_NUM_TILESETS = 8;
         // dialogs
         Help m_helpDlg;
         ImportTilesetDlg m_impTsDlg;
@@ -51,9 +54,11 @@ namespace test
         // the map
         CMap m_mMap;
         bool m_bChangesMade = false;
+
         // TODO:: Move map with mouse
+        bool m_bDraggingMap = false;
         Point m_ptMapMoveOriginal;
-        Point m_ptMapMoveEnd;
+        //Point m_ptMapMoveEnd;
 
         // array of tilesets
         CTileset[] m_tsTileset = new CTileset[MAX_NUM_TILESETS];
@@ -61,7 +66,7 @@ namespace test
         TilesetComponents[] m_tsComponents = new TilesetComponents[MAX_NUM_TILESETS];
 
         // which tileset are we currently looking at? based on the tabPage indexes
-        int m_nCurrTilesetIndex = 0; // index into the array of tilesets, from 0-3
+        int m_nCurrTilesetIndex = 0; // index into the array of tilesets, from 0->MAX_NUM_TILESETS-1
         bool m_bAddTileset = false;
         bool m_bJustClick = false;
         bool m_bDrawSelRectScroll = false;
@@ -73,6 +78,8 @@ namespace test
         // the currently selected tile
         CTILE   m_tCurrTile;
         Point   m_ptCurrMouseTileID;
+        Point m_ptFirstTileCoord = new Point(-1,0);
+
         // free placing tile variables
         bool m_bFreePlace = false;
         bool m_bDeleting = false;
@@ -92,9 +99,7 @@ namespace test
         string m_str5 = "5=Not Set";
         int m_nCurrTileFlag = 0;
         
-        /// <summary>
-        /// when shift+right-click, which tile are we clicking?
-        /// </summary>
+        // when shift+right-click, which tile are we clicking?
         int m_nCurrTileEditID = -1;
         
         // default filename string
@@ -105,7 +110,9 @@ namespace test
 
         // timer for drawing delay
         Timer m_timer;
-        bool m_bDontDraw = false;
+        bool m_bDontDraw = false;   // used to optimize rendering, don't draw if we don't have to
+        bool m_bInPanelOne = false; // also helps optimize rendering by determining 
+        bool m_bInPanelTwo = false; // if the window needs to be redrawn depending if the mouse is in the window or not
 
         bool m_bIsGridOn = true;
         bool m_bIsDragging = false;
@@ -128,6 +135,9 @@ namespace test
         int m_nXScrollOffset;
         int m_nYScrollOffset;
         string m_strSelectedID = "Tile ID = ";
+
+        // COLORS
+        Color m_clrDots = Color.White;
         Color[] m_clrKey = new Color[MAX_NUM_TILESETS];
         Color m_clrMapBGclear = Color.Gray;
         Color m_clrTilesetBGClear = Color.White;
@@ -137,11 +147,13 @@ namespace test
         int m_nLayerMode = (int)LAYER_MODE.SHOW_L1;
         string m_strLayerLabel = "Current Layer : ";
         bool m_bIsTwoLayersOn = true;
+        int dotID;
     #endregion
 
         public Form1()
         {
             InitializeComponent();
+            version11ToolStripMenuItem.Text += m_strVersionNumber;
             this.KeyPreview = true;
             this.Text += " - " + m_strSaveFileName;
             //splitContainer1.Focus();
@@ -161,6 +173,7 @@ namespace test
                                      this.splitContainer1.Panel2.Height, true, false);
             m_mTM = ManagedTextureManager.Instance;
             m_mTM.InitManagedTextureManager(m_mD3d.Device, m_mD3d.Sprite);
+            dotID = m_mTM.LoadTexture("dot.png", 0);
             //////////////////////////////////////////////////////////////////////////
             //Set up input boxes
             nudAdjustRectHeight.Enabled = false;
@@ -179,20 +192,27 @@ namespace test
 
         void timer_Tick(object sender, EventArgs e)
         {
-            if (!m_bDontDraw)
+//             if (m_mD3d == null)
+//                 return;
+            // we're only redrawing a window if we need to...
+            if (m_bInPanelOne && !m_bDontDraw)
             {
-	            PanelOnePaint();
-	            PanelTwoPaint();
-                m_bDontDraw = true;
+                PanelOnePaint();
             }
+            if (m_bInPanelTwo && !m_bDontDraw)
+            {
+                PanelTwoPaint();
+            }
+            m_bDontDraw = true;
         }
 
         private void PanelTwoPaint()
         {
-            m_mD3d.ChangeDisplayParam(splitContainer1.Panel2, false);
+            if (m_mD3d.GetCurrRenderWindow() != splitContainer1.Panel2)
+                m_mD3d.ChangeDisplayParam(splitContainer1.Panel2, false);
             m_mD3d.DeviceBegin();
             m_mD3d.Clear(m_clrMapBGclear.R, m_clrMapBGclear.G, m_clrMapBGclear.B);
-
+            
             if (m_mMap != null && m_nCurrTilesetIndex != -1)
             {
 	            if (m_tsTileset[m_nCurrTilesetIndex] != null)
@@ -226,12 +246,13 @@ namespace test
 	            if (m_bIsGridOn)
                 {
                     m_mD3d.SpriteBegin();
-                    m_mMap.GMapGrid.DrawGrid(m_bIsIsometric);
+                    m_mMap.GMapGrid.DrawGrid(m_bIsIsometric, m_clrDots);
                     m_mD3d.SpriteEnd();
-	                m_mD3d.LineBegin();
-                    m_mMap.GMapGrid.DrawSelectionRect(m_ptCurrMouseTileID.X, m_ptCurrMouseTileID.Y);
-	                m_mD3d.LineEnd();
                 }
+                m_mD3d.LineBegin();
+                if (!m_bFreePlace)
+                    m_mMap.GMapGrid.DrawSelectionRect(m_ptCurrMouseTileID.X, m_ptCurrMouseTileID.Y);
+                m_mD3d.LineEnd();
             }
             m_mD3d.DeviceEnd();
             m_mD3d.Present();
@@ -241,7 +262,8 @@ namespace test
         {
             if (m_nCurrTilesetIndex == -1)
             {
-                m_mD3d.ChangeDisplayParam(splitContainer1.Panel1, false);
+                if (m_mD3d.GetCurrRenderWindow() != splitContainer1.Panel1)
+                    m_mD3d.ChangeDisplayParam(splitContainer1.Panel1, false);
                 m_mD3d.DeviceBegin();
                 m_mD3d.Clear(m_clrTilesetBGClear.R, m_clrTilesetBGClear.G, m_clrTilesetBGClear.B);
                 m_mD3d.DeviceEnd();
@@ -250,7 +272,8 @@ namespace test
             }
             if(m_tsTileset[m_nCurrTilesetIndex] != null)
             {
-                m_mD3d.ChangeDisplayParam(splitContainer1.Panel1, false);
+                if (m_mD3d.GetCurrRenderWindow() != splitContainer1.Panel1)
+                    m_mD3d.ChangeDisplayParam(splitContainer1.Panel1, false);
                 m_mD3d.DeviceBegin();
                 m_mD3d.Clear(m_clrTilesetBGClear.R, m_clrTilesetBGClear.G, m_clrTilesetBGClear.B);
 
@@ -292,36 +315,45 @@ namespace test
                 m_mD3d.Present();
             }
         }
-
+        private void ResetCurrTile()
+        {
+            // set up default starting selected tile
+            if (m_tsTileset[m_nCurrTilesetIndex] != null)
+                m_tCurrTile = new CTILE(m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[m_tsTileset[m_nCurrTilesetIndex].NCurrSelectedTile]);
+            else
+            {
+                m_tCurrTile = new CTILE();
+                m_tCurrTile.NSourceID = 0;
+                m_tCurrTile.SourceRect = new Rectangle(0, 0, 64, 45);
+                m_tCurrTile.NTileFlag = 0;
+                m_tCurrTile.ImageID = m_nCurrImageID[m_nCurrTilesetIndex];
+            }
+            //lblTileID.Text = "Tile ID = " + m_nCurrImageID[m_nCurrTilesetIndex].ToString();
+        }
         private void LoadDefault()
         {
             int ID = m_mTM.LoadTexture(m_strDefFileName, Color.FromArgb(255, 255, 255).ToArgb());
+            m_nCurrImageID[m_nCurrTilesetIndex] = ID;
             int imageWidth = m_mTM.GetTextureWidth(ID);
             int imageHeight= m_mTM.GetTextureHeight(ID);
 
             splitContainer1.Panel1.AutoScrollMinSize = new Size(imageWidth, imageHeight + m_nTilesetYoffset + 5);
 
             // set up default starting selected tile
-            m_tCurrTile = new CTILE();
-            m_tCurrTile.NSourceID = 0;
-            m_tCurrTile.SourceRect = new Rectangle(0, 0, 64, 45);
-            m_tCurrTile.NTileFlag = 0;
-            m_tCurrTile.ImageID = ID;
-            lblTileID.Text += ID.ToString();
+            ResetCurrTile();
 
             // set up default Map
-
-            m_mMap = new CMap(64, 32, (int)nudMapNumCols.Value, (int)nudMapNumRows.Value, m_nZoomIncrement, true, 0, this.Height);
-            m_mMap.NPanelWidth = m_mMap.NNumCols * (m_mMap.NCellWidth/2 )+ m_mMap.GMapGrid.NIsoCenterTopX + 100;
-            m_mMap.NPanelHeight = m_mMap.NNumRows * (m_mMap.NCellHeight/2) + m_mMap.GMapGrid.NIsoCenterLeftY + 100;
+            m_mMap = new CMap(64, 32, (int)nudMapNumCols.Value, (int)nudMapNumRows.Value, m_nZoomIncrement, true, 0, this.Height, this.Width);
+            m_mMap.GMapGrid.SetDotID(dotID);
+            m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth; // panel size is size of map + an extra cell on top and bottom
+            m_mMap.NPanelHeight = m_mMap.NNumRows * m_mMap.NCellHeight + m_mMap.NCellHeight;
             splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth, m_mMap.NPanelHeight);
             m_bIsIsometric = true;
             nudMapNumCols.Enabled = false;
             nudMapNumRows.Enabled = false;
             nudMapCellSize.Enabled = false;
-            nudMapZoom.Enabled = false;
+            //nudMapZoom.Enabled = false;
 
-            m_nCurrImageID[m_nCurrTilesetIndex] = ID;
             m_clrKey[m_nCurrTilesetIndex] = Color.White;
             m_mMap.ClrTilesetKey = m_clrKey[m_nCurrTilesetIndex];
 
@@ -360,7 +392,7 @@ namespace test
             m_tsTileset[m_nCurrTilesetIndex].NPanelWidth = splitContainer1.Panel1.Width;
             m_tsTileset[m_nCurrTilesetIndex].NPanelHeight = splitContainer1.Panel1.Height;
             m_tsTileset[m_nCurrTilesetIndex].GTilesetGrid.ZeroOffset();
-            m_tsTileset[m_nCurrTilesetIndex].GTilesetGrid.Offset(m_nXScrollOffset, m_nYScrollOffset);
+            //m_tsTileset[m_nCurrTilesetIndex].GTilesetGrid.Offset(m_nXScrollOffset, m_nYScrollOffset);
             m_tsTileset[m_nCurrTilesetIndex].ZeroScrollOS();
 
             tbAnchorX.Text = m_tCurrTile.AnchorX.ToString();
@@ -409,6 +441,8 @@ namespace test
             splitContainer1.Panel1.VerticalScroll.Value = 0;
             splitContainer1.Panel1.HorizontalScroll.Value = 0;
             m_bDontDraw = false;
+            if (tabControl1.TabCount == 2)
+                btnAddTileset.Visible = false;
         }
 
         private void nudMapNumCols_ValueChanged(object sender, EventArgs e)
@@ -443,6 +477,8 @@ namespace test
 
         void impTsDlg_CreatePushed(object sender, EventArgs e)
         {
+            m_bInPanelOne = true; m_bDontDraw = false;
+
             ImportTilesetDlg impDlg = sender as ImportTilesetDlg;
             if (impDlg != null)
             {
@@ -451,7 +487,7 @@ namespace test
                 {
                     // set up first selected default tile
                     Rectangle srcRect = new Rectangle(0, 0, impDlg.Ts.NCellWidth, impDlg.Ts.NCellHeight);
-                    m_tCurrTile = new CTILE(0, srcRect, m_nCurrTileFlag, m_nCurrImageID[m_nCurrTilesetIndex]);
+                    m_tCurrTile = new CTILE(0, srcRect, m_nCurrTileFlag, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", Path.GetFullPath(impDlg.StrFileName));
 	
 	                m_mMap.ClrTilesetKey = impDlg.ClrKey;
                     m_clrKey[m_nCurrTilesetIndex] = impDlg.ClrKey;
@@ -462,23 +498,24 @@ namespace test
                     m_nCurrImageID[m_nCurrTilesetIndex] = impDlg.Ts.NTilesetImageID;
                     AddTileset(impDlg.Ts.NTilesetImageID, impDlg.ClrKey, impDlg.Ts.NTilesetWidth, impDlg.Ts.NTilesetHeight,
                                             impDlg.Ts.NCellWidth, impDlg.Ts.NCellHeight, m_strTilesetFilenames[m_nCurrTilesetIndex]);
+                    m_tsTileset[m_nCurrTilesetIndex].NCurrLayer = m_nCurrLayer;
 
 	                m_impTsDlg.Close();
 	
 	                nudMapNumRows.Enabled = false;
 	                nudMapNumCols.Enabled = false;
                     nudMapCellSize.Enabled = false;
-
                 } 
                 // adding a new tileset
                 else
                 {
                     // set up default starting selected tile
                     Rectangle SourceRect = new Rectangle(0, 0, impDlg.Ts.NCellWidth, impDlg.Ts.NCellHeight);
-                    m_tCurrTile = new CTILE(0, SourceRect, m_nCurrTileFlag, impDlg.Ts.NTilesetImageID);
+                    m_tCurrTile = new CTILE(0, SourceRect, m_nCurrTileFlag, impDlg.Ts.NTilesetImageID, 0, "None", Path.GetFullPath(impDlg.StrFileName));
                     bNewTS = true;
                     AddTileset(impDlg.Ts.NTilesetImageID, impDlg.ClrKey, impDlg.Ts.NTilesetWidth, impDlg.Ts.NTilesetHeight,
                                             impDlg.Ts.NCellWidth, impDlg.Ts.NCellHeight, impDlg.StrFileName);
+                    m_tsTileset[m_nCurrTilesetIndex].NCurrLayer = m_nCurrLayer;
                     bNewTS = false;
 //                     string tempString = Path.GetFileName(impDlg.StrFileName);
 // 
@@ -494,6 +531,33 @@ namespace test
                     m_impTsDlg.Close();
                 }
             }
+        }
+        private void importTilesetAddToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            m_bAddTileset = true;
+            if (m_impTsDlg == null)
+            {
+                m_nCurrTilesetIndex = tabControl1.TabCount - 1;
+                if (m_nCurrTilesetIndex == MAX_NUM_TILESETS)
+                {
+                    m_nCurrTilesetIndex = MAX_NUM_TILESETS - 1;
+                    MessageBox.Show(this, "You cannot add any more tilesets.", "Tileset limit reached!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+                m_bDontDraw = true;
+                m_impTsDlg = new ImportTilesetDlg(m_mMap.NCellWidth, m_mMap.NCellHeight);
+                m_impTsDlg.Text = "Add New Tileset...";
+
+                m_impTsDlg.FormClosing += new FormClosingEventHandler(impTsDlg_Close);
+                m_impTsDlg.createPushed += new EventHandler(impTsDlg_CreatePushed);
+                m_impTsDlg.cancelPushed += new EventHandler(m_impTsDlg_cancelPushed);
+                m_impTsDlg.Show(this);
+            }
+        }
+
+        void m_impTsDlg_cancelPushed(object sender, EventArgs e)
+        {
+            m_nCurrTilesetIndex--;
         }
         void impTsDlg_Close(object sender, FormClosingEventArgs e)
         {
@@ -518,7 +582,11 @@ namespace test
             NewMap newMap = sender as NewMap;
             if (newMap != null)
             {
+                m_bInPanelTwo = true;
+                m_bDontDraw = false;
                 m_bIsIsometric = newMap.BIsIsometric;
+                nudMapNumCols.Value = newMap.NColumns;
+                nudMapNumRows.Value = newMap.NRows;
                 if (!newMap.BIsIsometric)
                 {
                     m_mMap = new CMap(newMap.NCellSize, newMap.NColumns, newMap.NRows, m_nZoomIncrement, false);
@@ -527,31 +595,75 @@ namespace test
                     nudMapNumRows.Enabled = true;
                     nudMapCellSize.Enabled = true;
                     nudMapZoom.Enabled = true;
-                    m_mMap.NPanelWidth = m_mMap.NNumCols * (m_mMap.NCellWidth / 2) + m_mMap.GMapGrid.NIsoCenterTopX + 100;
-                    m_mMap.NPanelHeight = m_mMap.NNumRows * (m_mMap.NCellHeight / 2) + m_mMap.GMapGrid.NIsoCenterLeftY + 100;
-                    splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NMapWidth + m_mMap.AnchorOffset * 6, m_mMap.NMapHeight + m_mMap.AnchorOffset * 6);
+                    m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth;
+                    m_mMap.NPanelHeight = m_mMap.NNumRows * m_mMap.NCellHeight + m_mMap.NCellHeight;
+                    splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth, m_mMap.NPanelHeight);
                 } 
                 else // is an isometric map
                 {
-                    m_mMap = new CMap(newMap.NIsoWidth, newMap.NIsoHeight, newMap.NColumns, newMap.NRows, m_nZoomIncrement, true, newMap.NIsoType, splitContainer1.Panel2.ClientSize.Height);
+                    m_mMap = new CMap(newMap.NIsoWidth, newMap.NIsoHeight, newMap.NColumns, newMap.NRows, 
+                        m_nZoomIncrement, true, newMap.NIsoType,
+                        this.Height, this.Width);
+                    m_mMap.GMapGrid.SetDotID(dotID);
+
                     nudMapNumCols.Enabled = false;
                     nudMapNumRows.Enabled = false;
                     nudMapCellSize.Enabled = false;
                     nudMapZoom.Enabled = false;
-                    m_mMap.NPanelWidth = m_mMap.NMapWidth + 200;
-                    m_mMap.NPanelHeight = m_mMap.NMapHeight + 200;
-                    splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NMapWidth + m_mMap.AnchorOffset * 6, m_mMap.NMapHeight + m_mMap.AnchorOffset * 6);
+                    m_bIsIsometric = true;
+
+                    switch (newMap.NIsoType)
+                    {
+                        case (int)IsoType.ISO_DIAMOND:
+                            m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth;
+                            m_mMap.NPanelHeight = m_mMap.NNumRows * m_mMap.NCellHeight + m_mMap.NCellHeight;
+                            if (m_mMap.NPanelHeight < this.Height)
+                                m_mMap.NPanelHeight = this.Height;
+                            if (m_mMap.NPanelWidth < this.Width)
+                                m_mMap.NPanelWidth = this.Width;
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth, m_mMap.NPanelHeight);
+                            break;
+                        case (int)IsoType.ISO_SLIDE:
+                            m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth;
+                            m_mMap.NPanelHeight = (m_mMap.NNumRows >> 1) * m_mMap.NCellHeight + m_mMap.NCellHeight;
+                            if (m_mMap.NPanelHeight < this.Height)
+                                m_mMap.NPanelHeight = this.Height;
+                            if (m_mMap.NPanelWidth < this.Width)
+                                m_mMap.NPanelWidth = this.Width;
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(m_mMap.NPanelWidth + 100, m_mMap.NPanelHeight + 100);
+                            break;
+                        case (int)IsoType.ISO_STAG:
+                            int tempWidth, tempHeight;
+                            tempWidth = m_mMap.NPanelWidth = m_mMap.NNumCols * m_mMap.NCellWidth + m_mMap.NCellWidth + 100;
+                            tempHeight = m_mMap.NPanelHeight = (m_mMap.NNumRows >> 1) * m_mMap.NCellHeight + m_mMap.NCellHeight + m_mMap.GMapGrid.NIsoTopY;
+                            if (m_mMap.NPanelHeight < this.Height)
+                                m_mMap.NPanelHeight = this.Height;
+                            if (m_mMap.NPanelWidth < this.Width)
+                                m_mMap.NPanelWidth = this.Width;
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(0, 0);
+                            splitContainer1.Panel2.AutoScrollMinSize = new Size(tempWidth, m_mMap.NPanelHeight);
+
+                            if (tempWidth > splitContainer1.Panel2.ClientSize.Width)
+                                m_mMap.NPanelWidth = tempWidth;
+                            if (tempHeight > splitContainer1.Panel2.ClientSize.Height)
+                                m_mMap.NPanelHeight = tempHeight;
+
+                            break;
+                    }
                 }
 
-                if (m_nCurrTilesetIndex == -1)
-                    m_nCurrTilesetIndex = 0;
-                m_mMap.NPanelWidth = splitContainer1.Panel2.Width;
-                m_mMap.NPanelHeight = splitContainer1.Panel2.Height;
-                nudMapNumCols.Value = newMap.NColumns;
-                nudMapNumRows.Value = newMap.NRows;
-                if (m_tsTileset[m_nCurrTilesetIndex] != null)
-	                m_nCurrImageID[m_nCurrTilesetIndex] = m_tsTileset[m_nCurrTilesetIndex].NTilesetImageID;
-                m_mMap.ClrTilesetKey = m_clrKey[m_nCurrTilesetIndex];
+//                 if (m_nCurrTilesetIndex == -1)
+//                     m_nCurrTilesetIndex = 0;
+                if (m_nCurrTilesetIndex > -1 && m_tsTileset[m_nCurrTilesetIndex] != null)
+                {
+                    m_nCurrImageID[m_nCurrTilesetIndex] = m_tsTileset[m_nCurrTilesetIndex].NTilesetImageID;
+                    m_mMap.ClrTilesetKey = m_clrKey[m_nCurrTilesetIndex];
+                }
+                else
+                    m_mMap.ClrTilesetKey = Color.White;
+
                 m_strSaveFileName = "MyMap";
                 this.Text = "TED - " + m_strSaveFileName;
                 newMap.Close();
@@ -636,6 +748,7 @@ namespace test
             }
             m_bDrawSelRectScroll = true;
             m_bDontDraw = false;
+            m_bInPanelOne = true;
         }
 
         private void splitContainer1_Panel2_Scroll(object sender, ScrollEventArgs e)
@@ -657,6 +770,7 @@ namespace test
                 lbCurrentLayer.Location = nPt;
             }
             m_bDontDraw = false;
+            m_bInPanelTwo = true;
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
@@ -684,18 +798,19 @@ namespace test
             {
                 m_fRotation = 0.0f;
             }
-            if (keyData == Keys.G)
+            else if (keyData == Keys.G)
             {
                 cbShowGrid.Checked = !cbShowGrid.Checked;
                 m_bIsGridOn = cbShowGrid.Checked;
                 m_tsTileset[m_nCurrTilesetIndex].ShowGrid = m_bIsGridOn;
             }
             // Fills all tiles with currently selected tile
-            else if (keyData == Keys.F && m_nCurrLayer != (int)LAYER.LAYER_FREE)
+            else if (keyData == Keys.F && m_nCurrLayer != (int)LAYER.LAYER_FREE && m_nCurrTilesetIndex > -1)
             {
                 if (DialogResult.Yes == MessageBox.Show("Are you sure you want to fill all tiles?", "Fill all...", MessageBoxButtons.YesNo))
                     for (int i = 0; i < m_mMap.NTotalNumTiles; ++i)
                         m_mMap.AddTile(m_tCurrTile, i);
+                m_bChangesMade = true;
             }
             else if (keyData == Keys.Space && m_bIsTwoLayersOn)
             {
@@ -704,8 +819,16 @@ namespace test
                 else
                     cbLayer.SelectedIndex = (int)LAYER.LAYER_ONE;
             }
-            else if (keyData == Keys.C)
-            { m_mMap.ClearMap(); }
+            else if (keyData == Keys.T)
+            {
+                nudTileCost.Visible = !nudTileCost.Visible;
+                Point pt = m_tsTileset[m_nCurrTilesetIndex].GetTLPointOfSelectedTile();
+                pt.X += 10; pt.Y += 10;
+                nudTileCost.Location = pt;
+                nudTileCost.Value = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[m_tsTileset[m_nCurrTilesetIndex].NCurrSelectedTile].Cost;
+            }
+            else if (keyData == Keys.C && m_nCurrTilesetIndex > -1)
+            { m_mMap.ClearMap(); ResetCurrTile(); }
             else if (keyData == Keys.Q && m_bIsTwoLayersOn)
                 cbLayerMode.SelectedIndex = (int)LAYER_MODE.SHOW_L1;
             else if (keyData == Keys.W && m_bIsTwoLayersOn)
@@ -831,21 +954,31 @@ namespace test
                 m_tsTileset[m_nCurrTilesetIndex].BShowFlags = cbShowFlags.Checked;
             }
             else if (keyData == Keys.Escape)
-                this.Close();
-            
+            { this.Close(); return base.ProcessCmdKey(ref msg, keyData); }
+
             m_bDontDraw = false;
+            PanelOnePaint();
+            PanelTwoPaint();
             return base.ProcessCmdKey(ref msg, keyData);
         }
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
+            if (e.Shift)
+                bShiftDown = false;
         }
+        bool bShiftDown = false;
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
             if (e.Control && (e.KeyData & Keys.Z) == Keys.Z)
             {
                 m_bDontDraw = false;
+            }
+            else if (e.Shift && !bShiftDown)
+            {
+                m_ptFirstTileCoord.X = -1;
+                bShiftDown = true;
             }
         }
         protected override void OnMouseWheel(MouseEventArgs e)
@@ -953,7 +1086,7 @@ namespace test
                     int left = (nSourceID % m_tsTileset[m_nCurrTilesetIndex].NNumCols) * m_tsTileset[m_nCurrTilesetIndex].NCellWidth;
                     int top = (nSourceID / m_tsTileset[m_nCurrTilesetIndex].NNumCols) * m_tsTileset[m_nCurrTilesetIndex].NCellHeight;
                     Rectangle sRect = new Rectangle(left, top, m_tsTileset[m_nCurrTilesetIndex].NCellWidth, m_tsTileset[m_nCurrTilesetIndex].NCellHeight);
-                    m_tCurrTile = new CTILE(nSourceID, sRect, newTileFlag, m_nCurrImageID[m_nCurrTilesetIndex]);
+                    m_tCurrTile = new CTILE(nSourceID, sRect, newTileFlag, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                     tbAnchorX.Text = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].AnchorX.ToString();
                     tbAnchorY.Text = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].AnchorY.ToString();
                     m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.SelectedIndex = newTileFlag;
@@ -978,6 +1111,11 @@ namespace test
                         tbAnchorY.Text = m_tCurrTile.AnchorY.ToString();
                     }
                     m_tsTileset[m_nCurrTilesetIndex].SetSelectionRect();
+
+                    Point pt = m_tsTileset[m_nCurrTilesetIndex].GetTLPointOfSelectedTile();
+                    pt.X += 10; pt.Y += 10;
+                    nudTileCost.Location = pt;
+                    nudTileCost.Value = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].Cost;
 	            }
             }
         }
@@ -987,7 +1125,8 @@ namespace test
             m_ptTopLeft.Y = -1;
             m_ptBottomRight.X = -1;
             m_ptBottomRight.Y = -1;
-            if (m_ptTopLeft.X == -1 && e.X < m_tsTileset[m_nCurrTilesetIndex].NWidth + m_nTilesetXoffset && e.Y < m_tsTileset[m_nCurrTilesetIndex].NHeight + m_nTilesetYoffset)
+            if (m_ptTopLeft.X == -1 && m_nCurrTilesetIndex > -1 &&
+                e.X < m_tsTileset[m_nCurrTilesetIndex].NWidth + m_nTilesetXoffset && e.Y < m_tsTileset[m_nCurrTilesetIndex].NHeight + m_nTilesetYoffset)
             {
                 Point click = new Point(e.X, e.Y);
                 click.X += (-m_nTilesetXoffset + (-splitContainer1.Panel1.AutoScrollPosition.X));
@@ -1118,7 +1257,7 @@ namespace test
                     width = m_ptBottomRight.X - left;
                     height = m_ptBottomRight.Y - top;
                     Rectangle sRect = new Rectangle(left, top, width, height);
-                    m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                    m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                     //tbAnchorX.Text = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].AnchorX.ToString();
                     //tbAnchorY.Text = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[nSourceID].AnchorY.ToString();
                     m_tsComponents[m_nCurrTilesetIndex].cbTileFlag.SelectedIndex = 0;
@@ -1147,7 +1286,7 @@ namespace test
                     for (int i = 0; i < totalNumTiles; ++i)
                     {
                         Rectangle sRect = new Rectangle(sourceX, sourceY, m_tsTileset[m_nCurrTilesetIndex].GTilesetGrid.NCellWidth, m_tsTileset[m_nCurrTilesetIndex].GTilesetGrid.NCellHeight);
-                        m_tMarqueeTiles[i] = new CTILE(ID, sRect, m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[ID].NTileFlag, m_nCurrImageID[m_nCurrTilesetIndex]);
+                        m_tMarqueeTiles[i] = new CTILE(ID, sRect, m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[ID].NTileFlag, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                         m_tsTileset[m_nCurrTilesetIndex].MarqueeTiles[i] = m_tMarqueeTiles[i];
                         currCol++;
                         ID++;
@@ -1185,7 +1324,6 @@ namespace test
             }
         }
 
-
         void OpenSetTiggerDlg(string currTileTrigger, int ID)
         {
             if (m_stDlg != null)
@@ -1211,9 +1349,13 @@ namespace test
 	            {
 	                case (int)LAYER.LAYER_ONE:
                         m_mMap.TMapTiles[m_nCurrTileEditID].Trigger = stDlg.Trigger;
+                        m_tCurrTile = new CTILE();
+                        m_tCurrTile = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[m_tsTileset[m_nCurrTilesetIndex].NCurrSelectedTile];
 	                    break;
 	                case (int)LAYER.LAYER_TWO:
-	                    m_mMap.TMapTilesLayer2[m_nCurrTileEditID].Trigger = stDlg.Trigger;
+                        m_mMap.TMapTilesLayer2[m_nCurrTileEditID].Trigger = stDlg.Trigger;
+                        m_tCurrTile = new CTILE();
+                        m_tCurrTile = m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[m_tsTileset[m_nCurrTilesetIndex].NCurrSelectedTile];
 	                    break;
 	                case (int)LAYER.LAYER_FREE:
                         m_mMap.FreePlaced[m_nCurrTileEditID].Trigger = stDlg.Trigger;
@@ -1231,25 +1373,27 @@ namespace test
         Point ptFirstPanel2Click;
         private void splitContainer1_Panel2_MouseClick(object sender, MouseEventArgs e)
         {
+            if (m_bDraggingMap == true)
+                return;
             m_bPanel2HasFocus = true;
             if (m_nCurrTilesetIndex == -1)
                 return;
             m_bDontDraw = false;
             m_bDeleting = false;
-            Point click = new Point(e.X, e.Y);
+            Point mouse = new Point(e.X, e.Y);
             Point freeClick = new Point();
-            click.X += (-splitContainer1.Panel2.AutoScrollPosition.X);
-            click.Y += (-splitContainer1.Panel2.AutoScrollPosition.Y);
-            freeClick = click;
+            mouse.X += (-splitContainer1.Panel2.AutoScrollPosition.X);
+            mouse.Y += (-splitContainer1.Panel2.AutoScrollPosition.Y);
+            freeClick = mouse;
 
             #region non-isometric 1
             if (!m_bIsIsometric)
             {
-                int numVertLines = (click.X / m_mMap.NCellSize) / 2;
-                int numHorLines = (click.Y / m_mMap.NCellSize);
-                click.X = ((click.X/* + numVertLines*/) / m_mMap.NCellSize);
-                click.Y = ((click.Y/* + numHorLines*/) / m_mMap.NCellSize);
-                int ID = click.Y * (m_mMap.GMapGrid.NNumVertLines - 1) + click.X;
+                int numVertLines = (mouse.X / m_mMap.NCellSize) / 2;
+                int numHorLines = (mouse.Y / m_mMap.NCellSize);
+                mouse.X = mouse.X / m_mMap.NCellSize;
+                mouse.Y = mouse.Y / m_mMap.NCellSize;
+                int ID = mouse.Y * (m_mMap.GMapGrid.NNumVertLines - 1) + mouse.X;
                 if (e.X < m_mMap.NMapWidth-1 && e.Y < m_mMap.NMapHeight-1 && m_tsTileset[m_nCurrTilesetIndex] != null)
                 {
                     m_bChangesMade = true;
@@ -1368,26 +1512,8 @@ namespace test
             else
             {
                 int xID = 0, yID = 0;
-                int cellHeight = m_mMap.GMapGrid.NCellHeight;
-                int cellWidth  = m_mMap.GMapGrid.NCellWidth;
-                click.X -= m_mMap.AnchorOffset;
-                click.Y -= m_mMap.AnchorOffset;
-
-                // isometric ID equation
-                
-                // if too low here:
-                //
-                //  need to increase before and/or after add ....  and/or lower after divide
-
-                xID = ((cellWidth * (click.Y - m_mMap.GMapGrid.NIsoCenterLeftY)) + (cellHeight * (click.X - m_mMap.GMapGrid.NIsoCenterTopX))) / 
-                       (cellWidth * cellHeight);
-
-                // if too low here:
-                //
-                //  need to increase before subtract and/or decrease after add.... and/or lower after divide
-
-                yID = ((cellWidth * (click.Y - m_mMap.GMapGrid.NIsoCenterLeftY)) - (cellHeight * (click.X - m_mMap.GMapGrid.NIsoCenterTopX))) / 
-                       (cellWidth * cellHeight);
+                xID = m_ptCurrMouseTileID.X;
+                yID = m_ptCurrMouseTileID.Y;
 
                 lblXID.Text = "X ID = " + xID + " Y ID = " + yID;
 
@@ -1402,14 +1528,14 @@ namespace test
                         switch (m_nCurrLayer)
                         {
                             case (int)LAYER.LAYER_ONE:
-                                if (m_mMap.TMapTiles[m_nCurrTileEditID].NSourceID != -1)
+                                if (m_mMap.TMapTiles[m_nCurrTileEditID] != null)
                                 {
                                     OpenSetTiggerDlg(m_mMap.TMapTiles[m_nCurrTileEditID].Trigger, m_nCurrTileEditID);
                                     return;
                                 }
                                 break;
                             case (int)LAYER.LAYER_TWO:
-                                if (m_mMap.TMapTilesLayer2[m_nCurrTileEditID].NSourceID != -1)
+                                if (m_mMap.TMapTilesLayer2[m_nCurrTileEditID] != null)
                                 {
                                     OpenSetTiggerDlg(m_mMap.TMapTilesLayer2[m_nCurrTileEditID].Trigger, m_nCurrTileEditID);
                                     return;
@@ -1431,6 +1557,38 @@ namespace test
                                     }
                                 }
                                 break;
+                        }
+                    }
+                    #endregion
+                    #region tileLine 1
+                    else if (Control.ModifierKeys == Keys.Shift && MouseButtons.Left == e.Button)
+                    {
+                        // depending on the new location of the mouse point, fill every tile in between the old tile's id and the new one in a straight line
+
+                        // if there has not been a first coord indicated, the current map point will be that first coord
+                        if (m_ptFirstTileCoord.X == -1)
+                        {
+                            m_ptFirstTileCoord.X = xID;
+                            m_ptFirstTileCoord.Y = yID;
+                        }
+                        // otherwise, checking to determine if the last tile has the same x or y and a different y or x respectively
+                        else if (m_ptFirstTileCoord.X == xID && m_ptFirstTileCoord.Y != yID)
+                        {
+                            int difference = Math.Abs(m_ptFirstTileCoord.Y - yID);
+                            int direction = -m_mMap.NNumCols;
+                            if (m_ptFirstTileCoord.Y - yID < 0) // the new yID is higher, add to y
+                                direction = m_mMap.NNumCols;
+                            AddLineOfTiles(direction, difference);
+                            return;
+                        }
+                        else if (m_ptFirstTileCoord.Y == yID && m_ptFirstTileCoord.X != xID)
+                        {
+                            int difference = Math.Abs(m_ptFirstTileCoord.X - xID);
+                            int direction = -1;
+                            if (m_ptFirstTileCoord.X - xID < 0) // the new xID is higher, add to x
+                                direction = 1;
+                            AddLineOfTiles(direction, difference);
+                            return;
                         }
                     }
                     #endregion
@@ -1512,6 +1670,7 @@ namespace test
                             {
                                 m_bChangesMade = true;
                                 m_mMap.AddTile(m_tCurrTile, tileID);
+                                ResetCurrTile();
                                 return;
                             }
                         }
@@ -1526,9 +1685,9 @@ namespace test
                             m_bChangesMade = true;
                             int tileID = yID * m_mMap.NNumCols + xID;
                             if (m_nCurrLayer == (int)LAYER.LAYER_ONE)
-                                m_mMap.TMapTiles[tileID] = new CTILE();
+                                m_mMap.TMapTiles[tileID] = null;
                             else
-                                m_mMap.TMapTilesLayer2[tileID] = new CTILE();
+                                m_mMap.TMapTilesLayer2[tileID] = null;
                             return;
                         }
                     }
@@ -1619,7 +1778,16 @@ namespace test
             #endregion
         }
 
-
+        private void AddLineOfTiles(int direction, int difference)
+        {
+            m_bChangesMade = true;
+            int tileID = m_ptFirstTileCoord.Y * m_mMap.NNumCols + m_ptFirstTileCoord.X;
+            // determine the amount of tiles needing to be filled
+            for (int i = 1; i < difference + 1; ++i)
+                m_mMap.AddTile(m_tCurrTile, tileID + (i * direction));
+            m_ptFirstTileCoord = new Point(-1, 0);
+            ResetCurrTile();
+        }
         #region editTileChanges
 
         void edDlg_Activated(object sender, EventArgs e)
@@ -1787,11 +1955,12 @@ namespace test
 
         private void splitContainer1_Panel2_MouseDown(object sender, MouseEventArgs e)
         {
+            m_bDraggingMap = false;
             // Map move click point:
             m_ptMapMoveOriginal = e.Location;
 
             //////////////////////////////////////////////////////////////////////////
-            // only start dragging if the mouse has moved more than a certain amount of pixels
+            // 
             if (!bPanel2StartPtCalculated)
             {
                 ptFirstPanel2Click = new Point(e.X + (-splitContainer1.Panel2.AutoScrollOffset.X), e.Y + (-splitContainer1.Panel2.AutoScrollOffset.Y));
@@ -1800,23 +1969,103 @@ namespace test
             //////////////////////////////////////////////////////////////////////////
             if (m_bFreePlace && e.Button == MouseButtons.Right)
                 m_bDeleting = true;
+            splitContainer1_Panel2_MouseClick(sender, e);
         }
+
         private void splitContainer1_Panel2_MouseMove(object sender, MouseEventArgs e)
         {
             m_bDontDraw = false;
             Point mouse = new Point(e.X, e.Y);
+            // adjust for scrolling
             mouse.X += (-splitContainer1.Panel2.AutoScrollPosition.X);
             mouse.Y += (-splitContainer1.Panel2.AutoScrollPosition.Y);
             int cellHeight = m_mMap.GMapGrid.NCellHeight;
             int cellWidth = m_mMap.GMapGrid.NCellWidth;
-            mouse.X -= m_mMap.AnchorOffset;
-            mouse.Y -= m_mMap.AnchorOffset;
+            // adjust for the original offset
+            mouse.X -= m_mMap.GMapGrid.NIsoCenterX;
+            mouse.Y -= m_mMap.GMapGrid.NIsoTopY;
 
-            m_ptCurrMouseTileID.X = ((cellWidth * (mouse.Y - m_mMap.GMapGrid.NIsoCenterLeftY)) + (cellHeight * (mouse.X - m_mMap.GMapGrid.NIsoCenterTopX))) /
-                   (cellWidth * cellHeight);
-
-            m_ptCurrMouseTileID.Y = ((cellWidth * (mouse.Y - m_mMap.GMapGrid.NIsoCenterLeftY)) - (cellHeight * (mouse.X - m_mMap.GMapGrid.NIsoCenterTopX))) /
-                   (cellWidth * cellHeight);
+            switch (m_mMap.GMapGrid.Type)
+            {
+                case (int)IsoType.ISO_DIAMOND:
+                    m_ptCurrMouseTileID.X = ((cellWidth * mouse.Y) + (cellHeight * mouse.X)) /
+                           (cellWidth * cellHeight);
+                    m_ptCurrMouseTileID.Y = ((cellWidth * mouse.Y) - (cellHeight * mouse.X)) /
+                           (cellWidth * cellHeight);
+                    break;
+                case (int)IsoType.ISO_STAG:
+                    int hWidth, hHeight; hWidth = (cellWidth >> 1); hHeight = (cellHeight >> 1);
+                    // first find which rectangle the point's in:
+                    int rectIDx, rectIDy;
+                    m_ptCurrMouseTileID.X = rectIDx = mouse.X / cellWidth; m_ptCurrMouseTileID.Y = rectIDy = mouse.Y / cellHeight;
+                    if (m_ptCurrMouseTileID.Y > 0)
+                        m_ptCurrMouseTileID.Y = (m_ptCurrMouseTileID.Y << 1);
+                    // now find which quadrant it's in based upon the point's relative position in this rect
+                    int adjX, adjY;
+                    adjX = mouse.X - (rectIDx * cellWidth); adjY = mouse.Y - (rectIDy * cellHeight);
+                    int quadrant = (int)QUADRANT.TOP_LEFT;
+                    if (adjX >= hWidth)
+                        quadrant = (int)QUADRANT.TOP_RIGHT;
+                    if (adjY >= hHeight)
+                    {
+                        if (quadrant > 0)
+                            quadrant = (int)QUADRANT.BTM_RIGHT;
+                        else
+                            quadrant = (int)QUADRANT.BTM_LEFT;
+                    }
+                    // now determine if the point is inside or outside the actual tile based upon which quadrant it's in
+                    int result = -1;
+                    switch (quadrant)
+                    {
+                        case (int)QUADRANT.BTM_RIGHT:   // for bottoms, if result > 0, the point is outside the tile
+                            {
+                                float d = (float)(hHeight - cellHeight) / (float)(cellWidth - hWidth);
+                                result = adjY - cellHeight - (int)(d * (float)(adjX - hWidth));
+                                if (result > 0)
+                                    ++m_ptCurrMouseTileID.Y;
+                            }
+                            break;
+                        case (int)QUADRANT.BTM_LEFT:
+                            {
+                                float d = (float)(hHeight - cellHeight) / (float)(-hWidth);
+                                result = adjY - cellHeight - (int)(d * (float)(adjX - hWidth));
+                                if (result > 0)
+                                { --m_ptCurrMouseTileID.X; ++m_ptCurrMouseTileID.Y; }
+                            }
+                            break;
+                        case (int)QUADRANT.TOP_RIGHT:   // for tops, if result is < 0, the point is outside the tile
+                            {
+                                float d = (float)hHeight / (float)(cellWidth - hWidth);
+                                result = adjY - (int)(d * (float)(adjX - hWidth));
+                                if (result < 0)
+                                    --m_ptCurrMouseTileID.Y;
+                            }
+                            break;
+                        case (int)QUADRANT.TOP_LEFT:
+                            {
+                                float d = (float)hHeight / (float)(-hWidth);
+                                result = adjY - (int)(d * (float)(adjX - hWidth));
+                                if (result < 0)
+                                { --m_ptCurrMouseTileID.X; --m_ptCurrMouseTileID.Y; }
+                            }
+                            break;
+                    }
+                    break;
+                case (int)IsoType.ISO_SLIDE:
+                    m_ptCurrMouseTileID.X = ((cellWidth * mouse.Y) + (cellHeight * mouse.X)) /
+                           (cellWidth * cellHeight);
+                    m_ptCurrMouseTileID.Y = ((cellWidth * mouse.Y) - (cellHeight * mouse.X)) /
+                           (cellWidth * cellHeight);
+                    break;
+            }
+            if (m_ptCurrMouseTileID.X < 0)
+                m_ptCurrMouseTileID.X = 0;
+            if (m_ptCurrMouseTileID.Y < 0)
+                m_ptCurrMouseTileID.Y = 0;
+            if (m_ptCurrMouseTileID.X > m_mMap.NNumCols - 1)
+                m_ptCurrMouseTileID.X = m_mMap.NNumCols - 1;
+            if (m_ptCurrMouseTileID.Y > m_mMap.NNumRows - 1)
+                m_ptCurrMouseTileID.Y = m_mMap.NNumRows - 1;
 
             //////////////////////////////////////////////////////////////////////////
             // only start dragging if the mouse has moved more than a certain amount of pixels
@@ -1824,53 +2073,31 @@ namespace test
             {
 	            if (bPanel2StartPtCalculated)
 	            {
-		            Point ptLatest = e.Location;
-		            ptLatest.X += (-splitContainer1.Panel2.AutoScrollOffset.X);
-		            ptLatest.Y += (-splitContainer1.Panel2.AutoScrollOffset.Y);
-		            if (ptLatest.X >= ptFirstPanel2Click.X + 5 || ptLatest.X <= ptFirstPanel2Click.X - 5 ||
-		                        m_ptDrawTL.Y >= ptFirstPanel2Click.Y + 5 || ptLatest.Y <= ptFirstPanel2Click.Y - 5)
+// 		            Point ptLatest = e.Location;
+// 		            ptLatest.X += (-splitContainer1.Panel2.AutoScrollOffset.X);
+// 		            ptLatest.Y += (-splitContainer1.Panel2.AutoScrollOffset.Y);
+		            /*if (trueptLatest.X >= ptFirstPanel2Click.X + 1 || ptLatest.X <= ptFirstPanel2Click.X - 1 ||*/
+		                        /*m_ptDrawTL.Y >= ptFirstPanel2Click.Y + 1 || ptLatest.Y <= ptFirstPanel2Click.Y - 1)*/
 		                m_bIsDragging = true;
 	            }
 	
 	            if(m_bIsDragging && !m_bFreePlace)
 	                splitContainer1_Panel2_MouseClick(sender, e);
 	            if (m_bFreePlace)
-	            {
 	                m_ptMouseFreePlacePos = e.Location;
-	            }
 	            lblCursorPos.Text = "X=" + e.X + " Y=" + e.Y;
             } 
             else if (Control.ModifierKeys == Keys.Control && e.Button == MouseButtons.Left)
             {
+                m_bDraggingMap = true;
                 // TODO:: move the map around with the mouse
                 // use map offset to adjust, starting at the top-left corner (0,0)
-/*                Point newPos = e.Location;*/
-
-                // beginning at the click Point, calculate how far the mouse moves
-                // before the button is released...update as we move.
-//                 int moveDistX = (newPos.X - m_ptMapMoveOriginal.X);
-//                 int moveDistY = (newPos.Y - m_ptMapMoveOriginal.Y);
-//                 if (moveDistX > 5)
-//                 {
-//                     m_mMap.GMapGrid.Offset(5, 0);
-//                     m_mMap.OffsetImage(5, 0);
-//                 }
-//                 else if (moveDistX < -5)
-//                 {
-//                     m_mMap.GMapGrid.Offset(-5, 0);
-//                     m_mMap.OffsetImage(-5, 0);
-//                 }
-//                 else if (moveDistY < -5)
-//                 {
-//                     m_mMap.GMapGrid.Offset(0, -5);
-//                     m_mMap.OffsetImage(0, -5);
-//                 }
-//                 else if (moveDistY > 5)
-//                 {
-//                     m_mMap.GMapGrid.Offset(0, 5);
-//                     m_mMap.OffsetImage(0, 5);
-//                 }
-//                 int i = 0;
+                if (splitContainer1.Panel2.HorizontalScroll.Visible)
+                {
+                }
+                if (splitContainer1.Panel2.VerticalScroll.Visible)
+                {
+                }
             }
             #region MousedragAddTiles 0
 //             if (e.Button == MouseButtons.Left)
@@ -1918,6 +2145,7 @@ namespace test
             m_bIsDragging = false;
             m_bDeleting = false;
             bPanel2StartPtCalculated = false;
+            m_ptMapMoveOriginal = new Point(0, 0);
         }
 
         private void cbLayer_SelectedIndexChanged(object sender, EventArgs e)
@@ -1928,7 +2156,7 @@ namespace test
                 m_bFreePlace = false;
                 m_nCurrLayer = cbLayer.SelectedIndex;
                 m_mMap.NCurrLayer = m_nCurrLayer;
-                m_tsTileset[m_nCurrTilesetIndex].NCurrLayer = m_nCurrLayer + 1;
+                m_tsTileset[m_nCurrTilesetIndex].NCurrLayer = m_nCurrLayer;
                 if (m_nCurrLayer == (int)LAYER.LAYER_TWO)
                 {
                     cbLayerMode.SelectedIndex = (int)LAYER_MODE.SHOW_BOTH;
@@ -2144,8 +2372,14 @@ namespace test
             if (m_helpDlg == null)
             {
                 m_helpDlg = new Help();
+                m_helpDlg.FormClosing += new FormClosingEventHandler(m_helpDlg_FormClosing);
                 m_helpDlg.Show(this);
             }
+        }
+
+        void m_helpDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            m_helpDlg = null;
         }
 
         private void changeBGColorToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2166,37 +2400,6 @@ namespace test
             }
         }
 
-        private void importTilesetAddToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            m_bAddTileset = true;
-            if (m_impTsDlg == null)
-            {
-                if (m_nCurrTilesetIndex == -1)
-                    m_nCurrTilesetIndex = 0;
-                else
-                    m_nCurrTilesetIndex++;
-                if (m_nCurrTilesetIndex == MAX_NUM_TILESETS)
-                {
-                    m_nCurrTilesetIndex = MAX_NUM_TILESETS - 1; 
-                    MessageBox.Show(this, "You cannot add any more tilesets.", "Tileset limit reached!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                m_bDontDraw = true;
-                m_impTsDlg = new ImportTilesetDlg();
-                m_impTsDlg.Text = "Add New Tileset...";
-
-                m_impTsDlg.FormClosing += new FormClosingEventHandler(impTsDlg_Close);
-                m_impTsDlg.createPushed += new EventHandler(impTsDlg_CreatePushed);
-                m_impTsDlg.cancelPushed += new EventHandler(m_impTsDlg_cancelPushed);
-                m_impTsDlg.Show(this);
-            }
-        }
-
-        void m_impTsDlg_cancelPushed(object sender, EventArgs e)
-        {
-            m_nCurrTilesetIndex--;
-        }
-
         private void tabControl1_Selecting(object sender, TabControlCancelEventArgs e)
         {
             if (tabControl1.SelectedIndex != 0 && !m_bJustClick)
@@ -2211,7 +2414,7 @@ namespace test
                 int left = (selectedTile % m_tsTileset[m_nCurrTilesetIndex].NNumCols) * m_tsTileset[m_nCurrTilesetIndex].NCellWidth;
                 int top = (selectedTile / m_tsTileset[m_nCurrTilesetIndex].NNumCols) * m_tsTileset[m_nCurrTilesetIndex].NCellHeight;
                 Rectangle sRect = new Rectangle(left, top, m_tsTileset[m_nCurrTilesetIndex].NCellWidth, m_tsTileset[m_nCurrTilesetIndex].NCellHeight);
-                m_tCurrTile = new CTILE(selectedTile, sRect, newTileFlag, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_tCurrTile = new CTILE(selectedTile, sRect, newTileFlag, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                 m_bDrawMarquee = m_tsTileset[m_nCurrTilesetIndex].DrawMarquee;
                 m_bMarqueeSelect = m_bDrawMarquee;
                 if (m_bDrawMarquee)
@@ -2225,6 +2428,7 @@ namespace test
                 nudAdjustRectX.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageWidth.Value;
                 nudAdjustRectY.Maximum = m_tsComponents[m_nCurrTilesetIndex].nudImageHeight.Value;
             }
+            m_bInPanelOne = true;
             m_bDontDraw = false;
             m_bJustClick = false;
         }
@@ -2243,21 +2447,13 @@ namespace test
 
                     for (int i = 0; i < m_mMap.NTotalNumTiles; ++i )
                     {
-                        if (m_mMap.TMapTiles[i].ImageID == imageIDtoRemove)
+                        if (m_mMap.TMapTiles[i] != null && m_mMap.TMapTiles[i].ImageID == imageIDtoRemove)
                         {
 	                        m_mMap.TMapTiles[i] = new CTILE();
                         }
-                        else if (m_mMap.TMapTiles[i].ImageID != imageIDtoRemove && m_mMap.TMapTiles[i].ImageID > 0)
-                        {
-                            m_mMap.TMapTiles[i].ImageID--;
-                        }
-                        if (m_mMap.TMapTilesLayer2[i].ImageID == imageIDtoRemove)
+                        if (m_mMap.TMapTilesLayer2[i] != null && m_mMap.TMapTilesLayer2[i].ImageID == imageIDtoRemove)
                         {
                             m_mMap.TMapTilesLayer2[i] = new CTILE();
-                        }
-                        else if (m_mMap.TMapTilesLayer2[i].ImageID != imageIDtoRemove && m_mMap.TMapTilesLayer2[i].ImageID > 0)
-                        {
-                            m_mMap.TMapTilesLayer2[i].ImageID--;
                         }
                     }
                     for (int i = 0; i < m_mMap.FreePlaced.GetLength(0); ++i )
@@ -2281,6 +2477,10 @@ namespace test
                         m_nCurrImageID[1] = -1;
                         m_tsComponents[0] = m_tsComponents[1];
                         m_tsComponents[1] = null;
+                        m_nCurrImageID[0] = m_nCurrImageID[1];
+                        m_nCurrImageID[1] = -1;
+                        m_strTilesetFilenames[0] = m_strTilesetFilenames[1];
+                        m_strTilesetFilenames[1] = null;
                     }
                     tabControl1.SelectedIndex = tabControl1.TabCount - 1;
                     m_mTM.ReleaseTexture(imageIDtoRemove);
@@ -2290,6 +2490,7 @@ namespace test
             {
                 m_nCurrTilesetIndex = -1;
                 m_tCurrTile = new CTILE();
+                btnAddTileset.Visible = true;
             }
         }
 
@@ -2355,7 +2556,7 @@ namespace test
                         m_nCurrTilesetIndex = 1;
                     }
                     m_bDontDraw = true;
-                    m_impTsDlg = new ImportTilesetDlg();
+                    m_impTsDlg = new ImportTilesetDlg(m_mMap.NCellWidth, m_mMap.NCellHeight);
                     m_impTsDlg.Text = "Replace Tileset...";
 
                     m_impTsDlg.FormClosing += new FormClosingEventHandler(impTsDlg_Close);
@@ -2365,24 +2566,7 @@ namespace test
             }
         }
 
-        private void Form1_Activated(object sender, EventArgs e)
-        {
-            m_bDontDraw = false;
-
-        }
-
-        private void Form1_ResizeEnd(object sender, EventArgs e)
-        {
-            m_bDontDraw = false;
-            int h = splitContainer1.Panel2.Height;
-        }
-
-        private void Form1_LocationChanged(object sender, EventArgs e)
-        {
-            m_bDontDraw = false;
-
-        }
-
+        #region ADJ_RECT 1
         private void nudAdjustRectWidth_ValueChanged(object sender, EventArgs e)
         {
             if (!m_bJustClick)
@@ -2393,7 +2577,7 @@ namespace test
 	            int height = m_ptBottomRight.Y - top;
                 m_ptBottomRight.X = left + width;
 	            Rectangle sRect = new Rectangle(left, top, width, height);
-	            m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
 	            m_bDontDraw = false;
             }
         }
@@ -2408,7 +2592,7 @@ namespace test
 	            int height = (int)nudAdjustRectHeight.Value;
                 m_ptBottomRight.Y = top + height;
 	            Rectangle sRect = new Rectangle(left, top, width, height);
-	            m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
 	            m_bDontDraw = false;
             }
         }
@@ -2425,7 +2609,7 @@ namespace test
                     return;
                 nudAdjustRectWidth.Value = width;
                 Rectangle sRect = new Rectangle(left, top, width, height);
-                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                 m_bDontDraw = false;
             }
         }
@@ -2442,10 +2626,11 @@ namespace test
                     return;
                 nudAdjustRectHeight.Value = height;
                 Rectangle sRect = new Rectangle(left, top, width, height);
-                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex]);
+                m_tCurrTile = new CTILE(0, sRect, 0, m_nCurrImageID[m_nCurrTilesetIndex], 0, "None", m_tsTileset[m_nCurrTilesetIndex].StrFilePath);
                 m_bDontDraw = false;
             }
         }
+        #endregion
 
         private void lbCurrentLayer_Click(object sender, EventArgs e)
         {
@@ -2469,7 +2654,11 @@ namespace test
 
         private void Form1_Shown(object sender, EventArgs e)
         {
-            LoadDefault();
+            LoadDefault(); 
+            m_bDontDraw = false;
+            PanelOnePaint();
+            PanelTwoPaint();
+            m_bDontDraw = true;
         }
 
         private void Form1_ClientSizeChanged(object sender, EventArgs e)
@@ -2477,9 +2666,61 @@ namespace test
             if (m_mMap != null)
             {
                 m_mMap.GMapGrid.CenterOnY(this.Height, m_mMap.NMapHeight);
-                m_mMap.GMapGrid.CenterOnX(this.Width);
+                //m_mMap.GMapGrid.CenterOnX(this.Width);
             }
         }
 
+        private void Form1_Activated(object sender, EventArgs e)
+        {
+            m_bDontDraw = false;
+
+        }
+
+        private void Form1_ResizeEnd(object sender, EventArgs e)
+        {
+            m_bDontDraw = false;
+            int h = splitContainer1.Panel2.Height;
+        }
+
+        private void Form1_LocationChanged(object sender, EventArgs e)
+        {
+            m_bDontDraw = false;
+        }
+
+        private void cellPointsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog cd = new ColorDialog();
+            cd.Color = m_clrDots;
+            if (DialogResult.OK == cd.ShowDialog(this))
+            {
+                m_clrDots = cd.Color;
+            }            
+        }
+
+        private void nudTileCost_ValueChanged(object sender, EventArgs e)
+        {
+            m_tCurrTile.Cost = (int)nudTileCost.Value;
+            m_tsTileset[m_nCurrTilesetIndex].TTilesetTiles[m_tsTileset[m_nCurrTilesetIndex].NCurrSelectedTile].Cost = (int)nudTileCost.Value;
+        }
+
+        private void splitContainer1_Panel1_MouseEnter(object sender, EventArgs e)
+        {
+            m_bInPanelOne = true;
+            m_bDontDraw = false;
+        }
+        private void splitContainer1_Panel1_MouseLeave(object sender, EventArgs e)
+        {
+            m_bInPanelOne = false;
+        }
+
+        private void splitContainer1_Panel2_MouseEnter(object sender, EventArgs e)
+        {
+            m_bInPanelTwo = true;
+            m_bDontDraw = false;
+        }
+        private void splitContainer1_Panel2_MouseLeave(object sender, EventArgs e)
+        {
+            m_bInPanelTwo = false;
+        }
     }
 }

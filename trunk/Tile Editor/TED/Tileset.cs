@@ -198,7 +198,7 @@ namespace test
         {
             mD3d = ManagedDirect3D.Instance;
             mTM = ManagedTextureManager.Instance;
-            m_nCurrLayer      = 1;
+            m_nCurrLayer      = 0;
             nTilesetImageID   = imageID;
             m_nImageWidth     = m_nTilesetWidth = width;
             m_nImageHeight    = m_nTilesetHeight = height;
@@ -221,7 +221,7 @@ namespace test
             if (cellHeight == cellWidth)
                 SetupTileset(0, imageID);
             else
-                SetupTilesetNotSqure(0, imageID);
+                SetupTilesetNotSquare(0, imageID);
         }
         public void SetupTileset(int tileFlag, int imageID)
         {
@@ -232,10 +232,10 @@ namespace test
                 int y = id / m_nNumCols * m_nCellWidth;
 
                 Rectangle srcRect = new Rectangle( x, y, m_nCellWidth, m_nCellHeight);
-                m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID);
+                m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID, 0, "None", m_strFilePath);
             }
         }
-        public void SetupTilesetNotSqure(int tileFlag, int imageID)
+        public void SetupTilesetNotSquare(int tileFlag, int imageID)
         {
             int srcX = 0, srcY = 0;
             m_tTilesetTiles = new CTILE[m_nTotalNumTiles];
@@ -247,15 +247,15 @@ namespace test
                     srcX = id % m_nNumCols * m_nCellWidth;
                     srcY = m_nCellHeight * y;
                     Rectangle srcRect = new Rectangle(srcX, srcY, m_nCellWidth, m_nCellHeight);
-                    m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID);
+                    m_tTilesetTiles[id] = new CTILE(id, srcRect, tileFlag, imageID, 0, "None", m_strFilePath);
                 }
             }
         }
 
         public void DrawTSGrid()
         {
-            //if (m_bShowGrid)
-                m_gTilesetGrid.DrawGrid(false);
+            Color clr = Color.White;
+            m_gTilesetGrid.DrawGrid(false, clr);
         }
         public void DrawSelectionRect(bool bScroll)
         {
@@ -306,6 +306,11 @@ namespace test
             // anchor point crosshairs
             xPOI = m_tTilesetTiles[NCurrSelectedTile].AnchorX;
             yPOI = m_tTilesetTiles[NCurrSelectedTile].AnchorY;
+        }
+        public Point GetTLPointOfSelectedTile()
+        {
+            Point pt = new Point(left, top);
+            return pt;
         }
         public void SetMarqueeSelectionRect(int firstTileID, int numCols, int numRows)
         {
@@ -362,9 +367,9 @@ namespace test
                         Color.White.ToArgb());
                     if (m_bShowFlags)
                     {
-                        if (m_nCurrLayer == 1)
+                        if (m_nCurrLayer == 0)
                             mD3d.DrawText(m_tTilesetTiles[id].NTileFlag.ToString(), x + 2, y + 2, 0, 200, 0);
-                        else if (m_nCurrLayer == 2)
+                        else if (m_nCurrLayer == 1)
                             mD3d.DrawText(m_tTilesetTiles[id].NTileFlag.ToString(), x + m_nCellSize - 10, y + 2, 255, 0, 0);
                         else
                             mD3d.DrawText(m_tTilesetTiles[id].NTileFlag.ToString(), x + m_nCellSize / 2 - 3, y + 2, 0, 0, 255);

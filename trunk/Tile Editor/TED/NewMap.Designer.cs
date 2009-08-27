@@ -56,6 +56,7 @@
             this.tbColumns.TabIndex = 0;
             this.tbColumns.Text = "10";
             this.tbColumns.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tbColumns.TextChanged += new System.EventHandler(this.tbColumns_TextChanged);
             // 
             // tbRows
             // 
@@ -65,6 +66,7 @@
             this.tbRows.TabIndex = 1;
             this.tbRows.Text = "10";
             this.tbRows.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tbRows.TextChanged += new System.EventHandler(this.tbRows_TextChanged);
             // 
             // cbIsometric
             // 
@@ -72,7 +74,7 @@
             this.cbIsometric.Location = new System.Drawing.Point(11, 21);
             this.cbIsometric.Name = "cbIsometric";
             this.cbIsometric.Size = new System.Drawing.Size(68, 17);
-            this.cbIsometric.TabIndex = 2;
+            this.cbIsometric.TabIndex = 3;
             this.cbIsometric.Text = "Isometric";
             this.toolTip1.SetToolTip(this.cbIsometric, "Is the map going to be Isometric?");
             this.cbIsometric.UseVisualStyleBackColor = true;
@@ -83,9 +85,10 @@
             this.tbCellsize.Location = new System.Drawing.Point(197, 31);
             this.tbCellsize.Name = "tbCellsize";
             this.tbCellsize.Size = new System.Drawing.Size(47, 20);
-            this.tbCellsize.TabIndex = 3;
+            this.tbCellsize.TabIndex = 2;
             this.tbCellsize.Text = "32";
             this.tbCellsize.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tbCellsize.TextChanged += new System.EventHandler(this.tbCellsize_TextChanged);
             // 
             // label1
             // 
@@ -120,7 +123,7 @@
             this.btnCreate.Location = new System.Drawing.Point(33, 148);
             this.btnCreate.Name = "btnCreate";
             this.btnCreate.Size = new System.Drawing.Size(75, 23);
-            this.btnCreate.TabIndex = 8;
+            this.btnCreate.TabIndex = 7;
             this.btnCreate.Text = "Create";
             this.btnCreate.UseVisualStyleBackColor = true;
             this.btnCreate.Click += new System.EventHandler(this.btnCreate_Click);
@@ -131,7 +134,7 @@
             this.btnCancel.Location = new System.Drawing.Point(149, 148);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(75, 23);
-            this.btnCancel.TabIndex = 9;
+            this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancel";
             this.btnCancel.UseVisualStyleBackColor = true;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -160,9 +163,10 @@
             this.tbIsoWidth.Location = new System.Drawing.Point(194, 46);
             this.tbIsoWidth.Name = "tbIsoWidth";
             this.tbIsoWidth.Size = new System.Drawing.Size(49, 20);
-            this.tbIsoWidth.TabIndex = 2;
+            this.tbIsoWidth.TabIndex = 6;
             this.tbIsoWidth.Text = "0";
             this.tbIsoWidth.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tbIsoWidth.TextChanged += new System.EventHandler(this.tbIsoWidth_TextChanged);
             // 
             // tbIsoHeight
             // 
@@ -170,9 +174,10 @@
             this.tbIsoHeight.Location = new System.Drawing.Point(194, 20);
             this.tbIsoHeight.Name = "tbIsoHeight";
             this.tbIsoHeight.Size = new System.Drawing.Size(49, 20);
-            this.tbIsoHeight.TabIndex = 1;
+            this.tbIsoHeight.TabIndex = 5;
             this.tbIsoHeight.Text = "0";
             this.tbIsoHeight.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.tbIsoHeight.TextChanged += new System.EventHandler(this.tbIsoHeight_TextChanged);
             // 
             // groupBox1
             // 
@@ -196,12 +201,11 @@
             this.cbIsoType.FormattingEnabled = true;
             this.cbIsoType.Items.AddRange(new object[] {
             "Diamond",
-            "Staggered",
-            "Slide"});
+            "Staggered"});
             this.cbIsoType.Location = new System.Drawing.Point(11, 44);
             this.cbIsoType.Name = "cbIsoType";
             this.cbIsoType.Size = new System.Drawing.Size(96, 21);
-            this.cbIsoType.TabIndex = 12;
+            this.cbIsoType.TabIndex = 4;
             // 
             // NewMap
             // 

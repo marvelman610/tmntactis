@@ -56,11 +56,23 @@ namespace tile
             get { return m_nPOIY; }
             set { m_nPOIY = value; }
         }
+        int m_nCost;
+        public int Cost
+        {
+            get { return m_nCost; }
+            set { m_nCost = value; }
+        }
         string m_strTrigger;
         public string Trigger
         {
             get { return m_strTrigger; }
             set { m_strTrigger = value; }
+        }
+        string m_strFileName;
+        public string FileName
+        {
+            get { return m_strFileName; }
+            set { m_strFileName = value; }
         }
        
         // constructors
@@ -73,18 +85,39 @@ namespace tile
             m_nPOIX = 0;
             m_nPOIY = 0;
             m_strTrigger = "None";
+            m_strFileName = "";
+            m_nCost = 0;
         }
-        public CTILE(int sourceID, Rectangle srcRect, int tileFlag, int imageID)
+        public CTILE(int sourceID, Rectangle srcRect, int tileFlag, int imageID, int cost, string trigger, string fileName)
         {
             m_nSourceID = sourceID;
             SourceRect = srcRect;
             m_nTileFlag = tileFlag;
             m_nImageID = imageID;
+            m_nCost = cost;
+            m_strTrigger = trigger;
             m_nPOIX = 0;
             m_nPOIY = 0;
-            m_strTrigger = "None";
+            m_strFileName = fileName;
+        }
+        public CTILE (CTILE tile)
+        {
+            CTILE newTILE = new CTILE();
+            this.AnchorX = tile.AnchorX;
+            this.AnchorY = tile.AnchorY;
+            this.ImageID = tile.ImageID;
+            this.NSourceID = tile.NSourceID;
+            this.NTileFlag = tile.NTileFlag;
+            this.SourceRect = tile.SourceRect;
+            this.Trigger = tile.Trigger;
+            this.m_nCost = tile.Cost;
+            this.FileName = tile.FileName;
         }
     }
+    /// <summary>
+    /// Free tiles allow the user to place a tile of any origin (custom size, not restricted to the grid)
+    /// from a tileset to anywhere on the map.
+    /// </summary>
     public class CFREETILE
     {
         Rectangle m_sourceRect;
@@ -153,6 +186,13 @@ namespace tile
             get { return m_fScaleY; }
             set { m_fScaleY = value; }
         }
+        string m_strFilename;
+        public string Filename
+        {
+            get { return m_strFilename; }
+            set { m_strFilename = value; }
+        }
+
         // constructors
         public CFREETILE()
         {
@@ -167,8 +207,9 @@ namespace tile
             m_fScaleY = 1.0f;
             m_fRotation = 0.0f;
             m_strTrigger = "None";
+            m_strFilename = "";
         }
-        public CFREETILE(int PosX, int PosY, Rectangle srcRect, int tileFlag, int imageID, float rotation)
+        public CFREETILE(int PosX, int PosY, Rectangle srcRect, int tileFlag, int imageID, float rotation, string fileName)
         {
             SourceRect = srcRect;
             m_nTileFlag = tileFlag;
@@ -181,8 +222,9 @@ namespace tile
             m_fScaleY = 1.0f;
             m_fRotation = rotation;
             m_strTrigger = "None";
+            m_strFilename = fileName;
         }
-        public CFREETILE(int PosX, int PosY, Rectangle srcRect, int tileFlag, int imageID )
+        public CFREETILE(int PosX, int PosY, Rectangle srcRect, int tileFlag, int imageID, string fileName)
         {
             SourceRect = srcRect;
             m_nTileFlag = tileFlag;
@@ -195,6 +237,7 @@ namespace tile
             m_fScaleY = 1.0f;
             m_fRotation = 0.0f;
             m_strTrigger = "None";
+            m_strFilename = fileName;
         }
     }
 }

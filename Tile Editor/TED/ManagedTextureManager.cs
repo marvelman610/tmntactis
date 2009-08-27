@@ -255,6 +255,17 @@ namespace SGD
             return ((TEXTURE)textures[id]).height;
         }
 
+        public string GetTextureFilename(int id)
+        {
+            // Make sure the id is in range.
+            Debug.Assert((id > -1 && id < textures.Count), "id is out of range");
+            return ((TEXTURE)textures[id]).fileName;
+        }
+        public int GetNumTextures()
+        {
+            return textures.Count;
+        }
+
         /// <summary>
         /// Draws a texture to the screen.
         /// </summary>

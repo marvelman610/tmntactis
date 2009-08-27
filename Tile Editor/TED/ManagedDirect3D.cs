@@ -341,6 +341,10 @@ namespace SGD
 
             return true;
         }
+        public Control GetCurrRenderWindow()
+        {
+            return presentParams.DeviceWindow;
+        }
 
         /// <summary>
         /// Handles resetting the device (Private utility function).

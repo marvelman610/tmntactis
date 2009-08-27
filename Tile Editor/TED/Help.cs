@@ -56,7 +56,7 @@ namespace test
                 "Map tab page under Current Layer Mode and selecting an option from the drop down list.\n\n" +
 
                 "You may also select more than one tile from the tileset by dragging the mouse across as many tiles" +
-                "as you wish to select in a rectangle at once. When you place the tiles, they will always place" +
+                "as you wish to select in a rectangle at once (only available in non-isometric maps). When you place the tiles, they will always place" +
                 "from the top left down and to the right. If you happen to place tiles off the right edge of the map" +
                 "they will end up drawing in the first columns of the next row...so beware.\n\n" +
 
@@ -76,25 +76,41 @@ namespace test
 
                 "Ctrl + F \t--    Brings up the Set Tile Flags dialog box.\n" +
                 "Shift+ R-click\t Brings up the Set Trigger String dialog box.\n" +
-                "Shift+ L-click\t Brings up the Edit Free Tile dialog box.\n\n" +
+                "Shift+ L-click\t Brings up the Edit Free Tile dialog box (must be in Free Tile Layer).\n\n" +
 
-                "0 (zero) \t--    sets currently selected tile(s) flag to 0\n" +
-                "1 (one)  \t--    sets currently selected tile(s) flag to 1\n" +
-                "2        \t--    sets currently selected tile(s) flag to 2\n" +
-                "3        \t--    sets currently selected tile(s) flag to 3\n\n" +
+                "0 (zero) \t--    Sets currently selected tile(s) flag to 0\n" +
+                "1 (one)  \t--    Sets currently selected tile(s) flag to 1\n" +
+                "2        \t--    Sets currently selected tile(s) flag to 2\n" +
+                "3        \t--    Sets currently selected tile(s) flag to 3\n" +
+                "4        \t--    Sets currently selected tile(s) flag to 4\n" +
+                "5        \t--    Sets currently selected tile(s) flag to 5\n\n" +
 
-                "Q        \t--    set the current view to Layer 1 only.\n" +
-                "W        \t--    set the current view to Layer 2 only.\n" +
-                "E        \t--    set the current view to both first and second layers.\n" +
-                "R        \t--    set the current view to all layers.\n\n" +
+                "Q        \t--    Set the current view to Layer 1 only.\n" +
+                "W        \t--    Set the current view to Layer 2 only.\n" +
+                "E        \t--    Set the current view to both first and second layers.\n" +
+                "R        \t--    Set the current view to all layers.\n\n" +
 
-                "F        \t--    fills all tiles of Current Layer with the selected tile.\n" +
-                "C        \t--    clears all tiles of Current Layer.\n" +
+                "F        \t--    Fills all tiles of Current Layer with the selected tile.\n" +
+                "C        \t--    Clears all tiles of Current Layer.\n\n" +
+                "Shift+ L-click \tFills tiles in a row/column from begin to end.\n" +
+                                "\t\tHold shift before clicking on first tile, then select end tile.\n" +
+                                "\t\tBoth tiles must be in the same row/column.\n" +
+                                "\t\tOnly usable in layer one and two.\n\n" +
 
                 "S        \t--    toggle on/off (S)how tile flags.\n" +
                 "G        \t--    toggle on/off (G)rid lines.\n" +
-                "SPACE    \t--    toggles between Currently Selected layers.\n";
+                "SPACE    \t--    toggles between Currently Selected layers.\n" +
+                "T        \t--    toggles between showing the currently selected tile's cost.\n";
 
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if (keyData == Keys.Escape)
+                this.Close();
+            else if (keyData == Keys.F1)
+                this.Close();
+            return base.ProcessCmdKey(ref msg, keyData);
         }
         
     }

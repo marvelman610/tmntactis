@@ -25,10 +25,12 @@ namespace test
     public partial class ImportTilesetDlg : Form
     {
         ColorPickerDialog clrPicker;
-        public ImportTilesetDlg()
+        public ImportTilesetDlg(int tileWidth, int tileHeight)
         {
             InitializeComponent();
             btnKeyClr.Enabled = false;
+            nudCellWidth.Value = tileWidth;
+            nudCellHeight.Value = tileHeight;
         }
         // the new tileset
         CTileset m_ts;
@@ -98,14 +100,41 @@ namespace test
                     mD3d = ManagedDirect3D.Instance;
 
                     m_nImageID = mTM.LoadTexture(m_strFileName, Color.FromArgb (m_clrKey.R, m_clrKey.G, m_clrKey.B).ToArgb ());
-                    nudImageWidth.Value = (Decimal)mTM.GetTextureWidth(m_nImageID);
-                    nudImageHeight.Value = (Decimal)mTM.GetTextureHeight(m_nImageID);
-                    toolStripStatusLabel1.Text = "Image : Loaded -- " + m_strFileName;
-                    scaleX = 494f / (float)(mTM.GetTextureWidth(m_nImageID));
-                    scaleY = 424f / (float)(mTM.GetTextureHeight(m_nImageID));
-                    thisScaleX = panel1.Width / (float)(mTM.GetTextureWidth(m_nImageID));
-                    thisScaleY = panel1.Height / (float)(mTM.GetTextureHeight(m_nImageID));
-                    btnKeyClr.Enabled = true;
+                    decimal width, height;
+                    width = mTM.GetTextureWidth(m_nImageID);
+                    height = mTM.GetTextureHeight(m_nImageID);
+                    bool ok = true;
+                    if (width > nudImageWidth.Maximum)
+                    {
+                        ok = false;
+                        MessageBox.Show("Image width value too large, load a smaller image.", "Error", MessageBoxButtons.OK);
+                    }
+                    else if (width < nudCellWidth.Value)
+                    {
+                        ok = false;
+                        MessageBox.Show("Image width value too small, load a larger image.", "Error", MessageBoxButtons.OK);
+                    }
+                    if (height > nudImageHeight.Maximum)
+                    {
+                        ok = false;
+                        MessageBox.Show("Image height value too large, load a smaller image.", "Error", MessageBoxButtons.OK);
+                    }
+                    else if (height < nudCellHeight.Value)
+                    {
+                        ok = false;
+                        MessageBox.Show("Image height value too small, load a larger image.", "Error", MessageBoxButtons.OK);
+                    }
+                    if (ok)
+                    {
+                        nudImageWidth.Value = width;
+                        nudImageHeight.Value = height;
+                        toolStripStatusLabel1.Text = "Image : Loaded -- " + m_strFileName;
+                        scaleX = 494f / (float)(mTM.GetTextureWidth(m_nImageID));
+                        scaleY = 424f / (float)(mTM.GetTextureHeight(m_nImageID));
+                        thisScaleX = panel1.Width / (float)(mTM.GetTextureWidth(m_nImageID));
+                        thisScaleY = panel1.Height / (float)(mTM.GetTextureHeight(m_nImageID));
+                        btnKeyClr.Enabled = true;
+                    }
                 } 
             }
         }
@@ -175,7 +204,6 @@ namespace test
                 mD3d.DeviceEnd();
                 mD3d.Present();
             }
-
         }
     }
 }

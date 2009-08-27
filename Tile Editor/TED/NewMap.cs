@@ -13,7 +13,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 
-enum IsoType {ISO_DIAMOND, ISO_STAG, ISO_SLIDE, }
+enum IsoType {ISO_DIAMOND, ISO_STAG, ISO_SLIDE, RECT}
 
 namespace test
 {
@@ -22,6 +22,7 @@ namespace test
         public NewMap()
         {
             InitializeComponent();
+            cbIsoType.SelectedIndex = 0;
         }
 
         int nCellSize;
@@ -72,7 +73,9 @@ namespace test
         {
             if (!cbIsometric.Checked)
             {
-	            if (tbCellsize.Text != "0" && tbColumns.Text != "0" && tbRows.Text != "0")
+	            if (tbCellsize.Text.Length > 0 && tbCellsize.Text != "0" && 
+                    tbColumns.Text.Length > 0 && tbColumns.Text != "0" && 
+                    tbRows.Text.Length > 0 && tbRows.Text != "0")
 	            {
 		            nCellSize   = int.Parse(tbCellsize.Text);
 		            nColumns    = int.Parse(tbColumns.Text);
@@ -84,27 +87,63 @@ namespace test
                 }
                 else
                 {
-                    MessageBox.Show("All fields must be greater than 0", "For Normal Maps...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("All fields must contain non-negative values", "For Normal Maps...", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
             else if (cbIsometric.Checked)
             {
-                if (tbCellsize.Text != "0" && tbColumns.Text != "0" && tbRows.Text != "0" && tbIsoHeight.Text != "0" && tbIsoWidth.Text != "0" &&
-                    tbColumns.Text == tbRows.Text)
+                switch (cbIsoType.SelectedIndex)
                 {
-	                nIsoWidth   = int.Parse(tbIsoWidth.Text);
-	                nIsoHeight  = int.Parse(tbIsoHeight.Text);
-	                nColumns    = int.Parse(tbColumns.Text);
-	                nRows       = int.Parse(tbRows.Text);
-	                bIsIsometric= cbIsometric.Checked;
-                    nIsoType    = cbIsoType.SelectedIndex;
-	
-	                if (createPushed != null)
-	                    createPushed(this, new EventArgs());
-                }
-                else
-                {
-                    MessageBox.Show("All fields must be greater than 0, and the number of columns and rows must be the same.", "For Isometric Maps...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    case (int)IsoType.ISO_DIAMOND:
+                        {
+                            if (tbCellsize.Text.Length > 0  && tbCellsize.Text != "0" && 
+                                tbColumns.Text.Length > 0   && tbColumns.Text != "0" && 
+                                tbRows.Text.Length > 0      && tbRows.Text != "0" && 
+                                tbIsoHeight.Text.Length > 0 && tbIsoHeight.Text != "0" && 
+                                tbIsoWidth.Text.Length > 0  && tbIsoWidth.Text != "0" &&
+                                tbColumns.Text == tbRows.Text)
+                            {
+                                nIsoWidth   = int.Parse(tbIsoWidth.Text);
+                                nIsoHeight  = int.Parse(tbIsoHeight.Text);
+                                nColumns    = int.Parse(tbColumns.Text);
+                                nRows       = int.Parse(tbRows.Text);
+                                bIsIsometric= cbIsometric.Checked;
+                                nIsoType    = cbIsoType.SelectedIndex;
+
+                                if (createPushed != null)
+                                    createPushed(this, new EventArgs());
+                            }
+                            else
+                            {
+                                MessageBox.Show("All fields must contain non-negative values, and the number of columns and rows must be the same.", 
+                                    "For Diamond Maps...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            break;
+                        }
+                    case (int)IsoType.ISO_STAG:
+                        {
+                            if (tbCellsize.Text.Length > 0  && tbCellsize.Text != "0" && 
+                                tbColumns.Text.Length > 0   && tbColumns.Text != "0" && 
+                                tbRows.Text.Length > 0      && tbRows.Text != "0" && 
+                                tbIsoHeight.Text.Length > 0 && tbIsoHeight.Text != "0" && 
+                                tbIsoWidth.Text.Length > 0  && tbIsoWidth.Text != "0")
+                            {
+                                nIsoWidth = int.Parse(tbIsoWidth.Text);
+                                nIsoHeight = int.Parse(tbIsoHeight.Text);
+                                nColumns = int.Parse(tbColumns.Text);
+                                nRows = int.Parse(tbRows.Text);
+                                bIsIsometric = cbIsometric.Checked;
+                                nIsoType = cbIsoType.SelectedIndex;
+
+                                if (createPushed != null)
+                                    createPushed(this, new EventArgs());
+                            }
+                            else
+                            {
+                                MessageBox.Show("All fields must contain non-negative values.", "For Staggered Maps...", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            break;
+                        }
                 }
             }
         }
@@ -122,6 +161,58 @@ namespace test
             cbIsoType.Enabled = !cbIsoType.Enabled;
         }
 
+        // check to make sure the entered text is a numeric value
+        private void tbColumns_TextChanged(object sender, EventArgs e)
+        {
+            if (tbColumns.Text.Length > 0)
+            {
+                int index = tbColumns.Text.Length-1;
+                if (tbColumns.Text[index] < 48 || tbColumns.Text[index] > 57)
+                {
+                    tbColumns.Text = tbColumns.Text.Remove(index);
+                }
+            }
+        }
+
+        private void tbRows_TextChanged(object sender, EventArgs e)
+        {
+            if (tbRows.Text.Length > 0)
+            {
+                int index = tbRows.Text.Length - 1;
+                if (tbRows.Text[index] < 48 || tbRows.Text[index] > 57) 
+                    tbRows.Text = tbRows.Text.Remove(index);
+            }
+        }
+
+        private void tbIsoHeight_TextChanged(object sender, EventArgs e)
+        {
+            if (tbIsoHeight.Text.Length > 0)
+            {
+                int index = tbIsoHeight.Text.Length - 1;
+                if (tbIsoHeight.Text[index] < 48 || tbIsoHeight.Text[index] > 57)
+                    tbIsoHeight.Text = tbIsoHeight.Text.Remove(index);
+            }
+        }
+
+        private void tbIsoWidth_TextChanged(object sender, EventArgs e)
+        {
+            if (tbIsoWidth.Text.Length > 0)
+            {
+                int index = tbIsoWidth.Text.Length - 1;
+                if (tbIsoWidth.Text[index] < 48 || tbIsoWidth.Text[index] > 57)
+                    tbIsoWidth.Text = tbIsoWidth.Text.Remove(index);
+            }
+        }
+
+        private void tbCellsize_TextChanged(object sender, EventArgs e)
+        {
+            if (tbCellsize.Text.Length > 0)
+            {
+                int index = tbCellsize.Text.Length - 1;
+                if (tbCellsize.Text[index] < 48 || tbCellsize.Text[index] > 57)
+                    tbCellsize.Text = tbCellsize.Text.Remove(index);
+            }
+        }
 
     }
 }

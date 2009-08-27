@@ -29,3 +29,35 @@ C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.SetTriggerDlg.resources
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\TED.csproj.GenerateResource.Cache
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.exe
 C:\Code\SGP\Code\SVN\TED\TED\obj\Debug\test.pdb
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.exe
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.pdb
+C:\Documents and Settings\Administrator\Desktop\TED\TED\bin\Debug\test.exe
+C:\Documents and Settings\Administrator\Desktop\TED\TED\bin\Debug\test.pdb
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\ColorPicker.ColorPickerCtrl.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\ColorPicker.ColorPickerDialog.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.EditTileDlg.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.Form1.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.Help.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.ImportTilesetDlg.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.NewMap.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.Properties.Resources.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.SetTileFlagsDlg.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\test.SetTriggerDlg.resources
+C:\Documents and Settings\Administrator\Desktop\TED\TED\obj\Debug\TED.csproj.GenerateResource.Cache
+C:\Code\TED\TED\obj\Debug\ResolveAssemblyReference.cache
+C:\Code\TED\TED\obj\Debug\ColorPicker.ColorPickerCtrl.resources
+C:\Code\TED\TED\obj\Debug\ColorPicker.ColorPickerDialog.resources
+C:\Code\TED\TED\obj\Debug\test.EditTileDlg.resources
+C:\Code\TED\TED\obj\Debug\test.Form1.resources
+C:\Code\TED\TED\obj\Debug\test.Help.resources
+C:\Code\TED\TED\obj\Debug\test.ImportTilesetDlg.resources
+C:\Code\TED\TED\obj\Debug\test.NewMap.resources
+C:\Code\TED\TED\obj\Debug\test.Properties.Resources.resources
+C:\Code\TED\TED\obj\Debug\test.SetTileFlagsDlg.resources
+C:\Code\TED\TED\obj\Debug\test.SetTriggerDlg.resources
+C:\Code\TED\TED\obj\Debug\TED.csproj.GenerateResource.Cache
+C:\Code\TED\TED\bin\Debug\TED.exe
+C:\Code\TED\TED\bin\Debug\TED.pdb
+C:\Code\TED\TED\obj\Debug\TED.exe
+C:\Code\TED\TED\obj\Debug\TED.pdb

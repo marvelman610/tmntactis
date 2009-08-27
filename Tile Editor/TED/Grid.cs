@@ -29,17 +29,17 @@ namespace grid
             get { return m_bIsIsometric; }
             set { m_bIsIsometric = value; }
         }
-        int m_nIsoCenterLeftY;
-        public int NIsoCenterLeftY
+        int m_nIsoTopY;
+        public int NIsoTopY
         {
-            get { return m_nIsoCenterLeftY; }
-            set { m_nIsoCenterLeftY = value; }
+            get { return m_nIsoTopY; }
+            set { m_nIsoTopY = value; }
         }
-        int m_nIsoCenterTopX;
-        public int NIsoCenterTopX
+        int m_nIsoCenterX;
+        public int NIsoCenterX
         {
-            get { return m_nIsoCenterTopX; }
-            set { m_nIsoCenterTopX = value; }
+            get { return m_nIsoCenterX; }
+            set { m_nIsoCenterX = value; }
         }
         int m_nZoomIncrement;
         public int ZoomIncrement
@@ -105,6 +105,13 @@ namespace grid
         int m_nNumCols;
         int m_nTotalTiles;
         int m_nType;
+        public int Type
+        {
+            get { return m_nType; }
+            set { m_nType = value; }
+        }
+        int m_nScrollX;
+        int m_nScrollY;
 
         ManagedDirect3D mD3d;
         ManagedTextureManager mTM;
@@ -123,8 +130,8 @@ namespace grid
             // dimensions
             m_nCellWidth        = cellWidth;
             m_nCellHeight       = cellHeight;
-            m_nNumRows          = numHorizontal;
-            m_nNumCols          = numVertical;
+            m_nNumRows          = numVertical;
+            m_nNumCols          = numHorizontal;
             m_nTotalTiles       = m_nNumCols * m_nNumRows;
             NNumVertLines       = numVertical   + 1;  //always one more line than there are tiles
             NNumHorizontalLines = numHorizontal + 1;
@@ -143,12 +150,30 @@ namespace grid
             if (m_bIsIsometric)
             {
                 m_nType = type;
-                m_nIsoCenterTopX  = (m_nNumCols >> 1) * cellWidth + (cellWidth >> 1);
+                switch (m_nType)
+                {
+                    case (int)IsoType.ISO_DIAMOND:
+                        {
+                            m_nIsoCenterX = (m_nNumCols >> 1) * cellWidth + (cellWidth >> 1);
+                        }
+                        break;
+                    case (int)IsoType.ISO_SLIDE:
+                        break;
+                    case (int)IsoType.ISO_STAG:
+                        {
+                            // TODO::get these to center for staggered
+                            m_nIsoCenterX = cellWidth;
+                        }
+                        break;
+                }
             }
             // the d3d device to draw lines
             mD3d = ManagedDirect3D.Instance;
             mTM = ManagedTextureManager.Instance;
-            m_nDotID = mTM.LoadTexture("dot.png", 0);
+        }
+        public void SetDotID(int id)
+        {
+            m_nDotID = id;
         }
 
         //  Instead of using lines to draw the grid, 
@@ -171,15 +196,22 @@ namespace grid
         private Point PlotPointSlide(Point pt, int xOffset, int yOffset)
         {
             Point newPt = new Point();
-            newPt.X = pt.X * m_nCellWidth + newPt.Y * (m_nCellWidth >> 1) + xOffset;
+            newPt.X = pt.X * m_nCellWidth + pt.Y * (m_nCellWidth >> 1) + xOffset;
             newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset;
             return newPt;
         }
         private Point PlotPointStag(Point pt, int xOffset, int yOffset)
         {
             Point newPt = new Point();
-            newPt.X = pt.X * m_nCellWidth + (newPt.Y&1) * (m_nCellWidth >> 1) + xOffset;
+            newPt.X = pt.X * m_nCellWidth + (pt.Y&1) * (m_nCellWidth >> 1) + xOffset;
             newPt.Y = pt.Y * (m_nCellHeight >> 1) + yOffset;
+            return newPt;
+        }
+        private Point PlotPointRect(Point pt, int xOffset, int yOffset)
+        {
+            Point newPt = new Point();
+            newPt.X = pt.X;
+            newPt.Y = pt.Y;
             return newPt;
         }
 
@@ -194,13 +226,13 @@ namespace grid
                         switch (m_nType)
                         {
                             case (int)IsoType.ISO_DIAMOND:
-                                tilePoints[y * m_nNumCols + x] = PlotPointDiamond(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                tilePoints[y * m_nNumCols + x] = PlotPointDiamond(new Point(x, y), m_nIsoCenterX + m_nScrollX, m_nIsoTopY + m_nScrollY);
                                 break;
                             case (int)IsoType.ISO_SLIDE:
-                                tilePoints[y * m_nNumCols + x] = PlotPointSlide(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                tilePoints[y * m_nNumCols + x] = PlotPointSlide(new Point(x, y), m_nIsoCenterX + m_nScrollX, m_nIsoTopY + m_nScrollY);
                                 break;
                             case (int)IsoType.ISO_STAG:
-                                tilePoints[y * m_nNumCols + x] = PlotPointStag(new Point(x, y), m_nIsoCenterTopX, m_nIsoCenterLeftY);
+                                tilePoints[y * m_nNumCols + x] = PlotPointStag(new Point(x, y), m_nIsoCenterX + (m_nCellWidth >> 1) + m_nScrollX, m_nIsoTopY + m_nScrollY);
                                 break;
                         }
                     }
@@ -235,40 +267,74 @@ namespace grid
 
         public void CenterOnY(int windowHeight, int mapHeight)
         {
-            m_nIsoCenterLeftY = ((windowHeight - mapHeight) >> 1) - m_nCellHeight;
+            if (windowHeight > mapHeight)
+                m_nIsoTopY = ((windowHeight - mapHeight) >> 1) - m_nCellHeight;
+            else
+                m_nIsoTopY = 0;// (windowHeight >> 1) - (mapHeight >> 1);
             SetGridPts();
         }
-        public void CenterOnX(int windowWidth)
+        public void CenterOnX(int windowWidth, int mapWidth)
         {
-            m_nIsoCenterTopX = windowWidth >> 1;
+            if (windowWidth - 5 > mapWidth)
+                m_nIsoCenterX = ((windowWidth - mapWidth) >> 1) - m_nCellWidth;
+            else
+                m_nIsoCenterX = m_nCellWidth;// (windowWidth >> 1) - (mapWidth >> 1);
             SetGridPts();
+        }
+        public void SetMapX(int x)
+        {
+            m_nIsoCenterX = x;
+        }
+        public void SetMapY(int y)
+        {
+            m_nIsoTopY = y;
         }
 
-        public void DrawGrid(bool iso)
+        public void DrawGrid(bool iso, Color clr)
         {
             if (iso)
-                for (int i = 0; i < m_nTotalTiles; ++i )
-                    mTM.Draw(m_nDotID, tilePoints[i].X, tilePoints[i].Y, 1.0f, 1.0f, Rectangle.Empty, 0, 0, 0.0f, Color.White.ToArgb());
+            {
+                Rectangle srcRect = new Rectangle(new Point(0, 0), new Size(3, 3));
+                for (int i = 0; i < m_nTotalTiles; ++i)
+                    mTM.Draw(m_nDotID, tilePoints[i].X - 1 + m_nScrollX, tilePoints[i].Y - 1 + m_nScrollY, 1.0f, 1.0f,
+                        srcRect, 0, 0, 0.0f, clr.ToArgb());
+            }
             else
             {
                 for (int i = 0; i < m_nGridNumHorLines; ++i)
                 {
-                       mD3d.DrawLine(ptGridLinesHoriz[i].X, ptGridLinesHoriz[i].Y,
-                                       ptGridLinesHorizEnd[i].X, ptGridLinesHorizEnd[i].Y,
+                    mD3d.DrawLine(ptGridLinesHoriz[i].X + m_nScrollX, ptGridLinesHoriz[i].Y + m_nScrollY,
+                                       ptGridLinesHorizEnd[i].X + m_nScrollX, ptGridLinesHorizEnd[i].Y + m_nScrollY,
                                        clrGridLines.R, clrGridLines.G, clrGridLines.B);
                 }
                 for (int i2 = 0; i2 < m_nGridNumVertLines; ++i2)
                 {
-                       mD3d.DrawLine(ptGridLinesVert[i2].X, ptGridLinesVert[i2].Y,
-                                       ptGridLinesVertEnd[i2].X, ptGridLinesVertEnd[i2].Y,
+                    mD3d.DrawLine(ptGridLinesVert[i2].X + m_nScrollX, ptGridLinesVert[i2].Y + m_nScrollY,
+                                       ptGridLinesVertEnd[i2].X + m_nScrollX, ptGridLinesVertEnd[i2].Y + m_nScrollY,
                                         clrGridLines.R, clrGridLines.G, clrGridLines.B);
                 }
             }
         }
         public void DrawSelectionRect(int xID, int yID)
         {
-            Point topPt = PlotPointDiamond(new Point(xID, yID), m_nIsoCenterTopX, m_nIsoCenterLeftY);
-            Point btmPt = topPt; btmPt.Y = topPt.Y + m_nCellHeight;
+            Point topPt = new Point();
+            Point btmPt;
+
+            switch (m_nType)
+            {
+                case (int)IsoType.ISO_DIAMOND:
+                    topPt = PlotPointDiamond(new Point(xID, yID), m_nIsoCenterX + m_nScrollX, m_nIsoTopY + m_nScrollY);
+                    break;
+                case (int)IsoType.ISO_SLIDE:                                    
+                    topPt = PlotPointSlide(new Point(xID, yID), m_nIsoCenterX + m_nScrollX, m_nIsoTopY + m_nScrollY);
+                    break;
+                case (int)IsoType.ISO_STAG:
+                    topPt = PlotPointStag(new Point(xID, yID), m_nIsoCenterX + (m_nCellWidth >> 1) + m_nScrollX, m_nIsoTopY + m_nScrollY);
+                    break;
+                case (int)IsoType.RECT:
+                    break;
+            }
+            btmPt = topPt; btmPt.Y = topPt.Y + m_nCellHeight;
             int halfWidth = (m_nCellWidth >> 1);
             int halfHeight = (m_nCellHeight >> 1);
             // top to left
@@ -280,6 +346,7 @@ namespace grid
             // btm to right
             mD3d.DrawLine(btmPt.X, btmPt.Y, btmPt.X + halfWidth, btmPt.Y - halfHeight, 255, 255, 255);
         }
+
         public void GridAdjust(int vertLines, int horizontalLines)
         {
             NNumVertLines       = vertLines + 1;
@@ -311,7 +378,7 @@ namespace grid
             m_nCellHeight = cellSize;
             SetGridLines();
         }
-        public int CellSizeAdjustWidth(int cellWidth)  // for isometric adjust width
+        public int CellSizeAdjustWidth(int cellWidth) 
         {
             m_nCellWidth = cellWidth;
             if (m_nGridNumVertLines < m_nImageWidth / cellWidth + 1)
@@ -330,7 +397,7 @@ namespace grid
             }
             return m_nCellWidth;
         }
-        public int CellSizeAdjustHeight(int cellHeight)    // for isometric adjust height
+        public int CellSizeAdjustHeight(int cellHeight)
         {
             m_nCellHeight = cellHeight;
             if (m_nGridNumHorLines < m_nImageHeight / cellHeight + 1)
@@ -351,24 +418,29 @@ namespace grid
         }
         public void Offset(int x, int y)
         {
-            for (int i = 0; i < m_nGridNumVertLines; ++i)
-            {
-                ptGridLinesVert[i].X    += x;
-                ptGridLinesVert[i].Y    += y;
-                ptGridLinesVertEnd[i].X += x;
-                ptGridLinesVertEnd[i].Y += y;
-
-            }
-            for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2)
-            {
-                ptGridLinesHoriz[i2].X      += x;
-                ptGridLinesHoriz[i2].Y      += y;
-                ptGridLinesHorizEnd[i2].X   += x;
-                ptGridLinesHorizEnd[i2].Y   += y;
-            }
+            m_nScrollX += x;
+            m_nScrollY += y;
+//             for (int i = 0; i < m_nGridNumVertLines; ++i)
+//             {
+//                 ptGridLinesVert[i].X    += x;
+//                 ptGridLinesVert[i].Y    += y;
+//                 ptGridLinesVertEnd[i].X += x;
+//                 ptGridLinesVertEnd[i].Y += y;
+// 
+//             }
+//             for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2)
+//             {
+//                 ptGridLinesHoriz[i2].X      += x;
+//                 ptGridLinesHoriz[i2].Y      += y;
+//                 ptGridLinesHorizEnd[i2].X   += x;
+//                 ptGridLinesHorizEnd[i2].Y   += y;
+//             }
+//             for (int i = 0; i < m_nTotalTiles; ++i)
+//             { tilePoints[i].X += x; tilePoints[i].Y += y; }
         }
         public void ZeroOffset()
         {
+            m_nScrollX = m_nScrollY = 0;
             int x = 0, y = 0;
             for (int i = 0; i < m_nGridNumVertLines; ++i)
             {
@@ -376,7 +448,6 @@ namespace grid
                 ptGridLinesVert[i].Y = y;
                 ptGridLinesVertEnd[i].X = x;
                 ptGridLinesVertEnd[i].Y = y;
-
             }
             for (int i2 = 0; i2 < m_nGridNumHorLines; ++i2)
             {
@@ -385,6 +456,8 @@ namespace grid
                 ptGridLinesHorizEnd[i2].X = x;
                 ptGridLinesHorizEnd[i2].Y = y;
             }
+            for (int i = 0; i < m_nTotalTiles; ++i )
+            { tilePoints[i].X = tilePoints[i].Y = 0; }
         }
         public float ABS (float nIN)
         {

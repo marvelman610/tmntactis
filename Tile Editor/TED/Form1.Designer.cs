@@ -46,6 +46,8 @@
             this.lblCols = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.nudTileCost = new System.Windows.Forms.NumericUpDown();
+            this.btnAddTileset = new System.Windows.Forms.Button();
             this.lbCurrentLayer = new System.Windows.Forms.Label();
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,9 +78,11 @@
             this.changeBGColorToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cellPointsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveXMLWithToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             this.allTheHelpYouNeedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.version11ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cbShowFlags = new System.Windows.Forms.CheckBox();
             this.lblTileID = new System.Windows.Forms.Label();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
@@ -113,14 +117,17 @@
             this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.btnNewMap = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudImageWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudCellWidth)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridHeight)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridWidth)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.nudTileCost)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.tabPageGrid.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudMapZoom)).BeginInit();
@@ -257,6 +264,9 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.nudTileCost);
+            this.splitContainer1.Panel1.Controls.Add(this.btnAddTileset);
+            this.splitContainer1.Panel1.MouseLeave += new System.EventHandler(this.splitContainer1_Panel1_MouseLeave);
             this.splitContainer1.Panel1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel1_MouseMove);
             this.splitContainer1.Panel1.Click += new System.EventHandler(this.splitContainer1_Panel1_Click);
             this.splitContainer1.Panel1.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer1_Panel1_Scroll);
@@ -264,24 +274,58 @@
             this.splitContainer1.Panel1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel1_MouseDown);
             this.splitContainer1.Panel1.Resize += new System.EventHandler(this.splitContainer1_Panel1_Resize);
             this.splitContainer1.Panel1.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel1_MouseUp);
+            this.splitContainer1.Panel1.MouseEnter += new System.EventHandler(this.splitContainer1_Panel1_MouseEnter);
             // 
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.AllowDrop = true;
             this.splitContainer1.Panel2.Controls.Add(this.lbCurrentLayer);
+            this.splitContainer1.Panel2.MouseLeave += new System.EventHandler(this.splitContainer1_Panel2_MouseLeave);
             this.splitContainer1.Panel2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseMove);
             this.splitContainer1.Panel2.DragDrop += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel2_DragDrop);
             this.splitContainer1.Panel2.Scroll += new System.Windows.Forms.ScrollEventHandler(this.splitContainer1_Panel2_Scroll);
-            this.splitContainer1.Panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseClick);
+            this.splitContainer1.Panel2.MouseClick += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseUp);
             this.splitContainer1.Panel2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseDown);
             this.splitContainer1.Panel2.Resize += new System.EventHandler(this.splitContainer1_Panel2_Resize);
             this.splitContainer1.Panel2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.splitContainer1_Panel2_MouseUp);
             this.splitContainer1.Panel2.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel2_DragEnter);
+            this.splitContainer1.Panel2.MouseEnter += new System.EventHandler(this.splitContainer1_Panel2_MouseEnter);
             this.splitContainer1.Panel2MinSize = 50;
             this.splitContainer1.Size = new System.Drawing.Size(1295, 750);
             this.splitContainer1.SplitterDistance = 346;
             this.splitContainer1.SplitterWidth = 2;
             this.splitContainer1.TabIndex = 5;
+            // 
+            // nudTileCost
+            // 
+            this.nudTileCost.Location = new System.Drawing.Point(139, 196);
+            this.nudTileCost.Maximum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            0});
+            this.nudTileCost.Minimum = new decimal(new int[] {
+            999,
+            0,
+            0,
+            -2147483648});
+            this.nudTileCost.Name = "nudTileCost";
+            this.nudTileCost.Size = new System.Drawing.Size(44, 20);
+            this.nudTileCost.TabIndex = 13;
+            this.nudTileCost.Visible = false;
+            this.nudTileCost.ValueChanged += new System.EventHandler(this.nudTileCost_ValueChanged);
+            // 
+            // btnAddTileset
+            // 
+            this.btnAddTileset.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAddTileset.Location = new System.Drawing.Point(115, 365);
+            this.btnAddTileset.Name = "btnAddTileset";
+            this.btnAddTileset.Size = new System.Drawing.Size(112, 40);
+            this.btnAddTileset.TabIndex = 12;
+            this.btnAddTileset.Text = "Add Tileset";
+            this.btnAddTileset.UseVisualStyleBackColor = true;
+            this.btnAddTileset.Visible = false;
+            this.btnAddTileset.Click += new System.EventHandler(this.importTilesetAddToolStripMenuItem_Click);
             // 
             // lbCurrentLayer
             // 
@@ -500,9 +544,7 @@
             // 
             // twoLayersToolStripMenuItem
             // 
-            this.twoLayersToolStripMenuItem.Checked = true;
             this.twoLayersToolStripMenuItem.CheckOnClick = true;
-            this.twoLayersToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
             this.twoLayersToolStripMenuItem.Name = "twoLayersToolStripMenuItem";
             this.twoLayersToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
             this.twoLayersToolStripMenuItem.Text = "One Layer only";
@@ -512,24 +554,32 @@
             // 
             this.changeBGColorToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.mapToolStripMenuItem,
-            this.tilesetToolStripMenuItem});
+            this.tilesetToolStripMenuItem,
+            this.cellPointsToolStripMenuItem});
             this.changeBGColorToolStripMenuItem.Name = "changeBGColorToolStripMenuItem";
             this.changeBGColorToolStripMenuItem.Size = new System.Drawing.Size(226, 22);
-            this.changeBGColorToolStripMenuItem.Text = "Change BG Color";
+            this.changeBGColorToolStripMenuItem.Text = "Change Colors";
             // 
             // mapToolStripMenuItem
             // 
             this.mapToolStripMenuItem.Name = "mapToolStripMenuItem";
-            this.mapToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.mapToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.mapToolStripMenuItem.Text = "Map";
             this.mapToolStripMenuItem.Click += new System.EventHandler(this.changeBGColorToolStripMenuItem_Click);
             // 
             // tilesetToolStripMenuItem
             // 
             this.tilesetToolStripMenuItem.Name = "tilesetToolStripMenuItem";
-            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(105, 22);
+            this.tilesetToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
             this.tilesetToolStripMenuItem.Text = "Tileset";
             this.tilesetToolStripMenuItem.Click += new System.EventHandler(this.tilesetToolStripMenuItem_Click);
+            // 
+            // cellPointsToolStripMenuItem
+            // 
+            this.cellPointsToolStripMenuItem.Name = "cellPointsToolStripMenuItem";
+            this.cellPointsToolStripMenuItem.Size = new System.Drawing.Size(123, 22);
+            this.cellPointsToolStripMenuItem.Text = "Cell Points";
+            this.cellPointsToolStripMenuItem.Click += new System.EventHandler(this.cellPointsToolStripMenuItem_Click);
             // 
             // saveXMLWithToolStripMenuItem
             // 
@@ -543,7 +593,8 @@
             // toolStripMenuItem8
             // 
             this.toolStripMenuItem8.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.allTheHelpYouNeedToolStripMenuItem});
+            this.allTheHelpYouNeedToolStripMenuItem,
+            this.version11ToolStripMenuItem});
             this.toolStripMenuItem8.Name = "toolStripMenuItem8";
             this.toolStripMenuItem8.Size = new System.Drawing.Size(40, 20);
             this.toolStripMenuItem8.Text = "Help";
@@ -551,9 +602,17 @@
             // allTheHelpYouNeedToolStripMenuItem
             // 
             this.allTheHelpYouNeedToolStripMenuItem.Name = "allTheHelpYouNeedToolStripMenuItem";
-            this.allTheHelpYouNeedToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.allTheHelpYouNeedToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
+            this.allTheHelpYouNeedToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
             this.allTheHelpYouNeedToolStripMenuItem.Text = "All the help you need";
             this.allTheHelpYouNeedToolStripMenuItem.Click += new System.EventHandler(this.allTheHelpYouNeedToolStripMenuItem_Click);
+            // 
+            // version11ToolStripMenuItem
+            // 
+            this.version11ToolStripMenuItem.Enabled = false;
+            this.version11ToolStripMenuItem.Name = "version11ToolStripMenuItem";
+            this.version11ToolStripMenuItem.Size = new System.Drawing.Size(194, 22);
+            this.version11ToolStripMenuItem.Text = "Current Version: ";
             // 
             // cbShowFlags
             // 
@@ -715,7 +774,7 @@
             this.cbLayer.Location = new System.Drawing.Point(203, 26);
             this.cbLayer.Name = "cbLayer";
             this.cbLayer.Size = new System.Drawing.Size(95, 21);
-            this.cbLayer.TabIndex = 8;
+            this.cbLayer.TabIndex = 0;
             this.cbLayer.SelectedIndexChanged += new System.EventHandler(this.cbLayer_SelectedIndexChanged);
             // 
             // label4
@@ -1042,11 +1101,24 @@
             this.label10.TabIndex = 31;
             this.label10.Text = "X:";
             // 
+            // btnNewMap
+            // 
+            this.btnNewMap.Font = new System.Drawing.Font("Microsoft Sans Serif", 6F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnNewMap.Location = new System.Drawing.Point(1222, 1);
+            this.btnNewMap.Name = "btnNewMap";
+            this.btnNewMap.Size = new System.Drawing.Size(71, 21);
+            this.btnNewMap.TabIndex = 32;
+            this.btnNewMap.Text = "New Map";
+            this.btnNewMap.UseVisualStyleBackColor = true;
+            this.btnNewMap.Visible = false;
+            this.btnNewMap.Click += new System.EventHandler(this.toolStripMenuItem2_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1295, 774);
+            this.Controls.Add(this.btnNewMap);
             this.Controls.Add(this.label10);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.label8);
@@ -1085,9 +1157,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudCellWidth)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridHeight)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudTilesetGridWidth)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             this.splitContainer1.Panel2.PerformLayout();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.nudTileCost)).EndInit();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.tabPageGrid.ResumeLayout(false);
@@ -1192,6 +1266,11 @@
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.ToolStripMenuItem cellPointsToolStripMenuItem;
+        private System.Windows.Forms.Button btnAddTileset;
+        private System.Windows.Forms.NumericUpDown nudTileCost;
+        private System.Windows.Forms.Button btnNewMap;
+        private System.Windows.Forms.ToolStripMenuItem version11ToolStripMenuItem;
 
     }
 }

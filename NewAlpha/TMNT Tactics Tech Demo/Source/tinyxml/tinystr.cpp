@@ -27,6 +27,7 @@ distribution.
  */
 
 
+#include "stdafx.h"
 #ifndef TIXML_USE_STL
 
 #include "tinystr.h"
